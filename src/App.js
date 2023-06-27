@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import initialData from './store/initial-data';
+import TaskList from './components/tasklist';
+import SlotList from './components/slotlist';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  
+  state = initialData;
+
+  render() {
+    const tasks = this.state.tasks;
+    const slots = this.state.slots;
+    
+    return (
+      <div className="flex flex-row">
+        <TaskList tasks={tasks}/>
+        <SlotList slots={slots} tasks={tasks}/>
+      </div>
+    );
+  }
 }
 
 export default App;
