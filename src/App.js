@@ -8,7 +8,7 @@ function App() {
   const taskRedux = useSelector(state => state.task.tasks);
   return (
     <div className="flex flex-row">
-      <TaskList tasks={taskRedux}/>
+      <TaskList />
       <SlotList slots={slotRedux} tasks={taskRedux}/>        
     </div>
   );
