@@ -1,23 +1,22 @@
 import React from "react";
+import { useSelector } from "react-redux";
+
 import './slot.css';
 import Task from "./task";
 
-export default class Slot extends React.Component {
-    render() {
-        const slot = this.props.slot;
-        const start = this.props.slot.start;
-        const end = this.props.slot.end;
-        const tasks = this.props.tasks.filter(task => task.slotId != null && task.slotId === slot.id);
-        return (
-            <div className="bg-blue-200 border-2 border-gray-500 rounded p-1 my-1">
-                <div className="title">{this.props.slot.title}</div>
-                {start != null && end != null && <div className="time text-xs">{this.props.slot.start} - {this.props.slot.end}</div>}
-                {this.props.slot.inner != null && this.props.slot.inner.map((innerSlot, index) => 
-                    <Slot key={innerSlot.id} slot={innerSlot} tasks={this.props.tasks}/>)
-                }
-                { tasks.length > 0 && tasks.map(task => <Task task={task} />)}
-                <div className="h-10"/>
-            </div>
+export default function Slot({slot, tasks}) {
+    const { title, start, end, inner } = slot;
+    const taskRedux = useSelector(state => state.task.tasks);
+    const tasksInSlot = taskRedux.filter(task => task.slotId != null && task.slotId === slot.id);
+    return (
+        <div className="bg-blue-200 border-2 border-gray-500 rounded p-1 my-1">
+        <div className="title">{title}</div>
+        {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
+        {inner != null && inner.map((innerSlot, index) => 
+            <Slot key={innerSlot.id} slot={innerSlot} tasks={taskRedux}/>)
+        }
+        { tasksInSlot.length > 0 && tasksInSlot.map(task => <Task task={task} />)}
+        <div className="h-10"/>
+        </div>
         )
     }
-}
