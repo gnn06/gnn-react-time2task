@@ -5,7 +5,7 @@ import taskReducer from '../features/taskSlice';
 
 export default configureStore({
   reducer: {
-    slot: slotReducer,
-    task: taskReducer
+    slots: slotReducer,
+    tasks: taskReducer
   }
 })

@@ -1,29 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export const slotSlice = createSlice({
-    name: 'slot',
-    initialState: {
-        slots: [
+const initialState = [
+    {
+        id:    'slot1',
+        title: 'day',
+        inner: [
+            {
+                id:    'slot2',
+                title: 'créneau1',
+                start: '10:00',
+                end:   '11:00'
+            },
             {
                 id:    'slot3',
-                title: 'day',
-                inner: [
-                    {
-                        id:    'slot1',
-                        title: 'créneau1',
-                        start: '10:00',
-                        end:   '11:00'
-                    },
-                    {
-                        id:    'slot2',
-                        title: 'créneau2',
-                        start: '14:00',
-                        end:   '15:00'
-                    }
-                ]
+                title: 'créneau2',
+                start: '14:00',
+                end:   '15:00'
             }
         ]
-    },
+    }
+];
+
+export const slotSlice = createSlice({
+    name: 'slots',
+    initialState,
     reducers: {
         add: (state, newSlot) => {
             state.slots.push(newSlot)
