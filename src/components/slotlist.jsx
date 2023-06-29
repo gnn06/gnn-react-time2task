@@ -9,7 +9,7 @@ export default function SlotList()  {
         <div className="m-1">
         <h1>Slots</h1>
         {slotRedux.map((slot, index) => {
-            return <Slot key={slot.id} slot={slot} tasks={taskRedux}/>
+            return <Slot key={slot.id} slot={slot} />
         })}
         </div>
         )
