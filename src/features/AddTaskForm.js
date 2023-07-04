@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
+import Button from '../components/button';
+
 import { add } from './taskSlice';
 
 export default function AddTaskForm() {
@@ -29,7 +31,7 @@ export default function AddTaskForm() {
                     onChange={onTitleChange}
                 />
             </form>
-            <button type="button" onClick={onSaveTaskClicked}>Sauver la Tâche</button>
+            <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />
         </div>
     )
 }
