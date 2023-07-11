@@ -3,9 +3,13 @@ import { useSelector } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 
+function filterNoSlot(tasks) {
+    return tasks.filter(task => task.slotId == null);
+}
+
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
-    const tasks = taskRedux.filter(task => task.slotId == null);
+    const tasks = filterNoSlot(taskRedux);
     return (
         <div className="m-1">
             <h1>Tasks</h1>
