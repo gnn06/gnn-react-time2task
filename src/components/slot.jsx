@@ -6,7 +6,7 @@ import Task from "./task";
 
 export default function Slot({slot}) {
     const { title, start, end, inner } = slot;
-    const taskRedux = useSelector(state => state.tasks);
+    const taskRedux = useSelector(state => state.tasks.tasks);
     const tasksInSlot = taskRedux.filter(task => task.slotId != null && task.slotId === slot.id);
     return (
         <div className="bg-blue-200 border-2 border-gray-500 rounded p-1 my-1">
