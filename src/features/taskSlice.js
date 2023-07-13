@@ -15,7 +15,7 @@ const initialState = {
             title: 'task 3'
         }
     ],
-    taskWithSlot: {}
+    association: {}
 };
 
 export const taskSlice = createSlice({
@@ -29,7 +29,7 @@ export const taskSlice = createSlice({
         },
         associate: (state, action) => {
             const {task, slot} = action.payload;
-            state.taskWithSlot[task] = slot;
+            state.association[task] = slot;
         }
     }
 })
