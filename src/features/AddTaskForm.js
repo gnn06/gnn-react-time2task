@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import Button from '../components/button';
 
-import { add } from './taskSlice';
+import { add, associate } from './taskSlice';
 
 export default function AddTaskForm() {
 
@@ -18,7 +18,13 @@ export default function AddTaskForm() {
             add({title})
         );
         setTitle('');
-    }
+    };
+
+    const onAssociateClicked = () => {
+        dispatch(
+            associate({task: 'task1', slot: 'slot1'})
+        );
+    };
 
     return(
         <div>
@@ -32,6 +38,7 @@ export default function AddTaskForm() {
                 />
             </form>
             <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />
+            <Button clickToto={onAssociateClicked} label="Associer" />
         </div>
     )
 }
