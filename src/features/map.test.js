@@ -8,9 +8,7 @@ it('test Map', () => {
 });
 
 it('test Object', () => {
-    const foo = {
-        
-    };
+    const foo = {};
     foo['task1'] = 'slot1';
     expect(foo['task1']).toEqual('slot1');
     expect(foo['task2']).toEqual(undefined);

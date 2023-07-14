@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 
-import filterNoSlot from './domainDataUtil';
+import {filterNoSlot} from './domainDataUtil';
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
