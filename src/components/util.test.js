@@ -1,6 +1,4 @@
-function filterNoSlot(tasks, association) {
-    return tasks.filter(task => association[task.id] == null);
-}
+import filterNoSlot from './domainDataUtil';
 
 it('test filterNoSlot one slot', () => {
     const tasks = [ {

@@ -3,9 +3,7 @@ import { useSelector } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 
-function filterNoSlot(tasks, association) {
-    return tasks.filter(task => association[task.id] == null);
-}
+import filterNoSlot from './domainDataUtil';
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
