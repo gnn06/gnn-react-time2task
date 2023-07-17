@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Slot from './slot';
 
 export default function SlotList()  {
-    const slotRedux = useSelector(state => state.slots);
+    const slotRedux = useSelector(state => state.tasks.slots);
     return (
         <div className="m-1">
         <h1>Slots</h1>

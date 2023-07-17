@@ -15,6 +15,26 @@ const initialState = {
             title: 'task 3'
         }
     ],
+    slots: [
+        {
+            id:    'slot1',
+            title: 'day',
+            inner: [
+                {
+                    id:    'slot2',
+                    title: 'créneau1',
+                    start: '10:00',
+                    end:   '11:00'
+                },
+                {
+                    id:    'slot3',
+                    title: 'créneau2',
+                    start: '14:00',
+                    end:   '15:00'
+                }
+            ]
+        }
+    ],
     association: {}
 };
 
