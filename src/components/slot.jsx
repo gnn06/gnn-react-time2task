@@ -1,13 +1,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import './slot.css';
 import Task from "./task";
 
 import { findWithSlot } from "./domainDataUtil";
+import { selectSlot } from "../features/taskSlice";
 
 export default function Slot({slot}) {
+    const dispatch = useDispatch();
+    
     const { title, start, end, inner } = slot;
     const [selected, setSelected] = useState(false);
 
@@ -28,7 +32,13 @@ export default function Slot({slot}) {
         slotStyle += "hover:bg-blue-100 ";
     }
 
-    const onSlotClick = e => setSelected(!selected);
+    const onSlotClick = e => {
+        setSelected(!selected);
+        const slotId = slot.id;
+        dispatch(
+            selectSlot(slotId)
+        );
+    }
 
     return (
         <div>
