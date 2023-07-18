@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { arrayPut } from '../utils/arrayUtil';
+
 const initialState = {
     tasks : [
         { 
@@ -50,12 +52,7 @@ export const taskSlice = createSlice({
         },
         selectTask: (state, action) => {
             const taskId = action.payload;
-            const index = state.selectedTask.indexOf(taskId);
-            if (index === -1) {
-                state.selectedTask.push(taskId);
-            } else {
-                state.selectedTask.splice(index, 1);
-            }
+            arrayPut(state.selectedTask, taskId);
         },
         associate: (state, action) => {
             const {task, slot} = action.payload;
