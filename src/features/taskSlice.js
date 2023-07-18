@@ -15,6 +15,7 @@ const initialState = {
             title: 'task 3'
         }
     ],
+    selectedTask: [],
     slots: [
         {
             id:    'slot1',
@@ -47,6 +48,15 @@ export const taskSlice = createSlice({
             action.payload.id = "id" + newId;
             state.tasks.push(action.payload)
         },
+        selectTask: (state, action) => {
+            const taskId = action.payload;
+            const index = state.selectedTask.indexOf(taskId);
+            if (index === -1) {
+                state.selectedTask.push(taskId);
+            } else {
+                state.selectedTask.splice(index, 1);
+            }
+        },
         associate: (state, action) => {
             const {task, slot} = action.payload;
             state.association[task] = slot;
@@ -54,6 +64,6 @@ export const taskSlice = createSlice({
     }
 })
 
-export const { add, associate } = taskSlice.actions
+export const { add, selectTask, associate } = taskSlice.actions
 
 export default taskSlice.reducer
