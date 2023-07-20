@@ -17,7 +17,7 @@ const initialState = {
             title: 'task 3'
         }
     ],
-    selectedTask: [],
+    selectedTaskId: [],
     slots: [
         {
             id:    'slot1',
@@ -38,7 +38,7 @@ const initialState = {
             ]
         }
     ],
-    selectedSlot: [],
+    selectedSlotId: [],
     association: {}
 };
 
@@ -53,22 +53,22 @@ export const taskSlice = createSlice({
         },
         selectTask: (state, action) => {
             const taskId = action.payload;
-            arrayPut(state.selectedTask, taskId);
+            arrayPut(state.selectedTaskId, taskId);
         },
         selectSlot: (state, action) => {
             const slotId = action.payload;
-            arrayPut(state.selectedSlot, slotId);
+            arrayPut(state.selectedSlotId, slotId);
         },
         associate: (state, action) => {
             const {task, slot} = action.payload;
             state.association[task] = slot;
         },
         associateSelected: (state, action) => {
-            const selectedTask = state.selectedTask;
-            const selectedSlot = state.selectedSlot[0];
+            const selectedTask = state.selectedTaskId;
+            const selectedSlot = state.selectedSlotId[0];
             selectedTask.every(task => state.association[task] = selectedSlot);
-            state.selectedTask = [];
-            state.selectedSlot = [];
+            state.selectedTaskId = [];
+            state.selectedSlotId = [];
         }
     }
 })

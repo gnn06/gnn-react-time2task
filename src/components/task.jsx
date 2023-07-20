@@ -7,7 +7,7 @@ import { selectTask } from "../features/taskSlice";
 
 export default function Task({task}) {
     
-    const selected = useSelector(state => state.tasks.selectedTask).some(taskId => taskId === task.id);
+    const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
     const dispatch = useDispatch();
 
     const myClassName = 'rounded p-1 my-1 '

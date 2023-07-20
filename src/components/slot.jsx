@@ -12,7 +12,7 @@ export default function Slot({slot}) {
     const dispatch = useDispatch();
     
     const { id, title, start, end, inner } = slot;
-    const selected = useSelector(state => state.tasks.selectedSlot).some(slotId => slotId === id);
+    const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
     const taskRedux = useSelector(state => state.tasks.tasks);
     const association = useSelector(state => state.tasks.association);
