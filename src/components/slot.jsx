@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import './slot.css';
@@ -12,8 +11,8 @@ import { selectSlot } from "../features/taskSlice";
 export default function Slot({slot}) {
     const dispatch = useDispatch();
     
-    const { title, start, end, inner } = slot;
-    const [selected, setSelected] = useState(false);
+    const { id, title, start, end, inner } = slot;
+    const selected = useSelector(state => state.tasks.selectedSlot).some(slotId => slotId === id);
 
     const taskRedux = useSelector(state => state.tasks.tasks);
     const association = useSelector(state => state.tasks.association);
@@ -33,7 +32,6 @@ export default function Slot({slot}) {
     }
 
     const onSlotClick = e => {
-        setSelected(!selected);
         const slotId = slot.id;
         dispatch(
             selectSlot(slotId)

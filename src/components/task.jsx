@@ -1,13 +1,13 @@
 import React from "react";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import './task.css'
 import { selectTask } from "../features/taskSlice";
 
 export default function Task({task}) {
     
-    const [selected, setSelected] = useState(false);
+    const selected = useSelector(state => state.tasks.selectedTask).some(taskId => taskId === task.id);
     const dispatch = useDispatch();
 
     const myClassName = 'rounded p-1 my-1 '
@@ -17,7 +17,6 @@ export default function Task({task}) {
 
     const onTaskClick = e => {
         const taskId = task.id;
-        setSelected(!selected);
         dispatch(
             selectTask(taskId)
         );
