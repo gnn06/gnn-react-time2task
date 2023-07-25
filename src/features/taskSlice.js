@@ -6,15 +6,18 @@ const initialState = {
     tasks : [
         { 
             id: 'task1',
-            title: 'task 1'
+            title: 'task 1',
+            slotExpr: ''
         },
         {
             id: 'task2',
-            title: 'task 2'
+            title: 'task 2',
+            slotExpr: ''
         },
         {
             id:    'task3',
-            title: 'task 3'
+            title: 'task 3',
+            slotExpr: ''
         }
     ],
     selectedTaskId: [],
