@@ -1,4 +1,4 @@
-import { filterNoSlot, findWithSlot } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot } from './domainDataUtil';
 
 it('test filterNoSlot one slot', () => {
     const tasks = [ {
@@ -42,7 +42,7 @@ it('test filterNoSlot all slot', () => {
     expect(result.length).toEqual(0);
 });
 
-it('test findWithSlot', () => {
+it('test findTaskWithSlot', () => {
     const slots = [ {
         id: 'slot1'
     }, {
@@ -57,11 +57,11 @@ it('test findWithSlot', () => {
         'task1': 'slot1'
     };
     const slotId = 'slot1';
-    const result = findWithSlot(tasks, slotId, association);
+    const result = findTaskWithSlot(tasks, slotId, association);
     expect(result.length).toEqual(1);
 });
 
-it('test findWithSlot no found', () => {
+it('test findTaskWithSlot no found', () => {
     const slots = [ {
         id: 'slot1'
     }, {
@@ -76,6 +76,6 @@ it('test findWithSlot no found', () => {
         'task1': 'slot1'
     };
     const slotId = 'slot2';
-    const result = findWithSlot(tasks, slotId, association);
+    const result = findTaskWithSlot(tasks, slotId, association);
     expect(result.length).toEqual(0);
 });
