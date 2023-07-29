@@ -30,5 +30,5 @@ export default function Task({task}) {
 
     return <div 
     className={myClassName}
-        onClick={onTaskClick}>{task.title} <input type="text" value={task.slotExpr} onChange={onSlotExprChange}/></div>;
+        onClick={onTaskClick}>{task.title} <input className="p-1" type="text" value={task.slotExpr} onChange={onSlotExprChange}/></div>;
 }
