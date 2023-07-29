@@ -15,7 +15,6 @@ export default function Slot({slot}) {
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
     const taskRedux = useSelector(state => state.tasks.tasks);
-    const association = useSelector(state => state.tasks.association);
     
     const tasksInSlot = findTaskBySlotExpr(taskRedux, slot.id);
 
