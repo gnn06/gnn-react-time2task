@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
 import './task.css'
-import { selectTask } from "../features/taskSlice";
+import { selectTask, setSlotExpr } from "../features/taskSlice";
 
 export default function Task({task}) {
     
@@ -22,7 +22,13 @@ export default function Task({task}) {
         );
     }
 
+    const onSlotExprChange = e => {
+        const taskId = task.id;
+        const slotExpr = e.target.value;
+        dispatch(setSlotExpr({taskId, slotExpr}))
+    };
+
     return <div 
-        className={myClassName}
-        onClick={onTaskClick}>{task.title}</div>;
+    className={myClassName}
+        onClick={onTaskClick}>{task.title} <input type="text" value={task.slotExpr} onChange={onSlotExprChange}/></div>;
 }

@@ -72,10 +72,14 @@ export const taskSlice = createSlice({
             selectedTask.every(task => state.association[task] = selectedSlot);
             state.selectedTaskId = [];
             state.selectedSlotId = [];
+        },
+        setSlotExpr: (state, action) => {
+            const { taskId, slotExpr } = action.payload;
+            state.tasks.find(item => item.id === taskId).slotExpr = slotExpr;
         }
     }
 })
 
-export const { add, selectTask, selectSlot, associateSelected } = taskSlice.actions
+export const { add, selectTask, selectSlot, associateSelected, setSlotExpr } = taskSlice.actions
 
 export default taskSlice.reducer
