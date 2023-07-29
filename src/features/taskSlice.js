@@ -22,6 +22,17 @@ const initialState = {
     ],
     selectedTaskId: [],
     slots: [
+        { id:    'week',
+          title: 'semaine',
+          inner: [
+            { id:    'lundi',
+              title: 'lundi' },
+            { id:    'mardi',
+              title: 'mardi' },
+            { id:    'mercredi',
+              title: 'mercredi' }
+          ]
+        },
         {
             id:    'slot1',
             title: 'day',
