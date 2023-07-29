@@ -18,7 +18,7 @@ export default function Slot({slot}) {
     
     const tasksInSlot = findTaskBySlotExpr(taskRedux, slot.id);
 
-    let slotStyle = "border-2 border-gray-500 rounded p-1 my-1 ";
+    let slotStyle = "border-2 border-gray-500 rounded p-1 m-1 ";
     if (selected) {
         slotStyle += "bg-gray-400 ";
     } else {
@@ -37,6 +37,9 @@ export default function Slot({slot}) {
         );
     }
 
+    const innerClass = 'ml-3' 
+        + (slot.id === 'week' ? ' flex flex-row' : '');
+
     return (
         <div>
             <div className={slotStyle} onClick={onSlotClick}>
@@ -45,7 +48,7 @@ export default function Slot({slot}) {
                 { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
                 <div className="h-10"/>
             </div>
-            <div className="mx-3">
+            <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
                 <Slot key={innerSlot.id} slot={innerSlot} />)}
             </div>
