@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
 import './slot.css';
-import Task from "./task";
+import TaskLight from "./task-light";
 
 import { findTaskBySlotExpr } from "./domainDataUtil";
 import { selectSlot } from "../features/taskSlice";
@@ -42,7 +42,7 @@ export default function Slot({slot}) {
             <div className={slotStyle} onClick={onSlotClick}>
                 <div className="title">{title}</div>
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
-                { tasksInSlot.length > 0 && tasksInSlot.map(task => <Task key={task.id} task={task} />)}
+                { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
                 <div className="h-10"/>
             </div>
             <div className="mx-3">
