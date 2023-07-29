@@ -43,7 +43,7 @@ export default function Slot({slot}) {
             <div className={slotStyle} onClick={onSlotClick}>
                 <div className="title">{title}</div>
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
-                { tasksInSlot.length > 0 && tasksInSlot.map(task => <Task task={task} />)}
+                { tasksInSlot.length > 0 && tasksInSlot.map(task => <Task key={task.id} task={task} />)}
                 <div className="h-10"/>
             </div>
             <div className="mx-3">
