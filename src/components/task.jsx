@@ -28,7 +28,12 @@ export default function Task({task}) {
         dispatch(setSlotExpr({taskId, slotExpr}))
     };
 
+    const onClickInput = e => {
+        e.stopPropagation();
+    };
+
     return <div 
     className={myClassName}
-        onClick={onTaskClick}>{task.title} <input className="p-1" type="text" value={task.slotExpr} onChange={onSlotExprChange}/></div>;
+        onClick={onTaskClick}>{task.title} <input className="p-1" type="text" value={task.slotExpr} 
+        onChange={onSlotExprChange} onClick={onClickInput}/></div>;
 }
