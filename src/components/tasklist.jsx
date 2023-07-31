@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
+import TaskFilter from "./task-filter.jsx";
 
 import {filterNoSlot} from './domainDataUtil';
 
@@ -11,6 +12,7 @@ export default function TaskList() {
     const tasks = filterNoSlot(taskRedux, association);
     return (
         <div className="m-1">
+            <TaskFilter/>
             <h1>Tasks</h1>
             {tasks.map((task, index) => <Task key={task.id} task={task} />)}
             <AddTaskForm />

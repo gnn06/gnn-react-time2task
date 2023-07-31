@@ -21,6 +21,7 @@ const initialState = {
         }
     ],
     selectedTaskId: [],
+    currentTaskFilter: 'no-filter',
     slots: [
         { id:    'week',
           title: 'semaine',
@@ -35,17 +36,17 @@ const initialState = {
         },
         {
             id:    'slot1',
-            title: 'day',
+            title: 'jour',
             inner: [
                 {
                     id:    'slot2',
-                    title: 'créneau1',
+                    title: 'matin',
                     start: '10:00',
                     end:   '11:00'
                 },
                 {
                     id:    'slot3',
-                    title: 'créneau2',
+                    title: 'aprem',
                     start: '14:00',
                     end:   '15:00'
                 }
@@ -87,10 +88,14 @@ export const taskSlice = createSlice({
         setSlotExpr: (state, action) => {
             const { taskId, slotExpr } = action.payload;
             state.tasks.find(item => item.id === taskId).slotExpr = slotExpr;
+        },
+        setTaskFilter: (state, action) => {
+            console.log('reduce setTaskFilter ' + action.payload.filter);
+            state.currentTaskFilter = action.payload.filter;
         }
     }
 })
 
-export const { add, selectTask, selectSlot, associateSelected, setSlotExpr } = taskSlice.actions
+export const { add, selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter } = taskSlice.actions
 
 export default taskSlice.reducer
