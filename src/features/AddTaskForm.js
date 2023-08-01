@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import Button from '../components/button';
 
-import { add, associateSelected } from './taskSlice';
+import { add } from './taskSlice';
 
 export default function AddTaskForm() {
 
@@ -18,12 +18,6 @@ export default function AddTaskForm() {
             add({title})
         );
         setTitle('');
-    };
-
-    const onAssociateClicked = () => {
-        dispatch(
-            associateSelected()
-        );
     };
 
     return(
