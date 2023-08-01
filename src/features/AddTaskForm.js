@@ -38,7 +38,6 @@ export default function AddTaskForm() {
                 />
             </form>
             <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />
-            <Button clickToto={onAssociateClicked} label="Associer" />
         </div>
     )
 }

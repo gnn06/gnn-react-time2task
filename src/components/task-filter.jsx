@@ -25,7 +25,7 @@ export default function TaskFilter() {
     
     return <div>
         <label htmlFor="task-filter">Filtre : </label>
-        <select className="p-1 rounded" id="task-filter" name="task-filter" onChange={onChange}>
+        <select className="p-2 rounded bg-gray-400 hover:bg-gray-300 " id="task-filter" name="task-filter" onChange={onChange}>
             { taskFilters.map(item => (
                 <option key={item.value} value={item.value} label={item.label}/>
             ))}
