@@ -4,12 +4,14 @@ import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 import TaskFilter from "./task-filter.jsx";
 
-import {filterNoSlot} from './domainDataUtil';
+import { filterSlotExpr } from './domainDataUtil';
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
-    const association = useSelector(state => state.tasks.association);
-    const tasks = filterNoSlot(taskRedux, association);
+    const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
+    
+    const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
+    
     return (
         <div className="m-1">
             <TaskFilter/>
