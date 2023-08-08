@@ -3,23 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { arrayPut } from '../utils/arrayUtil';
 
 const initialState = {
-    tasks : [
-        { 
-            id: 'task1',
-            title: 'task 1',
-            slotExpr: ''
-        },
-        {
-            id: 'task2',
-            title: 'task 2',
-            slotExpr: ''
-        },
-        {
-            id:    'task3',
-            title: 'task 3',
-            slotExpr: ''
-        }
-    ],
+    tasks : [],
     selectedTaskId: [],
     currentTaskFilter: 'no-filter',
     slots: [
@@ -92,10 +76,13 @@ export const taskSlice = createSlice({
         setTaskFilter: (state, action) => {
             console.log('reduce setTaskFilter ' + action.payload.filter);
             state.currentTaskFilter = action.payload.filter;
+        },
+        setTasks: (state, action) => {
+            state.tasks = action.payload;
         }
     }
 })
 
-export const { add, selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter } = taskSlice.actions
+export const { add, selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter, setTasks } = taskSlice.actions
 
 export default taskSlice.reducer
