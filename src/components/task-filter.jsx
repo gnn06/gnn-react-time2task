@@ -11,6 +11,8 @@ export default function TaskFilter() {
         { label: 'lundi',    value: 'lundi' },
         { label: 'mardi',    value: 'mardi' },
         { label: 'mercredi', value: 'mercredi' },
+        { label: 'jeudi', value: 'jeudi' },
+        { label: 'vendredi', value: 'vendredi' },
         { label: 'jour',     value: 'slot1' },
         { label: 'matin',    value: 'slot2' },
         { label: 'aprem',    value: 'slot3' }

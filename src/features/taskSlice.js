@@ -15,7 +15,11 @@ const initialState = {
             { id:    'mardi',
               title: 'mardi' },
             { id:    'mercredi',
-              title: 'mercredi' }
+              title: 'mercredi' },
+              { id:    'jeudi',
+                title: 'jeudi' },
+                { id:    'vendredi',
+                  title: 'vendredi' }
           ]
         },
         {
