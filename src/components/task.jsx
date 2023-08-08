@@ -32,8 +32,9 @@ export default function Task({task}) {
         e.stopPropagation();
     };
 
-    return <div 
-    className={myClassName}
-        onClick={onTaskClick}>{task.title} <input className="p-1 bg-transparent" type="text" value={task.slotExpr} 
-        onChange={onSlotExprChange} onClick={onClickInput}/></div>;
+    return <tr className={myClassName} onClick={onTaskClick}>
+            <td>{task.title} </td>
+            <td><input className="p-1 bg-transparent" type="text" value={task.slotExpr} 
+                onChange={onSlotExprChange} onClick={onClickInput}/></td>
+        </tr>;
 }

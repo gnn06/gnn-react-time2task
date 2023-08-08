@@ -16,7 +16,14 @@ export default function TaskList() {
         <div className="m-1">
             <TaskFilter/>
             <h1>Tasks</h1>
-            {tasks.map((task, index) => <Task key={task.id} task={task} />)}
+            <table>
+                <thead>
+                <tr><th>Titre</th><th>Créneau (expression)</th></tr>
+                </thead>
+                <tbody>
+                {tasks.map((task, index) => <Task key={task.id} task={task} />)}
+                </tbody>
+            </table>
             <AddTaskForm />
         </div>
         )        
