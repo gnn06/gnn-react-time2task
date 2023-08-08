@@ -5,7 +5,7 @@ export function filterNoSlot(tasks, association) {
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
 
-    return tasks.filter(item => item.slotExpr === filter);
+    return tasks.filter(item => slotMatchExpr(filter, item.slotExpr));
 }
 
 export function findTaskWithSlot(tasks, slotId, association) {
