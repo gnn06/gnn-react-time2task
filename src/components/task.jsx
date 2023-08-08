@@ -34,7 +34,7 @@ export default function Task({task}) {
 
     return <tr className={myClassName} onClick={onTaskClick}>
             <td>{task.title} </td>
-            <td><input className="p-1 bg-transparent" type="text" value={task.slotExpr} 
-                onChange={onSlotExprChange} onClick={onClickInput}/></td>
+            <td><input className="p-1 bg-transparent" type="text" defaultValue={task.slotExpr} 
+            onBlur={onSlotExprChange} onClick={onClickInput}/></td>
         </tr>;
 }
