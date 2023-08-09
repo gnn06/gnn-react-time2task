@@ -29,3 +29,11 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
 export function firstSlot(slotExpr) {
     return slotExpr.split(' ')[0];
 }
+
+export function lowerSlot(slotExpr) {
+    const i = slotExpr.indexOf(' ');
+    if (i == -1)
+        return '';
+    else
+        return slotExpr.substring(i + 1);
+}
