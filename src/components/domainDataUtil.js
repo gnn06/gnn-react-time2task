@@ -46,7 +46,7 @@ export function firstSlot(slotExpr) {
 
 export function lowerSlot(slotExpr) {
     const i = slotExpr.indexOf(' ');
-    if (i == -1)
+    if (i === -1)
         return '';
     else
         return slotExpr.substring(i + 1);
