@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot  } from './domainDataUtil';
 
 it('test filterNoSlot one slot', () => {
     const tasks = [ {
@@ -133,3 +133,50 @@ it('test slotMatchExpr empty expr', () => {
     const result = slotMatchExpr('slot1', ''); 
     expect(result).toEqual(false);
 });
+
+/*
+it('slotIsInOther true by first level', () => {
+    const result = slotIsInOther('S32 mercredi matin','S32');
+    expect(result).toBeTruthy();
+})
+
+it('slotIsInOther true by second level', () => {
+    const result = slotIsInOther('S32 mercredi matin','S32 mercredi');
+    expect(result).toBeTruthy();
+})
+
+it('slotIsInOther true by last level', () => {
+    const result = slotIsInOther('S32 mercredi matin','S32 mercredi matin');
+    expect(result).toBeTruthy();
+})
+
+it('slotIsInOther false by last level', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S32 mercredi matin');
+    expect(result).toBeFalsy()
+})
+
+it('slotIsInOther false by second level', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S32 lundi aprem');
+    expect(result).toBeFalsy()
+})
+
+it('slotIsInOther false by first level', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S33 mercredi aprem');
+    expect(result).toBeFalsy()
+})
+*/
+
+it('firstSlot', () => {
+    const result = firstSlot('S32 mercredi matin');
+    expect(result).toEqual('S32')
+})
+
+it('firstSlot one level', () => {
+    const result = firstSlot('matin');
+    expect(result).toEqual('matin')
+})
+
+it('firstSlot empty', () => {
+    const result = firstSlot('');
+    expect(result).toEqual('')
+})

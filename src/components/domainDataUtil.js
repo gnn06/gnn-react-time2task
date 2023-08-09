@@ -21,3 +21,11 @@ export function slotMatchExpr(slotId, slotExpr) {
     const result = slotExpr !== undefined && slotExpr.indexOf(slotId) > -1;
     return result;
 }
+
+export function slotIsInOther(slotExpr, otherSlotExpr) {
+    return false;
+}
+
+export function firstSlot(slotExpr) {
+    return slotExpr.split(' ')[0];
+}
