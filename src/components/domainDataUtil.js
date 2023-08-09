@@ -23,7 +23,21 @@ export function slotMatchExpr(slotId, slotExpr) {
 }
 
 export function slotIsInOther(slotExpr, otherSlotExpr) {
-    return false;
+    const first = firstSlot(slotExpr)
+    const firstOther = firstSlot(otherSlotExpr)
+    // first level is different, no need to go next level
+    if (first !== firstOther)
+        return false;
+    else {
+        const lower = lowerSlot(slotExpr);
+        const lowerOther = lowerSlot(otherSlotExpr);
+        // other has no more level so previous level egality is enough
+        if (lowerOther === '') 
+            return true;
+        else
+            // need to check at next level
+            return slotIsInOther(lower, lowerOther);   
+    }
 }
 
 export function firstSlot(slotExpr) {

@@ -134,7 +134,6 @@ it('test slotMatchExpr empty expr', () => {
     expect(result).toEqual(false);
 });
 
-/*
 it('slotIsInOther true by first level', () => {
     const result = slotIsInOther('S32 mercredi matin','S32');
     expect(result).toBeTruthy();
@@ -164,7 +163,26 @@ it('slotIsInOther false by first level', () => {
     const result = slotIsInOther('S32 mercredi aprem','S33 mercredi aprem');
     expect(result).toBeFalsy()
 })
-*/
+
+it('slotIsInOther true other less deeper', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S32 mercredi');
+    expect(result).toBeTruthy()
+})
+
+it('slotIsInOther false other less deeper', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S32 lundi');
+    expect(result).toBeFalsy()
+})
+
+it('slotIsInOther true other has 1 level', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S32');
+    expect(result).toBeTruthy()
+})
+
+it('slotIsInOther false other has 1 level', () => {
+    const result = slotIsInOther('S32 mercredi aprem','S33');
+    expect(result).toBeFalsy()
+})
 
 it('firstSlot', () => {
     const result = firstSlot('S32 mercredi matin');
