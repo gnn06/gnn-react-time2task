@@ -6,41 +6,49 @@ const initialState = {
     tasks : [],
     selectedTaskId: [],
     currentTaskFilter: 'no-filter',
-    slots: [
-        { id:    'week',
-          title: 'semaine',
-          inner: [
-            { id:    'lundi',
-              title: 'lundi' },
-            { id:    'mardi',
-              title: 'mardi' },
-            { id:    'mercredi',
-              title: 'mercredi' },
-              { id:    'jeudi',
-                title: 'jeudi' },
-                { id:    'vendredi',
-                  title: 'vendredi' }
-          ]
-        },
-        {
-            id:    'slot1',
-            title: 'jour',
-            inner: [
-                {
-                    id:    'slot2',
-                    title: 'matin',
-                    start: '10:00',
-                    end:   '11:00'
-                },
-                {
-                    id:    'slot3',
-                    title: 'aprem',
-                    start: '14:00',
-                    end:   '15:00'
-                }
-            ]
-        }
-    ],
+    slots: [{
+        id: 'this_month',
+        title: 'ce mois ci',
+        inner: [
+            { id:    'week',
+              title: 'semaine',
+              inner: [
+                { id:    'lundi',
+                  title: 'lundi' },
+                { id:    'mardi',
+                  title: 'mardi' },
+                { id:    'mercredi',
+                  title: 'mercredi' },
+                  { id:    'jeudi',
+                    title: 'jeudi' },
+                    { id:    'vendredi',
+                      title: 'vendredi' }
+              ]
+            },
+            { id:    'next_week',
+              title: 'semaine prochaine',
+              inner: []
+            },
+            {
+                id:    'slot1',
+                title: 'jour',
+                inner: [
+                    {
+                        id:    'slot2',
+                        title: 'matin',
+                        start: '10:00',
+                        end:   '11:00'
+                    },
+                    {
+                        id:    'slot3',
+                        title: 'aprem',
+                        start: '14:00',
+                        end:   '15:00'
+                    }
+                ]
+            }
+        ]
+    }],
     selectedSlotId: [],
     association: {}
 };

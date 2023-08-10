@@ -45,7 +45,7 @@ export default function Slot({slot}) {
     return (
         <div>
             <div className={slotStyle} onClick={onSlotClick}>
-                <div className="title">{title}</div>
+                <div className="title">{title} <span className="italic text-sm">({id})</span></div>
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
                 { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
                 <div className="h-10"/>
