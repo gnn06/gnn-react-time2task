@@ -184,6 +184,21 @@ it('slotIsInOther false other has 1 level', () => {
     expect(result).toBeFalsy()
 })
 
+it('slotIsInOther incomplet expr', () => {
+    const result = slotIsInOther('S33','S33');
+    expect(result).toBeTruthy()
+})
+
+it('slotIsInOther incomplet expr trop précis', () => {
+    const result = slotIsInOther('S33','S33 mercredi');
+    expect(result).toBeFalsy()
+})
+
+it('slotIsInOther incomplet expr false', () => {
+    const result = slotIsInOther('S32 mercredi','S33');
+    expect(result).toBeFalsy()
+})
+
 it('firstSlot', () => {
     const result = firstSlot('S32 mercredi matin');
     expect(result).toEqual('S32')
