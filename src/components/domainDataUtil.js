@@ -26,6 +26,7 @@ export function slotMatchExpr(slotId, slotExpr) {
 }
 
 export function slotIsInOther(slotExpr, otherSlotExpr) {
+    if (slotExpr === undefined || otherSlotExpr === undefined) return false;
     const first = firstSlot(slotExpr)
     const firstOther = firstSlot(otherSlotExpr)
     // first level is different, no need to go next level
