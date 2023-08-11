@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr } from './domainDataUtil';
 
 it('test filterNoSlot one slot', () => {
     const tasks = [ {
@@ -224,4 +224,16 @@ it('lowerSlot no lower', () => {
 
 it('lowerSlot empty', () => {
     expect(lowerSlot('')).toEqual('')
+})
+
+test('filterSlotExpr no match', () => {
+    const tasks = [ { slotExpr: 'S32 mercredi' } ];
+    const result = filterSlotExpr(tasks, 'S31');
+    expect(result).toEqual([])
+})
+
+test('filterSlotExpr match', () => {
+    const tasks = [ { slotExpr: 'S32 mercredi' } ];
+    const result = filterSlotExpr(tasks, 'S32');
+    expect(result).toEqual(tasks)
 })

@@ -2,10 +2,13 @@ export function filterNoSlot(tasks, association) {
     return tasks.filter(task => association[task.id] == null);
 }
 
+/**
+ * filter a task list on a filter expression
+ */
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
 
-    return tasks.filter(item => slotMatchExpr(filter, item.slotExpr));
+    return tasks.filter(item => slotIsInOther(item.slotExpr, filter));
 }
 
 export function findTaskWithSlot(tasks, slotId, association) {
