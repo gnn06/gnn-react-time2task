@@ -21,7 +21,7 @@ function getAllTasksP() {
             ,{"id":"recGCosJep60Ukuku","title":"transverse / revue mensuelle infra + compte à supprimer"}
             ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma"}
             ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy"}
-            ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig"}
+            ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
             ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF"}
             ,{"id":"recvz3IyTCyI3oXfs","title":"migration des apache 2.2 WS"}
             ,{"id":"recpCPTyVRin7m7Cl","title":"aide Domaine / front / migration witbe"}
