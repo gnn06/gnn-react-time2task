@@ -17,6 +17,6 @@ export default function TaskFilter() {
         <input type="text" 
             placeholder="expression"
             className="m-1 p-1"
-            onBlur={onChange}/>
+            onBlur={onChange}/> 'no-filter'
     </div>;
 };
