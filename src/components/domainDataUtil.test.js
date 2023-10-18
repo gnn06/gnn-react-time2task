@@ -105,6 +105,38 @@ it('test findTaskBySlotExpr match', () => {
     expect(result).toEqual(expected);
 });
 
+it('test findTaskBySlotExpr exact min', () => {
+    const tasks = [ {
+        id: 'task1',
+        slotExpr: 'week'
+    }, {
+        id: 'task2',
+        slotExpr: 'next_week'
+    }];
+    const expected = [ {
+        id: 'task1',
+        slotExpr: 'week'
+    }];
+    const result = findTaskBySlotExpr(tasks, 'week');
+    expect(result).toEqual(expected);
+});
+
+it('test findTaskBySlotExpr exact max', () => {
+    const tasks = [ {
+        id: 'task1',
+        slotExpr: 'week'
+    }, {
+        id: 'task2',
+        slotExpr: 'next_week'
+    }];
+    const expected = [ {
+        id: 'task2',
+        slotExpr: 'next_week'
+    }];
+    const result = findTaskBySlotExpr(tasks, 'next_week');
+    expect(result).toEqual(expected);
+});
+
 it('test findTaskBySlotExpr no match', () => {
     const slots = [ {
         id: 'slot1'

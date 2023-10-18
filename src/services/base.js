@@ -19,7 +19,7 @@ function getAllTasksP() {
             ,{"id":"recOyZDnf0uplEAFr","title":"transverse / reporting dufaux","slotExpr":"mercredi"}
             ,{"id":"recxJCq03Z9SGVpyD","title":"suivre saisie des temps IMPACT","slotExpr":"lundi aprem"}
             ,{"id":"recGCosJep60Ukuku","title":"transverse / revue mensuelle infra + compte à supprimer"}
-            ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma"}
+            ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma","slotExpr":"week"}
             ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy"}
             ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
             ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF"}

@@ -11,6 +11,7 @@ export default function TaskList() {
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
+    //console.log('filterSlotExpr', currentTaskFilter, tasks.length);
     
     return (
         <div className="m-1">
