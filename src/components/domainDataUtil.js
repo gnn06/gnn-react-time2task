@@ -57,3 +57,12 @@ export function lowerSlot(slotExpr) {
     else
         return slotExpr.substring(i + 1);
 }
+
+export function completeSlot(givenSlotExpr) {
+    const first = firstSlot(givenSlotExpr);
+    if (first === 'week' || first === 'next_week') {
+        return givenSlotExpr;
+    } else {
+        return 'week ' + givenSlotExpr;
+    }
+}

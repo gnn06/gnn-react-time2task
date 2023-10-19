@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot } from './domainDataUtil';
 
 it('test filterNoSlot one slot', () => {
     const tasks = [ {
@@ -268,4 +268,28 @@ test('filterSlotExpr match', () => {
     const tasks = [ { slotExpr: 'S32 mercredi' } ];
     const result = filterSlotExpr(tasks, 'S32');
     expect(result).toEqual(tasks)
+})
+
+it('filterSlotExpr uncomplete', () => {
+    const tasks = [ { slotExpr: 'vendredi' } ];
+    const result = filterSlotExpr(tasks, 'week');
+    expect(result).toEqual(tasks)
+})
+
+it('completeSlot uncomplete', () => {
+    const result = completeSlot('vendredi');
+    expect(result).toEqual('week vendredi');
+
+})
+
+it('completeSlot complete 1', () => {
+    const result = completeSlot('week vendredi');
+    expect(result).toEqual('week vendredi');
+
+})
+
+it('completeSlot complete 1', () => {
+    const result = completeSlot('next_week vendredi');
+    expect(result).toEqual('next_week vendredi');
+
 })
