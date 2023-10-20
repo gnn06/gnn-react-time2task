@@ -59,7 +59,7 @@ export function lowerSlot(slotExpr) {
 }
 
 export function completeSlot(givenSlotExpr) {
-    if (givenSlotExpr == undefined) return undefined;
+    if (givenSlotExpr === undefined) return undefined;
     const first = firstSlot(givenSlotExpr);
     if (first === 'week' || first === 'next_week') {
         return givenSlotExpr;
