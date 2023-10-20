@@ -8,8 +8,8 @@ export function filterNoSlot(tasks, association) {
 // OK
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
-
-    return tasks.filter(item => slotIsInOther(item.slotExpr, filter));
+    const filterComplet = completeSlot(filter);
+    return tasks.filter(item => slotIsInOther(completeSlot(item.slotExpr), filterComplet));
 }
 
 export function findTaskWithSlot(tasks, slotId, association) {
@@ -59,6 +59,7 @@ export function lowerSlot(slotExpr) {
 }
 
 export function completeSlot(givenSlotExpr) {
+    if (givenSlotExpr == undefined) return undefined;
     const first = firstSlot(givenSlotExpr);
     if (first === 'week' || first === 'next_week') {
         return givenSlotExpr;

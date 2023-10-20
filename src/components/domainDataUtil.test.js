@@ -258,38 +258,62 @@ it('lowerSlot empty', () => {
     expect(lowerSlot('')).toEqual('')
 })
 
-test('filterSlotExpr no match', () => {
-    const tasks = [ { slotExpr: 'S32 mercredi' } ];
-    const result = filterSlotExpr(tasks, 'S31');
-    expect(result).toEqual([])
-})
-
-test('filterSlotExpr match', () => {
-    const tasks = [ { slotExpr: 'S32 mercredi' } ];
-    const result = filterSlotExpr(tasks, 'S32');
+it('level1 match level1 level2', () => {
+    const tasks = [ { slotExpr: 'week mercredi' } ];
+    const result = filterSlotExpr(tasks, 'week');
     expect(result).toEqual(tasks)
 })
 
-it('filterSlotExpr uncomplete', () => {
+it('level1 don\'t match level1 level2', () => {
+    const tasks = [ { slotExpr: 'week mercredi' } ];
+    const result = filterSlotExpr(tasks, 'next_week');
+    expect(result).toEqual([])
+})
+
+it('level1 level2 match level1 level2', () => {
+    const tasks = [ { slotExpr: 'week mercredi' } ];
+    const result = filterSlotExpr(tasks, 'week mercredi');
+    expect(result).toEqual(tasks)
+})
+
+it('level1 match uncomplete level2', () => {
     const tasks = [ { slotExpr: 'vendredi' } ];
     const result = filterSlotExpr(tasks, 'week');
     expect(result).toEqual(tasks)
 })
 
-it('completeSlot uncomplete', () => {
+it('uncomplete level2 match level1 level2', () => {
+    const tasks = [ { slotExpr: 'week vendredi' } ];
+    const result = filterSlotExpr(tasks, 'vendredi');
+    expect(result).toEqual(tasks)
+})
+
+it('completeSlot no_level1 level2', () => {
     const result = completeSlot('vendredi');
     expect(result).toEqual('week vendredi');
 
 })
 
-it('completeSlot complete 1', () => {
+it('completeSlot level1 level2', () => {
     const result = completeSlot('week vendredi');
     expect(result).toEqual('week vendredi');
 
 })
 
-it('completeSlot complete 1', () => {
+it('completeSlot level1 bis level2', () => {
     const result = completeSlot('next_week vendredi');
     expect(result).toEqual('next_week vendredi');
+
+})
+
+it('completeSlot level 1 no level2', () => {
+    const result = completeSlot('week');
+    expect(result).toEqual('week');
+
+})
+
+it('completeSlot unidefined', () => {
+    const result = completeSlot(undefined);
+    expect(result).toEqual(undefined);
 
 })
