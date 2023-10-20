@@ -22,7 +22,7 @@ function getAllTasksP() {
             ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma","slotExpr":"week"}
             ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy","slotExpr":"week vendredi"}
             ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
-            ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF"}
+            ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF","slotExpr":"next_week vendredi"}
             ,{"id":"recvz3IyTCyI3oXfs","title":"migration des apache 2.2 WS"}
             ,{"id":"recpCPTyVRin7m7Cl","title":"aide Domaine / front / migration witbe"}
             ,{"id":"recphkpYwZCoQq8gs","title":"relecture fiche rgpd"}
