@@ -20,7 +20,7 @@ function getAllTasksP() {
             ,{"id":"recxJCq03Z9SGVpyD","title":"suivre saisie des temps IMPACT","slotExpr":"lundi aprem"}
             ,{"id":"recGCosJep60Ukuku","title":"transverse / revue mensuelle infra + compte à supprimer"}
             ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma","slotExpr":"week"}
-            ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy"}
+            ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy","slotExpr":"week vendredi"}
             ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
             ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF"}
             ,{"id":"recvz3IyTCyI3oXfs","title":"migration des apache 2.2 WS"}
