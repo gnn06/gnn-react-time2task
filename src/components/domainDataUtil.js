@@ -61,7 +61,8 @@ export function lowerSlot(slotExpr) {
 export function completeSlot(givenSlotExpr) {
     if (givenSlotExpr === undefined) return undefined;
     const first = firstSlot(givenSlotExpr);
-    if (first === 'week' || first === 'next_week') {
+    const level = getSlotLevel(first);
+    if (level === 1) {
         return givenSlotExpr;
     } else {
         const currentSlot = getCurrentSlot();
@@ -71,4 +72,15 @@ export function completeSlot(givenSlotExpr) {
 
 function getCurrentSlot() {
     return 'week'; 
+}
+
+/**
+ * @returns int -1 or >= 1
+ */
+function getSlotLevel(slot) {
+    if (slot === 'week' || slot === 'next_week') {
+        return 1;
+    } else {
+        return -1
+    }
 }
