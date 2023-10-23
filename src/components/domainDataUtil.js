@@ -19,7 +19,7 @@ export function findTaskWithSlot(tasks, slotId, association) {
 
 // KO
 export function findTaskBySlotExpr(tasks, slotId) {
-    return tasks.filter(task => slotIsInOther(task.slotExpr, slotId));
+    return tasks.filter(task => slotIsInOther(task.slotExpr, slotId) && slotDepth(completeSlot(task.slotExpr)) === slotDepth(completeSlot(slotId)));
 }
 
 export function slotMatchExpr(slotId, slotExpr) {
@@ -48,6 +48,10 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
 
 export function firstSlot(slotExpr) {
     return slotExpr.split(' ')[0];
+}
+
+export function slotDepth(slotExpr) {
+    return slotExpr.split(' ').length;
 }
 
 export function lowerSlot(slotExpr) {

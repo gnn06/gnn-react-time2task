@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot, slotDepth } from './domainDataUtil';
 
 describe('filterNoSlot', () => {
     it('test filterNoSlot one slot', () => {
@@ -155,6 +155,38 @@ describe('findTaskBySlotExpr', () => {
         const result = findTaskBySlotExpr(tasks, 'slot1');
         expect(result).toEqual([]);
     });
+
+    it('finaly included', () => {
+        const tasks = [ {
+            id: 'task1',
+            slotExpr: 'week'
+        },{
+            id: 'task2',
+            slotExpr: 'week vendredi'
+        }];
+        const expected = [{
+            id: 'task1',
+            slotExpr: 'week'
+        }];
+        const result = findTaskBySlotExpr(tasks, 'week');
+        expect(result).toEqual(expected);
+    })
+
+    it('finaly included', () => {
+        const tasks = [ {
+            id: 'task1',
+            slotExpr: 'week'
+        },{
+            id: 'task2',
+            slotExpr: 'week vendredi'
+        }];
+        const expected = [{
+            id: 'task2',
+            slotExpr: 'week vendredi'
+        }];
+        const result = findTaskBySlotExpr(tasks, 'week vendredi');
+        expect(result).toEqual(expected);
+    })
 })
 
 describe('slotMatchExpr', () => {
@@ -336,5 +368,22 @@ describe('completeSlot', () => {
         const result = completeSlot(undefined);
         expect(result).toEqual(undefined);
 
+    })
+})
+
+describe('slotDepth', () => {
+    it('one level', () => {
+        const result = slotDepth('week');
+        expect(result).toEqual(1);
+    })
+
+    it('two levels', () => {
+        const result = slotDepth('week lundi');
+        expect(result).toEqual(2);
+    })
+
+    it('three levels', () => {
+        const result = slotDepth('week lundi aprem');
+        expect(result).toEqual(3);
     })
 })
