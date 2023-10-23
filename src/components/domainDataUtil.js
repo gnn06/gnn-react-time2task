@@ -64,6 +64,11 @@ export function completeSlot(givenSlotExpr) {
     if (first === 'week' || first === 'next_week') {
         return givenSlotExpr;
     } else {
-        return 'week ' + givenSlotExpr;
+        const currentSlot = getCurrentSlot();
+        return currentSlot + ' ' + givenSlotExpr;
     }
+}
+
+function getCurrentSlot() {
+    return 'week'; 
 }
