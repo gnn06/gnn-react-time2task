@@ -15,10 +15,10 @@ function getAllTasksP() {
             ,{"id":"recoXd4OyDUcru2mJ","title":"préparer semaine prochaine","slotExpr":"aprem"}
             ,{"id":"recEpoP2owuvd4Zja","title":"suivi poseidon anomalie","slotExpr":"jeudi"}
             ,{"id":"recjy3Nj2ElGbPHoy","title":"suivi poseidon fonctionnement prod","slotExpr":"jeudi"}
-            ,{"id":"reczLLeGI4FwJv213","title":"suivi global sécu","slotExpr":"mardi"}
+            ,{"id":"reczLLeGI4FwJv213","title":"suivi global sécu","slotExpr":"mardi aprem"}
             ,{"id":"recOyZDnf0uplEAFr","title":"transverse / reporting dufaux","slotExpr":"mercredi"}
             ,{"id":"recxJCq03Z9SGVpyD","title":"suivre saisie des temps IMPACT","slotExpr":"lundi aprem"}
-            ,{"id":"recGCosJep60Ukuku","title":"transverse / revue mensuelle infra + compte à supprimer"}
+            ,{"id":"recGCosJep60Ukuku","title":"transverse / revue mensuelle infra + compte à supprimer","slotExpr":"next_week vendredi aprem"}
             ,{"id":"reccWBbHKc7IAzTGs","title":"saisie anticipée sciforma","slotExpr":"week"}
             ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy","slotExpr":"week vendredi"}
             ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
