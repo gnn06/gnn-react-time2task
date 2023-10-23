@@ -12,7 +12,7 @@ function getAllTasksP() {
             {"id":"recS0GWmbnKqTjcTW","title":"suivi projet transverse (dont prévention)"},
             {"id":"recM8xQ21j1dRpCSk","title":"consigner events de la semaine"},
             {"id":"recST8n10wB54U4jF","title":"consigner temps impact","slotExpr":"vendredi"}
-            ,{"id":"recoXd4OyDUcru2mJ","title":"préparer semaine prochaine"}
+            ,{"id":"recoXd4OyDUcru2mJ","title":"préparer semaine prochaine","slotExpr":"aprem"}
             ,{"id":"recEpoP2owuvd4Zja","title":"suivi poseidon anomalie","slotExpr":"jeudi"}
             ,{"id":"recjy3Nj2ElGbPHoy","title":"suivi poseidon fonctionnement prod","slotExpr":"jeudi"}
             ,{"id":"reczLLeGI4FwJv213","title":"suivi global sécu","slotExpr":"mardi"}
@@ -23,10 +23,10 @@ function getAllTasksP() {
             ,{"id":"recN1GHjT4sfWaGLj","title":"cablage préprod / lancer action legacy","slotExpr":"week vendredi"}
             ,{"id":"recrhJNBT1ijdKFLv","title":"upgrade tridig","slotExpr":"next_week"}
             ,{"id":"rec80dP8GUp02NHqw","title":"relecture matrice OWASP API et adaptation WAF","slotExpr":"next_week vendredi"}
-            ,{"id":"recvz3IyTCyI3oXfs","title":"migration des apache 2.2 WS"}
+            ,{"id":"recvz3IyTCyI3oXfs","title":"migration des apache 2.2 WS","slotExpr":"lundi"}
             ,{"id":"recpCPTyVRin7m7Cl","title":"aide Domaine / front / migration witbe"}
-            ,{"id":"recphkpYwZCoQq8gs","title":"relecture fiche rgpd"}
-            ,{"id":"recDYJOt4W6kg1qzu","title":"project bascule GED","slotExpr":"lundi matin"}];
+            ,{"id":"recphkpYwZCoQq8gs","title":"relecture fiche rgpd","slotExpr":"week lundi"}
+            ,{"id":"recDYJOt4W6kg1qzu","title":"project bascule GED","slotExpr":"week lundi matin"}];
         resolve(result);
         /*
         const result = [];
