@@ -62,25 +62,36 @@ export function completeSlot(givenSlotExpr) {
     if (givenSlotExpr === undefined) return undefined;
     const first = firstSlot(givenSlotExpr);
     const level = getSlotLevel(first);
-    if (level === 1) {
+    if (level === 1)
         return givenSlotExpr;
-    } else {
-        const currentSlot = getCurrentSlot();
-        return currentSlot + ' ' + givenSlotExpr;
+    else if (level === 2)
+        return getCurrentSlot(1) + ' ' + givenSlotExpr;
+    else {
+        return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + givenSlotExpr;
     }
 }
 
-function getCurrentSlot() {
-    return 'week'; 
+function getCurrentSlot(level) {
+    if (level === 1)
+        return 'week';
+    else if (level === 2)
+        return 'lundi';
+    else if (level === 3)
+        return 'matin';
+    else
+        return '';
 }
 
 /**
- * @returns int -1 or >= 1
+ * @returns int -1 or between 1 and 3
  */
 function getSlotLevel(slot) {
-    if (slot === 'week' || slot === 'next_week') {
+    if (slot === 'week' || slot === 'next_week')
         return 1;
-    } else {
+    else if (slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
+        return 2;
+    else if (slot === 'matin' || slot === 'aprem')
+        return 3;
+    else
         return -1
-    }
 }
