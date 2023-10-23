@@ -305,10 +305,20 @@ describe('filterSlotExpr', () => {
 })
 
 describe('completeSlot', () => {
-    it('completeSlot no_level1 level2', () => {
+    it('completeSlot level1', () => {
+        const result = completeSlot('week');
+        expect(result).toEqual('week');
+    })
+
+    it('completeSlot level2', () => {
         const result = completeSlot('vendredi');
         expect(result).toEqual('week vendredi');
 
+    })
+
+    it('completeSlot level3', () => {
+        const result = completeSlot('aprem');
+        expect(result).toEqual('week lundi aprem');
     })
 
     it('completeSlot level1 level2', () => {
@@ -317,16 +327,9 @@ describe('completeSlot', () => {
 
     })
 
-    it('completeSlot level1 bis level2', () => {
+    it('completeSlot level1_bis level2', () => {
         const result = completeSlot('next_week vendredi');
         expect(result).toEqual('next_week vendredi');
-
-    })
-
-    it('completeSlot level 1 no level2', () => {
-        const result = completeSlot('week');
-        expect(result).toEqual('week');
-
     })
 
     it('completeSlot unidefined', () => {
