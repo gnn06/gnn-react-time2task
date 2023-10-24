@@ -86,7 +86,6 @@ export const taskSlice = createSlice({
             state.tasks.find(item => item.id === taskId).slotExpr = slotExpr;
         },
         setTaskFilter: (state, action) => {
-            console.log('reduce setTaskFilter ' + action.payload.filter);
             state.currentTaskFilter = action.payload.filter;
         },
         setTasks: (state, action) => {

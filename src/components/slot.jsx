@@ -19,7 +19,6 @@ export default function Slot({slot}) {
     
     const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
     const tasksInSlot = findTaskBySlotExpr(tasks, slot.id);
-    console.log('findTaskBySlotExpr', slot.id, tasksInSlot.length);
 
     let slotStyle = "border-2 border-gray-500 rounded p-1 m-1 ";
     if (selected) {
