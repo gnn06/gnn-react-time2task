@@ -99,3 +99,12 @@ function getSlotLevel(slot) {
     else
         return -1
 }
+
+export function setSlotPath(slot, parentPath) {
+    const copy = {...slot};
+    copy.path = (parentPath !== '' ? parentPath + ' ' : '') + slot.id;
+    for (let i = 0; i < slot.inner.length; i++) {
+        slot.inner[i] = setSlotPath(slot.inner[i], (parentPath !== '' ? parentPath + ' ' : '') + slot.id);
+    }
+    return copy;
+}

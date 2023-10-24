@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot, slotDepth } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot, slotDepth, setSlotPath } from './domainDataUtil';
 
 describe('filterNoSlot', () => {
     it('test filterNoSlot one slot', () => {
@@ -387,3 +387,66 @@ describe('slotDepth', () => {
         expect(result).toEqual(3);
     })
 })
+
+describe('setSlotPath', () => {
+    it('final node', () => {
+        const given = {
+            id: 'id',
+            title: 'slot',
+            inner: []
+        };
+        const expected = {
+            id: 'id',
+            title: 'slot',
+            inner: [],
+            path: 'parent id'
+        };
+        const result = setSlotPath(given, 'parent')
+        expect(result).toEqual(expected);
+    })
+
+    it('tree', () => {
+        const given = {
+            id: 'id1',
+            title: 'slot1',
+            inner: [ {
+                id: 'id2',
+                title: 'slot2',
+                inner: [{
+                    id: 'id3',
+                    title: 'slot3',
+                    inner: []
+                }]
+            },{
+                id: 'id4',
+                title: 'slot4',
+                inner: []
+            }]
+        };
+        const expected = {
+            id: 'id1',
+            title: 'slot1',
+            path: 'id1',
+            inner: [ {
+                id: 'id2',
+                title: 'slot2',
+                path: 'id1 id2',
+                inner: [{
+                    id: 'id3',
+                    title: 'slot3',
+                    path: 'id1 id2 id3',
+                    inner: []
+                }]
+            },{
+                id: 'id4',
+                title: 'slot4',
+                path: 'id1 id4',
+                inner: []
+            }]
+        };
+        const result = setSlotPath(given, '')
+        expect(result).toEqual(expected);
+    })
+
+})
+
