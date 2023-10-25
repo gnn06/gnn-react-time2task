@@ -18,8 +18,8 @@ export function findTaskWithSlot(tasks, slotId, association) {
 };
 
 // KO
-export function findTaskBySlotExpr(tasks, slotId) {
-    return tasks.filter(task => slotIsInOther(task.slotExpr, slotId) && slotDepth(completeSlot(task.slotExpr)) === slotDepth(completeSlot(slotId)));
+export function findTaskBySlotExpr(tasks, slotPath) {
+    return tasks.filter(task => slotIsInOther(completeSlot(task.slotExpr), slotPath) && slotDepth(completeSlot(task.slotExpr)) === slotDepth(slotPath));
 }
 
 export function slotMatchExpr(slotId, slotExpr) {
@@ -70,17 +70,21 @@ export function completeSlot(givenSlotExpr) {
         return givenSlotExpr;
     else if (level === 2)
         return getCurrentSlot(1) + ' ' + givenSlotExpr;
-    else {
+    else if (level === 3)
         return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + givenSlotExpr;
+    else {
+        return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + getCurrentSlot(3) + ' ' + givenSlotExpr;
     }
 }
 
 function getCurrentSlot(level) {
     if (level === 1)
-        return 'week';
+        return 'this_month';
     else if (level === 2)
-        return 'lundi';
+        return 'week';
     else if (level === 3)
+        return 'lundi';
+    else if (level === 4)
         return 'matin';
     else
         return '';
@@ -90,12 +94,14 @@ function getCurrentSlot(level) {
  * @returns int -1 or between 1 and 3
  */
 function getSlotLevel(slot) {
-    if (slot === 'week' || slot === 'next_week')
+    if (slot === 'this_month')
         return 1;
-    else if (slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
+    if (slot === 'week' || slot === 'next_week')
         return 2;
-    else if (slot === 'matin' || slot === 'aprem')
+    else if (slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
         return 3;
+    else if (slot === 'matin' || slot === 'aprem')
+        return 4;
     else
         return -1
 }

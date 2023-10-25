@@ -9,39 +9,50 @@ const initialState = {
     slots: [{
         id: 'this_month',
         title: 'ce mois ci',
+        path: 'this_month',
         inner: [
             { id:    'week',
               title: 'semaine',
+              path: 'this_month week',
               inner: [
                 { id:    'lundi',
-                  title: 'lundi' },
+                  title: 'lundi',
+                  path:  'this_month week lundi' },
                 { id:    'mardi',
-                  title: 'mardi' },
+                  title: 'mardi',
+                  path:  'this_month week mardi' },
                 { id:    'mercredi',
-                  title: 'mercredi' },
+                  title: 'mercredi',
+                  path:  'this_month week mercredi' },
                   { id:    'jeudi',
-                    title: 'jeudi' },
+                    title: 'jeudi',
+                    path:  'this_month week jeudi' },
                     { id:    'vendredi',
-                      title: 'vendredi' }
+                      title: 'vendredi',
+                      path:  'this_month week vendredi' }
               ]
             },
             { id:    'next_week',
               title: 'semaine prochaine',
+              path:  'this_month next_week',
               inner: []
             },
             {
                 id:    'slot1',
                 title: 'jour',
+                path:'this_month jour',
                 inner: [
                     {
                         id:    'slot2',
                         title: 'matin',
+                        path: 'this_month jour matin',
                         start: '10:00',
                         end:   '11:00'
                     },
                     {
                         id:    'slot3',
                         title: 'aprem',
+                        path: 'this_month jour aprem',
                         start: '14:00',
                         end:   '15:00'
                     }
