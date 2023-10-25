@@ -15,21 +15,33 @@ const initialState = {
               title: 'semaine',
               path: 'this_month week',
               inner: [
-                { id:    'lundi',
-                  title: 'lundi',
-                  path:  'this_month week lundi' },
-                { id:    'mardi',
-                  title: 'mardi',
-                  path:  'this_month week mardi' },
-                { id:    'mercredi',
-                  title: 'mercredi',
-                  path:  'this_month week mercredi' },
-                  { id:    'jeudi',
+                {   id:    'lundi',
+                    title: 'lundi',
+                    path:  'this_month week lundi',
+                    inner: [
+                        { id: 'lundi_matin', title: 'matin', path: 'this_month week lundi matin' },
+                        { id: 'lundi_aprem', title: 'aprem', path: 'this_month week lundi aprem' }
+                    ]},
+                {   id:    'mardi',
+                    title: 'mardi',
+                    path:  'this_month week mardi',
+                    inner: [
+                        { id: 'mardi_matin', title: 'matin', path: 'this_month week mardi matin' },
+                        { id: 'mardi_aprem', title: 'aprem', path: 'this_month week mardi aprem' }
+                    ] },
+                {   id:    'mercredi',
+                    title: 'mercredi',
+                    path:  'this_month week mercredi' },
+                {   id:    'jeudi',
                     title: 'jeudi',
                     path:  'this_month week jeudi' },
-                    { id:    'vendredi',
-                      title: 'vendredi',
-                      path:  'this_month week vendredi' }
+                {   id:    'vendredi',
+                    title: 'vendredi',
+                    path:  'this_month week vendredi',
+                    inner: [
+                        { id: 'vendredi_matin', title: 'matin', path: 'this_month week vendredi matin' },
+                        { id: 'vendredi_aprem', title: 'aprem', path: 'this_month week vendredi aprem' }
+                    ] }
               ]
             },
             { id:    'next_week',
