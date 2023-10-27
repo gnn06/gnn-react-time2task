@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot, slotDepth, setSlotPath } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, slotIsInOther, firstSlot, lowerSlot, filterSlotExpr, completeSlot, slotDepth, setSlotPath, slotEqual } from './domainDataUtil';
 
 describe('filterNoSlot', () => {
     it('test filterNoSlot one slot', () => {
@@ -450,3 +450,29 @@ describe('setSlotPath', () => {
 
 })
 
+describe('slotEqual', () => {
+    it('equal one level', () => {
+        const result = slotEqual('week', 'week');
+        expect(result).toEqual(true);
+    })
+    it('not equal one level', () => {
+        const result = slotEqual('week', 'next_week');
+        expect(result).toEqual(false);
+    })
+    it('equal two level', () => {
+        const result = slotEqual('week lundi', 'week lundi');
+        expect(result).toEqual(true);
+    })
+    it('not equal tow level', () => {
+        const result = slotEqual('week lundi', 'week mardi');
+        expect(result).toEqual(false);
+    })
+    it('other empty', () => {
+        const result = slotEqual('week lundi', 'week');
+        expect(result).toEqual(false);
+    })
+    it('this empty', () => {
+        const result = slotEqual('week', 'week lundi');
+        expect(result).toEqual(false);
+    })    
+})

@@ -114,3 +114,19 @@ export function setSlotPath(slot, parentPath) {
     }
     return copy;
 }
+
+export function slotEqual(slot, otherSlot) {
+    const first = firstSlot(slot);
+    const firstOther = firstSlot(otherSlot);
+    if (first !== firstOther)
+        return false;
+    else {
+        const lowerThis = lowerSlot(slot);
+        const lowerOther = lowerSlot(otherSlot);
+        if (lowerThis === '' && lowerOther === '')
+            return true;
+        else
+            return slotEqual(lowerThis, lowerOther);
+    }
+}
+
