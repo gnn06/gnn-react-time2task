@@ -18,7 +18,7 @@ export default function Slot({slot}) {
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
-    const tasksInSlot = findTaskBySlotExpr(tasks, slot.path);
+    const tasksInSlot = findTaskBySlotExpr(tasks, {path:slot.path});
 
     let slotStyle = "border-2 border-gray-500 rounded p-1 m-1 ";
     if (selected) {
