@@ -19,7 +19,11 @@ export function findTaskWithSlot(tasks, slotId, association) {
 
 // KO
 export function findTaskBySlotExpr(tasks, slot) {
-    return tasks.filter(task => slotIsInOther(completeSlot(task.slotExpr), slot.path) && slotDepth(completeSlot(task.slotExpr)) === slotDepth(slot.path));
+    if (slot.inner !== undefined && slot.inner.length !== 0) {
+        return tasks.filter(task => slotEqual(completeSlot(task.slotExpr), slot.path));
+    } else {
+        return tasks.filter(task => slotIsInOther(completeSlot(task.slotExpr), slot.path));
+    }
 }
 
 export function slotMatchExpr(slotId, slotExpr) {
@@ -116,17 +120,23 @@ export function setSlotPath(slot, parentPath) {
 }
 
 export function slotEqual(slot, otherSlot) {
-    const first = firstSlot(slot);
-    const firstOther = firstSlot(otherSlot);
-    if (first !== firstOther)
+    if (slot !== undefined && otherSlot !== undefined) {
+        const first = firstSlot(slot);
+        const firstOther = firstSlot(otherSlot);
+        if (first !== firstOther)
+            return false;
+        else {
+            const lowerThis = lowerSlot(slot);
+            const lowerOther = lowerSlot(otherSlot);
+            if (lowerThis === '' && lowerOther === '')
+                return true;
+            else
+                return slotEqual(lowerThis, lowerOther);
+        }
+    } else if (slot === undefined && otherSlot === undefined) {
+        return true;
+    } else {
         return false;
-    else {
-        const lowerThis = lowerSlot(slot);
-        const lowerOther = lowerSlot(otherSlot);
-        if (lowerThis === '' && lowerOther === '')
-            return true;
-        else
-            return slotEqual(lowerThis, lowerOther);
     }
 }
 

@@ -85,6 +85,61 @@ describe('findTaskWithSlot', () => {
 })
 
 describe('findTaskBySlotExpr', () => {
+    it('feuille', () => {
+        const tasks = [ {
+            id: 'task1',
+            slotExpr: 'this_month week mardi'
+        }, {
+            id: 'task3',
+            slotExpr: 'this_month week jeudi'
+        }];
+        const slot = { id: 'slot1', path: 'this_month week mardi' };
+        const result = findTaskBySlotExpr(tasks, slot);
+        const expected = [ {
+            id: 'task1',
+            slotExpr: 'this_month week mardi'
+        }];
+        expect(result).toEqual(expected);
+    });
+
+    it('feuille avec subtask', () => {
+        const tasks = [ {
+            id: 'task2',
+            slotExpr: 'this_month week mardi aprem'
+        }, {
+            id: 'task3',
+            slotExpr: 'this_month week jeudi'
+        }];
+        const slot = { id: 'slot1', path: 'this_month week mardi' };
+        const result = findTaskBySlotExpr(tasks, slot);
+        const expected = [ {
+            id: 'task2',
+            slotExpr: 'this_month week mardi aprem'
+        }];
+        expect(result).toEqual(expected);
+    });
+
+    it('pas feuille', () => {
+        const tasks = [ {
+            id: 'task1',
+            slotExpr: 'this_month week mardi'
+        }, {
+            id: 'task3',
+            slotExpr: 'this_month week jeudi'
+        }];
+        const slot = { id: 'slot1', path: 'this_month week mardi',
+            inner: [ { id: 'slot2', path: 'this_month week mardi aprem',
+                inner: []
+            }]
+        };
+        const result = findTaskBySlotExpr(tasks, slot);
+        const expected = [ {
+            id: 'task1',
+            slotExpr: 'this_month week mardi'
+        }];
+        expect(result).toEqual(expected);
+    })
+    
     it('test findTaskBySlotExpr empty slotExpr', () => {
         const tasks = [ {
             id: 'task1'
@@ -98,15 +153,15 @@ describe('findTaskBySlotExpr', () => {
     it('test findTaskBySlotExpr match', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'lundi'
+            slotExpr: 'mardi'
         }, {
             id: 'task2',
             slotExpr: ''
         }];
-        const slot = { id: 'slot1', path: 'this_month week lundi' }
+        const slot = { id: 'slot1', path: 'this_month week mardi' }
         const expected = [ {
             id: 'task1',
-            slotExpr: 'lundi'
+            slotExpr: 'mardi'
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
@@ -164,15 +219,15 @@ describe('findTaskBySlotExpr', () => {
     it('endWith not on final', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'week mardi'
         },{
             id: 'task2',
             slotExpr: 'week vendredi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week' };
+        const slot = { id: 'slot1', path: 'this_month week mardi' };
         const expected = [{
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'week mardi'
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
