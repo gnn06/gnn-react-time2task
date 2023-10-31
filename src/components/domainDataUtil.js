@@ -1,3 +1,6 @@
+/**
+ * unused
+ */
 export function filterNoSlot(tasks, association) {
     return tasks.filter(task => association[task.id] == null);
 }
@@ -5,19 +8,26 @@ export function filterNoSlot(tasks, association) {
 /**
  * filter a task list on a filter expression
  */
-// OK
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
     const filterComplet = completeSlot(filter);
     return tasks.filter(item => slotIsInOther(completeSlot(item.slotExpr), filterComplet));
 }
 
+/*
+ * unused
+ */
 export function findTaskWithSlot(tasks, slotId, association) {
     const assos = Object.entries(association).map(entry => entry[1] === slotId ? entry[0] : null);
     return tasks.filter(task => assos.indexOf(task.id) >= 0);
 };
 
-// KO
+/**
+ * filter the task list included in a slot. used by slot view.
+ * @param {*} tasks 
+ * @param {*} slot with a path
+ * @returns [tasks filtered]
+ */
 export function findTaskBySlotExpr(tasks, slot) {
     if (slot.inner !== undefined && slot.inner.length !== 0) {
         return tasks.filter(task => slotEqual(completeSlot(task.slotExpr), slot.path));
@@ -26,11 +36,19 @@ export function findTaskBySlotExpr(tasks, slot) {
     }
 }
 
+/**
+ * unused
+ */
 export function slotMatchExpr(slotId, slotExpr) {
     const result = slotExpr !== undefined && slotExpr.indexOf(slotId) > -1;
     return result;
 }
 
+/**
+ * is a slot is inside an other
+ * 'week lundi' is in 'week'
+ * module private
+ */
 export function slotIsInOther(slotExpr, otherSlotExpr) {
     if (slotExpr === undefined || otherSlotExpr === undefined) return false;
     const first = firstSlot(slotExpr)
@@ -50,14 +68,24 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
     }
 }
 
+/*
+ * firstSlot('week lundi') = 'week'
+ */
 export function firstSlot(slotExpr) {
     return slotExpr.split(' ')[0];
 }
 
+/*
+ * slotDepth('this_month week lundi') = 3
+ * @return int >= 1
+ */
 export function slotDepth(slotExpr) {
     return slotExpr.split(' ').length;
 }
 
+/*
+ * lowerSlot('this_month week lundi') = 'week lundi'
+ */
 export function lowerSlot(slotExpr) {
     const i = slotExpr.indexOf(' ');
     if (i === -1)
@@ -66,6 +94,9 @@ export function lowerSlot(slotExpr) {
         return slotExpr.substring(i + 1);
 }
 
+/**
+ * completeSlot('lundi') = 'this_month week lundi'
+ */
 export function completeSlot(givenSlotExpr) {
     if (givenSlotExpr === undefined) return undefined;
     const first = firstSlot(givenSlotExpr);
@@ -81,6 +112,12 @@ export function completeSlot(givenSlotExpr) {
     }
 }
 
+/*
+ * returns the default slot of the given level
+ * getCurrentSlot(1) = this_month
+ * this_month, week, lundi, matin
+ * level int between 1 this_month and 4 matin
+ */
 function getCurrentSlot(level) {
     if (level === 1)
         return 'this_month';
@@ -95,7 +132,8 @@ function getCurrentSlot(level) {
 }
 
 /**
- * @returns int -1 or between 1 and 3
+ * give the level of a slot
+ * @returns int -1 or between 1 and 4
  */
 function getSlotLevel(slot) {
     if (slot === 'this_month')
@@ -110,6 +148,10 @@ function getSlotLevel(slot) {
         return -1
 }
 
+
+/*
+ * unused
+ */
 export function setSlotPath(slot, parentPath) {
     const copy = {...slot};
     copy.path = (parentPath !== '' ? parentPath + ' ' : '') + slot.id;
@@ -119,6 +161,10 @@ export function setSlotPath(slot, parentPath) {
     return copy;
 }
 
+/**
+ * test is two path have the same path
+ * @returns boolean
+ */
 export function slotEqual(slot, otherSlot) {
     if (slot !== undefined && otherSlot !== undefined) {
         const first = firstSlot(slot);
