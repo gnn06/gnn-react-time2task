@@ -13,10 +13,10 @@ export default function TaskList() {
     const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
     
     return (
-        <div className="m-1">
+        <div className="m-1 basis-1/2">
             <TaskFilter/>
             <h1>Tasks</h1>
-            <table>
+            <table className="w-full">
                 <thead>
                 <tr><th>Titre</th><th>Créneau (expression)</th></tr>
                 </thead>
