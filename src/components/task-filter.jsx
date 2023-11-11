@@ -1,11 +1,13 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+//import { useSelector } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
 
 export default function TaskFilter() {
     
     const dispatch = useDispatch();
+    //const currentTaskFilter = useSelector(state => state.currentTaskFilter);
 
     const onChange = (e) => {
         const filter = e.target.value;

@@ -7,8 +7,7 @@ const store = configureStore({
     tasks: taskReducer
   }
 })
-
 export default store;
-
+export const persistor = persistStore(store)
 // retrieve task from DB and set state when done
 getAllTasksP().then(result => store.dispatch(setTasks(result)))
