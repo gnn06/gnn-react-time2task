@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import './slot.css';
 import TaskLight from "./task-light";
 
-import { findTaskBySlotExpr, filterSlotExpr } from "./domainDataUtil";
+import { findTaskBySlotExpr, filterSlotExpr } from "../services/slot-filter";
 import { selectSlot } from "../features/taskSlice";
 
 export default function Slot({slot}) {

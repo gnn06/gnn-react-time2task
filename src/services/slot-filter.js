@@ -1,4 +1,4 @@
-import { slotIsInOther, completeSlot, slotEqual } from '../services/slot.js';
+import { slotIsInOther, completeSlot, slotEqual } from './slot.js';
 
 /**
  * unused

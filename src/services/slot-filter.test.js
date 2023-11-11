@@ -1,4 +1,4 @@
-import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, filterSlotExpr, setSlotPath } from './domainDataUtil';
+import { filterNoSlot, findTaskWithSlot, findTaskBySlotExpr, slotMatchExpr, filterSlotExpr, setSlotPath } from './slot-filter';
 
 describe('filterNoSlot', () => {
     it('test filterNoSlot one slot', () => {

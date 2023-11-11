@@ -4,7 +4,7 @@ import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 import TaskFilter from "./task-filter.jsx";
 
-import { filterSlotExpr } from './domainDataUtil';
+import { filterSlotExpr } from '../services/slot-filter.js';
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
