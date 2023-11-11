@@ -4,7 +4,7 @@ import SlotList from './components/slotlist';
 
 function App() {
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row text-sm">
       <TaskList />
       <SlotList />        
     </div>
