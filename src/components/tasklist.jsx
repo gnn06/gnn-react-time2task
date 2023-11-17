@@ -12,8 +12,7 @@ export default function TaskList() {
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
 
     if (!isLoading && isSuccess) {
-        const tasksFetched = data.records.map(item => ({ id: item.id, title: item.fields.Sujet, slotExpr: item.fields.slotExpr }));
-        const tasks = filterSlotExpr(tasksFetched, currentTaskFilter);
+        const tasks = filterSlotExpr(data, currentTaskFilter);
         return (
             <div className="m-1">
                 <TaskFilter/>
