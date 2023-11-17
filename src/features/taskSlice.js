@@ -50,6 +50,12 @@ const initialState = {
               inner: []
             },
             {
+              id: 'following_week',
+              title: 'semaine suivante',
+              path: 'this_month following_week',
+              inner: []
+            },
+            {
                 id:    'slot1',
                 title: 'jour',
                 path:'this_month jour',
