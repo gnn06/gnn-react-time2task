@@ -8,11 +8,11 @@ import { filterSlotExpr } from './domainDataUtil';
 import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function TaskList() {
-    const { data, isLoading, isSuccess, isError, error } = useGetTasksQuery()
+    const { data:tasksRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
 
     if (!isLoading && isSuccess) {
-        const tasks = filterSlotExpr(data, currentTaskFilter);
+        const tasks = filterSlotExpr(tasksRedux, currentTaskFilter);
         return (
             <div className="m-1">
                 <TaskFilter/>
