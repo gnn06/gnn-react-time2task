@@ -27,8 +27,17 @@ export const apiSlice = createApi({
                 method: 'PATCH',
                 body: { fields: { slotExpr: patch.slotExpr }},
               })
+        }),
+
+        addTask: builder.mutation({
+            // TODO manage revalidate
+            query: (patch) => ({
+                url: '/Taches',
+                method: 'POST',
+                body: { fields: { Sujet: patch.title }}
+            })
         })
     })
 })
 
-export const { useGetTasksQuery, useSetSlotExprMutation } = apiSlice
+export const { useGetTasksQuery, useSetSlotExprMutation, useAddTaskMutation } = apiSlice
