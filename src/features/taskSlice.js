@@ -80,12 +80,6 @@ export const taskSlice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
-        // TODO delete
-        add: (state, action) => {
-            const newId = state.tasks.length + 1;
-            action.payload.id = "id" + newId;
-            state.tasks.push(action.payload)
-        },
         selectTask: (state, action) => {
             const taskId = action.payload;
             arrayPut(state.selectedTaskId, taskId);
@@ -121,6 +115,6 @@ export const taskSlice = createSlice({
     }
 })
 
-export const { add, selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter, setTasks } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter, setTasks } = taskSlice.actions
 
 export default taskSlice.reducer
