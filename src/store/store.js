@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import taskReducer, { setTasks } from '../features/taskSlice';
 import { getAllTasksP } from '../services/base';
 import { apiSlice } from '../features/apiSlice';

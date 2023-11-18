@@ -9,8 +9,7 @@ export default function AddTaskForm() {
     const [title, setTitle] = useState('');
 
     const [
-        addTask, // This is the mutation trigger
-        { isLoading: isUpdating }, // This is the destructured mutation result
+        addTask
       ] = useAddTaskMutation()
     const onTitleChange = e => setTitle(e.target.value);
 
