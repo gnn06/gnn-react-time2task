@@ -19,8 +19,16 @@ export const apiSlice = createApi({
                         title: item.fields.Sujet,
                         slotExpr: item.fields.slotExpr
                     }))
+        }),
+
+        setSlotExpr: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/Taches/${id}`,
+                method: 'PATCH',
+                body: { fields: { slotExpr: patch.slotExpr }},
+              })
         })
     })
 })
 
-export const { useGetTasksQuery } = apiSlice
+export const { useGetTasksQuery, useSetSlotExprMutation } = apiSlice

@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { useSetSlotExprMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
@@ -9,6 +10,10 @@ export default function Task({task}) {
     
     const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
     const dispatch = useDispatch();
+    const [
+        setSlotExpr, // This is the mutation trigger
+        { isLoading: isUpdating }, // This is the destructured mutation result
+      ] = useSetSlotExprMutation()
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -25,7 +30,7 @@ export default function Task({task}) {
     const onSlotExprChange = e => {
         const taskId = task.id;
         const slotExpr = e.target.value;
-        dispatch(setSlotExpr({taskId, slotExpr}))
+        setSlotExpr({id:taskId, slotExpr})
     };
 
     const onClickInput = e => {
