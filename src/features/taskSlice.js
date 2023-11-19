@@ -99,11 +99,6 @@ export const taskSlice = createSlice({
             state.selectedTaskId = [];
             state.selectedSlotId = [];
         },
-        // obsolete, replace in apiSlice
-        setSlotExpr: (state, action) => {
-            const { taskId, slotExpr } = action.payload;
-            state.tasks.find(item => item.id === taskId).slotExpr = slotExpr;
-        },
         setTaskFilter: (state, action) => {
             state.currentTaskFilter = action.payload.filter;
         },
@@ -115,6 +110,6 @@ export const taskSlice = createSlice({
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setSlotExpr, setTaskFilter, setTasks } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, setTasks } = taskSlice.actions
 
 export default taskSlice.reducer
