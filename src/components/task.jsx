@@ -42,6 +42,7 @@ export default function Task({task}) {
     };
 
     const onDeleteClick = e => {
+        // TODO add confirmation
         deleteTask(task.id)
         e.stopPropagation();
     }
