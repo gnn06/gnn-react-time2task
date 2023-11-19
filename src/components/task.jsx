@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import './task.css'
 import { selectTask } from "../features/taskSlice";
 
+import Button from '../components/button';
+
 export default function Task({task}) {
     
     const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
@@ -40,14 +42,14 @@ export default function Task({task}) {
     };
 
     const onDeleteClick = id => {
-        // TODO Fix recursive delete :-o
-        //deleteTask(id)
+        deleteTask(task.id)
     }
 
-    return <tr className={myClassName} onClick={onTaskClick}>
+    // TODO reactivate onClick
+    return <tr className={myClassName} /*onClick={onTaskClick}*/>
             <td>{task.title} </td>
             <td><input className="p-1 bg-transparent" type="text" defaultValue={task.slotExpr} 
             onBlur={onSlotExprChange} onClick={onClickInput}/></td>
-            <td><input type="button" value="delete" onClick={onDeleteClick(task.id)}/></td>
+            <td><Button label="Delete" clickToto={onDeleteClick}/></td>
         </tr>;
 }
