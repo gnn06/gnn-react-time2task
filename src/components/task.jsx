@@ -41,15 +41,15 @@ export default function Task({task}) {
         e.stopPropagation();
     };
 
-    const onDeleteClick = id => {
+    const onDeleteClick = e => {
         deleteTask(task.id)
+        e.stopPropagation();
     }
 
-    // TODO reactivate onClick
-    return <tr className={myClassName} /*onClick={onTaskClick}*/>
+    return <tr className={myClassName} onClick={onTaskClick}>
             <td>{task.title} </td>
             <td><input className="p-1 bg-transparent" type="text" defaultValue={task.slotExpr} 
             onBlur={onSlotExprChange} onClick={onClickInput}/></td>
-            <td><Button label="Delete" clickToto={onDeleteClick}/></td>
+            <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
 }
