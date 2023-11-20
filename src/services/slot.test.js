@@ -223,11 +223,11 @@ describe('sort', () => {
 
     describe('compare with empty', () => {
         it('other is empty', () => {
-            inner_test('this_month', '', -1);
+            inner_test('this_month', undefined, -1);
         })
     
         it('this is empty', () => {
-            inner_test('', 'this_month', 1);
+            inner_test(undefined, 'this_month', 1);
         })
     })
 })

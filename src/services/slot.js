@@ -143,13 +143,17 @@ const weight = {
 }
 
 export function slotCompare(obj1, obj2) {
+    if (obj2 === undefined)
+        return -1
+    else if (obj1 === undefined)
+        return 1
     const first1 = firstSlot(obj1);
     const first2 = firstSlot(obj2);
     const weight1 = weight[first1];
     const weight2 = weight[first2];
-    if (weight1 < weight2 || weight2 === undefined)
+    if (weight1 < weight2)
         return -1
-    else if (weight1 > weight2 || weight1 === undefined)
+    else if (weight1 > weight2)
         return 1
     else {
         const lower1 = lowerSlot(obj1)
