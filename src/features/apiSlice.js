@@ -21,7 +21,8 @@ export const apiSlice = createApi({
                         id: item.id,
                         title: item.fields.Sujet,
                         slotExpr: item.fields.slotExpr
-                    }))
+                    })),
+            providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         setSlotExpr: builder.mutation({
@@ -33,21 +34,21 @@ export const apiSlice = createApi({
         }),
 
         addTask: builder.mutation({
-            // TODO manage revalidate
             query: (patch) => ({
                 url: '/Taches',
                 method: 'POST',
                 body: { fields: { Sujet: patch.title }}
-            })
+            }),
+            invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         deleteTask: builder.mutation({
-            // TODO invalidate to refresh UI
             query: (id) => ({
                 url: `/Taches/${id}`,
                 method: 'DELETE'
-              })
-        })
+              }),
+              invalidatesTags: (result, error, id) => [{ type: 'Tasks', id: 'LIST' }, { type: 'Tasks', id }]
+            })
     })
 })
 
