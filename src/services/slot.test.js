@@ -1,4 +1,4 @@
-import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth } from './slot.js';
+import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth, slotCompare } from './slot.js';
 
 describe('slotIsInOther', () => {
     it('slotIsInOther true by first level', () => {
@@ -178,23 +178,45 @@ describe('slotEqual', () => {
 })
 
 describe('sort', () => {
-    it('week next_week', () => {
-        const result = 12;
-        expect(result) .toEqual(-1);
+    
+    function inner_test (op1, op2, expected) {
+        const result = slotCompare(op1, op2);
+        expect(result).toEqual(expected);
+    }
+
+    it('this_month next_month', () => {
+        inner_test('this_month', 'next_month', -1);
     })
 
-    it('next_week week', () => {
-        const result = 12;
-        expect(result).toEqual(1)
+    it('next_month this_month', () => {
+        inner_test('next_month', 'this_month', 1);
     })
     
-    it('week week', () => {
-        const result = 12;
-        expect(result).toEqual(0)
+    it('this_month this_month', () => {
+        inner_test('this_month', 'this_month', 0);
     })
 
-    it('week lundi week mardi', () => {
-        const result = 12;
-        expect(result).toEqual(-1)
+    it('this_month week this_month next_week', () => {
+        inner_test('this_month week', 'this_month next_week', -1);
+    })
+
+    it('this_month next_week this_month week', () => {
+        inner_test('this_month next_week', 'this_month week', 1);
+    })
+
+    it('this_month week compare to this_month week', () => {
+        inner_test('this_month week', 'this_month week', 0);
+    })
+
+    it('this_month week compare to this_month', () => {
+        inner_test('this_month week', 'this_month', 1);
+    })
+
+    it('other is null', () => {
+        inner_test('this_month', '', -1);
+    })
+
+    it('this is null', () => {
+        inner_test('', 'this_month', 1);
     })
 })

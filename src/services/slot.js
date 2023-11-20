@@ -79,6 +79,7 @@ export function completeSlot(givenSlotExpr) {
 
 /*
  * lowerSlot('this_month week lundi') = 'week lundi'
+ * return 'week' => ''
  */
 export function lowerSlot(slotExpr) {
     const i = slotExpr.indexOf(' ');
@@ -124,6 +125,41 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
         else
             // need to check at next level
             return slotIsInOther(lower, lowerOther);   
+    }
+}
+
+const weight = {
+    this_month: 1,
+    next_month: 2,
+    week      : 1,
+    next_week : 2,
+    lundi     : 1,
+    mardi     : 2,
+    mercredi  : 3,
+    jeudi     : 4,
+    vendredi  : 5,
+    matin     : 1,
+    aprem     : 2
+}
+
+export function slotCompare(obj1, obj2) {
+    const first1 = firstSlot(obj1);
+    const first2 = firstSlot(obj2);
+    const weight1 = weight[first1];
+    const weight2 = weight[first2];
+    if (weight1 < weight2 || weight2 === undefined)
+        return -1
+    else if (weight1 > weight2 || weight1 === undefined)
+        return 1
+    else {
+        const lower1 = lowerSlot(obj1)
+        const lower2 = lowerSlot(obj2)
+        if (lower1 === '' && lower2 === '')
+            return 0
+        if (lower1 !== '' && lower2 !== '') 
+            return slotCompare(lower1, lower2)
+        else
+            return 1
     }
 }
 
