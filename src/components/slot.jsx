@@ -44,7 +44,7 @@ export default function Slot({slot}) {
     }
 
     const innerClass = 'ml-3' 
-        + (slot.id === 'week' ? ' flex flex-row' : '');
+        + (slot.id === 'this_week' ? ' flex flex-row' : '');
 
     return (
         <div>

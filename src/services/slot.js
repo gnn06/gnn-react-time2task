@@ -30,7 +30,7 @@ export function slotEqual(slot, otherSlot) {
 function getSlotLevel(slot) {
     if (slot === 'this_month')
         return 1;
-    if (slot === 'week' || slot === 'next_week')
+    if (slot === 'week' || slot === 'next_week' || slot === 'this_week')
         return 2;
     else if (slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
         return 3;
@@ -50,7 +50,7 @@ function getCurrentSlot(level) {
     if (level === 1)
         return 'this_month';
     else if (level === 2)
-        return 'week';
+        return 'this_week';
     else if (level === 3)
         return 'lundi';
     else if (level === 4)
@@ -132,7 +132,8 @@ const weight = {
     this_month: 1,
     next_month: 2,
     week      : 1,
-    next_week : 2,
+    this_week : 2,
+    next_week : 3,
     lundi     : 1,
     mardi     : 2,
     mercredi  : 3,

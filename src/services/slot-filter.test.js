@@ -105,16 +105,16 @@ describe('findTaskBySlotExpr', () => {
     it('feuille avec subtask', () => {
         const tasks = [ {
             id: 'task2',
-            slotExpr: 'this_month week mardi aprem'
+            slotExpr: 'this_month this_week mardi aprem'
         }, {
             id: 'task3',
-            slotExpr: 'this_month week jeudi'
+            slotExpr: 'this_month this_week jeudi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week mardi' };
+        const slot = { id: 'slot1', path: 'this_month this_week mardi' };
         const result = findTaskBySlotExpr(tasks, slot);
         const expected = [ {
             id: 'task2',
-            slotExpr: 'this_month week mardi aprem'
+            slotExpr: 'this_month this_week mardi aprem'
         }];
         expect(result).toEqual(expected);
     });
@@ -158,7 +158,7 @@ describe('findTaskBySlotExpr', () => {
             id: 'task2',
             slotExpr: ''
         }];
-        const slot = { id: 'slot1', path: 'this_month week mardi' }
+        const slot = { id: 'slot1', path: 'this_month this_week mardi' }
         const expected = [ {
             id: 'task1',
             slotExpr: 'mardi'
@@ -289,12 +289,12 @@ describe('filterSlotExpr', () => {
 
     it('level1 match uncomplete level2', () => {
         const tasks = [ { slotExpr: 'vendredi' } ];
-        const result = filterSlotExpr(tasks, 'week');
+        const result = filterSlotExpr(tasks, 'this_week');
         expect(result).toEqual(tasks)
     })
 
     it('uncomplete level2 match level1 level2', () => {
-        const tasks = [ { slotExpr: 'week vendredi' } ];
+        const tasks = [ { slotExpr: 'this_week vendredi' } ];
         const result = filterSlotExpr(tasks, 'vendredi');
         expect(result).toEqual(tasks)
     })

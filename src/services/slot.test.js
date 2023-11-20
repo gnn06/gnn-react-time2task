@@ -106,13 +106,13 @@ describe('completeSlot', () => {
 
     it('completeSlot level2', () => {
         const result = completeSlot('vendredi');
-        expect(result).toEqual('this_month week vendredi');
+        expect(result).toEqual('this_month this_week vendredi');
 
     })
 
     it('completeSlot level3', () => {
         const result = completeSlot('aprem');
-        expect(result).toEqual('this_month week lundi aprem');
+        expect(result).toEqual('this_month this_week lundi aprem');
     })
 
     it('completeSlot level1 level2', () => {

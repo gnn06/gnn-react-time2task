@@ -11,36 +11,36 @@ const initialState = {
         title: 'ce mois ci',
         path: 'this_month',
         inner: [
-            { id:    'week',
+            { id:    'this_week',
               title: 'semaine',
-              path: 'this_month week',
+              path: 'this_month this_week',
               inner: [
                 {   id:    'lundi',
                     title: 'lundi',
-                    path:  'this_month week lundi',
+                    path:  'this_month this_week lundi',
                     inner: [
-                        { id: 'lundi_matin', title: 'matin', path: 'this_month week lundi matin' },
-                        { id: 'lundi_aprem', title: 'aprem', path: 'this_month week lundi aprem' }
+                        { id: 'lundi_matin', title: 'matin', path: 'this_month this_week lundi matin' },
+                        { id: 'lundi_aprem', title: 'aprem', path: 'this_month this_week lundi aprem' }
                     ]},
                 {   id:    'mardi',
                     title: 'mardi',
-                    path:  'this_month week mardi',
+                    path:  'this_month this_week mardi',
                     inner: [
-                        { id: 'mardi_matin', title: 'matin', path: 'this_month week mardi matin' },
-                        { id: 'mardi_aprem', title: 'aprem', path: 'this_month week mardi aprem' }
+                        { id: 'mardi_matin', title: 'matin', path: 'this_month this_week mardi matin' },
+                        { id: 'mardi_aprem', title: 'aprem', path: 'this_month this_week mardi aprem' }
                     ] },
                 {   id:    'mercredi',
                     title: 'mercredi',
-                    path:  'this_month week mercredi' },
+                    path:  'this_month this_week mercredi' },
                 {   id:    'jeudi',
                     title: 'jeudi',
-                    path:  'this_month week jeudi' },
+                    path:  'this_month this_week jeudi' },
                 {   id:    'vendredi',
                     title: 'vendredi',
-                    path:  'this_month week vendredi',
+                    path:  'this_month this_week vendredi',
                     inner: [
-                        { id: 'vendredi_matin', title: 'matin', path: 'this_month week vendredi matin' },
-                        { id: 'vendredi_aprem', title: 'aprem', path: 'this_month week vendredi aprem' }
+                        { id: 'vendredi_matin', title: 'matin', path: 'this_month this_week vendredi matin' },
+                        { id: 'vendredi_aprem', title: 'aprem', path: 'this_month this_week vendredi aprem' }
                     ] }
               ]
             },
