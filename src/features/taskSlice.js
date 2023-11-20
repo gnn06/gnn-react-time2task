@@ -86,6 +86,7 @@ export const taskSlice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
+        // TODO replace in apiSlice
         add: (state, action) => {
             const newId = state.tasks.length + 1;
             action.payload.id = "id" + newId;
@@ -110,6 +111,7 @@ export const taskSlice = createSlice({
             state.selectedTaskId = [];
             state.selectedSlotId = [];
         },
+        // obsolete, replace in apiSlice
         setSlotExpr: (state, action) => {
             const { taskId, slotExpr } = action.payload;
             state.tasks.find(item => item.id === taskId).slotExpr = slotExpr;
@@ -117,6 +119,8 @@ export const taskSlice = createSlice({
         setTaskFilter: (state, action) => {
             state.currentTaskFilter = action.payload.filter;
         },
+        // obsolete, unused after migrate to RTK Query
+        // TODO check where setTasks is used
         setTasks: (state, action) => {
             state.tasks = action.payload;
         }
