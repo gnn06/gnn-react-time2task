@@ -10,7 +10,8 @@ import { slotCompare, completeSlot } from "../services/slot.js";
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
-    const taskSorted = taskRedux.sort((arg1, arg2) => slotCompare(completeSlot(arg1.slotExpr), completeSlot(arg2.slotExpr)));
+    // use slice to avoid 0 is readonly
+    const taskSorted = taskRedux.slice().sort((arg1, arg2) => slotCompare(completeSlot(arg1.slotExpr), completeSlot(arg2.slotExpr)));
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     const tasks = filterSlotExpr(taskSorted, currentTaskFilter);
     
