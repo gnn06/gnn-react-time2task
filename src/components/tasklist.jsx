@@ -13,8 +13,7 @@ export default function TaskList() {
     
     if (!isLoading && isSuccess) {
         const tasksFetched = data.records.map(item => ({ id: item.id, title: item.fields.Sujet, slotExpr: item.fields.slotExpr }));
-        const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
-    
+        const tasks = filterSlotExpr(data, currentTaskFilter);
         return (
             <div className="m-1 basis-1/2">
                 <TaskFilter/>

@@ -6,12 +6,19 @@ export const apiSlice = createApi({
         baseUrl : 'https://api.airtable.com/v0/appxxeJDaPUItDFAF',
         prepareHeaders: (headers, { getState }) => {
             headers.set("Authorization", "Bearer pateXlE2yDTfJUXSk.3ef63a108889473cb840070c3699ce6edebdfd737e94b57f0ab9c14c409f4f42")
-        }
+        },
     }),
 
     endpoints: builder => ({
         getTasks: builder.query({
-            query: () => '/Taches?view=Toutes%20les%20taches'
+            query: () => '/Taches?view=Toutes%20les%20taches',
+            transformResponse: (response, meta, arg) => 
+                response.records.map(
+                    item => ({
+                        id: item.id,
+                        title: item.fields.Sujet,
+                        slotExpr: item.fields.slotExpr
+                    }))
         })
     })
 })
