@@ -42,6 +42,7 @@ export const apiSlice = createApi({
         }),
 
         deleteTask: builder.mutation({
+            // TODO invalidate to refresh UI
             query: (id) => ({
                 url: `/Taches/${id}`,
                 method: 'DELETE'
