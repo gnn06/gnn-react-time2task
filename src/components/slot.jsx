@@ -7,6 +7,7 @@ import TaskLight from "./task-light";
 
 import { findTaskBySlotExpr, filterSlotExpr } from "../services/slot-filter";
 import { selectSlot } from "../features/taskSlice";
+import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function Slot({slot}) {
     const dispatch = useDispatch();
@@ -14,9 +15,12 @@ export default function Slot({slot}) {
     const { id, title, start, end, inner } = slot;
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
-    const taskRedux = useSelector(state => state.tasks.tasks);
+    const { data:taskRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
+    if (isLoading || isError)
+        return 'Loading or Error'
+
     const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
     const tasksInSlot = findTaskBySlotExpr(tasks, slot);
 
