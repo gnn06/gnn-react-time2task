@@ -4,7 +4,7 @@ import { useSetSlotExprMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
-import { selectTask, setSlotExpr } from "../features/taskSlice";
+import { selectTask } from "../features/taskSlice";
 
 export default function Task({task}) {
     
