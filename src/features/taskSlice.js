@@ -86,7 +86,7 @@ export const taskSlice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
-        // TODO replace in apiSlice
+        // TODO delete
         add: (state, action) => {
             const newId = state.tasks.length + 1;
             action.payload.id = "id" + newId;
