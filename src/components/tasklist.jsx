@@ -6,12 +6,13 @@ import TaskFilter from "./task-filter.jsx";
 
 import { filterSlotExpr } from '../services/slot-filter.js';
 import { useGetTasksQuery } from "../features/apiSlice.js";
-import { slotCompare } from "../services/slot.js";
+import { slotCompare, completeSlot } from "../services/slot.js";
 
 export default function TaskList() {
     const taskRedux = useSelector(state => state.tasks.tasks);
-    const taskSorted = taskRedux.sort((arg1, arg2) => slotCompare(arg1.slotExpr, arg2.slotExpr));    
+    const taskSorted = taskRedux.sort((arg1, arg2) => slotCompare(completeSlot(arg1.slotExpr), completeSlot(arg2.slotExpr)));
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
+    const tasks = filterSlotExpr(taskSorted, currentTaskFilter);
     
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.map(item => ({ id: item.id, title: item.title, slotExpr: item.slotExpr }));
