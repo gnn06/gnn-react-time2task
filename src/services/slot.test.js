@@ -176,3 +176,25 @@ describe('slotEqual', () => {
         expect(result).toEqual(false);
     })    
 })
+
+describe('sort', () => {
+    it('week next_week', () => {
+        const result = 12;
+        expect(result) .toEqual(-1);
+    })
+
+    it('next_week week', () => {
+        const result = 12;
+        expect(result).toEqual(1)
+    })
+    
+    it('week week', () => {
+        const result = 12;
+        expect(result).toEqual(0)
+    })
+
+    it('week lundi week mardi', () => {
+        const result = 12;
+        expect(result).toEqual(-1)
+    })
+})
