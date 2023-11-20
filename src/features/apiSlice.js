@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const IdBaseTest = 'appG4x4E9QAFuuldp'
+// eslint-disable-next-line
 const IdBaseProd = 'appxxeJDaPUItDFAF'
 
 export const apiSlice = createApi({

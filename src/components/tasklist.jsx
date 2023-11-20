@@ -8,6 +8,7 @@ import { filterSlotExpr } from './domainDataUtil';
 import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function TaskList() {
+    // eslint-disable-next-line
     const { data:tasksRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     

@@ -14,6 +14,7 @@ export default function Task({task}) {
     const dispatch = useDispatch();
     const [
         setSlotExpr, // This is the mutation trigger
+        // eslint-disable-next-line
         { isLoading: isUpdating }, // This is the destructured mutation result
       ] = useSetSlotExprMutation()
     
