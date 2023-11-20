@@ -36,8 +36,15 @@ export const apiSlice = createApi({
                 method: 'POST',
                 body: { fields: { Sujet: patch.title }}
             })
+        }),
+
+        deleteTask: builder.mutation({
+            query: (id) => ({
+                url: `/Taches/${id}`,
+                method: 'DELETE'
+              })
         })
     })
 })
 
-export const { useGetTasksQuery, useSetSlotExprMutation, useAddTaskMutation } = apiSlice
+export const { useGetTasksQuery, useSetSlotExprMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice

@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useSetSlotExprMutation } from "../features/apiSlice.js";
+import { useSetSlotExprMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
@@ -14,6 +14,8 @@ export default function Task({task}) {
         setSlotExpr, // This is the mutation trigger
         { isLoading: isUpdating }, // This is the destructured mutation result
       ] = useSetSlotExprMutation()
+    
+    const [ deleteTask ] = useDeleteTaskMutation()
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -37,9 +39,15 @@ export default function Task({task}) {
         e.stopPropagation();
     };
 
+    const onDeleteClick = id => {
+        // TODO Fix recursive delete :-o
+        //deleteTask(id)
+    }
+
     return <tr className={myClassName} onClick={onTaskClick}>
             <td>{task.title} </td>
             <td><input className="p-1 bg-transparent" type="text" defaultValue={task.slotExpr} 
             onBlur={onSlotExprChange} onClick={onClickInput}/></td>
+            <td><input type="button" value="delete" onClick={onDeleteClick(task.id)}/></td>
         </tr>;
 }
