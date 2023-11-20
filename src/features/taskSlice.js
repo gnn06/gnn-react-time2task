@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
+import { slotCompare, completeSlot } from '../services/slot';
 
 const initialState = {
     tasks : [],
@@ -112,10 +113,13 @@ export const taskSlice = createSlice({
         // TODO check where setTasks is used
         setTasks: (state, action) => {
             state.tasks = action.payload;
+        },
+        sortTasks: (state) => {
+            state.tasks.sort((arg1, arg2) => slotCompare(completeSlot(arg1.slotExpr), completeSlot(arg2.slotExpr)))
         }
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter, setTasks } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, setTasks, sortTasks } = taskSlice.actions
 
 export default taskSlice.reducer
