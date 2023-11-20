@@ -184,39 +184,50 @@ describe('sort', () => {
         expect(result).toEqual(expected);
     }
 
-    it('this_month next_month', () => {
-        inner_test('this_month', 'next_month', -1);
-    })
-
-    it('next_month this_month', () => {
-        inner_test('next_month', 'this_month', 1);
-    })
+    describe('compare at level 1', () => {
+        it('lower', () => {
+            inner_test('this_month', 'next_month', -1);
+        })
     
-    it('this_month this_month', () => {
-        inner_test('this_month', 'this_month', 0);
+        it('greater', () => {
+            inner_test('next_month', 'this_month', 1);
+        })
+        
+        it('equal', () => {
+            inner_test('this_month', 'this_month', 0);
+        })
     })
 
-    it('this_month week this_month next_week', () => {
-        inner_test('this_month week', 'this_month next_week', -1);
+    describe('compare at level 2', () => {
+        it('this_month week this_month next_week', () => {
+            inner_test('this_month week', 'this_month next_week', -1);
+        })
+    
+        it('this_month next_week this_month week', () => {
+            inner_test('this_month next_week', 'this_month week', 1);
+        })
+    
+        it('this_month week compare to this_month week', () => {
+            inner_test('this_month week', 'this_month week', 0);
+        })    
     })
 
-    it('this_month next_week this_month week', () => {
-        inner_test('this_month next_week', 'this_month week', 1);
+    describe('different depth', () => {
+        it('this_month week compare to this_month', () => {
+            inner_test('this_month week', 'this_month', 1);
+        })
+        it('this_month compare to this_month week', () => {
+            inner_test('this_month', 'this_month week', 1);
+        })
     })
 
-    it('this_month week compare to this_month week', () => {
-        inner_test('this_month week', 'this_month week', 0);
-    })
-
-    it('this_month week compare to this_month', () => {
-        inner_test('this_month week', 'this_month', 1);
-    })
-
-    it('other is null', () => {
-        inner_test('this_month', '', -1);
-    })
-
-    it('this is null', () => {
-        inner_test('', 'this_month', 1);
+    describe('compare with empty', () => {
+        it('other is empty', () => {
+            inner_test('this_month', '', -1);
+        })
+    
+        it('this is empty', () => {
+            inner_test('', 'this_month', 1);
+        })
     })
 })
