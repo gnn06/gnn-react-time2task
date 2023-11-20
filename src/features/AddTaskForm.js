@@ -21,10 +21,6 @@ export default function AddTaskForm() {
         setTitle('');
     };
 
-    const onImportAirtableClicked = () => {
-        getAllTasksP().then(result => dispatch(setTasks(result)))
-    };
-
     const onResetClicked = () => {
         dispatch(setTasks([]))
     };
@@ -44,7 +40,6 @@ export default function AddTaskForm() {
                 />
             </form>
             <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />
-            <Button clickToto={onImportAirtableClicked} label="Importer Airtable" />
             <Button clickToto={onResetClicked} label="Reset tasks" />
             <Button clickToto={onSortClicked} label="Sort" />
         </div>
