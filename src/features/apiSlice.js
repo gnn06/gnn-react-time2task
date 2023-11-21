@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { slotCompare, completeSlot } from '../services/slot'
 
 const IdBaseTest = 'appG4x4E9QAFuuldp'
 // eslint-disable-next-line
@@ -22,7 +23,10 @@ export const apiSlice = createApi({
                         id: item.id,
                         title: item.fields.Sujet,
                         slotExpr: item.fields.slotExpr
-                    })),
+                    }))
+                    .sort((arg1, arg2) => 
+                        slotCompare(completeSlot(arg1.slotExpr),
+                        completeSlot(arg2.slotExpr))),
             providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
@@ -31,7 +35,8 @@ export const apiSlice = createApi({
                 url: `/Taches/${id}`,
                 method: 'PATCH',
                 body: { fields: { slotExpr: patch.slotExpr }},
-              })
+              }),
+              invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         addTask: builder.mutation({
