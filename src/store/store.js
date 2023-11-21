@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import taskReducer, { setTasks } from '../features/taskSlice';
-import { getAllTasksP } from '../services/base';
+import taskReducer from '../features/taskSlice';
 import { apiSlice } from '../features/apiSlice';
 
 const store = configureStore({
@@ -13,6 +12,3 @@ const store = configureStore({
 })
 export default store;
 //export const persistor = persistStore(store)
-// retrieve task from DB and set state when done
-// TODO check used after migrate to RTK Query
-getAllTasksP().then(result => store.dispatch(setTasks(result)))

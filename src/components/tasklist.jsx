@@ -6,18 +6,15 @@ import TaskFilter from "./task-filter.jsx";
 
 import { filterSlotExpr } from '../services/slot-filter.js';
 import { useGetTasksQuery } from "../features/apiSlice.js";
-import { slotCompare, completeSlot } from "../services/slot.js";
 
 export default function TaskList() {
-    const taskRedux = useSelector(state => state.tasks.tasks);
-    // use slice to avoid 0 is readonly
-    const taskSorted = taskRedux.slice().sort((arg1, arg2) => slotCompare(completeSlot(arg1.slotExpr), completeSlot(arg2.slotExpr)));
+    // eslint-disable-next-line
+    const { data:tasksRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
-    const tasks = filterSlotExpr(taskSorted, currentTaskFilter);
     
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.map(item => ({ id: item.id, title: item.title, slotExpr: item.slotExpr }));
-        const tasks = filterSlotExpr(taskSorted, currentTaskFilter);
+        const tasks = filterSlotExpr(tasksFetched, currentTaskFilter);
         return (
             <div className="m-1 basis-1/2">
                 <TaskFilter/>

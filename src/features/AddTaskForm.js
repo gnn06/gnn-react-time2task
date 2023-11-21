@@ -3,9 +3,6 @@ import React, { useState } from "react";
 import Button from '../components/button';
 
 import { useAddTaskMutation } from "../features/apiSlice.js";
-import { useDispatch } from "react-redux";
-import { setTasks, sortTasks } from "../features/taskSlice";
-import { add } from './taskSlice';
 
 export default function AddTaskForm() {
 
@@ -21,13 +18,6 @@ export default function AddTaskForm() {
         setTitle('');
     };
 
-    const onResetClicked = () => {
-        dispatch(setTasks([]))
-    };
-
-    const onSortClicked = () => {
-        dispatch(sortTasks())
-    };
     return(
         <div>
             <form>
@@ -40,8 +30,6 @@ export default function AddTaskForm() {
                 />
             </form>
             <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />
-            <Button clickToto={onResetClicked} label="Reset tasks" />
-            <Button clickToto={onSortClicked} label="Sort" />
         </div>
     )
 }
