@@ -168,3 +168,10 @@ export function slotCompare(obj1, obj2) {
     }
 }
 
+export function multi2Mono(slotExpr) {
+    return null;
+}
+
+export function completeMultiSlot(incompleteMonoSlotArray) {
+    return [null];
+}
