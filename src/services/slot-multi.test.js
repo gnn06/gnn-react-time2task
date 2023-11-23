@@ -32,9 +32,9 @@ describe('multi slot', () => {
     })    
 })
 
-describe.skip('', () => {
+describe('completeMultiSlot', () => {
     it('completeSlot of multi', () => {
-        const result = completeMultiSlot(['mardi', 'jeudi'])
+        const result = completeMultiSlot(['mardi', 'next_week jeudi'])
         expect(result[0]).toEqual('this_month this_week mardi')
         expect(result[1]).toEqual('this_month next_week jeudi')
     })

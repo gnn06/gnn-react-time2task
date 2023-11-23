@@ -191,5 +191,5 @@ export function multi2Mono(slotExpr) {
 }
 
 export function completeMultiSlot(incompleteMonoSlotArray) {
-    return [null];
+    return incompleteMonoSlotArray.map(completeSlot);
 }
