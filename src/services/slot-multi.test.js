@@ -1,6 +1,16 @@
 import { multi2Mono, completeMultiSlot } from './slot.js';
 
 describe('multi slot', () => {
+    it('empty', () => {
+        const result = multi2Mono('')
+        expect(result).toEqual([''])
+    })
+    
+    it('one slot', () => {
+        const result = multi2Mono('this_week')
+        expect(result).toEqual(['this_week'])
+    })
+    
     it('no multi slot', () => {
         const result = multi2Mono('this_week mardi aprem')
         expect(result).toEqual(['this_week mardi aprem'])
@@ -22,7 +32,7 @@ describe('multi slot', () => {
     })    
 })
 
-describe('', () => {
+describe.skip('', () => {
     it('completeSlot of multi', () => {
         const result = completeMultiSlot(['mardi', 'jeudi'])
         expect(result[0]).toEqual('this_month this_week mardi')

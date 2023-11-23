@@ -104,6 +104,12 @@ export function firstSlot(slotExpr) {
     return slotExpr.split(' ')[0];
 }
 
+function removeLastSlot(slotExpr) {
+    const slots = slotExpr.split(' ');
+    slots.pop();
+    return slots.join(' ');
+}
+
 /**
  * is a slot is inside an other
  * 'week lundi' is in 'week'
@@ -170,10 +176,14 @@ export function slotCompare(obj1, obj2) {
 
 export function multi2Mono(slotExpr) {
     const result = slotExpr.split(' ').reduce((acc, val) => {
-        if (acc.length === 0 || getSlotLevel(acc.at(-1).split(' ').at(-1)) >= getSlotLevel(val)) {
-            acc.push([val]);
+        if (acc.length === 0) {
+            acc.push(val);            
+        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
+            acc.push(removeLastSlot(acc.at(-1)) + ' ' + val);
+        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) > getSlotLevel(val)) {
+            acc.push(val);
         } else {
-            acc.at(-1).push(val);
+            acc[acc.length-1] = acc.at(-1) + ' ' + val;
         }
         return acc;
     }, [])
