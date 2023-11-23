@@ -1,4 +1,4 @@
-import { slotIsInOther, completeSlot, slotEqual } from './slot.js';
+import { slotIsInOther, multiSlotIsInOther, completeSlot, completeMultiSlot, slotEqual, multi2Mono } from './slot.js';
 
 /**
  * unused
@@ -13,7 +13,8 @@ export function filterNoSlot(tasks, association) {
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
     const filterComplet = completeSlot(filter);
-    return tasks.filter(item => slotIsInOther(completeSlot(item.slotExpr), filterComplet));
+    // TODO add multi2Mono
+    return tasks.filter(item => multiSlotIsInOther(completeMultiSlot(multi2Mono(item.slotExpr)), filterComplet));
 }
 
 /*
