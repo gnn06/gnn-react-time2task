@@ -1,4 +1,4 @@
-import { multi2Mono, completeMultiSlot } from './slot.js';
+import { multi2Mono, completeMultiSlot, multiSlotIsInOther } from './slot.js';
 
 describe('multi slot', () => {
     it('empty', () => {
@@ -30,6 +30,23 @@ describe('multi slot', () => {
         const result = multi2Mono('this_week mardi mercredi next_week jeudi')
         expect(result).toEqual(['this_week mardi', 'this_week mercredi', 'next_week jeudi'])
     })    
+})
+
+describe('multiSlotIsInOther', () => {
+    it('first', () => {
+        const result = multiSlotIsInOther(['this_month this_week mercredi matin', 'this_month next_week'],'this_month this_week');
+        expect(result).toBeTruthy();
+    })
+
+    it('second', () => {
+        const result = multiSlotIsInOther(['this_month this_week mercredi matin', 'this_month next_week'],'this_month next_week');
+        expect(result).toBeTruthy();
+    })
+
+    it('false', () => {
+        const result = multiSlotIsInOther(['this_month this_week mercredi matin', 'this_month next_week'],'this_month this_week jeudi');
+        expect(result).toBeFalsy();
+    })
 })
 
 describe('completeMultiSlot', () => {

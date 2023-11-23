@@ -134,6 +134,10 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
     }
 }
 
+export function multiSlotIsInOther(slotPathArray, otherSlotExpr) {
+    return slotPathArray.some(item => slotIsInOther(item, otherSlotExpr))
+}
+
 const weight = {
     this_month: 1,
     next_month: 2,
