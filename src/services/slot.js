@@ -183,7 +183,8 @@ export function multi2Mono(slotExpr) {
         if (acc.length === 0) {
             acc.push(val);            
         } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
-            acc.push(removeLastSlot(acc.at(-1)) + ' ' + val);
+            const previous = removeLastSlot(acc.at(-1));
+            acc.push((previous !== '' ? previous  + ' ' : '') + val);
         } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) > getSlotLevel(val)) {
             acc.push(val);
         } else {

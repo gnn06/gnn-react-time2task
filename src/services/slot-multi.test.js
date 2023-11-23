@@ -30,6 +30,11 @@ describe('multi slot', () => {
         const result = multi2Mono('this_week mardi mercredi next_week jeudi')
         expect(result).toEqual(['this_week mardi', 'this_week mercredi', 'next_week jeudi'])
     })    
+
+    it('debug', () => {
+        const result = multi2Mono('mercredi jeudi')
+        expect(result).toEqual(['mercredi', 'jeudi'])
+    })    
 })
 
 describe('multiSlotIsInOther', () => {
