@@ -169,7 +169,15 @@ export function slotCompare(obj1, obj2) {
 }
 
 export function multi2Mono(slotExpr) {
-    return null;
+    const result = slotExpr.split(' ').reduce((acc, val) => {
+        if (acc.length === 0 || getSlotLevel(acc.at(-1).split(' ').at(-1)) >= getSlotLevel(val)) {
+            acc.push([val]);
+        } else {
+            acc.at(-1).push(val);
+        }
+        return acc;
+    }, [])
+    return result;
 }
 
 export function completeMultiSlot(incompleteMonoSlotArray) {
