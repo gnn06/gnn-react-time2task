@@ -13,12 +13,19 @@ export default function TaskFilter() {
         const filter = e.target.value;
         dispatch(setTaskFilter({filter}));
     }
+
+    const onKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            onChange(e)
+        }
+    }
     
     return <div>
         <label htmlFor="task-filter">Filtre : </label>
         <input type="text" 
             placeholder="expression"
             className="m-1 p-1"
-            onBlur={onChange}/> 'no-filter'
+            onBlur={onChange}
+            onKeyDown={onKeyDown}/> 'no-filter'
     </div>;
 };
