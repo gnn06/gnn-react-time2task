@@ -116,7 +116,7 @@ function removeLastSlot(slotExpr) {
  * is a slot is inside an other
  * 'week lundi' is in 'week'
  * module private
- * @param mono complete slot
+ * @param mono complete slot. if Given multi, test on first slot
  */
 export function slotIsInOther(slotExpr, otherSlotExpr) {
     if (slotExpr === undefined || otherSlotExpr === undefined) return false;
