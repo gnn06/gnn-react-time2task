@@ -25,6 +25,7 @@ export const apiSlice = createApi({
                         slotExpr: item.fields.slotExpr
                     }))
                     .sort((arg1, arg2) => 
+                        // Don't need to check MultiSlot as compare sort on  first slot
                         slotCompare(completeSlot(arg1.slotExpr),
                         completeSlot(arg2.slotExpr))),
             providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]

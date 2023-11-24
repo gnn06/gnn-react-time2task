@@ -131,6 +131,11 @@ describe('completeSlot', () => {
         expect(result).toEqual(undefined);
 
     })
+
+    it('complete on multi slot :-o', () => {
+        const result = completeSlot('this_week mercredi jeudi next_week vendredi');
+        expect(result).toEqual('this_month this_week mercredi jeudi');
+    })
 })
 
 describe('slotDepth', () => {
@@ -228,6 +233,12 @@ describe('sort', () => {
     
         it('this is empty', () => {
             inner_test(undefined, 'this_month', 1);
+        })
+    })
+
+    describe.only('sort multi', () => {
+        it('second slot don\'t affect sort', () => {
+            inner_test('this_month this_week mercredi vendredi', 'this_month this_week jeudi', -1)
         })
     })
 })

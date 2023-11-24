@@ -1,5 +1,6 @@
 /**
  * test is two path have the same path
+ * @param slot complete slotPath
  * @returns boolean
  */
 export function slotEqual(slot, otherSlot) {
@@ -61,6 +62,7 @@ function getCurrentSlot(level) {
 
 /**
  * completeSlot('lundi') = 'this_month week lundi'
+ * @param {incomplete mono or multi slot} givenSlotExpr if multi slot is given, complete only the first slot
  */
 export function completeSlot(givenSlotExpr) {
     if (givenSlotExpr === undefined) return undefined;
@@ -114,6 +116,7 @@ function removeLastSlot(slotExpr) {
  * is a slot is inside an other
  * 'week lundi' is in 'week'
  * module private
+ * @param mono complete slot
  */
 export function slotIsInOther(slotExpr, otherSlotExpr) {
     if (slotExpr === undefined || otherSlotExpr === undefined) return false;
@@ -153,6 +156,11 @@ const weight = {
     aprem     : 2
 }
 
+/**
+ * 
+ * @param { mono or multi complete slotPath} obj1 obj2. if a multi slot is given, compare on first slot
+ * @returns 
+ */
 export function slotCompare(obj1, obj2) {
     if (obj2 === undefined)
         return -1
@@ -178,6 +186,11 @@ export function slotCompare(obj1, obj2) {
     }
 }
 
+/**
+ * 
+ * @param {multi incomplete slot} slotExpr 
+ * @returns [mono incomplete slot]
+ */
 export function multi2Mono(slotExpr) {
     const result = slotExpr.split(' ').reduce((acc, val) => {
         if (acc.length === 0) {
