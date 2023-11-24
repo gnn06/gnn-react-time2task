@@ -13,7 +13,6 @@ export function filterNoSlot(tasks, association) {
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
     const filterComplet = completeSlot(filter);
-    // TODO add multi2Mono
     return tasks.filter(item => multiSlotIsInOther(completeMultiSlot(multi2Mono(item.slotExpr)), filterComplet));
 }
 
@@ -33,6 +32,7 @@ export function findTaskWithSlot(tasks, slotId, association) {
  */
 export function findTaskBySlotExpr(tasks, slot) {
     if (slot.inner !== undefined && slot.inner.length !== 0) {
+        // TODO manage multi, actually match only the first slot
         return tasks.filter(task => slotEqual(completeSlot(task.slotExpr), slot.path));
     } else {
         return tasks.filter(task => slotIsInOther(completeSlot(task.slotExpr), slot.path));

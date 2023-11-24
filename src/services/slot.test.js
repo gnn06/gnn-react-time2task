@@ -65,6 +65,18 @@ describe('slotIsInOther', () => {
         const result = slotIsInOther('S32 mercredi','S33');
         expect(result).toBeFalsy()
     })
+
+    describe('check behabior of slotIsInOther on multi', () => {
+        it('on first slot', () => {
+            const result = slotIsInOther('this_month this_week mercredi jeudi','this_month this_week mercredi');
+            expect(result).toBeTruthy()
+        })
+
+        it('on second slot', () => {
+            const result = slotIsInOther('this_month this_week mercredi jeudi','this_month this_week jeudi');
+            expect(result).toBeFalsy()
+        })
+    })
 })
 
 describe('firstSlot', () => {
@@ -133,8 +145,8 @@ describe('completeSlot', () => {
     })
 
     it('complete on multi slot :-o', () => {
-        const result = completeSlot('this_week mercredi jeudi next_week vendredi');
-        expect(result).toEqual('this_month this_week mercredi jeudi');
+        const result = completeSlot('mercredi jeudi next_week vendredi');
+        expect(result).toEqual('this_month this_week mercredi jeudi next_week vendredi');
     })
 })
 
@@ -236,7 +248,7 @@ describe('sort', () => {
         })
     })
 
-    describe.only('sort multi', () => {
+    describe('sort multi', () => {
         it('second slot don\'t affect sort', () => {
             inner_test('this_month this_week mercredi vendredi', 'this_month this_week jeudi', -1)
         })
