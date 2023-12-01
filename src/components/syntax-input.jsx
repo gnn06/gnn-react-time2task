@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function SyntaxInput() {
 
-  const [value, setValue] = useState('exemple');
+  const [value, setValue] = useState();
   const [show, setShow] = useState(false);
 
   const onChange = (e) => {
@@ -30,7 +30,7 @@ export default function SyntaxInput() {
   }
 
   return <div>
-      <input  id="filter-input" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <input  id="filter-input" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
       { show &&  
       <ul onMouseDown={(e) => e.preventDefault()} >
         <li onClick={onItemClick}>this_week</li>
