@@ -18,8 +18,14 @@ export default function SyntaxInput() {
   }
 
   const onItemClick = (e) => {
-    console.debug('click', e.target)
-    setValue(value + e.target.textContent)
+    const inputElem = document.getElementById('filter-input');
+    const startP = inputElem.selectionStart;
+    const endP   = inputElem.selectionEnd;
+    const begin = value.substring(0, startP);
+    const end   = value.substring(endP);
+    const valuetoInsert = (end === '' ? ' ' : '') + e.target.textContent + (end !== '' ? ' ' : '');
+    const newValue = begin + valuetoInsert + end;
+    setValue(newValue);
   }
   const onFocus = () => {
     setShow(true)
@@ -29,7 +35,7 @@ export default function SyntaxInput() {
   }
 
   return <div>
-      <input  value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <input  id="filter-input" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
       { show &&  
       <ul onMouseDown={(e) => e.preventDefault()} >
         <li onClick={onItemClick}>this_week</li>
