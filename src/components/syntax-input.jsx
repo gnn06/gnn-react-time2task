@@ -3,18 +3,11 @@ import { useState } from "react";
 
 export default function SyntaxInput() {
 
-  const [items, setItems] = useState(['gilles']);
   const [value, setValue] = useState('exemple');
   const [show, setShow] = useState(false);
-  const search = (event) => {
-    setItems(['gilles']);
-  }
+
   const onChange = (e) => {
-    console.debug('onChange', e)
     setValue(e.target.value)
-  }
-  const onSelect = (value) => {
-    console.debug('onSelect', value)
   }
 
   const onItemClick = (e) => {
@@ -27,9 +20,11 @@ export default function SyntaxInput() {
     const newValue = begin + valuetoInsert + end;
     setValue(newValue);
   }
+
   const onFocus = () => {
     setShow(true)
   }
+  
   const onBlur = () => {
     setShow(false)
   }
