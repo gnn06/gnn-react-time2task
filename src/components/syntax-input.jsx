@@ -30,7 +30,7 @@ export default function SyntaxInput() {
   }
 
   return <div>
-      <input  id="filter-input" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <input  id="filter-input" className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
       { show &&  
       <ul onMouseDown={(e) => e.preventDefault()} >
         <li onClick={onItemClick}>this_week</li>
