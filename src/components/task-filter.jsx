@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
+import SyntaxInput from './syntax-input';
 
 export default function TaskFilter() {
     
@@ -27,5 +28,6 @@ export default function TaskFilter() {
             className="m-1 p-1"
             onBlur={onChange}
             onKeyDown={onKeyDown}/> 'no-filter'
+        <SyntaxInput/>
     </div>;
 };
