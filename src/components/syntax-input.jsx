@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function SyntaxInput() {
 
-  const [value, setValue] = useState();
+  const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
 
   const items = ['this_week', 'mardi']
@@ -35,7 +35,7 @@ export default function SyntaxInput() {
       <input  id="filter-input" className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
       { show &&  
       <ul className="z-10 mt-1 border rounded shadow bg-gray-400 divide-y divide-gray-400 py-1" onMouseDown={(e) => e.preventDefault()} >
-        { items.map(item => <li className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
+        { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
       </ul>
       }
     </div>
