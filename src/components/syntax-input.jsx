@@ -33,11 +33,9 @@ export default function SyntaxInput() {
 
   return <div>
       <input  id="filter-input" className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
-      { show &&  
-      <ul className="z-10 mt-1 border rounded shadow bg-gray-400 divide-y divide-gray-400 py-1" onMouseDown={(e) => e.preventDefault()} >
+      <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
       </ul>
-      }
     </div>
   ;
 };
