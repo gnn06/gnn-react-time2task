@@ -1,10 +1,11 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function SyntaxInput() {
 
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
+  const inputRef = useRef(null);
 
   const items = ['this_week', 'mardi']
 
@@ -13,9 +14,8 @@ export default function SyntaxInput() {
   }
 
   const onItemClick = (e) => {
-    const inputElem = document.getElementById('filter-input');
-    const startP = inputElem.selectionStart;
-    const endP   = inputElem.selectionEnd;
+    const startP = inputRef.current.selectionStart;
+    const endP   = inputRef.current.selectionEnd;
     const begin = value.substring(0, startP);
     const end   = value.substring(endP);
     const valuetoInsert = (end === '' ? ' ' : '') + e.target.textContent + (end !== '' ? ' ' : '');
@@ -32,7 +32,7 @@ export default function SyntaxInput() {
   }
 
   return <div>
-      <input  id="filter-input" className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <input  ref={inputRef} className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
       <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
       </ul>
