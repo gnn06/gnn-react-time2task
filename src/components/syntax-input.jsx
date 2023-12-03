@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useRef } from "react";
 
+import { insertSeparator } from "../utils/stringUtil";
+
 export default function SyntaxInput() {
 
   const [value, setValue] = useState('');
@@ -18,7 +20,7 @@ export default function SyntaxInput() {
     const endP   = inputRef.current.selectionEnd;
     const begin = value.substring(0, startP);
     const end   = value.substring(endP);
-    const valuetoInsert = (end === '' ? ' ' : '') + e.target.textContent + (end !== '' ? ' ' : '');
+    const valuetoInsert = insertSeparator(begin, end, e.target.textContent);
     const newValue = begin + valuetoInsert + end;
     setValue(newValue);
   }
