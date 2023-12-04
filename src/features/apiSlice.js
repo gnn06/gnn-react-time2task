@@ -22,7 +22,8 @@ export const apiSlice = createApi({
                     item => ({
                         id: item.id,
                         title: item.fields.Sujet,
-                        slotExpr: item.fields.slotExpr
+                        slotExpr: item.fields.slotExpr,
+                        status: item.fields.Etat
                     }))
                     .sort((arg1, arg2) => 
                         // Don't need to check MultiSlot as compare sort on  first slot
@@ -38,6 +39,15 @@ export const apiSlice = createApi({
                 body: { fields: { slotExpr: patch.slotExpr }},
               }),
               invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
+        }),
+
+        setEtat: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/Taches/${id}`,
+                method: 'PATCH',
+                body: { fields: { Etat: patch.status }},
+            }),
+            invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         addTask: builder.mutation({

@@ -56,6 +56,7 @@ export default function Task({task}) {
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onClickInput={onClickInput} onBlurInput={onSlotExprChange}/>
             </td>
+            <td>{task.status}</td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
 }
