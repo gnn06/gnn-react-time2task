@@ -1,5 +1,15 @@
 import { useSetEtatMutation } from "../features/apiSlice.js";
 
+const statusReferentiel = [
+    'A faire', 
+    'en cours',
+    'fait', 
+    'reprendre aujourd\'hui',
+    'reprendre demain', 
+    'reprendre semaine', 
+    'terminé'
+];
+
 export default function SyntaxInput({task}) {
     const [
         setStatus,
@@ -19,7 +29,6 @@ export default function SyntaxInput({task}) {
 
     return <select defaultValue={task.status}
         onClick={onClick} onChange={onChange}>
-        <option value="A faire">A faire</option>
-        <option value="fait">fait</option>
+        { statusReferentiel.map(st => <option value={st}>{st}</option>)}
     </select>
 }
