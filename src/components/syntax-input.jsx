@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 
 import { insertSeparator } from "../utils/stringUtil";
 
-export default function SyntaxInput({items, classNameInput}) {
+export default function SyntaxInput({items, classNameInput, onClickInput, onBlurInput}) {
 
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
@@ -21,14 +21,16 @@ export default function SyntaxInput({items, classNameInput}) {
     const valuetoInsert = insertSeparator(begin, end, e.target.textContent);
     const newValue = begin + valuetoInsert + end;
     setValue(newValue);
+    e.stopPropagation();
   }
 
   const onFocus = () => {
     setShow(true)
   }
   
-  const onBlur = () => {
+  const onBlur = (event) => {
     setShow(false)
+    onBlurInput(event)
   }
 
   const onKeyDown = (e) => {
@@ -38,8 +40,7 @@ export default function SyntaxInput({items, classNameInput}) {
   }
 
   return <div>
-      <input  ref={inputRef} className={'border rounded p-1 w-full ' + classNameInput} placeholder="expression" value={value}
-      onChange={onChange} onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} onClick={onFocus} />
+    <input  ref={inputRef} className={'border rounded p-1 w-full ' + classNameInput} placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} onClick={onFocus} />
       <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
       </ul>
