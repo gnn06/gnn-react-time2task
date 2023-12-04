@@ -13,7 +13,7 @@ export default function TaskList() {
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     if (!isLoading && isSuccess) {
-        const tasksFetched = tasksRedux.map(item => ({ id: item.id, title: item.title, slotExpr: item.slotExpr }));
+        const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentTaskFilter);
         return (
             <div className="m-1 basis-1/2">
