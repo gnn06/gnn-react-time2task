@@ -31,6 +31,6 @@ export default function TaskFilter() {
             onBlur={onChange}
             onKeyDown={onKeyDown}/> 'no-filter'
         <SyntaxInput items={slotIdList}
-            placeHolderInput="expression"/>
+            placeHolderInput="expression" onBlurInput={onChange}/>
     </div>;
 };
