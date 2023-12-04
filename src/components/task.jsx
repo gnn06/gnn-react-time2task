@@ -9,6 +9,7 @@ import { slotIdList } from "../services/slot.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';
+import StatusInput from './status-input.jsx'
 
 export default function Task({task}) {
     
@@ -56,7 +57,7 @@ export default function Task({task}) {
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onClickInput={onClickInput} onBlurInput={onSlotExprChange}/>
             </td>
-            <td>{task.status}</td>
+            <td><StatusInput task={task}/></td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
 }

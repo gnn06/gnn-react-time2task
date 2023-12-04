@@ -69,4 +69,4 @@ export const apiSlice = createApi({
     })
 })
 
-export const { useGetTasksQuery, useSetSlotExprMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
+export const { useGetTasksQuery, useSetSlotExprMutation, useSetEtatMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
