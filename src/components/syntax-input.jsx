@@ -33,8 +33,16 @@ export default function SyntaxInput() {
     setShow(false)
   }
 
+  const onKeyDown = (e) => {
+    if (e.keyCode === 27) { // ESC
+        setShow(false)
+    }
+  }
+
   return <div>
-      <input  ref={inputRef} className="border rounded p-1 w-full" placeholder="expression" value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <input  ref={inputRef} className="border rounded p-1 w-full" placeholder="expression" value={value} 
+        onChange={onChange} onKeyDown={onKeyDown}
+        onClick={onFocus} onFocus={onFocus} onBlur={onBlur} />
       <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
       </ul>
