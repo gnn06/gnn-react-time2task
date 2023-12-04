@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 
 export default function SyntaxInput({items, placeHolderInput, initialInputValue, classNameInput, onClickInput, onBlurInput}) {
 
-  const [value, setValue] = useState(initialInputValue);
+  const [value, setValue] = useState(initialInputValue || '');
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
 
@@ -28,7 +28,7 @@ export default function SyntaxInput({items, placeHolderInput, initialInputValue,
   
   const onBlur = (event) => {
     setShow(false)
-    onBlurInput(event)
+    onBlurInput && onBlurInput(event)
   }
 
   const onKeyDown = (e) => {
