@@ -1,11 +1,9 @@
 import React from "react";
 import { useState, useRef } from "react";
 
-import { insertSeparator } from "../utils/stringUtil";
+export default function SyntaxInput({items, initialInputValue, classNameInput, onClickInput, onBlurInput}) {
 
-export default function SyntaxInput({items, classNameInput, onClickInput, onBlurInput}) {
-
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(initialInputValue);
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
 
