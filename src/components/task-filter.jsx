@@ -23,9 +23,11 @@ export default function TaskFilter() {
         }
     }
     
+    const filters = slotIdList.concat(['no-filter']);
+    
     return <div>
         <label htmlFor="task-filter">Filtre : </label>        
-        <SyntaxInput items={slotIdList}
+        <SyntaxInput items={filters}
             placeHolderInput="expression" onBlurInput={onChange}/>
         'no-filter'
     </div>;
