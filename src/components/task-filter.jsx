@@ -28,6 +28,6 @@ export default function TaskFilter() {
             className="m-1 p-1"
             onBlur={onChange}
             onKeyDown={onKeyDown}/> 'no-filter'
-        <SyntaxInput/>
+        <SyntaxInput items={['this_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem']}/>
     </div>;
 };

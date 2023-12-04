@@ -3,13 +3,11 @@ import { useState, useRef } from "react";
 
 import { insertSeparator } from "../utils/stringUtil";
 
-export default function SyntaxInput() {
+export default function SyntaxInput({items}) {
 
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
-
-  const items = ['this_week', 'mardi']
 
   const onChange = (e) => {
     setValue(e.target.value)
