@@ -24,13 +24,9 @@ export default function TaskFilter() {
     }
     
     return <div>
-        <label htmlFor="task-filter">Filtre : </label>
-        <input type="text" 
-            placeholder="expression"
-            className="m-1 p-1"
-            onBlur={onChange}
-            onKeyDown={onKeyDown}/> 'no-filter'
+        <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={slotIdList}
             placeHolderInput="expression" onBlurInput={onChange}/>
+        'no-filter'
     </div>;
 };
