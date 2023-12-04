@@ -25,10 +25,9 @@ export default function TaskFilter() {
     
     const filters = slotIdList.concat(['no-filter']);
     
-    return <div>
+    return <div className="flex flex-row space-x-1 items-baseline">
         <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={filters}
             placeHolderInput="expression" onBlurInput={onChange}/>
-        'no-filter'
     </div>;
 };

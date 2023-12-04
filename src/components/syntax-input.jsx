@@ -37,8 +37,7 @@ export default function SyntaxInput({items, placeHolderInput, initialInputValue,
         setShow(false)
     }
   }
-
-  return <div>
+  return <div className="flex-1 ">
     <input  ref={inputRef} className={'border rounded p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} onClick={onFocus} />
       <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onItemClick}>{item}</li>) }
