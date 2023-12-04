@@ -211,3 +211,5 @@ export function multi2Mono(slotExpr) {
 export function completeMultiSlot(incompleteMonoSlotArray) {
     return incompleteMonoSlotArray.map(completeSlot);
 }
+
+export const slotIdList = ['this_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];

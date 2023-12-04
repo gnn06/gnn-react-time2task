@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 
 import './task.css'
 import { selectTask } from "../features/taskSlice";
+import { slotIdList } from "../services/slot.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';
@@ -52,7 +53,7 @@ export default function Task({task}) {
     return <tr className={myClassName} onClick={onTaskClick}>
             <td>{task.title} </td>
             <td>                
-                <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={['aze', 'qsd']}
+                <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onClickInput={onClickInput} onBlurInput={onSlotExprChange}/>
             </td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>

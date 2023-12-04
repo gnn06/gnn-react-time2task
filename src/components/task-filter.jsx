@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
+import { slotIdList } from "../services/slot";
+
 import SyntaxInput from './syntax-input';
 
 export default function TaskFilter() {
@@ -28,7 +30,7 @@ export default function TaskFilter() {
             className="m-1 p-1"
             onBlur={onChange}
             onKeyDown={onKeyDown}/> 'no-filter'
-        <SyntaxInput items={['this_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem']}
+        <SyntaxInput items={slotIdList}
             placeHolderInput="expression"/>
     </div>;
 };
