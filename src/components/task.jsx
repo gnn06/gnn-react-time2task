@@ -7,6 +7,7 @@ import './task.css'
 import { selectTask } from "../features/taskSlice";
 
 import Button from '../components/button';
+import SyntaxInput from './syntax-input';
 
 export default function Task({task}) {
     
@@ -50,8 +51,9 @@ export default function Task({task}) {
 
     return <tr className={myClassName} onClick={onTaskClick}>
             <td>{task.title} </td>
-            <td><input className="p-1 bg-transparent" type="text" defaultValue={task.slotExpr} 
-            onBlur={onSlotExprChange} onClick={onClickInput}/></td>
+            <td>                
+                <SyntaxInput classNameInput="bg-transparent" items={['aze', 'qsd']}/>
+            </td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
 }
