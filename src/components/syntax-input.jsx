@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useRef } from "react";
+import { insertSeparator } from "../utils/stringUtil";
 
 export default function SyntaxInput({items, placeHolderInput, initialInputValue, classNameInput, onClickInput, onBlurInput}) {
 
