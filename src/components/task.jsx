@@ -37,12 +37,8 @@ export default function Task({task}) {
 
     const onSlotExprChange = e => {
         const taskId = task.id;
-        const slotExpr = e.target.value;
+        const slotExpr = e;
         setSlotExpr({id:taskId, slotExpr})
-    };
-
-    const onClickInput = e => {
-        e.stopPropagation();
     };
 
     const onDeleteClick = e => {
@@ -55,7 +51,7 @@ export default function Task({task}) {
             <td>{task.title} </td>
             <td>                
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
-                    onClickInput={onClickInput} onBlurInput={onSlotExprChange}/>
+                    onInputChange={onSlotExprChange}/>
             </td>
             <td><StatusInput task={task}/></td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
