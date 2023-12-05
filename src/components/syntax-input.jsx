@@ -18,8 +18,7 @@ export default function SyntaxInput({items, placeHolderInput, initialInputValue,
     const begin = value.substring(0, startP);
     const end   = value.substring(endP);
     const valuetoInsert = insertSeparator(begin, end, e.target.textContent);
-    const newValue = begin + valuetoInsert + end;
-    setValue(newValue);
+    setValue(valuetoInsert);
     e.stopPropagation();
   }
 
