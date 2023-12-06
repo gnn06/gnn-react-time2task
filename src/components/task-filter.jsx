@@ -22,6 +22,6 @@ export default function TaskFilter() {
     return <div className="flex flex-row space-x-1 items-baseline">
         <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={filters}
-            placeHolderInput="expression" onInputChange={onChange}/>
+            placeHolderInput="exmemple : lundi, next_week mardi, OR possible" onInputChange={onChange}/>
     </div>;
 };
