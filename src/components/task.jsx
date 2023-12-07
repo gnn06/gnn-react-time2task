@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useSetSlotExprMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
+import { useSetSlotExprMutation, useSetOrderMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
@@ -20,6 +20,9 @@ export default function Task({task}) {
         // eslint-disable-next-line
         { isLoading: isUpdating }, // This is the destructured mutation result
       ] = useSetSlotExprMutation()
+      const [
+        setOrder, // This is the mutation trigger
+      ] = useSetOrderMutation()
     
     const [ deleteTask ] = useDeleteTaskMutation()
 
@@ -41,9 +44,19 @@ export default function Task({task}) {
         setSlotExpr({id:taskId, slotExpr})
     };
 
+    const onOrderChange = e => {
+        const taskId = task.id;
+        const order = e.target.value;
+        setOrder({id:taskId, order})
+    };
+
     const onDeleteClick = e => {
         // TODO add confirmation
         deleteTask(task.id)
+        e.stopPropagation();
+    }
+
+    const noPropagation = (e) => {
         e.stopPropagation();
     }
 
@@ -53,6 +66,8 @@ export default function Task({task}) {
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onInputChange={onSlotExprChange}/>
             </td>
+            <td><input defaultValue={task.order} onChange={onOrderChange} onClick={noPropagation} 
+                className="bg-transparent w-10"/></td>
             <td><StatusInput task={task}/></td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;

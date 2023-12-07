@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { slotCompare, completeSlot } from '../services/slot'
+import { taskCompare } from '../services/task'
 
 const IdBaseTest = 'appG4x4E9QAFuuldp'
 // eslint-disable-next-line
@@ -23,12 +24,11 @@ export const apiSlice = createApi({
                         id: item.id,
                         title: item.fields.Sujet,
                         slotExpr: item.fields.slotExpr,
-                        status: item.fields.Etat
+                        status: item.fields.Etat,
+                        order: item.fields.ordre
                     }))
-                    .sort((arg1, arg2) => 
-                        // Don't need to check MultiSlot as compare sort on  first slot
-                        slotCompare(completeSlot(arg1.slotExpr),
-                        completeSlot(arg2.slotExpr))),
+                    // Don't need to check MultiSlot as compare sort on  first slot
+                    .sort(taskCompare),
             providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
@@ -46,6 +46,15 @@ export const apiSlice = createApi({
                 url: `/Taches/${id}`,
                 method: 'PATCH',
                 body: { fields: { Etat: patch.status }},
+            }),
+            invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
+        }),
+        
+        setOrder: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/Taches/${id}`,
+                method: 'PATCH',
+                body: { fields: { ordre: Number(patch.order) }},
             }),
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
@@ -69,4 +78,4 @@ export const apiSlice = createApi({
     })
 })
 
-export const { useGetTasksQuery, useSetSlotExprMutation, useSetEtatMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
+export const { useGetTasksQuery, useSetSlotExprMutation, useSetEtatMutation, useSetOrderMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
