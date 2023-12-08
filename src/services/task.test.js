@@ -56,4 +56,25 @@ describe('taskCompare', () => {
         const result = taskCompare(task1, task2)
         expect(result).toBe(1)
     })
+
+    it('compare task with param1 multislot', () => {
+        const task1 = { slotExpr: 'this_month next_week jeudi mardi' }
+        const task2 = { slotExpr: 'this_month this_week lundi' }
+        const result = taskCompare(task1, task2)
+        expect(result).toBe(1)
+    })
+
+    it('compare task with param2 multislot', () => {
+        const task1 = { slotExpr: 'this_month next_week vendredi' }
+        const task2 = { slotExpr: 'this_month this_week mardi jeudi' }
+        const result = taskCompare(task1, task2)
+        expect(result).toBe(1)
+    })
+
+    it('compare task with no slotExpr', () => {
+        const task1 = {  }
+        const task2 = { slotExpr: 'this_month this_week mardi jeudi' }
+        const result = taskCompare(task1, task2)
+        expect(result).toBe(1)
+    })
 })

@@ -189,10 +189,11 @@ export function slotCompare(obj1, obj2) {
 
 /**
  * 
- * @param {multi incomplete slot} slotExpr 
+ * @param {multi incomplete slot} slotExpr. if undefined returns []
  * @returns [mono incomplete slot]
  */
 export function multi2Mono(slotExpr) {
+    if (slotExpr === undefined) return []
     const result = slotExpr.split(' ').reduce((acc, val) => {
         if (acc.length === 0) {
             acc.push(val);            
