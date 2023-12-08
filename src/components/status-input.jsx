@@ -30,6 +30,6 @@ export default function SyntaxInput({task}) {
     return <select defaultValue={task.status}
         onClick={onClick} onChange={onChange}
         className="bg-transparent">
-        { statusReferentiel.map(st => <option value={st}>{st}</option>)}
+        { statusReferentiel.map(st => <option value={st} key={st}>{st}</option>)}
     </select>
 }
