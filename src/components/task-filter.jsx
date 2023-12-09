@@ -17,11 +17,11 @@ export default function TaskFilter() {
         dispatch(setTaskFilter({filter}));
     }
     
-    const filters = slotIdList.concat(['no-filter']);
+    const filters = slotIdList;
     
     return <div className="flex flex-row space-x-1 items-baseline">
         <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={filters}
-            placeHolderInput="exmemple : lundi, next_week mardi, OR possible" onInputChange={onChange}/>
+            placeHolderInput="lundi, next_week mardi, AND, OR, title:xxx" onInputChange={onChange}/>
     </div>;
 };
