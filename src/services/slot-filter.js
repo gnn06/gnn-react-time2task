@@ -1,4 +1,5 @@
 import { slotIsInOther, multiSlotIsInOther, completeSlot, completeMultiSlot, slotEqual, multi2Mono } from './slot.js';
+import { makeFilter, makeBoolFilterFuncOR } from './filter-engine.js';
 
 /**
  * unused
@@ -7,17 +8,13 @@ export function filterNoSlot(tasks, association) {
     return tasks.filter(task => association[task.id] == null);
 }
 
-const makeBoolFilterFunc = (task, filter) => multiSlotIsInOther(completeMultiSlot(multi2Mono(task.slotExpr)), filter);
-const makeBoolFilterFuncOR = (task, filters) => filters.some(filter => makeBoolFilterFunc(task, filter));
-
 /**
  * filter a task list on a filter expression
  * @param {string} filter expression. (mono incomplet slotPath) with OR
  */
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
-    const filters = filter.split(' OR ').map(completeSlot)
-    return tasks.filter(task => makeBoolFilterFuncOR(task, filters));
+    return tasks.filter(makeFilter(filter));
 }
 
 /*
