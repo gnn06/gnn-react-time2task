@@ -19,3 +19,28 @@ test('insertSeparator, empty, empty', () => {
     const result = insertSeparator('abc', 'qsd', 'toto')
     expect(result).toEqual('abc toto qsd')
 })
+
+test('don\'t add space', () => {
+    const result = insertSeparator('abc ', 'qsd', 'toto')
+    expect(result).toEqual('abc toto qsd')
+})
+
+test('don\'t add space', () => {
+    const result = insertSeparator('abc', ' qsd', 'toto')
+    expect(result).toEqual('abc toto qsd')
+})
+
+test('don\'t add space', () => {
+    const result = insertSeparator('abc ', '', 'toto')
+    expect(result).toEqual('abc toto')
+})
+
+test('don\'t add space', () => {
+    const result = insertSeparator('', ' qsd', 'toto')
+    expect(result).toEqual('toto qsd')
+})
+
+test('don\'t add space', () => {
+    const result = insertSeparator('abc ', ' qsd', 'toto')
+    expect(result).toEqual('abc toto qsd')
+})
