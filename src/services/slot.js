@@ -29,7 +29,7 @@ export function slotEqual(slot, otherSlot) {
  * @returns int -1 or between 1 and 4
  */
 function getSlotLevel(slot) {
-    if (slot === 'this_month')
+    if (slot === 'this_month' || slot === 'next_month')
         return 1;
     if (slot === 'week' || slot === 'next_week' || slot === 'following_week' || slot === 'this_week')
         return 2;
@@ -214,4 +214,4 @@ export function completeMultiSlot(incompleteMonoSlotArray) {
     return incompleteMonoSlotArray.map(completeSlot);
 }
 
-export const slotIdList = ['this_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
+export const slotIdList = ['this_month', 'next_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
