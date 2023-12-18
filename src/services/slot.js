@@ -194,7 +194,7 @@ export function slotCompare(obj1, obj2) {
  */
 export function multi2Mono(slotExpr) {
     if (slotExpr === undefined) return []
-    const result = slotExpr.split(' ').reduce((acc, val) => {
+    const result = slotExpr.split(' ').filter(item => item !== 'chaque').reduce((acc, val) => {
         if (acc.length === 0) {
             acc.push(val);            
         } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
