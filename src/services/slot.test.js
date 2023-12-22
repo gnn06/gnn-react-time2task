@@ -1,4 +1,4 @@
-import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth, slotCompare } from './slot.js';
+import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth, slotCompare, removeDisable } from './slot.js';
 
 describe('slotIsInOther', () => {
     it('slotIsInOther true by first level', () => {
@@ -254,3 +254,38 @@ describe('sort', () => {
         })
     })
 })
+
+describe('removeDisable', () => {
+    describe('one remove', () => {
+        test('middle ', () => {
+            expect(removeDisable(['lundi', 'disable', 'lundi', 'aprem', 'mardi']))
+            .toEqual(['lundi', 'mardi'])
+        })
+        test('start ', () => {
+            expect(removeDisable(['disable', 'lundi', 'aprem', 'mardi']))
+            .toEqual(['mardi'])
+        })
+        test('end ', () => {
+            expect(removeDisable(['lundi', 'disable', 'lundi', 'aprem']))
+            .toEqual(['lundi'])
+        }) 
+    });
+    describe('two remove', () => {
+        test('middle consecutif ', () => {
+            expect(removeDisable(['lundi', 'disable', 'lundi', 'aprem', 'disable', 'mardi', 'mercredi']))
+            .toEqual(['lundi', 'mercredi'])
+        })
+        test('middle non consecutif', () => {
+            expect(removeDisable(['lundi', 'disable', 'lundi', 'aprem', 'mercredi', 'disable', 'mardi', 'jeudi']))
+            .toEqual(['lundi', 'mercredi', 'jeudi'])
+        })
+        test('start ', () => {
+            expect(removeDisable(['disable', 'lundi', 'aprem', 'disable', 'mardi', 'mercredi']))
+            .toEqual(['mercredi'])
+        })
+        test('end ', () => {
+            expect(removeDisable(['lundi', 'disable', 'lundi', 'aprem', 'disable', 'mardi']))
+            .toEqual(['lundi'])
+        })
+    });
+});

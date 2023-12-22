@@ -1,3 +1,4 @@
+import { indexOfSiblingLevel } from "../utils/arrayUtil";
 /**
  * test is two path have the same path
  * @param slot complete slotPath
@@ -194,7 +195,9 @@ export function slotCompare(obj1, obj2) {
  */
 export function multi2Mono(slotExpr) {
     if (slotExpr === undefined) return []
-    const result = slotExpr.split(' ').filter(item => item !== 'chaque').reduce((acc, val) => {
+    let result = slotExpr.split(' ').filter(item => item !== 'chaque');
+    result = removeDisable(result)
+    result = result.reduce((acc, val) => {
         if (acc.length === 0) {
             acc.push(val);            
         } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
@@ -212,6 +215,20 @@ export function multi2Mono(slotExpr) {
 
 export function completeMultiSlot(incompleteMonoSlotArray) {
     return incompleteMonoSlotArray.map(completeSlot);
+}
+
+export function removeDisable(slotLst) {
+    const levelLst = slotLst.map(getSlotLevel);
+    let start;
+    while ((start = slotLst.indexOf('disable')) >= 0) {
+        if (start >= 0) {
+            start++;
+            const end = indexOfSiblingLevel(levelLst, start);
+            slotLst.splice(start -1, end - start + 1)
+            levelLst.splice(start -1, end - start + 1)
+        }
+    }
+    return slotLst;
 }
 
 export const slotIdList = ['this_month', 'next_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];

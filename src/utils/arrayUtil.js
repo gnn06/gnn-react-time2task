@@ -6,3 +6,14 @@ export function arrayPut(array, item) {
         array.splice(index, 1);
     }    
 }
+
+export function indexOfSiblingLevel(tab, start) {
+    const firstLevel = tab[start];
+    for (start++; start < tab.length; start++) {
+        const itemLevel = tab[start];
+        if (firstLevel >= itemLevel) {
+            return start;
+        }
+    }
+    return start;
+}

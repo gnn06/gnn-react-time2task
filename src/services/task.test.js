@@ -77,4 +77,11 @@ describe('taskCompare', () => {
         const result = taskCompare(task1, task2)
         expect(result).toBe(1)
     })
+
+    it('compare task with disable', () => {
+        const task1 = { slotExpr: 'this_month this_week disable vendredi lundi' }
+        const task2 = { slotExpr: 'this_month this_week mercredi' }
+        const result = taskCompare(task1, task2)
+        expect(result).toBe(-1)
+    })
 })
