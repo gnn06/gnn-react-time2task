@@ -48,17 +48,25 @@ function getSlotLevel(slot) {
  * this_month, week, lundi, matin
  * level int between 1 this_month and 4 matin
  */
-function getCurrentSlot(level) {
+export function getCurrentSlot(level) {
     if (level === 1)
         return 'this_month';
     else if (level === 2)
         return 'this_week';
-    else if (level === 3)
-        return 'lundi';
+    else if (level === 3) {
+        const currentTime = new Date();
+        const day = currentTime.getDay(); // 0 = dimanche
+        const jour = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+        return jour[day];
+    }
     else if (level === 4)
         return 'matin';
     else
         return '';
+}
+
+export function getCurrentPath() {
+    return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + getCurrentSlot(3);
 }
 
 /**

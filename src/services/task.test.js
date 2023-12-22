@@ -1,4 +1,7 @@
-import { taskCompare } from "./task";
+import { taskCompare, chooseSlotForSort } from "./task";
+
+jest.useFakeTimers()
+jest.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('taskCompare', () => {
     it('compare task by slot', () => {
@@ -57,19 +60,28 @@ describe('taskCompare', () => {
         expect(result).toBe(1)
     })
 
-    it('compare task with param1 multislot', () => {
-        const task1 = { slotExpr: 'this_month next_week jeudi mardi' }
-        const task2 = { slotExpr: 'this_month this_week lundi' }
-        const result = taskCompare(task1, task2)
-        expect(result).toBe(1)
-    })
+    describe('multi slot', () => {
+        it('compare task with param1 multislot', () => {
+            const task1 = { slotExpr: 'this_month next_week jeudi mardi' }
+            const task2 = { slotExpr: 'this_month this_week lundi' }
+            const result = taskCompare(task1, task2)
+            expect(result).toBe(1)
+        })
+    
+        it('compare task with param2 multislot', () => {
+            const task1 = { slotExpr: 'this_month next_week vendredi' }
+            const task2 = { slotExpr: 'this_month this_week mardi jeudi' }
+            const result = taskCompare(task1, task2)
+            expect(result).toBe(1)
+        })
 
-    it('compare task with param2 multislot', () => {
-        const task1 = { slotExpr: 'this_month next_week vendredi' }
-        const task2 = { slotExpr: 'this_month this_week mardi jeudi' }
-        const result = taskCompare(task1, task2)
-        expect(result).toBe(1)
-    })
+        it('compare task with param1 multislot', () => {
+            const task1 = { slotExpr: 'this_month this_week lundi mercredi' }
+            const task2 = { slotExpr: 'this_month this_week mardi' }
+            const result = taskCompare(task1, task2)
+            expect(result).toBe(1) // avec lundi => -1 avec mercredi => 1
+        })
+    });
 
     it('compare task with no slotExpr', () => {
         const task1 = {  }
@@ -85,3 +97,33 @@ describe('taskCompare', () => {
         expect(result).toBe(-1)
     })
 })
+
+describe('chooseSlotForSort', () => {
+    test('should take first and only slot', () => {
+        expect(chooseSlotForSort(['this_week lundi'], 'this_week lundi')).toEqual('this_week lundi')
+    });
+    
+    test('should take first and only slot', () => {
+        expect(chooseSlotForSort(['this_week lundi'], 'this_week mardi')).toEqual('this_week lundi')
+    });
+    
+    test('should take first slot', () => {
+        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week lundi')).toEqual('this_week lundi')
+    });
+
+    test('should take first slot', () => {
+        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mardi')).toEqual('this_week mardi')
+    });
+
+    test('should take first slot', () => {
+        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mercredi')).toEqual('this_week lundi')
+    });
+
+    test('should take first slot', () => {
+        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], undefined)).toEqual('this_week lundi')
+    });
+
+    test('should take first slot', () => {
+        expect(chooseSlotForSort(['this_week lundi'], undefined)).toEqual('this_week lundi')
+    });
+});

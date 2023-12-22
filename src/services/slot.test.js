@@ -1,4 +1,7 @@
-import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth, slotCompare, removeDisable } from './slot.js';
+import { slotIsInOther, completeSlot, slotEqual, firstSlot, lowerSlot, slotDepth, slotCompare, removeDisable, getCurrentSlot, getCurrentPath } from './slot.js';
+
+jest.useFakeTimers()
+jest.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('slotIsInOther', () => {
     it('slotIsInOther true by first level', () => {
@@ -124,7 +127,7 @@ describe('completeSlot', () => {
 
     it('completeSlot level3', () => {
         const result = completeSlot('aprem');
-        expect(result).toEqual('this_month this_week lundi aprem');
+        expect(result).toEqual('this_month this_week mercredi aprem');
     })
 
     it('completeSlot level1 level2', () => {
@@ -288,4 +291,12 @@ describe('removeDisable', () => {
             .toEqual(['lundi'])
         })
     });
+});
+
+
+describe('getCurrentPath', () => {
+    test('should return day of the week', () => {
+        expect(getCurrentPath()).toEqual('this_month this_week mercredi');
+    });
+    
 });

@@ -1,8 +1,20 @@
-import { slotCompare, completeSlot, multi2Mono } from "./slot"
+import { slotCompare, completeMultiSlot, multi2Mono, slotIsInOther, getCurrentPath } from "./slot"
+
+export function chooseSlotForSort (multi, todaySlot) {
+    const hasToday = multi.find(slot => slotIsInOther(slot, todaySlot));
+    if (hasToday) {
+        return hasToday
+    } else {
+        return multi[0];
+    }
+}
 
 export function taskCompare(task1, task2) {
     // if multi slot, compare on the first one
-    const slotComp = slotCompare(completeSlot(multi2Mono(task1.slotExpr)[0]), completeSlot(multi2Mono(task2.slotExpr)[0]))
+    const todaySlot = getCurrentPath();
+    const slotComp = slotCompare(
+                        chooseSlotForSort(completeMultiSlot( multi2Mono(task1.slotExpr)), todaySlot), 
+                        chooseSlotForSort(completeMultiSlot(multi2Mono(task2.slotExpr)), todaySlot))
     if (slotComp === 0) {
         // put no order task at begin
         const order1 = task1.order == undefined ? 0 : task1.order
