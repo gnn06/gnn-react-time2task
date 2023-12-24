@@ -2,14 +2,10 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { slotCompare, completeSlot } from '../services/slot'
 import { taskCompare } from '../services/task'
 
-const IdBaseTest = 'appG4x4E9QAFuuldp'
-// eslint-disable-next-line
-const IdBaseProd = 'appxxeJDaPUItDFAF'
-
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery:   fetchBaseQuery({
-        baseUrl : `https://api.airtable.com/v0/${IdBaseTest}`,
+        baseUrl : `https://api.airtable.com/v0/${process.env.REACT_APP_BDD_KEY}`,
         prepareHeaders: (headers, { getState }) => {
             headers.set("Authorization", "Bearer pateXlE2yDTfJUXSk.3ef63a108889473cb840070c3699ce6edebdfd737e94b57f0ab9c14c409f4f42")
         },
