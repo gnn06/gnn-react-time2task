@@ -60,7 +60,7 @@ export default function Task({task}) {
         e.stopPropagation();
     }
 
-    return <tr className={myClassName} onClick={onTaskClick}>
+    return <tr className={myClassName} >
             <td>{task.title} </td>
             <td>                
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
