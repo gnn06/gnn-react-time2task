@@ -16,7 +16,7 @@ export default function TaskList() {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentTaskFilter);
         return (
-            <div className="m-1 basis-1/2">
+            <div className="m-1 w-full">
                 <TaskFilter/>
                 <h1>Tasks</h1>
                 <table className="w-full">
