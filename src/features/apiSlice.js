@@ -1,6 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { slotCompare, completeSlot } from '../services/slot'
 import { taskCompare } from '../services/task'
+import { mapProperties } from '../utils/objectUtil'
+
+const mapping = [
+    { old: 'slotExpr', new: 'slotExpr' },
+    { old: 'status',   new: 'Etat' },
+    { old: 'order',    new: 'ordre' },
+    { old: 'title',    new: 'Sujet' },
+];
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -28,29 +36,11 @@ export const apiSlice = createApi({
             providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
-        setSlotExpr: builder.mutation({
+        updateTask: builder.mutation({
             query: ({ id, ...patch }) => ({
                 url: `/Taches/${id}`,
                 method: 'PATCH',
-                body: { fields: { slotExpr: patch.slotExpr }},
-              }),
-              invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
-        }),
-
-        setEtat: builder.mutation({
-            query: ({ id, ...patch }) => ({
-                url: `/Taches/${id}`,
-                method: 'PATCH',
-                body: { fields: { Etat: patch.status }},
-            }),
-            invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
-        }),
-        
-        setOrder: builder.mutation({
-            query: ({ id, ...patch }) => ({
-                url: `/Taches/${id}`,
-                method: 'PATCH',
-                body: { fields: { ordre: Number(patch.order) }},
+                body: { fields: mapProperties(patch, mapping) },
             }),
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
@@ -74,4 +64,4 @@ export const apiSlice = createApi({
     })
 })
 
-export const { useGetTasksQuery, useSetSlotExprMutation, useSetEtatMutation, useSetOrderMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
+export const { useGetTasksQuery, useUpdateTaskMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice

@@ -1,4 +1,4 @@
-import { useSetEtatMutation } from "../features/apiSlice.js";
+import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import Select from 'react-select';
 import Color from 'color';
 
@@ -18,15 +18,15 @@ const statusReferentiel = [
 
 export default function SyntaxInput({task}) {
     const [
-        setStatus,
+        updateTask,
         { isLoading: isUpdating }, // This is the destructured mutation result
-      ] = useSetEtatMutation()
+      ] = useUpdateTaskMutation()
     
     
     const onChange = (value, action) => {
         const taskId = task.id;
         const taskStatus = value.value;
-        setStatus({id:taskId, status: taskStatus})
+        updateTask({id:taskId, status: taskStatus})
     };
     
     const onClick = e => {

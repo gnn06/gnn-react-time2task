@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useSetSlotExprMutation, useSetOrderMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
+import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
@@ -16,13 +16,10 @@ export default function Task({task}) {
     const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
     const dispatch = useDispatch();
     const [
-        setSlotExpr, // This is the mutation trigger
+        updateTask, // This is the mutation trigger
         // eslint-disable-next-line
         { isLoading: isUpdating }, // This is the destructured mutation result
-      ] = useSetSlotExprMutation()
-      const [
-        setOrder, // This is the mutation trigger
-      ] = useSetOrderMutation()
+      ] = useUpdateTaskMutation()
     
     const [ deleteTask ] = useDeleteTaskMutation()
 
@@ -41,13 +38,19 @@ export default function Task({task}) {
     const onSlotExprChange = e => {
         const taskId = task.id;
         const slotExpr = e;
-        setSlotExpr({id:taskId, slotExpr})
+        updateTask({id:taskId, slotExpr})
     };
 
+    const onTitleChange = (e) => {
+        const taskId = task.id;
+        const title = e.target.value;
+        updateTask({id:taskId, title: title})
+    };
+    
     const onOrderChange = e => {
         const taskId = task.id;
-        const order = e.target.value;
-        setOrder({id:taskId, order})
+        const order = Number(e.target.value);
+        updateTask({id:taskId, order})
     };
 
     const onDeleteClick = e => {
@@ -61,7 +64,8 @@ export default function Task({task}) {
     }
 
     return <tr className={myClassName} >
-            <td>{task.title} </td>
+            <td><input  defaultValue={task.title} onBlur={onTitleChange}  
+                        className="bg-transparent"/></td>
             <td>                
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onInputChange={onSlotExprChange}/>
