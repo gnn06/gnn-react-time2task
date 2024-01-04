@@ -7,6 +7,7 @@ import { useAddTaskMutation } from "../features/apiSlice.js";
 export default function AddTaskForm() {
 
     const [title, setTitle] = useState('');
+    const [slotExpr, setSlotExpr]   = useState('');
 
     const [
         addTask
@@ -14,8 +15,9 @@ export default function AddTaskForm() {
     const onTitleChange = e => setTitle(e.target.value);
 
     const onSaveTaskClicked = () => {
-        addTask({title})
+        addTask({title, slotExpr})
         setTitle('');
+        setSlotExpr('');
     };
 
     return(
@@ -27,6 +29,13 @@ export default function AddTaskForm() {
                     name="taskTile"
                     value={title}
                     onChange={onTitleChange}
+                />
+                <label htmlFor="taskSlotExpr">Créneau : </label>
+                <input type="text"
+                    id="taskSlotExpr"
+                    name="taskSlotExpr"
+                    value={slotExpr}
+                    onChange={(e) => setSlotExpr(e.target.value)}
                 />
             </form>
             <Button clickToto={onSaveTaskClicked} label="Sauver la Tâche" />

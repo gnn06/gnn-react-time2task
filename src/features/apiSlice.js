@@ -59,7 +59,7 @@ export const apiSlice = createApi({
             query: (patch) => ({
                 url: '/Taches',
                 method: 'POST',
-                body: { fields: { Sujet: patch.title }}
+                body: { fields: { Sujet: patch.title, slotExpr: patch.slotExpr }}
             }),
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
