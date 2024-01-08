@@ -196,6 +196,44 @@ export function slotCompare(obj1, obj2) {
     }
 }
 
+class SlotParser {
+    slots = [];
+    newSlot(slotId) {
+        this.slots.push(slotId);
+    }
+    continueSlot(slotId) {
+        this.slots[this.slots.length-1] = this.slots.at(-1) + ' ' + slotId;
+    }
+    newMultiSlot(slotId) {
+        const previous = removeLastSlot(this.slots.at(-1));
+        this.slots.push((previous !== '' ? previous  + ' ' : '') + slotId);
+    }
+    getLastSlotId() {
+        return this.slots.at(-1).split(' ').at(-1);
+    }
+    parse(arg) {
+        this.slots = [];
+        return arg.reduce((acc, val) => {
+            if (acc.slots.length === 0) {
+                acc.newSlot(val);
+            } else if (val === 'chaque' || val === 'disable') {
+                if (getSlotLevel(acc.getLastSlotId()) !== -1) {
+                    acc.newSlot(val);
+                } else {
+                    acc.continueSlot(val);
+                }                
+            } else if (getSlotLevel(acc.getLastSlotId()) !== -1 && getSlotLevel(acc.getLastSlotId()) === getSlotLevel(val)) {
+                acc.newMultiSlot(val);
+            } else if (getSlotLevel(acc.getLastSlotId()) !== -1 && getSlotLevel(acc.getLastSlotId()) > getSlotLevel(val)) {
+                acc.newSlot(val);
+            } else {
+                acc.continueSlot(val)
+            }
+            return acc;
+        }, this).slots;
+    }
+};
+
 /**
  * 
  * @param {multi incomplete slot} slotExpr. if undefined returns []
@@ -205,19 +243,14 @@ export function multi2Mono(slotExpr) {
     if (slotExpr === undefined) return []
     let result = slotExpr.split(' ').filter(item => item !== 'chaque');
     result = removeDisable(result)
-    result = result.reduce((acc, val) => {
-        if (acc.length === 0) {
-            acc.push(val);            
-        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
-            const previous = removeLastSlot(acc.at(-1));
-            acc.push((previous !== '' ? previous  + ' ' : '') + val);
-        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) > getSlotLevel(val)) {
-            acc.push(val);
-        } else {
-            acc[acc.length-1] = acc.at(-1) + ' ' + val;
-        }
-        return acc;
-    }, [])
+    result = new SlotParser().parse(result);
+    return result;
+}
+
+export function multi2MonoKeep(slotExpr) {
+    if (slotExpr === undefined) return []
+    let result = slotExpr.split(' ');
+    result = new SlotParser().parse(result);
     return result;
 }
 
