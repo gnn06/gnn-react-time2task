@@ -202,23 +202,38 @@ export function slotCompare(obj1, obj2) {
  * @returns [mono incomplete slot]
  */
 export function multi2Mono(slotExpr) {
+    class SlotParser {
+        slots = [];
+        newSlot(slotId) {
+            this.slots.push(slotId);
+        }
+        continueSlot(slotId) {
+            this.slots[this.slots.length-1] = this.slots.at(-1) + ' ' + slotId;
+        }
+        newMultiSlot(slotId) {
+            const previous = removeLastSlot(this.slots.at(-1));
+            this.slots.push((previous !== '' ? previous  + ' ' : '') + slotId);
+        }
+        getLastSlotId() {
+            return this.slots.at(-1).split(' ').at(-1);
+        }
+    };
     if (slotExpr === undefined) return []
     let result = slotExpr.split(' ').filter(item => item !== 'chaque');
     result = removeDisable(result)
     result = result.reduce((acc, val) => {
-        if (acc.length === 0) {
-            acc.push(val);            
-        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) === getSlotLevel(val)) {
-            const previous = removeLastSlot(acc.at(-1));
-            acc.push((previous !== '' ? previous  + ' ' : '') + val);
-        } else if (getSlotLevel(acc.at(-1).split(' ').at(-1)) > getSlotLevel(val)) {
-            acc.push(val);
+        if (acc.slots.length === 0) {
+            acc.newSlot(val);            
+        } else if (getSlotLevel(acc.getLastSlotId()) === getSlotLevel(val)) {
+            acc.newMultiSlot(val)
+        } else if (getSlotLevel(acc.getLastSlotId()) > getSlotLevel(val)) {
+            acc.newSlot(val);
         } else {
-            acc[acc.length-1] = acc.at(-1) + ' ' + val;
+            acc.continueSlot(val)
         }
         return acc;
-    }, [])
-    return result;
+    }, new SlotParser());
+    return result.slots;
 }
 
 export function completeMultiSlot(incompleteMonoSlotArray) {

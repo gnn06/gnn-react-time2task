@@ -42,6 +42,11 @@ describe('multi slot', () => {
             expect(result).toEqual(['lundi matin', 'mercredi'])
         })
     });
+
+    it('chaque', () => {
+        const result = multi2Mono('lundi matin chaque mardi aprem mercredi')
+        expect(result).toEqual(['lundi matin', 'mardi aprem', 'mercredi'])
+    })
 })
 
 describe('multiSlotIsInOther', () => {
