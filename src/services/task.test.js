@@ -75,7 +75,7 @@ describe('taskCompare', () => {
             expect(result).toBe(1)
         })
 
-        it('compare task with param1 multislot', () => {
+        it('compare task with param1 multislot bis', () => {
             const task1 = { slotExpr: 'this_month this_week lundi mercredi' }
             const task2 = { slotExpr: 'this_month this_week mardi' }
             const result = taskCompare(task1, task2)
@@ -99,11 +99,11 @@ describe('taskCompare', () => {
 })
 
 describe('chooseSlotForSort', () => {
-    test('should take first and only slot', () => {
+    test('should take first and only slot 1', () => {
         expect(chooseSlotForSort(['this_week lundi'], 'this_week lundi')).toEqual('this_week lundi')
     });
     
-    test('should take first and only slot', () => {
+    test('should take first and only slot 2', () => {
         expect(chooseSlotForSort(['this_week lundi'], 'this_week mardi')).toEqual('this_week lundi')
     });
     
@@ -111,19 +111,19 @@ describe('chooseSlotForSort', () => {
         expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week lundi')).toEqual('this_week lundi')
     });
 
-    test('should take first slot', () => {
+    test('should take first slot 1', () => {
         expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mardi')).toEqual('this_week mardi')
     });
 
-    test('should take first slot', () => {
+    test('should take first slot 2', () => {
         expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mercredi')).toEqual('this_week lundi')
     });
 
-    test('should take first slot', () => {
+    test('should take first slot 3', () => {
         expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], undefined)).toEqual('this_week lundi')
     });
 
-    test('should take first slot', () => {
+    test('should take first slot 4', () => {
         expect(chooseSlotForSort(['this_week lundi'], undefined)).toEqual('this_week lundi')
     });
 });

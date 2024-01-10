@@ -1,0 +1,151 @@
+/*
+stack   current               action
+vide    .                     push(branch de slot)
+
+.       slot > dernier slot   push(branch de slot)
+.       slot = dernier slot   réduit en multi
+.       slot < dernier slot   réduit en multi
+
+1, 2, 3, 2
+vide                                  1
+.
+.
+[1, [2, 3]]                           2
+[1, [2, 3], [2]]                      $
+*/
+vide                                                                          1, 2, 3, 2, $end       empty ==> shift branch
+
+[{ branch, [1, ]}                                                             2, 3, 2, $end          current > last ==> shift branch
+  
+[{ branch, [1, ]}, { branch, [2 ]}]                                           3, 2, $end             current > last ==> shift branch
+  
+[{ branch, [1 ]}, { branch, [2 ]}, { branch, [3 ]} ]                          2, $end                current < last && 2 branch ascendante ==> reduce concat of 2 branches
+
+[{ branch, [1 ]}, { branch, [2, 3]}]                                          2, $end                current == last ==> shit branch
+
+[{ branch, [1 ]}, { branch, [2, 3]}, { branch, [2 ] }]                        $end                   $end && 2 branch at same level ===> reduce en multi 
+
+[{ branch, [1 ]}, { multi, [{ branch, [2, 3 ]}, { branch, [2 ] }] }]          $end                   $end && branch et multi ===> reduce concat of 2 branches
+
+[{ branch, [1, { multi, [{ branch, [2, 3 ]}, { branch, [2 ] }] }]}]           $end                   stack.length == 1 ==> exit
+
+
+
+vide                                                                          1, 2, 3, $end          empty ==> shift branch
+
+[{ branch, [1 ]}]                                                             2, 3, $end             current > last ==> shift branch
+  
+[{ branch, [1, ]}, { branch, [2 ]}]                                           3, $end                current > last ==> shift branch
+  
+[{ branch, [1 ]}, { branch, [2 ]}, { branch, [3 ]} ]                          $end                   $end && 2 branch ascendante ==> reduce concat of 2 branches
+
+[{ branch, [1 ]}, { branch, [2, 3]}]                                          $end                   $end && 2 branch ascendante ==> reduce concat of 2 branches
+
+[{ branch, [1, 2, 3]}]                                                        $end                   $end && stack.length == 1 ==> exit
+
+
+
+
+
+vide                                                                          1, 1, $end             empty ==> shift branch
+
+[{ branch, [1 ]}]                                                             1, $end                current == last ==> shit branch
+
+[{ branch, [1 ]}, { branch, [1 ]}]                                            $end                   $end && 2 branch at same level ===> reduce en multi
+
+[{ multi, [{ branch, [1 ]}, { branch, [1 ]}]}]                                $end                   $end && stack.length == 1 ==> exit
+
+
+
+empty                                   ==> shift branch
+current == last                         ==> shift branch
+current  > last                         ==> shift branch
+
+current < last && 2 branch ascendante   ==> reduce concat of 2 branches
+$end && 2 branch ascendante             ==> reduce concat of 2 branches
+$end && branch et multi                 ==> reduce concat of 2 branches
+
+$end && 2 branch at same level          ==> reduce en multi
+
+$end && stack.length == 1               ==> exit
+
+
+
+si empty                                                ==> shift
+si rupture
+
+  si 2 branch de même niveau                            ==> reduction en multi
+  
+  sinon                                                 ==> reduction en concanétation
+
+sinon (pas de rupture)                                  ==> shift
+
+
+
+
+[]
+1
+1, 2
+1, 2, 3
+1 multi(2, 2)
+multi(1, 1)
+multi([1, 2], [1, 2])
+multi(1, [1, 2])
+multi([1, 2], 1)
+multi([2, 3], 1)
+
+
+empty
+rupture by end or level
+  au moins 2 elements dans la stack
+    branch-branch with same level => multi
+    branch-multi => concat
+    multi-branch => multi
+    else (branch-branch && not same level || multi-multi) => contact branch
+  else (stack trop petite) pas géré
+else pas de rupture
+
+2
+jeudi
+vendredi
+
+2 3
+vendredi aprem
+vendredi aprem
+mardi matin
+jeudi aprem
+jeudi aprem
+vendredi aprem
+vendredi matin
+lundi aprem
+mercredi matin
+mardi aprem
+lundi matin
+lundi matin
+mardi aprem
+jeudi aprem
+lundi matin
+jeudi aprem
+vendredi matin
+jeudi matin
+jeudi matin
+mardi aprem
+
+2 3 2 3
+mercredi aprem vendredi matin
+lundi aprem jeudi matin
+mardi matin mercredi matin
+mercredi matin mardi matin
+jeudi aprem vendredi aprem
+
+2 3 2
+mardi matin mercredi
+
+1 2
+following_week mardi
+
+1 2 3
+following_week vendredi aprem
+following_week lundi matin
+next_week mercredi aprem
+next_week jeudi matin
