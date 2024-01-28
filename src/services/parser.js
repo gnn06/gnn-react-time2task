@@ -11,11 +11,14 @@ export class Parser {
     }
 
     parse(inputP) {
-        this.input = inputP.concat('$end');
+        if (inputP === undefined) return undefined;
+
+        this.input = inputP.split(' ').concat('$end');
         this.stack = [];
         while (this.input.length > 0) {
             this.shiftReduce();
         }
+        return this.stack.at(0);
     }
 
     shiftReduce() {
@@ -65,7 +68,7 @@ export class Parser {
                     this.stack.push(reduceMulti(previous, last))
                     this.input.unshift(current);
                     return
-                } else if (previous.type === 'flag' && last.type === 'branch') {
+                } else if (previous.type === 'flag' && (last.type === 'branch' || last.type === 'multi')) {
                     this.stack.pop();
                     this.stack.pop();
                     this.stack.push(reduceFlag(previous, last));
@@ -94,6 +97,8 @@ export function getLevelNode(node) {
     if (typeof node === 'number') {
         return node;
     }
+    if (typeof node === 'string' && !isNaN(node))
+        return Number(node)
     if (typeof node === 'string') {
         return getSlotLevel(node)
     }
@@ -138,8 +143,15 @@ export function reduceConcatBranchMulti2Multi(previous, last) {
 }
 
 export function reduceFlag(previous, last) {
-    const flag = previous.value;
-    const flags = last.flags ? [ flag ].concat(last.flags) : [ flag ];
-    last.flags = flags
-    return last;
+    if (last.type === 'branch') {
+        const flag = previous.value;
+        const flags = last.flags ? [ flag ].concat(last.flags) : [ flag ];
+        last.flags = flags
+        return last;
+    } else if (last.type === 'multi') {
+        const flag = previous.value;
+        const flags = last.value.at(0).flags ? [ flag ].concat(last.value.at(0).flags) : [ flag ];
+        last.value.at(0).flags = flags
+        return last;
+    }
 }

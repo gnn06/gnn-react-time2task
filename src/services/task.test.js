@@ -1,4 +1,4 @@
-import { taskCompare, chooseSlotForSort } from "./task";
+import { taskCompare, chooseSlotForSortBranch, taskFilter } from "./task";
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -98,32 +98,9 @@ describe('taskCompare', () => {
     })
 })
 
-describe('chooseSlotForSort', () => {
-    test('should take first and only slot 1', () => {
-        expect(chooseSlotForSort(['this_week lundi'], 'this_week lundi')).toEqual('this_week lundi')
-    });
-    
-    test('should take first and only slot 2', () => {
-        expect(chooseSlotForSort(['this_week lundi'], 'this_week mardi')).toEqual('this_week lundi')
-    });
-    
-    test('should take first slot', () => {
-        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week lundi')).toEqual('this_week lundi')
-    });
-
-    test('should take first slot 1', () => {
-        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mardi')).toEqual('this_week mardi')
-    });
-
-    test('should take first slot 2', () => {
-        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], 'this_week mercredi')).toEqual('this_week lundi')
-    });
-
-    test('should take first slot 3', () => {
-        expect(chooseSlotForSort(['this_week lundi', 'this_week mardi'], undefined)).toEqual('this_week lundi')
-    });
-
-    test('should take first slot 4', () => {
-        expect(chooseSlotForSort(['this_week lundi'], undefined)).toEqual('this_week lundi')
-    });
+test('taskFilter', () => {
+    const task = { slotExpr: 'mardi aprem' }
+    const filter = 'mardi matin'
+    const result = taskFilter(task, filter)
+    expect(result).toBeFalsy()
 });

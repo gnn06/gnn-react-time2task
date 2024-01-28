@@ -54,27 +54,6 @@ const initialState = {
               title: 'semaine suivante',
               path: 'this_month following_week',
               inner: []
-            },
-            {
-                id:    'slot1',
-                title: 'jour',
-                path:'this_month jour',
-                inner: [
-                    {
-                        id:    'slot2',
-                        title: 'matin',
-                        path: 'this_month jour matin',
-                        start: '10:00',
-                        end:   '11:00'
-                    },
-                    {
-                        id:    'slot3',
-                        title: 'aprem',
-                        path: 'this_month jour aprem',
-                        start: '14:00',
-                        end:   '15:00'
-                    }
-                ]
             }
         ]
     }],

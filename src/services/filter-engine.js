@@ -1,7 +1,6 @@
-import { multiSlotIsInOther, completeMultiSlot, multi2Mono } from './slot.js';
-import { completeSlot } from './slot-path.js';
+import { taskFilter } from './task.js';
 
-const makeSlotExprFilterFunc = (task, filter) => multiSlotIsInOther(completeMultiSlot(multi2Mono(task.slotExpr)), completeSlot(filter));
+const makeSlotExprFilterFunc = (task, filter) => taskFilter(task, filter);
 
 /* module private */
 export const makeTitleFilterFunc = (task, title) => task.title.indexOf(title) >= 0;

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 import './task.css'
 import { selectTask } from "../features/taskSlice";
-import { slotIdList } from "../services/slot.js";
+import { slotIdList } from "../services/slot-path.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';

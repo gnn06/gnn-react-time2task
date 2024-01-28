@@ -17,6 +17,10 @@ describe('getLevelNode', () => {
   test('should number', () => {
     expect(getLevelNode(1)).toEqual(1)
   })
+
+  test('should string number', () => {
+    expect(getLevelNode('1')).toEqual(1)
+  })
 });
 
 describe('reduce functions', () => {
@@ -65,42 +69,47 @@ describe('reduce functions', () => {
   test('reduceFlag branch with flag', () => {
     expect(reduceFlag({type:'flag', value:'disable'}, {type:'branch',value:['1','2'], flags: ['chaque']}))
       .toEqual({type:'branch',value:['1','2'], flags:['disable', 'chaque']})
-  });
+  })
+
+  test('reduceFlag multi with flag', () => {
+    expect(reduceFlag({type:'flag', value:'disable'}, { type: 'multi', value: [{type:'branch',value:['1']}, {type:'branch',value:['2']}]}))
+      .toEqual({ type: 'multi', value: [{type:'branch',value:['1'], flags: ['disable']}, {type:'branch',value:['2']}]})
+  })
 });
 
 describe('shiftReduce', () => {
   test('shiftReduce empty', () => {
-    const parser = new Parser([1, 2, '$end'], []);
+    const parser = new Parser(['1', '2', '$end'], []);
     parser.shiftReduce();
-    expect(parser.stack).toEqual([{type:'branch',value:[1]}])
-    expect(parser.input).toEqual([2, '$end'])
+    expect(parser.stack).toEqual([{type:'branch',value:['1']}])
+    expect(parser.input).toEqual(['2', '$end'])
   })
   
   test('shiftReduce no rupture', () => {
-    const parser = new Parser([2, '$end'], [{type:'branch',value:[1]}]);
+    const parser = new Parser(['2', '$end'], [{type:'branch',value:['1']}]);
     parser.shiftReduce();
-    expect(parser.stack).toEqual([{type:'branch',value:[1]}, {type:'branch',value:[2]}])
+    expect(parser.stack).toEqual([{type:'branch',value:['1']}, {type:'branch',value:['2']}])
     expect(parser.input).toEqual(['$end'])
   })
   
   test('shiftBranch rupture $end', () => {
-    const parser = new Parser([1, '$end'], [{type:'multi',value:[{type:'branch',value:[2]}, {type:'branch',value:[2]}]}]);
+    const parser = new Parser(['1', '$end'], [{type:'multi',value:[{type:'branch',value:['2']}, {type:'branch',value:['2']}]}]);
     parser.shiftReduce();
     expect(parser.stack).toEqual([
       {type:'multi',value:[
-        {type:'branch',value:[2]},
-        {type:'branch',value:[2]}]},
-      {type:'branch',value:[1]}
+        {type:'branch',value:['2']},
+        {type:'branch',value:['2']}]},
+      {type:'branch',value:['1']}
       ])
     expect(parser.input).toEqual(['$end'])
   })
 
   test('shiftBranch rupture stack too small', () => {
-    const parser = new Parser([1, '$end'], [{type:'branch',value:[2 , 3]}]);
+    const parser = new Parser(['1', '$end'], [{type:'branch',value:[2 , 3]}]);
     parser.shiftReduce();
     expect(parser.stack).toEqual([
         {type:'branch',value:[2 , 3]},
-        {type:'branch',value:[1]}
+        {type:'branch',value:['1']}
       ])
     expect(parser.input).toEqual(['$end'])
   })
@@ -108,22 +117,22 @@ describe('shiftReduce', () => {
   test('reduce multi of two branches', () => {
     const parser = new Parser(['$end'], [
       {type:'branch',value:[2 , 3]},
-      {type:'branch',value:[1]}
+      {type:'branch',value:['1']}
     ]);
     parser.shiftReduce();
     expect(parser.stack).toEqual([
         {type:'multi', value: [
           {type:'branch',value:[2 , 3]},
-          {type:'branch',value:[1]}        
+          {type:'branch',value:['1']}        
         ]}
       ]);
     expect(parser.input).toEqual(['$end'])
   })
 
   test('reduceMulti1', () => {
-    const parser = new Parser(['$end'], [{type:'branch',value:[1]}, {type:'branch',value:[1]}]);
+    const parser = new Parser(['$end'], [{type:'branch',value:['1']}, {type:'branch',value:['1']}]);
     parser.shiftReduce();
-    expect(parser.stack).toEqual([{type:'multi',value:[{type:'branch',value:[1]}, {type:'branch',value:[1]}]}])
+    expect(parser.stack).toEqual([{type:'multi',value:[{type:'branch',value:['1']}, {type:'branch',value:['1']}]}])
     expect(parser.input).toEqual(['$end'])
   })
 
@@ -132,26 +141,26 @@ describe('shiftReduce', () => {
       ['$end'],
       [
         {type:'multi',value:[
-          {type:'branch',value:[2]},
-          {type:'branch',value:[2]}]},
-        {type:'branch',value:[1]}
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}]},
+        {type:'branch',value:['1']}
       ]);
     parser.shiftReduce();
     expect(parser.stack).toEqual([
       {type:'multi',value:[
         {type:'multi',value:[
-          {type:'branch',value:[2]},
-          {type:'branch',value:[2]}]},
-        {type:'branch',value:[1]}
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}]},
+        {type:'branch',value:['1']}
       ]}
     ])
     expect(parser.input).toEqual(['$end'])
   })
 
   test('reduceConcatBranch', () => {
-    const parser = new Parser(['$end'], [{type:'branch',value:[1]}, {type:'branch',value:[2]}]);
+    const parser = new Parser(['$end'], [{type:'branch',value:['1']}, {type:'branch',value:['2']}]);
     parser.shiftReduce();
-    expect(parser.stack).toEqual([{type:'branch',value:[1, 2]}])
+    expect(parser.stack).toEqual([{type:'branch',value:['1', '2']}])
     expect(parser.input).toEqual(['$end'])
   })
   
@@ -159,14 +168,14 @@ describe('shiftReduce', () => {
     const parser = new Parser(
         ['$end'],
         [
-          {type:'branch',value:[1]},
-          {type:'multi',value:[{type:'branch',value:[2]},{type:'branch',value:[2]}]}
+          {type:'branch',value:['1']},
+          {type:'multi',value:[{type:'branch',value:['2']},{type:'branch',value:['2']}]}
         ]);
     parser.shiftReduce();
     expect(parser.stack).toEqual([
       {type:'branch',value:[
-          1,
-          {type:'multi',value:[{type:'branch',value:[2]},{type:'branch',value:[2]}]}
+          '1',
+          {type:'multi',value:[{type:'branch',value:['2']},{type:'branch',value:['2']}]}
       ]}
     ])
     expect(parser.input).toEqual(['$end'])
@@ -176,282 +185,245 @@ describe('shiftReduce', () => {
 describe('parser', () => {
   test('1', () => {
     const parser = new Parser()
-    parser.parse([1]);
-    expect(parser.stack).toEqual([{type:'branch',value:[1]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1');
+    expect(result).toEqual({type:'branch',value:['1']})
   })
   
   test('1, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 2]);
-    expect(parser.stack).toEqual([{type:'branch',value:[1, 2]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2');
+    expect(result).toEqual({type:'branch',value:['1', '2']})
   })
   
   test('2, 2', () => {
     const parser = new Parser();
-    parser.parse([2, 2, '$end']);
-    const resultStack = parser.stack;
-    expect(resultStack).toEqual([{type:'multi',value:[{type:'branch',value:[2]}, {type:'branch',value:[2]}]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('2 2 $end');
+    expect(result).toEqual({type:'multi',value:[{type:'branch',value:['2']}, {type:'branch',value:['2']}]})
   })
 
   test('2, 1', () => {
     const parser = new Parser();
-    parser.parse([2, 1, '$end']);
-    const resultStack = parser.stack;
-    expect(resultStack).toEqual([{type:'multi',value:[{type:'branch',value:[2]}, {type:'branch',value:[1]}]}])
+    const result = parser.parse('2 1 $end');
+    expect(result).toEqual({type:'multi',value:[{type:'branch',value:['2']}, {type:'branch',value:['1']}]})
     expect(parser.input).toEqual([])
   })
   
   test('1, 1, 1', () => {
     const parser = new Parser();
-    parser.parse([1, 1, 1, '$end']);
-    const resultStack = parser.stack;
-    expect(resultStack).toEqual([
-      { type:'multi', value:[
-        {type:'branch',value:[1]},
-        {type:'branch',value:[1]},
-        {type:'branch',value:[1]}
-      ]}])
+    const result = parser.parse('1 1 1 $end');
+    expect(result).toEqual({ type:'multi', value:[
+      {type:'branch',value:['1']},
+      {type:'branch',value:['1']},
+      {type:'branch',value:['1']}
+    ]})
     expect(parser.input).toEqual([])
   })
 
   test('2, 1, 1', () => {
     const parser = new Parser();
-    parser.parse([2, 1, 1, '$end']);
-    const resultStack = parser.stack;
-    expect(resultStack).toEqual([
-      { type:'multi', value:[
-        {type:'branch',value:[2]},
-        {type:'branch',value:[1]},
-        {type:'branch',value:[1]}
-      ]}])
+    const result = parser.parse('2 1 1 $end');
+    expect(result).toEqual({ type:'multi', value:[
+      {type:'branch',value:['2']},
+      {type:'branch',value:['1']},
+      {type:'branch',value:['1']}
+    ]})
     expect(parser.input).toEqual([])
   })
   
   test('1, 2, 1', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 1, '$end']);
-    const resultStack = parser.stack;
-    expect(resultStack).toEqual([{type:'multi',value:[{type:'branch',value:[1, 2]}, {type:'branch',value:[1]}]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2 1 $end');
+    expect(result).toEqual({type:'multi',value:[{type:'branch',value:['1', '2']}, {type:'branch',value:['1']}]})
   })
   
   test('1, 1, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 1, 2, '$end']);
-    expect(parser.stack).toEqual([{type:'multi',value:[{type:'branch',value:[1]}, {type:'branch',value:[1, 2]}]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 1 2 $end');
+    expect(result).toEqual({type:'multi',value:[{type:'branch',value:['1']}, {type:'branch',value:['1', '2']}]})
   })
   
   test('1, 2, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 2, '$end']);
-    expect(parser.stack).toEqual(
-        [{type:'branch',value:[
-            1,
-            {type:'multi',value:[
-              {type:'branch',value:[2]},
-              {type:'branch',value:[2]}
-            ]},
-          ]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2 2 $end');
+    expect(result).toEqual(
+      {type:'branch',value:[
+        '1',
+        {type:'multi',value:[
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}
+        ]},
+      ]})
   })
 
   test('2, 1, 2', () => {
     const parser = new Parser();
-    parser.parse([2, 1, 2, '$end']);
-    expect(parser.stack).toEqual(
-        [{type:'multi',value:[
-            {type:'branch',value:[2]},
-            {type:'branch',value:[1, 2]},
-          ]}])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('2 1 2 $end');
+    expect(result).toEqual(
+      {type:'multi',value:[
+        {type:'branch',value:['2']},
+        {type:'branch',value:['1', '2']},
+      ]})
   })
   
   test('2, 2, 1', () => {
     const parser = new Parser();
-    parser.parse([2, 2, 1, '$end']);
-    expect(parser.stack).toEqual([
+    const result = parser.parse('2 2 1 $end');
+    expect(result).toEqual({type:'multi',value:[
       {type:'multi',value:[
-        {type:'multi',value:[
-          {type:'branch',value:[2]},
-          {type:'branch',value:[2]}
-        ]},
-        {type:'branch',value:[1]}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+        {type:'branch',value:['2']},
+        {type:'branch',value:['2']}
+      ]},
+      {type:'branch',value:['1']}
+    ]})
   })
   
   test('1, 2, 1, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 1, 2, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[1, 2]},
-        {type:'branch',value:[1, 2]}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2 1 2 $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:['1', '2']},
+      {type:'branch',value:['1', '2']}
+    ]})
   })
 
   test('1, 2, 2, 1, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 2, 1, 2, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[
-          1,
-          {type:'multi',value:[
-            {type:'branch',value:[2]},
-            {type:'branch',value:[2]}
-          ]}
-        ]},
-        {type:'branch',value:[1, 2]}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2 2 1 2 $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:[
+        '1',
+        {type:'multi',value:[
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}
+        ]}
+      ]},
+      {type:'branch',value:['1', '2']}
+    ]})
   })
 
   test('1, 2, 2, 1, 2, 2', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 2, 1, 2, 2, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[
-          1,
-          {type:'multi',value:[
-            {type:'branch',value:[2]},
-            {type:'branch',value:[2]}
-          ]}
-        ]},
-        {type:'branch',value:[
-          1,
-          {type:'multi',value:[
-            {type:'branch',value:[2]},
-            {type:'branch',value:[2]}
-          ]}
+    const result = parser.parse('1 2 2 1 2 2 $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:[
+        '1',
+        {type:'multi',value:[
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}
+        ]}
+      ]},
+      {type:'branch',value:[
+        '1',
+        {type:'multi',value:[
+          {type:'branch',value:['2']},
+          {type:'branch',value:['2']}
         ]}
       ]}
-    ])
-    expect(parser.input).toEqual([])
+    ]})
   })
   
   test('1, 2, 3', () => {
     const parser = new Parser();
-    parser.parse([1, 2, 3, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'branch',value:[1, 2, 3]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('1 2 3 $end');
+    expect(result).toEqual({type:'branch',value:['1', '2', '3']})
   })
   
   test('2, 3, 1', () => {
     const parser = new Parser();
-    parser.parse([2, 3, 1, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[2, 3]},
-        {type:'branch',value:[1]}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('2 3 1 $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:['2', '3']},
+      {type:'branch',value:['1']}
+    ]})
   })
 
   test('2, 3, 3, 1', () => {
     const parser = new Parser();
-    parser.parse([2, 3, 3, 1, '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[
-          2, 
-          {type:'multi',value:[
-            {type:'branch',value:[3]},
-            {type:'branch',value:[3]}
-          ]}
-        ]},
-        {type:'branch',value:[1]}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('2 3 3 1 $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:[
+        '2', 
+        {type:'multi',value:[
+          {type:'branch',value:['3']},
+          {type:'branch',value:['3']}
+        ]}
+      ]},
+      {type:'branch',value:['1']}
+    ]})
   })
 
   test('slot jour', () => {
     const parser = new Parser();
-    parser.parse(['this_week', 'mardi', 'mercredi', 'next_month', '$end']);
-    expect(parser.stack).toEqual([
-      {type:'multi',value:[
-        {type:'branch',value:[
-          'this_week', 
-          {type:'multi',value:[
-            {type:'branch',value:['mardi']},
-            {type:'branch',value:['mercredi']}
-          ]}
-        ]},
-        {type:'branch',value:['next_month']}
-      ]}
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('this_week mardi mercredi next_month $end');
+    expect(result).toEqual({type:'multi',value:[
+      {type:'branch',value:[
+        'this_week', 
+        {type:'multi',value:[
+          {type:'branch',value:['mardi']},
+          {type:'branch',value:['mercredi']}
+        ]}
+      ]},
+      {type:'branch',value:['next_month']}
+    ]})
   })
 });
 
 describe('parser with disable and chaque', () => {
   test('disable one', () => {
     const parser = new Parser();
-    parser.parse(['disable', 'this_week', 'mardi', '$end']);
-    expect(parser.stack).toEqual([
-      { type:'branch',
-        value:[ 'this_week', 'mardi' ],
-        flags: ['disable']
-      }
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('disable this_week mardi $end');
+    expect(result).toEqual({ type:'branch',
+    value:[ 'this_week', 'mardi' ],
+    flags: ['disable']
+  })
   });
 
   test('disable second', () => {
     const parser = new Parser();
-    parser.parse(['this_week', 'mardi', 'disable', 'next_week', 'mercredi', '$end']);
-    expect(parser.stack).toEqual([
-      { type: 'multi',
-        value: [
-          { type:'branch', value:[ 'this_week', 'mardi' ] },
-          { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable'] }
-        ]
-      }
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('this_week mardi disable next_week mercredi $end');
+    expect(result).toEqual({ type: 'multi',
+    value: [
+      { type:'branch', value:[ 'this_week', 'mardi' ] },
+      { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable'] }
+    ]
+  })
   });
 
   test('chaque', () => {
     const parser = new Parser();
-    parser.parse(['chaque', 'next_week', 'mercredi', '$end']);
-    expect(parser.stack).toEqual([
-      { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] }
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('chaque next_week mercredi $end');
+    expect(result).toEqual({ type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] })
   });
 
   test('disable chaque', () => {
     const parser = new Parser();
-    parser.parse(['disable', 'chaque', 'next_week', 'mercredi', '$end']);
-    expect(parser.stack).toEqual([
-      { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable', 'chaque'] }
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('disable chaque next_week mercredi $end');
+    expect(result).toEqual({ type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable', 'chaque'] })
   });
 
   test('disable chaque second', () => {
     const parser = new Parser();
-    parser.parse(['this_week', 'mardi', 'disable', 'chaque', 'next_week', 'mercredi', '$end']);
-    expect(parser.stack).toEqual([
-      { type: 'multi', value: [
-        { type:'branch', value:[ 'this_week', 'mardi' ] },
-        { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable', 'chaque'] }
-      ]}
-      
-    ])
-    expect(parser.input).toEqual([])
+    const result = parser.parse('this_week mardi disable chaque next_week mercredi $end');
+    expect(result).toEqual({ type: 'multi', value: [
+      { type:'branch', value:[ 'this_week', 'mardi' ] },
+      { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable', 'chaque'] }
+    ]})
   });
+
+  test('parse undefined', () => {
+    const parser = new Parser();
+    const result = parser.parse(undefined);
+    expect(result).toEqual(undefined)
+  });
+
+  test('disable + multi', () => {
+    const parser = new Parser();
+    const result = parser.parse('disable vendredi lundi');
+    expect(result).toEqual(
+      { type: 'multi', value: [
+        { type: 'branch', value: ['vendredi'], flags: ['disable'] },
+        { type: 'branch', value: ['lundi'] }
+      ]}
+    )
+  })
 });

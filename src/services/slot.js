@@ -87,3 +87,14 @@ export function removeDisable(slotLst) {
     return slotLst;
 }
 
+export function removeDisableMulti(multi) {
+    return {
+        type: multi.type,
+        flags: multi.flags,
+        value: multi.value.filter(item => !item.flags || item.flags.indexOf('disable') < 0)
+    }
+}
+
+export function slotFilter(slotExpr, filter) {
+    return multiSlotIsInOther(completeMultiSlot(multi2Mono(slotExpr)), completeSlot(filter))
+}

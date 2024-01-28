@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
-import { slotIdList } from "../services/slot";
+import { slotIdList } from "../services/slot-path";
 
 import SyntaxInput from './syntax-input';
 

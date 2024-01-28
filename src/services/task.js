@@ -1,5 +1,5 @@
-import { getCurrentPath, slotIsInOther, slotCompare } from "./slot-path";
-import { multi2Mono, completeMultiSlot } from './slot.js'
+import { getCurrentPath, slotIsInOther, slotCompare, slotIsInOtherBranch, getCurrentPathBranch, getSlotLevel } from "./slot-path";
+import { multi2Mono, completeMultiSlot, slotFilter } from './slot.js'
 
 /* private module */
 export function chooseSlotForSort (multi, todaySlot) {
@@ -11,13 +11,14 @@ export function chooseSlotForSort (multi, todaySlot) {
     }
 }
 
+export function taskFilter(task, filter) {
+    return slotFilter(task.slotExpr, filter)
+}
+
 /* public, used by apiSlice.js */
 export function taskCompare(task1, task2) {
     // if multi slot, compare on the first one
-    const todaySlot = getCurrentPath();
-    const slotComp = slotCompare(
-                        chooseSlotForSort(completeMultiSlot( multi2Mono(task1.slotExpr)), todaySlot), 
-                        chooseSlotForSort(completeMultiSlot(multi2Mono(task2.slotExpr)), todaySlot))
+    const slotComp = slotCompare(task1.slotExpr, task2.slotExpr)
     if (slotComp === 0) {
         // put no order task at begin
         const order1 = task1.order === undefined ? 0 : task1.order
