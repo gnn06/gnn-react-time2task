@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import './slot.css';
 import TaskLight from "./task-light";
 
-import { findTaskBySlotExpr, filterSlotExpr } from "../services/slot-filter";
+import { filterSlotExpr, findTaskBySlotExpr } from "../services/task"
 import { selectSlot } from "../features/taskSlice";
 import { useGetTasksQuery } from "../features/apiSlice.js";
 
@@ -15,7 +15,7 @@ export default function Slot({slot}) {
     const { id, title, start, end, inner } = slot;
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
-    const { data:taskRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
+    const { data:taskRedux, isLoading, isError } = useGetTasksQuery()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     if (isLoading || isError)

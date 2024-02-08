@@ -1,18 +1,8 @@
-import { getCurrentPath, slotIsInOther, slotCompare, slotIsInOtherBranch, getCurrentPathBranch, getSlotLevel } from "./slot-path";
-import { multi2Mono, completeMultiSlot, slotFilter } from './slot.js'
-
-/* private module */
-export function chooseSlotForSort (multi, todaySlot) {
-    const hasToday = multi.find(slot => slotIsInOther(slot, todaySlot));
-    if (hasToday) {
-        return hasToday
-    } else {
-        return multi[0];
-    }
-}
+import { slotCompare, slotIsInOther, slotEqual } from "./slot-path";
+import { makeFilter }  from './filter-engine.js';
 
 export function taskFilter(task, filter) {
-    return slotFilter(task.slotExpr, filter)
+    return slotIsInOther(task.slotExpr, filter)
 }
 
 /* public, used by apiSlice.js */
@@ -32,4 +22,30 @@ export function taskCompare(task1, task2) {
         }
     }
     return slotComp
+}
+
+/**
+ * filter a task list on a filter expression
+ * @param {string} filter expression. (mono incomplet slotPath) with OR
+ * public, used by slot.jsx and tasklist.jsx
+ */
+export function filterSlotExpr(tasks, filter) {
+    if (filter === 'no-filter') return tasks;
+    return tasks.filter(makeFilter(filter));
+}
+
+/**
+ * filter the task list included in a slot. used by slot view.
+ * @param {*} tasks 
+ * @param {*} slot with a path
+ * @returns [tasks filtered]
+ * public, used by slot.jsx 
+ */
+export function findTaskBySlotExpr(tasks, slot) {
+    if (slot.inner !== undefined && slot.inner.length !== 0) {
+        // TODO manage multi, actually match only the first slot
+        return tasks.filter(task => slotEqual(task.slotExpr, slot.path));
+    } else {
+        return tasks.filter(task => slotIsInOther(task.slotExpr, slot.path));
+    }
 }

@@ -23,7 +23,6 @@ export class Parser {
 
     shiftReduce() {
         const current = this.input.shift();
-        console.log(current, this.input, this.stack);
         if (this.stack.length === 0) {
             this.stack.push(shiftBranchOrFlag(current));
             return

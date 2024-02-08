@@ -1,5 +1,4 @@
 import { Parser } from './parser'
-import { removeDisableMulti } from './slot';
 
 /**
  * give the level of a slot
@@ -19,29 +18,6 @@ export function getSlotLevel(slot) {
         return -1
 }
 
-/* module private
- * unused
- */
-export default class SlotPath {
-    constructor(expr) {
-        const slots = expr.split(' ');
-        this.slots = slots;
-    }
-}
-
-/*
- * lowerSlot('this_month week lundi') = 'week lundi'
- * return 'week' => ''
- * module private
- */
-export function lowerSlot(slotExpr) {
-    const i = slotExpr.indexOf(' ');
-    if (i === -1)
-        return '';
-    else
-        return slotExpr.substring(i + 1);
-}
-
 export function lowerSlotBranch(slot) {
     if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
         return slot.value.at(1)
@@ -51,32 +27,8 @@ export function lowerSlotBranch(slot) {
     
 }
 
-/*
- * slotDepth('this_month week lundi') = 3
- * @return int >= 1
- * unused
- */
-export function slotDepth(slotExpr) {
-    return slotExpr.split(' ').length;
-}
-
-/*
- * firstSlot('week lundi') = 'week'
- * module private
- */
-export function firstSlot(slotExpr) {
-    return slotExpr.split(' ')[0];
-}
-
 export function firstSlotBranch(slotExpr) {
     return slotExpr.value[0];
-}
-
-/* module private */
-export function removeLastSlot(slotExpr) {
-    const slots = slotExpr.split(' ');
-    slots.pop();
-    return slots.join(' ');
 }
 
 const weight = {
@@ -96,26 +48,6 @@ const weight = {
 }
 
 export const slotIdList = ['this_month', 'next_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
-
-/**
- * completeSlot('lundi') = 'this_month week lundi'
- * @param {incomplete mono or multi slot} givenSlotExpr if multi slot is given, complete only the first slot
- * public used by 4 modules
- */
-export function completeSlot(givenSlotExpr) {
-    if (givenSlotExpr === undefined) return undefined;
-    const first = firstSlot(givenSlotExpr);
-    const level = getSlotLevel(first);
-    if (level === 1)
-        return givenSlotExpr;
-    else if (level === 2)
-        return getCurrentSlot(1) + ' ' + givenSlotExpr;
-    else if (level === 3)
-        return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + givenSlotExpr;
-    else {
-        return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + getCurrentSlot(3) + ' ' + givenSlotExpr;
-    }
-}
 
 export function completeSlotBranch(givenSlotExpr, targetLevel) {
     if (targetLevel === undefined) targetLevel = 1
@@ -155,11 +87,6 @@ export function getCurrentSlot(level) {
         return '';
 }
 
-/* public used by task.js */
-export function getCurrentPath() {
-    return getCurrentSlot(1) + ' ' + getCurrentSlot(2) + ' ' + getCurrentSlot(3);
-}
-
 export function getCurrentPathBranch(level) {
     const branch = [];
     if (level <= 1) {
@@ -175,33 +102,6 @@ export function getCurrentPathBranch(level) {
 }
 
 /**
- * test is two path have the same path
- * @param slot complete slotPath
- * @returns boolean
- * public used by slot-filter.js and filter-engine.js
- */
-export function slotEqual(slot, otherSlot) {
-    if (slot !== undefined && otherSlot !== undefined) {
-        const first = firstSlot(slot);
-        const firstOther = firstSlot(otherSlot);
-        if (first !== firstOther)
-            return false;
-        else {
-            const lowerThis = lowerSlot(slot);
-            const lowerOther = lowerSlot(otherSlot);
-            if (lowerThis === '' && lowerOther === '')
-                return true;
-            else
-                return slotEqual(lowerThis, lowerOther);
-        }
-    } else if (slot === undefined && otherSlot === undefined) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
  * 
  * @param { mono or multi complete slotPath} obj1 obj2. if a multi slot is given, compare on first slot
  * @returns 
@@ -214,6 +114,16 @@ export function slotCompare(obj1, obj2) {
     return slotCompareTree(tree1, tree2)
 }
 
+/**
+ * test is two path have the same path
+ * @param slot complete slotPath
+ * @returns boolean
+ * public used by slot-filter.js and filter-engine.js
+ */
+export function slotEqual(slot, otherSlot) {
+    const temp = slotCompare(slot, otherSlot)
+    return temp === 0;
+}
 
 export function chooseSlotForSortBranch (multi) {
     multi = removeDisableMulti(multi)
@@ -321,5 +231,13 @@ export function slotIsInOtherBranch(slotExpr, otherSlotExpr) {
         }
     } else if (slotExpr.type === 'multi' && otherSlotExpr.type === 'branch') {
         return slotExpr.value.some(slot => slotIsInOtherBranch(slot, otherSlotExpr))
+    }
+}
+
+export function removeDisableMulti(multi) {
+    return {
+        type: multi.type,
+        flags: multi.flags,
+        value: multi.value.filter(item => !item.flags || item.flags.indexOf('disable') < 0)
     }
 }

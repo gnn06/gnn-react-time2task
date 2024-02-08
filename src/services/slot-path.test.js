@@ -1,10 +1,4 @@
-import { slotIsInOther, slotIsInOtherBranch, completeSlot, slotEqual, firstSlot, lowerSlot, lowerSlotBranch, slotDepth, slotCompare, getCurrentPath, slotCompareTree, getCurrentPathBranch, chooseSlotForSortBranch, completeSlotBranch } from './slot-path.js';
-import SlotPath from './slot-path';
-
-test('that constructor split expr', () => {
-    const slot = new SlotPath('S32 mercredi matin');
-    expect(slot.slots).toEqual(['S32', 'mercredi', 'matin'])
-})
+import { slotIsInOther, slotIsInOtherBranch, slotEqual, lowerSlotBranch, slotCompare, slotCompareTree, getCurrentPathBranch, chooseSlotForSortBranch, completeSlotBranch, removeDisableMulti } from './slot-path.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -119,37 +113,6 @@ describe('slotIsInOtherBranch', () => {
     })
 })
 
-describe('firstSlot', () => {
-    it('firstSlot', () => {
-        const result = firstSlot('S32 mercredi matin');
-        expect(result).toEqual('S32')
-    })
-
-    it('firstSlot one level', () => {
-        const result = firstSlot('matin');
-        expect(result).toEqual('matin')
-    })
-
-    it('firstSlot empty', () => {
-        const result = firstSlot('');
-        expect(result).toEqual('')
-    })
-})
-
-describe('lowerSlot', () => {
-    it('lowerSlot', () => {
-        expect(lowerSlot('S32 mercredi matin')).toEqual('mercredi matin')
-    })
-
-    it('lowerSlot no lower', () => {
-        expect(lowerSlot('matin')).toEqual('')
-    })
-
-    it('lowerSlot empty', () => {
-        expect(lowerSlot('')).toEqual('')
-    })
-})
-
 describe('lowerSlotBranch', () => {
     it('lowerSlot', () => {
         expect(lowerSlotBranch({type:'branch',value:['S32', 'mercredi', 'matin']})).toEqual({type:'branch',value:['mercredi', 'matin']})
@@ -165,46 +128,6 @@ describe('lowerSlotBranch', () => {
 
     it('lowerSlot multi', () => {
         expect(lowerSlotBranch({type:'branch',value:['this_week', {type:'multi', value:['mercredi','jeudi']}]})).toEqual({type:'multi', value:['mercredi','jeudi']})
-    })
-})
-
-describe('completeSlot', () => {
-    it('completeSlot level1', () => {
-        const result = completeSlot('week');
-        expect(result).toEqual('this_month week');
-    })
-
-    it('completeSlot level2', () => {
-        const result = completeSlot('vendredi');
-        expect(result).toEqual('this_month this_week vendredi');
-
-    })
-
-    it('completeSlot level3', () => {
-        const result = completeSlot('aprem');
-        expect(result).toEqual('this_month this_week mercredi aprem');
-    })
-
-    it('completeSlot level1 level2', () => {
-        const result = completeSlot('week vendredi');
-        expect(result).toEqual('this_month week vendredi');
-
-    })
-
-    it('completeSlot level1_bis level2', () => {
-        const result = completeSlot('next_week vendredi');
-        expect(result).toEqual('this_month next_week vendredi');
-    })
-
-    it('completeSlot unidefined', () => {
-        const result = completeSlot(undefined);
-        expect(result).toEqual(undefined);
-
-    })
-
-    it('complete on multi slot :-o', () => {
-        const result = completeSlot('mercredi jeudi next_week vendredi');
-        expect(result).toEqual('this_month this_week mercredi jeudi next_week vendredi');
     })
 })
 
@@ -259,50 +182,6 @@ describe('completeSlotBranch', () => {
         const result = completeSlotBranch('mercredi jeudi next_week vendredi');
         expect(result).toEqual('this_month this_week mercredi jeudi next_week vendredi');
     })
-})
-
-describe('slotDepth', () => {
-    it('one level', () => {
-        const result = slotDepth('week');
-        expect(result).toEqual(1);
-    })
-
-    it('two levels', () => {
-        const result = slotDepth('week lundi');
-        expect(result).toEqual(2);
-    })
-
-    it('three levels', () => {
-        const result = slotDepth('week lundi aprem');
-        expect(result).toEqual(3);
-    })
-})
-
-describe('slotEqual', () => {
-    it('equal one level', () => {
-        const result = slotEqual('week', 'week');
-        expect(result).toEqual(true);
-    })
-    it('not equal one level', () => {
-        const result = slotEqual('week', 'next_week');
-        expect(result).toEqual(false);
-    })
-    it('equal two level', () => {
-        const result = slotEqual('week lundi', 'week lundi');
-        expect(result).toEqual(true);
-    })
-    it('not equal tow level', () => {
-        const result = slotEqual('week lundi', 'week mardi');
-        expect(result).toEqual(false);
-    })
-    it('other empty', () => {
-        const result = slotEqual('week lundi', 'week');
-        expect(result).toEqual(false);
-    })
-    it('this empty', () => {
-        const result = slotEqual('week', 'week lundi');
-        expect(result).toEqual(false);
-    })    
 })
 
 describe('slotCompare', () => {
@@ -546,25 +425,6 @@ describe('slotCompareTree', () => {
     });
 })
 
-describe('getCurrentPath', () => {
-    test('should return day of the week', () => {
-        expect(getCurrentPath()).toEqual('this_month this_week mercredi');
-    });
-
-    test('should return day of the week branch depth 3', () => {
-        expect(getCurrentPathBranch(3)).toEqual({type:'branch',value:['mercredi']});
-    });
-    
-    test('should return day of the week branch depth 2', () => {
-        expect(getCurrentPathBranch(2)).toEqual({type:'branch',value:['this_week', 'mercredi']});
-    });
-
-    test('should return day of the week branch depth 1', () => {
-        expect(getCurrentPathBranch(1)).toEqual({type:'branch',value:['this_month', 'this_week', 'mercredi']});
-    })
-    
-});
-
 describe('chooseSlotForSortBranch', () => {
     test('should take default (first) multi', () => {
         expect(chooseSlotForSortBranch({type:'multi',value:[
@@ -589,4 +449,63 @@ describe('chooseSlotForSortBranch', () => {
             })).toEqual({type:'branch',value:['mercredi']})
     });
 
+})
+
+describe('getCurrentPathBranch', () => {
+    test('should return day of the week branch depth 3', () => {
+        expect(getCurrentPathBranch(3)).toEqual({type:'branch',value:['mercredi']});
+    });
+    
+    test('should return day of the week branch depth 2', () => {
+        expect(getCurrentPathBranch(2)).toEqual({type:'branch',value:['this_week', 'mercredi']});
+    });
+    
+    test('should return day of the week branch depth 1', () => {
+        expect(getCurrentPathBranch(1)).toEqual({type:'branch',value:['this_month', 'this_week', 'mercredi']});
+    })
+})
+
+test('removeDisableMulti', () => {
+    const given = {
+        type: 'multi',
+        value: [
+            { type: 'branch', value: [ 'lundi' ], flags: [ 'disable' ] },
+            { type: 'branch', value: [ 'mardi' ] }
+        ]
+    }
+    const expected = {
+        type: 'multi',
+        value: [
+            { type: 'branch', value: [ 'mardi' ] }
+        ]
+    }
+    const result = removeDisableMulti(given)
+    expect(result).toEqual(expected)
+});
+
+describe('slotEqual', () => {
+    it('equal one level', () => {
+        const result = slotEqual('week', 'week');
+        expect(result).toEqual(true);
+    })
+    it('not equal one level', () => {
+        const result = slotEqual('week', 'next_week');
+        expect(result).toEqual(false);
+    })
+    it('equal two level', () => {
+        const result = slotEqual('week lundi', 'week lundi');
+        expect(result).toEqual(true);
+    })
+    it('not equal tow level', () => {
+        const result = slotEqual('week lundi', 'week mardi');
+        expect(result).toEqual(false);
+    })
+    it('other empty', () => {
+        const result = slotEqual('week lundi', 'week');
+        expect(result).toEqual(false);
+    })
+    it('this empty', () => {
+        const result = slotEqual('week', 'week lundi');
+        expect(result).toEqual(false);
+    })    
 })

@@ -4,13 +4,6 @@ import { configureStore, createSlice } from '@reduxjs/toolkit';
 import '../assets/index.css'
 
 
-const task = {
-  id: 12,
-  title: 'titre',
-  slotExpr: 'lundi mardi',
-  order: 12
-};
-
 export const MockedState = {
   tasks: [],
   status: 'idle',

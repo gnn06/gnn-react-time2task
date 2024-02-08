@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { slotCompare, completeSlot } from '../services/slot'
 import { taskCompare } from '../services/task'
 import { mapProperties } from '../utils/objectUtil'
 

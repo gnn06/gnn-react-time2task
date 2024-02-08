@@ -4,7 +4,7 @@ import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
 import TaskFilter from "./task-filter.jsx";
 
-import { filterSlotExpr } from '../services/slot-filter.js';
+import { filterSlotExpr } from '../services/task.js';
 import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function TaskList() {
