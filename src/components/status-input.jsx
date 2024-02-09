@@ -11,6 +11,7 @@ const statusReferentiel = [
     {value: 'en cours', color: myColor('#eab308') },
     {value: 'fait'    , color: myColor('#22c55e')  },
     {value: 'terminé' , color: myColor('#14b8a6')  },
+    {value: 'archivé' , color: myColor('#6B7280')  },
     {value: 'reprendre aujourd\'hui', color: myColor('#a855f7') },
     {value: 'reprendre demain'      , color: myColor('#d946ef') },
     {value: 'reprendre semaine'     , color: myColor('#ec4899') },
