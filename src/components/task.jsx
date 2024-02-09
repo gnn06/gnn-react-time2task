@@ -68,7 +68,7 @@ export default function Task({task}) {
 
     return <tr className={myClassName} >
             <td><input  defaultValue={task.title} onBlur={onTitleChange}  
-                        className="bg-transparent"/></td>
+                        className="bg-transparent w-full"/></td>
             <td>                
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onInputChange={onSlotExprChange}/>
