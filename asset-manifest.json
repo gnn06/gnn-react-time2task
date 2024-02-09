@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/gnn-react-time2task/static/css/main.509018fd.css",
-    "main.js": "/gnn-react-time2task/static/js/main.e26adb6e.js",
+    "main.css": "/gnn-react-time2task/static/css/main.d22e1af4.css",
+    "main.js": "/gnn-react-time2task/static/js/main.3fe4e615.js",
     "index.html": "/gnn-react-time2task/index.html",
-    "main.509018fd.css.map": "/gnn-react-time2task/static/css/main.509018fd.css.map",
-    "main.e26adb6e.js.map": "/gnn-react-time2task/static/js/main.e26adb6e.js.map"
+    "main.d22e1af4.css.map": "/gnn-react-time2task/static/css/main.d22e1af4.css.map",
+    "main.3fe4e615.js.map": "/gnn-react-time2task/static/js/main.3fe4e615.js.map"
   },
   "entrypoints": [
-    "static/css/main.509018fd.css",
-    "static/js/main.e26adb6e.js"
+    "static/css/main.d22e1af4.css",
+    "static/js/main.3fe4e615.js"
   ]
 }
