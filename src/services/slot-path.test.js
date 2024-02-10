@@ -221,7 +221,7 @@ describe('slotCompare', () => {
 
     describe('different depth', () => {
         it('this_month week compare to this_month', () => {
-            inner_test('this_month week', 'this_month', 1);
+            inner_test('this_month week', 'this_month', -1);
         })
         it('this_month compare to this_month week', () => {
             inner_test('this_month', 'this_month week', 1);
@@ -282,10 +282,17 @@ describe('slotCompareTree', () => {
 
     describe('different depth', () => {
         it('this_month week compare to this_month', () => {
-            inner_test({type:'branch',value:['this_month', 'week']}, {type:'branch',value:['this_month']}, 1);
+            inner_test({type:'branch',value:['this_month', 'week']}, {type:'branch',value:['this_month']}, -1);
         })
         it('this_month compare to this_month week', () => {
             inner_test({type:'branch',value:['this_month']}, {type:'branch',value:['this_month', 'week']}, 1);
+        })
+        it('delta depth first deeper', () => {
+            inner_test({type:'branch',value:['vendredi', 'aprem']}, {type:'branch',value:['vendredi']}, -1)
+        })
+    
+        it('delta depth second deeper', () => {
+            inner_test({type:'branch',value:['vendredi']}, {type:'branch',value:['vendredi', 'aprem']}, 1)
         })
     })
 

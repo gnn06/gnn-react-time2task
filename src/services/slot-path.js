@@ -171,6 +171,8 @@ export function slotCompareTree(obj1, obj2) {
                 return 0
             if (lower1.value.length !== 0 && lower2.value.length !== 0) 
                 return slotCompareTree(lower1, lower2)
+            if (lower1.value.length !== 0 && lower2.value.length === 0) 
+                return -1
             else
                 return 1
         }
@@ -178,6 +180,8 @@ export function slotCompareTree(obj1, obj2) {
         return slotCompareTree(chooseSlotForSortBranch(obj1), obj2)
     } else if (obj1.type === 'branch' && obj2.type === 'multi') {
         return slotCompareTree(obj1, chooseSlotForSortBranch(obj2))
+    } else if (obj1.type === 'multi' && obj2.type === 'multi') {
+        return slotCompareTree(chooseSlotForSortBranch(obj1), chooseSlotForSortBranch(obj2))
     }
 
 }

@@ -96,6 +96,26 @@ describe('taskCompare', () => {
         const result = taskCompare(task1, task2)
         expect(result).toBe(-1)
     })
+
+    it('debug', () => {
+        jest.setSystemTime(new Date('2024-2-9')) // vendredi
+        const tasks = [{ id:0, slotExpr: 'this_week vendredi aprem',                       order: 40 }, // 5
+                       { id:1, slotExpr: 'vendredi aprem',                                 order: 50 }, // 6
+                       { id:2, slotExpr: 'vendredi aprem',                                 order: 10 }, // 1
+                       { id:3, slotExpr: 'chaque jeudi aprem vendredi aprem',              order: 35 }, // 4
+                       { id:4, slotExpr: 'vendredi',                                       order: 36 }, // 8
+                       { id:5, slotExpr: 'chaque lundi aprem chaque vendredi aprem',       order: 20 }, // 2
+                       { id:6, slotExpr: 'disable chaque mercredi aprem vendredi aprem',   order: 55 }, // 7
+                       { id:7, slotExpr: 'chaque vendredi aprem',                          order: 30 }] // 3
+        
+        expect(taskCompare(tasks[0], tasks[1])).toEqual(-1)
+        expect(taskCompare(tasks[1], tasks[2])).toEqual(1)
+        expect(taskCompare(tasks[2], tasks[3])).toEqual(-1)
+        expect(taskCompare(tasks[3], tasks[4])).toEqual(-1)
+        expect(taskCompare(tasks[4], tasks[5])).toEqual(1)
+        expect(taskCompare(tasks[5], tasks[6])).toEqual(-1)
+        expect(tasks.sort(taskCompare).map(task => task.id)).toEqual([2, 5, 7, 3, 0, 1, 6, 4])
+    })
 })
 
 describe('taskFilter', () => {
