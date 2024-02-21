@@ -1,13 +1,15 @@
 {
   "files": {
-    "main.css": "/gnn-react-time2task/static/css/main.d22e1af4.css",
-    "main.js": "/gnn-react-time2task/static/js/main.d6e1652c.js",
+    "main.css": "/gnn-react-time2task/static/css/main.c7a28c83.css",
+    "main.js": "/gnn-react-time2task/static/js/main.0ba1563b.js",
+    "static/js/289.65b32e55.chunk.js": "/gnn-react-time2task/static/js/289.65b32e55.chunk.js",
     "index.html": "/gnn-react-time2task/index.html",
-    "main.d22e1af4.css.map": "/gnn-react-time2task/static/css/main.d22e1af4.css.map",
-    "main.d6e1652c.js.map": "/gnn-react-time2task/static/js/main.d6e1652c.js.map"
+    "main.c7a28c83.css.map": "/gnn-react-time2task/static/css/main.c7a28c83.css.map",
+    "main.0ba1563b.js.map": "/gnn-react-time2task/static/js/main.0ba1563b.js.map",
+    "289.65b32e55.chunk.js.map": "/gnn-react-time2task/static/js/289.65b32e55.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d22e1af4.css",
-    "static/js/main.d6e1652c.js"
+    "static/css/main.c7a28c83.css",
+    "static/js/main.0ba1563b.js"
   ]
 }
