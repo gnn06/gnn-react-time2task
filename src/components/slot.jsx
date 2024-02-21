@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
@@ -15,7 +14,8 @@ export default function Slot({slot}) {
     const { id, title, start, end, inner } = slot;
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
-    const { data:taskRedux, isLoading, isError } = useGetTasksQuery()
+    const userId = useSelector(state => state.tasks.user.id);
+    const { data:taskRedux, isLoading, isError } = useGetTasksQuery(userId)
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     if (isLoading || isError)

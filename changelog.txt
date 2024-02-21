@@ -1,0 +1,7 @@
+branch : develop
+------------------------------
+Switch to supabase.co with authenticated access
+Manage login with refresh token
+Store user into Redux store and sessionStorage
+
+TO DO

@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import Button from '../components/button';
 
 import { useAddTaskMutation } from "../features/apiSlice.js";
+import { useStore } from "react-redux";
 
 export default function AddTaskForm() {
 
     const [title, setTitle] = useState('');
     const [slotExpr, setSlotExpr]   = useState('');
+    const store = useStore();
 
     const [
         addTask
@@ -15,7 +17,8 @@ export default function AddTaskForm() {
     const onTitleChange = e => setTitle(e.target.value);
 
     const onSaveTaskClicked = () => {
-        addTask({title, slotExpr})
+        const user = store.getState().tasks.user;
+        addTask({title, slotExpr, user: user.id})
         setTitle('');
         setSlotExpr('');
     };

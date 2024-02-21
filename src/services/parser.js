@@ -39,7 +39,6 @@ export class Parser {
                         this.stack.push(reduceMulti(previous, last));
                         this.input.unshift(current);
                         return
-                        // TODO soit les deux éléments sont ascendant
                     } else {
                         this.stack.pop();
                         this.stack.pop();

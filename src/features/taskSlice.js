@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
+import { retrieveAccessToken, retrieveUser } from '../extserv/browser-storage';
 
 const initialState = {
     tasks : [],
@@ -58,7 +59,9 @@ const initialState = {
         ]
     }],
     selectedSlotId: [],
-    association: {}
+    association: {},
+    user: retrieveUser(),
+    accessToken: retrieveAccessToken()
 };
 
 export const taskSlice = createSlice({
@@ -86,10 +89,20 @@ export const taskSlice = createSlice({
         },
         setTaskFilter: (state, action) => {
             state.currentTaskFilter = action.payload.filter;
+        },
+        login: (state, action) => {
+            state.user = action.payload;
+        },
+        logout: (state) => {
+            state.user = { id: '', email: '' };
+            state.accessToken = '';
+        },
+        accessToken: (state, action) => {
+            state.accessToken = action.payload;
         }
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, login, logout, accessToken } = taskSlice.actions
 
 export default taskSlice.reducer

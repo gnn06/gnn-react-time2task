@@ -9,26 +9,32 @@ const mapping = [
     { old: 'title',    new: 'Sujet' },
 ];
 
+/**
+ * postgres policy implemented, tasks.id need to be autoincremented
+ */
+
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery:   fetchBaseQuery({
-        baseUrl : `https://api.airtable.com/v0/${process.env.REACT_APP_BDD_KEY}`,
+        baseUrl : process.env.REACT_APP_API_URL,
         prepareHeaders: (headers, { getState }) => {
-            headers.set("Authorization", "Bearer pateXlE2yDTfJUXSk.3ef63a108889473cb840070c3699ce6edebdfd737e94b57f0ab9c14c409f4f42")
+            const state = getState()            
+            headers.set("apiKey", process.env.REACT_APP_API_KEY)
+            headers.set("Authorization", 'Bearer ' + state.tasks.accessToken)
         },
     }),
 
     endpoints: builder => ({
         getTasks: builder.query({
-            query: () => '/Taches?view=Toutes%20les%20taches',
+            query: (user) => `/tasks?user=eq.${user}`,
             transformResponse: (response, meta, arg) => 
-                response.records.map(
+                response.map(
                     item => ({
                         id: item.id,
-                        title: item.fields.Sujet,
-                        slotExpr: item.fields.slotExpr,
-                        status: item.fields.Etat,
-                        order: item.fields.ordre
+                        title: item.Sujet,
+                        slotExpr: item.slotExpr,
+                        status: item.Etat,
+                        order: item.ordre
                     }))
                     // Don't need to check MultiSlot as compare sort on  first slot
                     .sort(taskCompare),
@@ -37,25 +43,25 @@ export const apiSlice = createApi({
 
         updateTask: builder.mutation({
             query: ({ id, ...patch }) => ({
-                url: `/Taches/${id}`,
+                url: `/tasks?id=eq.${id}`,
                 method: 'PATCH',
-                body: { fields: mapProperties(patch, mapping) },
+                body: mapProperties(patch, mapping),
             }),
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         addTask: builder.mutation({
             query: (patch) => ({
-                url: '/Taches',
+                url: '/tasks',
                 method: 'POST',
-                body: { fields: { Sujet: patch.title, slotExpr: patch.slotExpr }}
+                body: { Sujet: patch.title, slotExpr: patch.slotExpr, user: patch.user }
             }),
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         deleteTask: builder.mutation({
             query: (id) => ({
-                url: `/Taches/${id}`,
+                url: `/tasks?id=eq.${id}`,
                 method: 'DELETE'
               }),
               invalidatesTags: (result, error, id) => [{ type: 'Tasks', id: 'LIST' }, { type: 'Tasks', id }]

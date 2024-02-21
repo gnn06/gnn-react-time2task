@@ -43,7 +43,6 @@ export function filterSlotExpr(tasks, filter) {
  */
 export function findTaskBySlotExpr(tasks, slot) {
     if (slot.inner !== undefined && slot.inner.length !== 0) {
-        // TODO manage multi, actually match only the first slot
         return tasks.filter(task => slotEqual(task.slotExpr, slot.path));
     } else {
         return tasks.filter(task => slotIsInOther(task.slotExpr, slot.path));

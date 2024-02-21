@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../features/AddTaskForm";
@@ -9,7 +8,9 @@ import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function TaskList() {
     // eslint-disable-next-line
-    const { data:tasksRedux, isLoading, isSuccess, isError, error } = useGetTasksQuery()
+    const userId = useSelector(state => state.tasks.user.id);
+
+    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
     if (!isLoading && isSuccess) {

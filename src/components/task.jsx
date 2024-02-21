@@ -54,7 +54,6 @@ export default function Task({task}) {
     };
 
     const onDeleteClick = e => {
-        // TODO add confirmation
         const isConfirm = window.confirm('Supprimer la tâche ?');
         if (isConfirm) {
             deleteTask(task.id)

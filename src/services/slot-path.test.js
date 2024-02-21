@@ -312,7 +312,6 @@ describe('slotCompareTree', () => {
         })
     })
 
-    //TODO multi, chaque
     it('first disable', () => {
         inner_test({type:'branch',value:['this_month', 'this_week', 'mercredi'],flags:['disable']}, {type:'branch',value:['this_month', 'this_week', 'jeudi']}, 1)
     })
