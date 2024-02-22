@@ -32,10 +32,20 @@ const initialState = {
                     ] },
                 {   id:    'mercredi',
                     title: 'mercredi',
-                    path:  'this_month this_week mercredi' },
+                    path:  'this_month this_week mercredi',
+                    inner: [
+                        { id: 'mercredi_matin', title: 'matin', path: 'this_month this_week mercredi matin' },
+                        { id: 'mercredi_aprem', title: 'aprem', path: 'this_month this_week mercredi aprem' }
+                    ]
+                },
                 {   id:    'jeudi',
                     title: 'jeudi',
-                    path:  'this_month this_week jeudi' },
+                    path:  'this_month this_week jeudi',
+                    inner: [
+                        { id: 'jeudi_matin', title: 'matin', path: 'this_month this_week jeudi matin' },
+                        { id: 'jeudi_aprem', title: 'aprem', path: 'this_month this_week jeudi aprem' }
+                    ]
+                },
                 {   id:    'vendredi',
                     title: 'vendredi',
                     path:  'this_month this_week vendredi',
@@ -57,6 +67,10 @@ const initialState = {
               inner: []
             }
         ]
+    },{
+        id:    'next_month',
+        title: 'mois prochain',
+        path:  'next_month'
     }],
     selectedSlotId: [],
     association: {},
