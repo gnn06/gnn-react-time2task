@@ -1,6 +1,6 @@
 branch : feat_fix
 ------------------------------
 rajoute les slots manquants mercredi, jeudi et next_month
-
+fix parse many spaces
 
 TO DO

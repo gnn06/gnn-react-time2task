@@ -182,7 +182,7 @@ describe('shiftReduce', () => {
   });
 });
 
-describe('parser', () => {
+describe('parser number', () => {
   test('1', () => {
     const parser = new Parser()
     const result = parser.parse('1');
@@ -351,7 +351,9 @@ describe('parser', () => {
       {type:'branch',value:['1']}
     ]})
   })
+})
 
+describe('parser string', () => {
   test('slot jour', () => {
     const parser = new Parser();
     const result = parser.parse('this_week mardi mercredi next_month $end');
@@ -366,9 +368,6 @@ describe('parser', () => {
       {type:'branch',value:['next_month']}
     ]})
   })
-});
-
-describe('parser with disable and chaque', () => {
   test('disable one', () => {
     const parser = new Parser();
     const result = parser.parse('disable this_week mardi $end');
@@ -376,8 +375,7 @@ describe('parser with disable and chaque', () => {
     value:[ 'this_week', 'mardi' ],
     flags: ['disable']
   })
-  });
-
+  })
   test('disable second', () => {
     const parser = new Parser();
     const result = parser.parse('this_week mardi disable next_week mercredi $end');
@@ -387,14 +385,12 @@ describe('parser with disable and chaque', () => {
       { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['disable'] }
     ]
   })
-  });
-
+  })
   test('chaque', () => {
     const parser = new Parser();
     const result = parser.parse('chaque next_week mercredi $end');
     expect(result).toEqual({ type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] })
-  });
-
+  })
   test('disable chaque', () => {
     const parser = new Parser();
     const result = parser.parse('disable chaque next_week mercredi $end');
@@ -410,12 +406,6 @@ describe('parser with disable and chaque', () => {
     ]})
   });
 
-  test('parse undefined', () => {
-    const parser = new Parser();
-    const result = parser.parse(undefined);
-    expect(result).toEqual(undefined)
-  });
-
   test('disable + multi', () => {
     const parser = new Parser();
     const result = parser.parse('disable vendredi lundi');
@@ -426,4 +416,18 @@ describe('parser with disable and chaque', () => {
       ]}
     )
   })
+});
+
+describe('parse wrong expression', () => {
+  test('parse undefined', () => {
+    const parser = new Parser();
+    const result = parser.parse(undefined);
+    expect(result).toEqual(undefined)
+  });
+
+  test('parse many spaces middle', () => {
+    const parser = new Parser();
+    const result = parser.parse('lundi     aprem');
+    expect(result).toEqual({ type: 'branch', value: ['lundi', 'aprem'] })
+  });
 });

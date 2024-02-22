@@ -1,3 +1,4 @@
+import { tokenizer } from "../utils/stringUtil";
 import { getSlotLevel } from "./slot-path";
 
 export class Parser {
@@ -13,7 +14,7 @@ export class Parser {
     parse(inputP) {
         if (inputP === undefined) return undefined;
 
-        this.input = inputP.split(' ').concat('$end');
+        this.input = tokenizer(inputP).concat('$end');
         this.stack = [];
         while (this.input.length > 0) {
             this.shiftReduce();

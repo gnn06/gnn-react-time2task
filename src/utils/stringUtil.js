@@ -6,3 +6,7 @@ export function insertSeparator(start, end, toInsert) {
     + (end !== '' && end.at(0) !== ' ' ? ' ' : '')
     + end
 }
+
+export function tokenizer(expr) {
+    return expr.trim().split(/\s+/)
+}

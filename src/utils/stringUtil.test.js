@@ -1,4 +1,4 @@
-import {insertSeparator} from './stringUtil'
+import {insertSeparator, tokenizer} from './stringUtil'
 
 test('insertSeparator, empty, empty', () => {
     const result = insertSeparator('', '', 'toto')
@@ -44,3 +44,11 @@ test('don\'t add space space first and second', () => {
     const result = insertSeparator('abc ', ' qsd', 'toto')
     expect(result).toEqual('abc toto qsd')
 })
+
+test('split one space middle', () => {
+    expect(tokenizer('aaa bbb')).toEqual(['aaa','bbb'])
+    expect(tokenizer('aaa    bbb')).toEqual(['aaa','bbb'])
+    expect(tokenizer('aaa   bbb  ')).toEqual(['aaa','bbb'])
+    expect(tokenizer('   aaa   bbb')).toEqual(['aaa','bbb'])
+    expect(tokenizer('   aaa   bbb    ')).toEqual(['aaa','bbb'])
+});
