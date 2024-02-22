@@ -28,3 +28,9 @@ test('should don\'t transmit unmapped property', () => {
     const expected = { prem: 12, deuse: 'abc' };
     expect(mapProperties(given, mapping)).toEqual(expected);
 })
+
+test('empty value is keeped', () => {
+    const given = {a:12, b:''};
+    const expected = { prem: 12, deuse: '' };
+    expect(mapProperties(given, mapping)).toEqual(expected);
+})
