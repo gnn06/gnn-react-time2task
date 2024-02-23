@@ -386,6 +386,17 @@ describe('parser string', () => {
     ]
   })
   })
+  test('chaque and multi', () => {
+    const parser = new Parser();
+    const result = parser.parse('chaque mercredi jeudi');
+    expect(result).toEqual(
+      { type: 'multi', value: [
+        { type:'branch', value:[ 'mercredi' ], flags: [ 'chaque' ]  },
+        { type:'branch', value:[ 'jeudi' ] }
+      ] }
+      )
+  })
+  
   test('chaque', () => {
     const parser = new Parser();
     const result = parser.parse('chaque next_week mercredi $end');
