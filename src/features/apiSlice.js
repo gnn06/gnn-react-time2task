@@ -26,7 +26,7 @@ export const apiSlice = createApi({
 
     endpoints: builder => ({
         getTasks: builder.query({
-            query: (user) => `/tasks?user=eq.${user}`,
+            query: (user) => `/tasks?and=(Etat.neq.archivé),user.eq.${user})`,            
             transformResponse: (response, meta, arg) => 
                 response.map(
                     item => ({
