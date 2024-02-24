@@ -4,5 +4,6 @@ rajoute les slots manquants mercredi, jeudi et next_month
 fix parse many spaces
 fix empty slotExpr
 filter 'archivé' (don't use BDD view) with bdd "Etat" default value to 'A faire'
+add help on expression and methodo
 
 TO DO
