@@ -1,20 +1,17 @@
-import React from "react";
-import { useDispatch } from "react-redux";
 import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
 import { useSelector } from "react-redux";
 
 import './task.css'
-import { selectTask } from "../features/taskSlice";
 import { slotIdList } from "../services/slot-path.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';
 import StatusInput from './status-input.jsx'
+import InputEdit from "./edit-input.jsx";
 
 export default function Task({task}) {
     
     const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
-    const dispatch = useDispatch();
     const [
         updateTask, // This is the mutation trigger
         // eslint-disable-next-line
@@ -27,13 +24,6 @@ export default function Task({task}) {
         + (selected ? 
            'hover:bg-gray-300  bg-gray-400  border-gray-500 border-2'
          : 'hover:bg-green-100 bg-green-200 border-gray-500 border-2');
-
-    const onTaskClick = e => {
-        const taskId = task.id;
-        dispatch(
-            selectTask(taskId)
-        );
-    }
 
     const onSlotExprChange = e => {
         const taskId = task.id;
@@ -61,19 +51,13 @@ export default function Task({task}) {
         e.stopPropagation();
     }
 
-    const noPropagation = (e) => {
-        e.stopPropagation();
-    }
-
     return <tr className={myClassName} >
-            <td><input  defaultValue={task.title} onBlur={onTitleChange}  
-                        className="bg-transparent w-full"/></td>
+            <td><InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/></td>
             <td>                
                 <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList}
                     onInputChange={onSlotExprChange}/>
             </td>
-            <td><input defaultValue={task.order} onChange={onOrderChange} onClick={noPropagation} 
-                className="bg-transparent w-10"/></td>
+            <td><InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-10"/></td>
             <td><StatusInput task={task}/></td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
