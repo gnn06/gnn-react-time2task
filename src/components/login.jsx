@@ -4,6 +4,7 @@ import { supabase } from '../extserv/supabase'
 import { login, accessToken } from "../features/taskSlice";
 
 import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../extserv/browser-storage";
+import Button from "./button";
 
 export default function Login() {
 
@@ -60,7 +61,7 @@ export default function Login() {
                     <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
                     <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" type="password" placeholder="******************"/>
                 </div>
-                <button className="bg-gray-400 text-black hover:bg-gray-300 p-2 m-0 rounded" type="submit">Login</button>
+                <Button type="submit" label="Login"></Button>
             </form>
         </div>
     </div>)

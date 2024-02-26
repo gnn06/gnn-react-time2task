@@ -6,5 +6,6 @@ fix empty slotExpr
 filter 'archivé' (don't use BDD view) with bdd "Etat" default value to 'A faire'
 add help on expression and methodo
 update order and title onBlur and enter key
+add help on expresion nito a dialog
 
 TO DO

@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 
@@ -6,6 +5,7 @@ import { setTaskFilter } from "../features/taskSlice";
 import { slotIdList } from "../services/slot-path";
 
 import SyntaxInput from './syntax-input';
+import DialogHelpExpression from "./button-help-expression";
 
 export default function TaskFilter() {
     
@@ -18,10 +18,11 @@ export default function TaskFilter() {
     }
     
     const filters = slotIdList;
-    
+
     return <div className="flex flex-row space-x-1 items-baseline">
         <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={filters}
             placeHolderInput="lundi, next_week mardi, AND, OR, title:xxx" onInputChange={onChange}/>
+        <DialogHelpExpression/>
     </div>;
 };

@@ -30,19 +30,6 @@ export default function TaskList() {
                 </table>
                 <AddTaskForm />
                 <div>
-                    <h1 className=" text-lg">Exemples de créneau :</h1>
-                    <ul>
-                        <li><span class="font-mono">mardi aprem</span></li>
-                        <li><span class="font-mono">mardi</span> pour une tache qu'on doit faire mardi sans savoir si ça sera le matin ou l'aprem</li>
-                        <li><span class="font-mono">this_week</span> pour une tache qu'on doit faire cette semaine sans savoir quel jour</li>
-                        <li><span class="font-mono">mardi mercredi</span> pour une tache à faire 2 fois dans la semaine sur 2 créneaux</li>
-                        <li><span class="font-mono">chaque lundi</span> pour une tache à faire chaque semaine le lundi</li>
-                        <li><span class="font-mono">chaque lundi chaque jeudi</span> pour une tache à faire chaque semaine 2 fois dans la semaine</li>
-                        <li><span class="font-mono">chaque lundi jeudi</span> pour une tache à faire chaque lundi mais aussi ce jeudi précisement</li>
-                        <li><span class="font-mono">disable chaque lundi jeudi</span> pour une tache qu'on fait habituellement le lundi mais qu'on fera cette semaine exceptionnellement le jeudi</li>
-                        <li><span class="font-mono">next_week mercredi</span> pour une tache à faire mercredi prochain</li>
-                        <li><span class="font-mono">next_week ou next_month</span> pour une tache à faire la semaine prochaine ou le mois prochain sans savoir quand</li>
-                    </ul>
                     <h1 className=" text-lg">Méthode :</h1>
                     <p>Commencez par lister vos taches sans réfléchir aux créneaux puis associer chaque tache à un créneau.</p>
                     <p>En début de mois, positionner les taches sur des semaines et pas à la journée</p>
