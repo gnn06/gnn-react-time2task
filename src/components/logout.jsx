@@ -16,5 +16,5 @@ export default function Logout() {
         dispatch(logout())
     }
 
-    return <div><div>{email}</div><Button clickToto={logoutHandler} label="Se déconnecter" /></div>
+    return <span>{email} <Button clickToto={logoutHandler} label="Se déconnecter" /></span>
 }

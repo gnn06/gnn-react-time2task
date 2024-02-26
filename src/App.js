@@ -1,7 +1,7 @@
 import TaskList from './components/tasklist';
 import SlotList from './components/slotlist';
 import Login from './components/login';
-import Logout from './components/logout';
+import AppMenu from './components/appmenu';
 import { useSelector } from "react-redux";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -15,7 +15,7 @@ function App() {
       <div>
         { userId ? (
           <div>
-            <Logout />
+            <AppMenu/>
             <div className="flex flex-row text-sm">
               <TaskList />
               { showSlot ? <SlotList/>:'' }
