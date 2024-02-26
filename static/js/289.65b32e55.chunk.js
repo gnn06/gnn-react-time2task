@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkgnn_react_time2task=self.webpackChunkgnn_react_time2task||[]).push([[289],{289:e=>{e.exports=function(){throw new Error("ws does not work in the browser. Browser clients must use the native WebSocket object")}}}]);
-//# sourceMappingURL=289.65b32e55.chunk.js.map
