@@ -417,6 +417,12 @@ describe('parser string', () => {
     ]})
   });
 
+  test('chaque this_week', () => {
+    const parser = new Parser();
+    const result = parser.parse('chaque this_week');
+    expect(result).toEqual({ type:'branch', value:[ 'this_week' ], flags: ['chaque'] })
+  });
+
   test('disable + multi', () => {
     const parser = new Parser();
     const result = parser.parse('disable vendredi lundi');
