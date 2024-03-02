@@ -1,4 +1,4 @@
-import { taskCompare, taskFilter, filterSlotExpr, findTaskBySlotExpr } from "./task";
+import { taskCompare, taskFilter, taskFilterExact, taskFilterPredicateByNoRepeat, filterSlotExpr, findTaskBySlotExpr } from "./task";
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -157,6 +157,38 @@ describe('taskFilter', () => {
     })
 
 });
+
+describe('taskFilterExact', () => {
+    test('false', () => {
+        const task = { slotExpr: 'this_week mardi aprem' }
+        const result = taskFilterExact(task, 'this_week mardi')
+        expect(result).toBeFalsy()
+    })
+    test('true', () => {
+        const task = { slotExpr: 'this_week mardi' }
+        const result = taskFilterExact(task, 'this_week mardi')
+        expect(result).toBeTruthy()
+    })
+})
+
+describe('taskFilterPredicateByNoRepeat', () => {
+    test('norepeat keep true', () => {
+        const task = { slotExpr: 'mardi' }
+        const result = taskFilterPredicateByNoRepeat(task)
+        expect(result).toBeTruthy()
+    });
+    test('repeat discard false', () => {
+        const task = { slotExpr: 'chaque mardi' }
+        const result = taskFilterPredicateByNoRepeat(task)
+        expect(result).toBeFalsy()
+    });
+    test.skip('repeat at sub level', () => {
+        const task = { slotExpr: 'this_week chaque mardi aprem' }
+        const result = taskFilterPredicateByNoRepeat(task)
+        expect(result).toBeFalsy()
+    });
+})
+
 
 describe('filterSlotExpr', () => {
     it('level1 match level1 level2', () => {

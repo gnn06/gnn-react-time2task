@@ -1,4 +1,5 @@
-import { slotIsInOther, slotIsInOtherBranch, slotEqual, lowerSlotBranch, slotCompare, slotCompareTree, getCurrentPathBranch, chooseSlotForSortBranch, completeSlotBranch, removeDisableMulti } from './slot-path.js';
+import { slotIsInOther, slotIsInOtherBranch, slotEqual, lowerSlotBranch, slotCompare, slotCompareTree, getCurrentPathBranch, chooseSlotForSortBranch,
+    completeSlotBranch, removeDisableMulti, isRecurrenceSlotBranch } from './slot-path.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -514,4 +515,83 @@ describe('slotEqual', () => {
         const result = slotEqual('week', 'week lundi');
         expect(result).toEqual(false);
     })    
+})
+
+describe('getType', () => {
+    test('branch with recurrence', () => {
+        const result = isRecurrenceSlotBranch({type:'branch', value: ['lundi'], flags:['chaque']});
+        expect(result).toBeTruthy();
+    });
+
+    test('branch without recurrence', () => {
+        const result = isRecurrenceSlotBranch({type:'branch', value: ['lundi']});
+        expect(result).toBeFalsy();
+    })
+    
+    test('branch without recurrence but disable', () => {
+        const result = isRecurrenceSlotBranch({type:'branch', value: ['lundi'], flags:['disable']});
+        expect(result).toBeFalsy();
+    });    
+
+    test('multi with recurrence on first', () => {
+        const result = isRecurrenceSlotBranch(
+            {type:'multi', value: [
+                {type:'branch', value: ['lundi'], flags:['chaque']},
+                {type:'branch', value: ['mardi']}
+            ]});
+        expect(result).toBeTruthy();
+    });
+    
+    test('multi with recurrence on second', () => {
+        const result = isRecurrenceSlotBranch({type:'multi', value: [
+            {type:'branch', value: ['lundi']},
+            {type:'branch', value: ['mardi'], flags:['chaque']}
+        ]});
+        expect(result).toBeTruthy();
+    });
+    
+    test('multi without recurrence', () => {
+        const result = isRecurrenceSlotBranch({type:'multi', value: [
+            {type:'branch', value: ['lundi']},
+            {type:'branch', value: ['mardi']}
+        ]});
+        expect(result).toBeFalsy();
+    });
+
+    test('multi at final depth' , () => {
+        const result = isRecurrenceSlotBranch(
+            {type:'branch', value: [
+                'this_week',
+                {type:'multi', value: [
+                    {type:'branch', value: ['lundi'], flags:['chaque']},
+                    {type:'branch', value: ['mardi']}
+                ]}
+            ]});
+        expect(result).toBeTruthy();
+    });
+
+    test('multi at middle depth', () => {
+        const result = isRecurrenceSlotBranch(
+            {type:'branch', value: [
+                'this_week',
+                {type:'multi', value: [
+                    {type:'branch', value: ['lundi'], flags:['chaque']},
+                    {type:'branch', value: ['mardi']}
+                ]}
+            ]});
+        expect(result).toBeTruthy();
+    });
+
+    test('deep multi without recurrence', () => {
+        const result = isRecurrenceSlotBranch(
+            {type:'branch', value: [
+                'this_week',
+                {type:'multi', value: [
+                    {type:'branch', value: ['lundi']},
+                    {type:'branch', value: ['mardi']}
+                ]}
+            ]});
+        expect(result).toBeFalsy();
+    })
+    
 })

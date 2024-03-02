@@ -18,7 +18,14 @@ const text = `
 - update order and title onBlur and enter key
 - add help on expresion nito a dialog
 - move methodo help into page, add react-router with error page, use hash  router for github pages
-- add changelog page reachable from app menu, using react-markdown`
+- add changelog page reachable from app menu, using react-markdown
+
+02/03/2024
+==========
+- create NOREPEAT filter for tasks which don't have 'chaque' (found bug parsing this_week chaque mardi aprem)
+- make 'title:' filter case insensitive
+- create NONE filter for exact slot equality ('mercredi NONE' doesn't match 'mercredi aprem')
+`
 
 export default function Changelog() {
     return <div>

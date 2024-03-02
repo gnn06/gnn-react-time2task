@@ -1,8 +1,16 @@
-import { slotCompare, slotIsInOther, slotEqual } from "./slot-path";
+import { slotCompare, slotIsInOther, slotEqual, isRecurrenceSlot } from "./slot-path";
 import { makeFilter }  from './filter-engine.js';
 
 export function taskFilter(task, filter) {
     return slotIsInOther(task.slotExpr, filter)
+}
+
+export function taskFilterExact(task, filter) {
+    return slotEqual(task.slotExpr, filter)
+}
+
+export function taskFilterPredicateByNoRepeat(task) {
+    return !isRecurrenceSlot(task.slotExpr);
 }
 
 /* public, used by apiSlice.js */

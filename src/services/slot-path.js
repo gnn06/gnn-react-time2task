@@ -245,3 +245,21 @@ export function removeDisableMulti(multi) {
         value: multi.value.filter(item => !item.flags || item.flags.indexOf('disable') < 0)
     }
 }
+
+export function isRecurrenceSlot(slotExpr) {
+    const parser = new Parser()
+    const tree = parser.parse(slotExpr)
+    return isRecurrenceSlotBranch(tree)
+}
+
+export function isRecurrenceSlotBranch(slot) {
+    if (slot.type === 'multi') {
+        return slot.value.some(isRecurrenceSlotBranch)
+    } else {
+        if (typeof  slot.value.at(-1) === 'object' && slot.value.at(-1).type === 'multi') {
+            return isRecurrenceSlotBranch(slot.value.at(-1))
+        } else {
+            return (slot.flags && slot.flags.indexOf('chaque') > -1);
+        }
+    }
+}

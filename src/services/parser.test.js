@@ -399,8 +399,18 @@ describe('parser string', () => {
   
   test('chaque', () => {
     const parser = new Parser();
-    const result = parser.parse('chaque next_week mercredi $end');
-    expect(result).toEqual({ type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] })
+    const result = parser.parse('chaque mardi aprem');
+    expect(result).toEqual({ type: 'branch', value: ['mardi', 'aprem'], flags: ['chaque'] });    
+  })
+
+  test.skip('chaque at level 2', () => {
+    const parser = new Parser();
+    const result = parser.parse('this_week chaque next_week mercredi');
+    expect(result).toEqual(
+      { type:'branch', value:[ 
+        'next_week',
+        { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] } 
+      ]})
   })
   test('disable chaque', () => {
     const parser = new Parser();
