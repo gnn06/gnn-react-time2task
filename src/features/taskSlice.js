@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
-import { retrieveAccessToken, retrieveUser } from '../extserv/browser-storage';
+import { retrieveAccessToken, retrieveUser } from '../services/browser-storage';
 
 const initialState = {
     tasks : [],

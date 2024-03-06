@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { taskCompare } from '../services/task'
+import { taskCompare } from '../data/task'
 import { mapProperties } from '../utils/objectUtil'
 
 const mapping = [

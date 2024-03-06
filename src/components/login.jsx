@@ -1,9 +1,10 @@
 import { useDispatch } from "react-redux";
-import { supabase } from '../extserv/supabase'
 
 import { login, accessToken } from "../features/taskSlice";
 
-import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../extserv/browser-storage";
+import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
+import { supabase } from '../services/supabase'
+
 import Button from "./button";
 
 export default function Login() {

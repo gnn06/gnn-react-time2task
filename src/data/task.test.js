@@ -1,4 +1,4 @@
-import { taskCompare, taskFilter, taskFilterExact, taskFilterPredicateByNoRepeat, filterSlotExpr, findTaskBySlotExpr } from "./task";
+import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2 } from "./task";
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -122,37 +122,37 @@ describe('taskFilter', () => {
     test('false', () => {
         const task = { slotExpr: 'mardi aprem' }
         const filter = 'mardi matin'
-        const result = taskFilter(task, filter)
+        const result = taskPredicateEqualAndInclude(task, filter)
         expect(result).toBeFalsy()
     });
     test('true', () => {
         const task = { slotExpr: 'mardi aprem' }
         const filter = 'mardi'
-        const result = taskFilter(task, filter)
+        const result = taskPredicateEqualAndInclude(task, filter)
         expect(result).toBeTruthy()
     });
     test('slotFilter keep', () => {
         const task = { slotExpr: 'mardi' }
         const filter = 'mardi'
-        const result = taskFilter(task, filter)
+        const result = taskPredicateEqualAndInclude(task, filter)
         expect(result).toBeTruthy()
     });
 
     test('slotFilter discard', () => {
         const task = { slotExpr: 'mardi' }
-        const result = taskFilter(task, 'mercredi')
+        const result = taskPredicateEqualAndInclude(task, 'mercredi')
         expect(result).toBeFalsy()
     });
 
     test('slotFilter level 3 keep', () => {
         const task = { slotExpr: 'mardi matin' }
-        const result = taskFilter(task, 'mardi matin')
+        const result = taskPredicateEqualAndInclude(task, 'mardi matin')
         expect(result).toBeTruthy()
     });
 
     test('slotFilter level 3 discard', () => {
         const task = { slotExpr: 'mardi aprem' }
-        const result = taskFilter(task, 'mardi matin')
+        const result = taskPredicateEqualAndInclude(task, 'mardi matin')
         expect(result).toBeFalsy()
     })
 
@@ -161,12 +161,12 @@ describe('taskFilter', () => {
 describe('taskFilterExact', () => {
     test('false', () => {
         const task = { slotExpr: 'this_week mardi aprem' }
-        const result = taskFilterExact(task, 'this_week mardi')
+        const result = taskPredicateEqual(task, 'this_week mardi')
         expect(result).toBeFalsy()
     })
     test('true', () => {
         const task = { slotExpr: 'this_week mardi' }
-        const result = taskFilterExact(task, 'this_week mardi')
+        const result = taskPredicateEqual(task, 'this_week mardi')
         expect(result).toBeTruthy()
     })
 })
@@ -174,38 +174,43 @@ describe('taskFilterExact', () => {
 describe('taskFilterPredicateByNoRepeat', () => {
     test('norepeat keep true', () => {
         const task = { slotExpr: 'mardi' }
-        const result = taskFilterPredicateByNoRepeat(task)
+        const result = taskPredicateNoRepeat(task)
         expect(result).toBeTruthy()
     });
     test('repeat discard false', () => {
         const task = { slotExpr: 'chaque mardi' }
-        const result = taskFilterPredicateByNoRepeat(task)
+        const result = taskPredicateNoRepeat(task)
         expect(result).toBeFalsy()
     });
-    test.skip('repeat at sub level', () => {
+    test('repeat at sub level', () => {
         const task = { slotExpr: 'this_week chaque mardi aprem' }
-        const result = taskFilterPredicateByNoRepeat(task)
+        const result = taskPredicateNoRepeat(task)
         expect(result).toBeFalsy()
+    });
+    test('every2', () => {
+        const task = { slotExpr: 'EVERY2 this_week mardi aprem' }
+        const result = taskPredicateEvery2(task)
+        expect(result).toBeTruthy()
     });
 })
 
 
 describe('filterSlotExpr', () => {
     it('level1 match level1 level2', () => {
-        const tasks = [ { slotExpr: 'week mercredi' } ];
-        const result = filterSlotExpr(tasks, 'week');
+        const tasks = [ { slotExpr: 'this_week mercredi' } ];
+        const result = filterSlotExpr(tasks, 'this_week');
         expect(result).toEqual(tasks)
     })
 
     it('level1 don\'t match level1 level2', () => {
-        const tasks = [ { slotExpr: 'week mercredi' } ];
+        const tasks = [ { slotExpr: 'this_week mercredi' } ];
         const result = filterSlotExpr(tasks, 'next_week');
         expect(result).toEqual([])
     })
 
     it('level1 level2 match level1 level2', () => {
-        const tasks = [ { slotExpr: 'week mercredi' } ];
-        const result = filterSlotExpr(tasks, 'week mercredi');
+        const tasks = [ { slotExpr: 'this_week mercredi' } ];
+        const result = filterSlotExpr(tasks, 'this_week mercredi');
         expect(result).toEqual(tasks)
     })
 
@@ -308,15 +313,15 @@ describe('findTaskBySlotExpr', () => {
     it('test findTaskBySlotExpr exact min', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'this_week'
         }, {
             id: 'task2',
             slotExpr: 'next_week'
         }];
-        const slot = { id: 'slot1', path: 'this_month week' };
+        const slot = { id: 'slot1', path: 'this_month this_week' };
         const expected = [ {
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'this_week'
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
@@ -342,9 +347,9 @@ describe('findTaskBySlotExpr', () => {
     it('test findTaskBySlotExpr no match', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'slot3'
+            slotExpr: 'mercredi'
         }];
-        const slot = { id: 'slot1', path: 'slot1' };
+        const slot = { id: 'mardi', path: 'mardi' };
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual([]);
     });

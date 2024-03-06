@@ -21,6 +21,10 @@ describe('getLevelNode', () => {
   test('should string number', () => {
     expect(getLevelNode('1')).toEqual(1)
   })
+
+  test('should string number', () => {
+    expect(getLevelNode('chaque')).toEqual(-1)
+  })
 });
 
 describe('reduce functions', () => {
@@ -40,10 +44,38 @@ describe('reduce functions', () => {
     expect(reduceMulti('toto', 'titi')).toEqual({ type: 'multi', value: [ 'toto', 'titi' ] })
   });
   
-  test('reduceConcatBranch', () => {
-    expect(reduceConcatBranch({type:['branch'],value:['previous']}, {type:'branch',value:'last'})).toEqual({ type: 'branch', value: [ 'previous', 'last' ] })
-  });
+  describe('reduceConcatBranch', () => {
+    test('reduceConcatBranch simple branches', () => {
+      expect(reduceConcatBranch(
+        {type:'branch', value:['previous']}, 
+        {type:'branch', value:['last']}))
+      .toEqual({ type: 'branch', value: [ 'previous', 'last' ] })
+    });
   
+    test('reduceConcatBranch', () => {
+      const result = reduceConcatBranch(
+        {type:'branch',value:['previous'] }, 
+        {type:'branch',value:['last', { type: 'multi', value: ['toto', 'titi']}]}
+      )
+      expect(result).toEqual(
+        { type: 'branch', value: [ 'previous', 'last', { type: 'multi', value: ['toto', 'titi']} ] }
+      )
+    });
+    
+    test('reduceConcatBranch branch with flags', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'], flags:['disable']},
+        {type:'branch', value:['last'],     flags:['chaque']})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], flags:['chaque']} ],
+          flags:['disable'] })
+    });
+  
+    
+  });
+
   test('reduceConcatBranchMulti', () => {
     expect(reduceConcatBranchMulti(
       { type: 'branch', value: ['previous'] }, 
@@ -356,7 +388,7 @@ describe('parser number', () => {
 describe('parser string', () => {
   test('slot jour', () => {
     const parser = new Parser();
-    const result = parser.parse('this_week mardi mercredi next_month $end');
+    const result = parser.parse('this_week mardi mercredi next_month');
     expect(result).toEqual({type:'multi',value:[
       {type:'branch',value:[
         'this_week', 
@@ -368,9 +400,36 @@ describe('parser string', () => {
       {type:'branch',value:['next_month']}
     ]})
   })
+
+  test('multi at second position', () => {
+    const parser = new Parser();
+    const result = parser.parse('this_week mardi jeudi');
+    expect(result).toEqual(
+      {type:'branch',value:[
+        'this_week', 
+        {type:'multi',value:[
+          {type:'branch',value:['mardi']},
+          {type:'branch',value:['jeudi']}
+        ]}
+      ]})
+  })
+
+  test('multi at third position', () => {
+    const parser = new Parser();
+    const result = parser.parse('this_month this_week mardi jeudi');
+    expect(result).toEqual(
+      {type:'branch',value:[
+        'this_month', 'this_week', 
+        {type:'multi',value:[
+          {type:'branch',value:['mardi']},
+          {type:'branch',value:['jeudi']}
+        ]}
+      ]})
+  })
+
   test('disable one', () => {
     const parser = new Parser();
-    const result = parser.parse('disable this_week mardi $end');
+    const result = parser.parse('disable this_week mardi');
     expect(result).toEqual({ type:'branch',
     value:[ 'this_week', 'mardi' ],
     flags: ['disable']
@@ -386,6 +445,67 @@ describe('parser string', () => {
     ]
   })
   })
+  
+  describe('chaque and every2', () => {
+    test('deep 1 chaque at 1', () => {
+      const parser = new Parser();
+      const result = parser.parse('chaque this_week');
+      expect(result).toEqual({ type:'branch', value:[ 'this_week' ], flags: ['chaque'] })
+    });
+  
+    test('deep 2 chaque at 1', () => {
+      const parser = new Parser();
+      const result = parser.parse('chaque mardi aprem');
+      expect(result).toEqual({ type: 'branch', value: ['mardi', 'aprem'], flags: ['chaque'] });    
+    })
+  
+    test('deep 2, chaque at 2', () => {
+      const parser = new Parser();
+      const result = parser.parse('this_week chaque mardi');
+      expect(result).toEqual(
+        { type:'branch', value:[ 'this_week', 
+          { type:'branch', value:[ 'mardi'  ], flags: ['chaque'] }         
+        ]})
+    })
+    
+    test('deep 3, chaque at 1', () => {
+      const parser = new Parser();
+      const result = parser.parse('chaque this_week mardi aprem');
+      expect(result).toEqual(
+        { type:'branch', value:[ 'this_week', 'mardi', 'aprem' ], flags: ['chaque'] }
+      )
+    })
+    
+    test('deep 3, chaque at 2', () => {
+      const parser = new Parser();
+      const result = parser.parse('this_week chaque mardi aprem');
+      expect(result).toEqual(
+        { type:'branch', value:[ 
+          'this_week', { type:'branch', value:[ 'mardi', 'aprem' ], flags: ['chaque'] }         
+        ]})
+    })
+
+    test('deep 3, chaque at 3', () => {
+      const parser = new Parser();
+      const result = parser.parse('this_week mardi chaque aprem');
+      expect(result).toEqual(
+        { type:'branch', value:[ 
+          'this_week', 'mardi', { type:'branch', value:[ 'aprem' ], flags: ['chaque'] }         
+        ]})
+    })
+  
+    test('EVERY2', () => {
+      const parser = new Parser();
+      const result = parser.parse('EVERY2 mardi');
+      expect(result).toEqual({ type: 'branch', value: ['mardi'], flags: ['EVERY2'] });    
+    })
+    
+    test('EVERY2 at middle branch', () => {
+      const result = new Parser().parse('this_month EVERY2 next_week jeudi')
+      expect(result).toEqual({ type: 'branch', value: ['this_month', { type: 'branch', value: ['next_week', 'jeudi'], flags: ['EVERY2'] }] })
+    })
+  })
+
   test('chaque and multi', () => {
     const parser = new Parser();
     const result = parser.parse('chaque mercredi jeudi');
@@ -397,21 +517,6 @@ describe('parser string', () => {
       )
   })
   
-  test('chaque', () => {
-    const parser = new Parser();
-    const result = parser.parse('chaque mardi aprem');
-    expect(result).toEqual({ type: 'branch', value: ['mardi', 'aprem'], flags: ['chaque'] });    
-  })
-
-  test.skip('chaque at level 2', () => {
-    const parser = new Parser();
-    const result = parser.parse('this_week chaque next_week mercredi');
-    expect(result).toEqual(
-      { type:'branch', value:[ 
-        'next_week',
-        { type:'branch', value:[ 'next_week', 'mercredi' ], flags: ['chaque'] } 
-      ]})
-  })
   test('disable chaque', () => {
     const parser = new Parser();
     const result = parser.parse('disable chaque next_week mercredi $end');
@@ -427,12 +532,6 @@ describe('parser string', () => {
     ]})
   });
 
-  test('chaque this_week', () => {
-    const parser = new Parser();
-    const result = parser.parse('chaque this_week');
-    expect(result).toEqual({ type:'branch', value:[ 'this_week' ], flags: ['chaque'] })
-  });
-
   test('disable + multi', () => {
     const parser = new Parser();
     const result = parser.parse('disable vendredi lundi');
@@ -442,6 +541,19 @@ describe('parser string', () => {
         { type: 'branch', value: ['lundi'] }
       ]}
     )
+  })
+
+  test('disable + chaque + multi', () => {
+    const parser = new Parser();
+    const result = parser.parse('disable chaque lundi aprem this_week mercredi');
+    expect(result).toEqual(
+      { type: 'multi', value: 
+        [
+          { type: 'branch', value: ['lundi',     'aprem'],   flags: ['disable', 'chaque'] },
+          { type: 'branch', value: ['this_week', 'mercredi'] }
+        ]
+      }
+    );  
   })
 });
 
@@ -456,5 +568,11 @@ describe('parse wrong expression', () => {
     const parser = new Parser();
     const result = parser.parse('lundi     aprem');
     expect(result).toEqual({ type: 'branch', value: ['lundi', 'aprem'] })
+  });
+
+  test('parse unknown keyword', () => {
+    const parser = new Parser();
+    const result = parser.parse('lundi toto');
+    expect(result).toEqual({ type: 'branch', value: ['lundi'] })
   });
 });

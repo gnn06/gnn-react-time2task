@@ -5,7 +5,8 @@ const task2 = {title:'titi', slotExpr: 'this_week mardi'};
 const task3 = {title:'TATA', slotExpr: 'mercredi'};
 const task4 = {title:'tutu', slotExpr: 'mercredi aprem'};
 const task5 = {title:'task5', slotExpr: 'chaque vendredi'};
-const data = [task1, task2, task3, task4, task5];
+const task6 = {title:'task5', slotExpr: 'EVERY2 this_week mardi'};
+const data = [task1, task2, task3, task4, task5, task6];
 
 describe('makeFilter', () => {
     test('slotExpr with task complete', () => {
@@ -20,12 +21,12 @@ describe('makeFilter', () => {
     
     test('slotExpr with filter complete', () => {
         const result = data.filter(makeFilter('mardi'));
-        expect(result).toEqual([task2])
+        expect(result).toEqual([task2,task6])
     })
     
     test('OR', () => {
         const result = data.filter(makeFilter('lundi OR mardi'));
-        expect(result).toEqual([task1, task2])
+        expect(result).toEqual([task1, task2, task6])
     })
     
     test('no filter', () => {
@@ -41,6 +42,16 @@ describe('makeFilter', () => {
     test('slotExpr AND title', () => {
         const result = data.filter(makeFilter('mercredi AND title:TATA'));
         expect(result).toEqual([task3])
+    })
+
+    test('AND with space and nothing', () => {
+        const result = data.filter(makeFilter('mercredi AND '));
+        expect(result).toEqual([task3, task4])
+    })
+
+    test('AND without space', () => {
+        const result = data.filter(makeFilter('mercredi AND'));
+        expect(result).toEqual([task3, task4])
     })
 
     test('title case insensitive', () => {
@@ -71,7 +82,12 @@ describe('makeFilter', () => {
    test('with NONE', () => {
     const result = data.filter(makeFilter('mercredi NONE'));
     expect(result).toEqual([task3])
-})
+    })
+    
+    test('EVERY2 filter', () => {
+        const result = data.filter(makeFilter('EVERY2'));
+        expect(result).toEqual([task6])
+    })
 });
 
 describe('makexxxFilterFunc', () => {

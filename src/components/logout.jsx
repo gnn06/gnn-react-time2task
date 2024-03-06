@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
-import { supabase } from '../extserv/supabase'
-import { removeAccessToken, removeUser } from "../extserv/browser-storage";
+import { supabase } from '../services/supabase'
+import { removeAccessToken, removeUser } from "../services/browser-storage";
 import { logout } from "../features/taskSlice";
 
 export default function Logout() {

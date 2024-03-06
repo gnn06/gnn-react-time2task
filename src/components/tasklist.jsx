@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 import Task from './task';
-import AddTaskForm from "../features/AddTaskForm";
+import AddTaskForm from "../components/AddTaskForm";
 import TaskFilter from "./task-filter.jsx";
 
-import { filterSlotExpr } from '../services/task.js';
+import { filterSlotExpr } from '../data/task.js';
 import { useGetTasksQuery } from "../features/apiSlice.js";
 
 export default function TaskList() {

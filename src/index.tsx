@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import ErrorPage from './error-page'
+import App from './components/App';
+import ErrorPage from './components/error-page'
 import HelpMethodo from './components/help-methodo-page.jsx';
 import Changelog from './components/changelog';
 import './assets/index.css'
-import store from './store/store'
+import store from './features/store'
 import { Provider } from 'react-redux'
-import { createBrowserRouter, createHashRouter, RouterProvider, } from "react-router-dom";
+import { createHashRouter, RouterProvider, } from "react-router-dom";
 
 const router = createHashRouter([
   {

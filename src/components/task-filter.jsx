@@ -2,11 +2,11 @@ import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
-import { slotIdList } from "../services/slot-path";
+import { slotIdList } from "../data/slot-path";
 
 import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
-import {FILTER_KEYWORDS} from '../services/filter-engine'
+import {FILTER_KEYWORDS} from '../data/filter-engine'
 
 export default function TaskFilter() {
     
@@ -23,7 +23,7 @@ export default function TaskFilter() {
     return <div className="flex flex-row space-x-1 items-baseline">
         <label htmlFor="task-filter">Filtre : </label>        
         <SyntaxInput items={filters}
-            placeHolderInput="lundi, next_week mardi, AND, OR, title:xxx, NOREPEAT, NONE" onInputChange={onChange}/>
+            placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} onInputChange={onChange}/>
         <DialogHelpExpression/>
     </div>;
 };

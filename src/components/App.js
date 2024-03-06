@@ -1,7 +1,7 @@
-import TaskList from './components/tasklist';
-import SlotList from './components/slotlist';
-import Login from './components/login';
-import AppMenu from './components/appmenu';
+import TaskList from './tasklist';
+import SlotList from './slotlist';
+import Login from './login';
+import AppMenu from './appmenu';
 import { useSelector } from "react-redux";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

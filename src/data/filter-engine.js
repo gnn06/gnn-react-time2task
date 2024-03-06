@@ -1,14 +1,17 @@
-import { taskFilter, taskFilterExact, taskFilterPredicateByNoRepeat } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2 } from './task.js';
 
-const makeSlotExprFilterFunc = (task, filter) => taskFilter(task, filter);
+const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
 
-const makeExactFilterFunc = (task, filter) => taskFilterExact(task, filter);
+const makeExactFilterFunc = (task, filter) => taskPredicateEqual(task, filter);
 
 /* module private */
 export const makeTitleFilterFunc = (task, title) => task.title.toLowerCase().indexOf(title.toLowerCase()) >= 0;
 
 /* export for test */
-export const makeNoRepeatFilterFunc = (task) => taskFilterPredicateByNoRepeat(task)
+export const makeNoRepeatFilterFunc = (task) => taskPredicateNoRepeat(task)
+
+export const makeEvery2FilterFunc = (task) => taskPredicateEvery2(task)
+
 
 /* public, used slot-filter.js by */
 export function makeFilter(filterExpr) {
@@ -26,6 +29,8 @@ export function makeFilter(filterExpr) {
         return (task) => makeTitleFilterFunc(task, title);
     } else if (filterExpr === 'NOREPEAT') {
         return makeNoRepeatFilterFunc;
+    } else if (filterExpr === 'EVERY2') {
+        return makeEvery2FilterFunc;    
     } else {
         if (filterExpr.endsWith(' NONE')) {
             return (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5));
@@ -35,4 +40,4 @@ export function makeFilter(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['AND', 'OR', 'title:', 'NOREPEAT', 'NONE'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY2', 'AND', 'OR'];

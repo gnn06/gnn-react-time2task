@@ -1,10 +1,13 @@
 import { tokenizer } from "../utils/stringUtil";
-import { getSlotLevel } from "./slot-path";
+import { getSlotLevel, slotIdList, slotKeyWords } from "./slot-path";
 
 export class Parser {
 
     input = [];
     stack = [];
+
+    parseKeyWords = [...slotIdList,
+            ...slotKeyWords, '1', '2', '3', '$end'];
 
     constructor(Pinput, Pstack) {
         this.input = Pinput;
@@ -24,13 +27,15 @@ export class Parser {
 
     shiftReduce() {
         const current = this.input.shift();
+        if (this.parseKeyWords.indexOf(current) === -1) return;
         if (this.stack.length === 0) {
             this.stack.push(shiftBranchOrFlag(current));
             return
         }
         const last = this.stack.at(-1);
         if (isRupture(current, last)) {
-            // Rupture
+            // Rupture de niveau ou apparition d'un flag
+            // on essaie de reduire au maximum et sinon on empile
             if (this.stack.length >= 2) {
                 const previous = this.stack.at(-2);
                 if (previous.type === 'branch' && last.type === 'branch') {
@@ -80,12 +85,9 @@ export class Parser {
                     this.input.unshift(current);
                     return
                 }
-            } else if (current !== '$end') {
-                this.stack.push(shiftBranchOrFlag(current));
-                return
             }
-        } else {
-            // pas de rupture
+        }
+        if (current !== '$end') {
             this.stack.push(shiftBranchOrFlag(current));
             return
         }
@@ -109,6 +111,7 @@ export function getLevelNode(node) {
     }
 }
 
+/* quand un flag apparait dans le flux, ça introduit une rupture si le précédent est un slot normal, un flag qui suit un flag ne provoque pas de rupture */
 function isRupture(current, last) {
     if (current === '$end' || getLevelNode(current) < getLevelNode(last)) {
         return true
@@ -118,7 +121,7 @@ function isRupture(current, last) {
 }
 
 export function shiftBranchOrFlag(current) {
-    if (current === 'disable' || current === 'chaque') {
+    if (current === 'disable' || current === 'chaque' || current === 'EVERY2') {
         return { type: 'flag', value: current };
     } else {
         return { type: 'branch', value: [current] };
@@ -130,7 +133,13 @@ export function reduceMulti(previous, last) {
 }
 
 export function reduceConcatBranch(previous, last) {
-    return { type: 'branch', value: previous.value.concat(last.value) };
+    if (last.flags === undefined) {
+        // on conserve la structure last
+        return { type: 'branch', value: previous.value.concat(last.value) };
+    } else {
+        // on met les valeur à plat
+        return { type: 'branch', value: previous.value.concat(last) , flags: previous.flags };
+    }    
 }
 
 export function reduceConcatBranchMulti(previous, last) {
