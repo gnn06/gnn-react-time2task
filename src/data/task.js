@@ -43,7 +43,7 @@ export function taskCompare(task1, task2) {
  */
 export function filterSlotExpr(tasks, filter) {
     if (filter === 'no-filter') return tasks;
-    return tasks.filter(makeFilter(filter));
+    return tasks.filter(makeFilter(filter).func);
 }
 
 /**

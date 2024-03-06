@@ -37,6 +37,7 @@ const text = `
 xx/xx/xxxx
 ==========
 - refactor typescript as devDependency
+- fix crash on filter 'mardi mercredi' with error message
 `
 
 export default function Changelog() {

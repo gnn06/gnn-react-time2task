@@ -225,6 +225,11 @@ describe('filterSlotExpr', () => {
         const result = filterSlotExpr(tasks, 'vendredi');
         expect(result).toEqual(tasks)
     })
+    test('error', () => {
+        const tasks = [ { slotExpr: 'this_week vendredi' } ];
+        const result = filterSlotExpr(tasks, 'mardi mercredi');
+        expect(result).toEqual(tasks);
+    })
 })
 
 describe('findTaskBySlotExpr', () => {

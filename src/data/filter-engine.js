@@ -1,4 +1,5 @@
 import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2 } from './task.js';
+import { isSlotSimple } from './slot-path.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
 
@@ -15,27 +16,28 @@ export const makeEvery2FilterFunc = (task) => taskPredicateEvery2(task)
 
 /* public, used slot-filter.js by */
 export function makeFilter(filterExpr) {
-    if (filterExpr === '' || filterExpr === 'no-filter') return () => true;
+    if (filterExpr === '' || filterExpr === 'no-filter') return {func: () => true};
     const filtersAnd = filterExpr.split(' AND ');
     if (filtersAnd.length >= 2) {
-        return (task) => filtersAnd.every(filter => makeFilter(filter)(task));
+        return {func: (task) => filtersAnd.every(filter => makeFilter(filter).func(task))};
     }
     const filtersOr = filterExpr.split(' OR ');
     if (filtersOr.length >= 2) {
-        return (task) => filtersOr.some(filter => makeFilter(filter)(task));
+        return {func: (task) => filtersOr.some(filter => makeFilter(filter).func(task))};
     }
     if (filterExpr.startsWith('title:')) {
         const title = filterExpr.replace('title:', '')
-        return (task) => makeTitleFilterFunc(task, title);
+        return {func: (task) => makeTitleFilterFunc(task, title)};
     } else if (filterExpr === 'NOREPEAT') {
-        return makeNoRepeatFilterFunc;
+        return {func: makeNoRepeatFilterFunc};
     } else if (filterExpr === 'EVERY2') {
-        return makeEvery2FilterFunc;    
+        return {func: makeEvery2FilterFunc};
     } else {
+        if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
         if (filterExpr.endsWith(' NONE')) {
-            return (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5));
+            return {func: (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5))};
         } else {
-            return (task) => makeSlotExprFilterFunc(task, filterExpr);
+            return {func: (task) => makeSlotExprFilterFunc(task, filterExpr)};
         }
     }
 }

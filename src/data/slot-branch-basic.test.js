@@ -1,5 +1,5 @@
 import { lowerSlotBranch, completeSlotBranch, getCurrentPathBranch, chooseSlotForSortBranch, 
-         removeDisableBranch } from './slot-branch.js';
+         removeDisableBranch, isSlotSimpleBranch } from './slot-branch.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -150,4 +150,24 @@ describe('removeDisable', () => {
         const result = removeDisableBranch(given)
         expect(result).toEqual(given)
     })
+})
+
+test('isSlotSimple branch', () => {
+    const result = isSlotSimpleBranch({type:'branch', value: ['this_week', 'lundi']})
+    expect(result).toBeTruthy()
+})
+
+test('isSlotSimple multi', () => {
+    const result = isSlotSimpleBranch(
+        {type:'multi', value: [
+            {type:'branch', value: ['this_week', 'lundi']},
+            {type:'branch', value: ['this_week', 'mardi']}
+        ]})
+    expect(result).toBeFalsy()
+})
+
+test('isSlotSimple flag', () => {
+    const result = isSlotSimpleBranch(
+        {type:'branch', value: ['this_week', 'lundi'], flags: ['chaque']})
+    expect(result).toBeFalsy()
 })

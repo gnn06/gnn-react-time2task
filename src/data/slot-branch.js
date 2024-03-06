@@ -175,3 +175,7 @@ export function slotCompareBranch(obj1, obj2) {
     }
 
 }
+
+export function isSlotSimpleBranch(tree) {
+    return tree.type === 'branch' && tree.flags === undefined;
+}
