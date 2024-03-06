@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '06/03/2024'
+export const RELEASE = 'xx/xx/2024'
 
 const text = `
 21/02/2024
@@ -33,6 +33,10 @@ const text = `
 - create EVERY2 flag. Use it as 'EVERY2 this_week mardi'. At the end of week, change 'EVERY2 this_week' into 'EVERY2 following_week'. NOREPEAT manages EVERY2.
 - bug fixes (crash filter 'mardi AND', 'this_month EVERY2 next_week jeudi', 'disable chaque lundi aprem this_week mercredi')
 - refactoring
+
+xx/xx/xxxx
+==========
+- refactor typescript as devDependency
 `
 
 export default function Changelog() {
