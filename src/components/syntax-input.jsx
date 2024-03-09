@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useRef } from "react";
 import { insertSeparator } from "../utils/stringUtil";
 
-export default function SyntaxInput({items, placeHolderInput, initialInputValue, classNameInput, onInputChange}) {
+export default function SyntaxInput({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange}) {
 
   const [value, setValue] = useState(initialInputValue || '');
   const [show, setShow] = useState(false);
@@ -45,7 +45,7 @@ export default function SyntaxInput({items, placeHolderInput, initialInputValue,
     }
   }
   return <div className="flex-1 ">
-    <input  ref={inputRef} className={'border rounded p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus={onFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onItemClick} />
+    <input  id={id} ref={inputRef} className={'border rounded p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus={onFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onItemClick} />
       <ul className={(show ? 'show' : 'hidden') + ' absolute z-10 mt-1 border rounded shadow-lg bg-gray-400 divide-y divide-gray-400 py-1'} onMouseDown={(e) => e.preventDefault()} >
         { items.map(item => <li key={item} className="py-1 px-2 hover:bg-gray-300" onClick={onSelectClick}>{item}</li>) }
       </ul>

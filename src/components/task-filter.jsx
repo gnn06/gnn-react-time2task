@@ -29,10 +29,10 @@ export default function TaskFilter() {
     return <div className="w-full"> 
         <div className="w-full flex flex-row space-x-1 items-baseline">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
-                <div class="w-full">
-                    <SyntaxInput items={filters}
+                <div className="w-full">
+                    <SyntaxInput id="task-filter" items={filters}
                         placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} onInputChange={onChange}/>
-                    <div class="m-1 text-red-500">{error}</div>
+                    { error && <div className="m-1 text-red-500">{error}</div>}
                 </div>
             <DialogHelpExpression/>            
         </div>

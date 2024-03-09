@@ -39,6 +39,7 @@ xx/xx/xxxx
 - refactor typescript as devDependency
 - fix crash when filter 'mardi mercredi' with error message
 - fix 'this_month EVERY2 this_week jeudi' don't filtered by 'jeudi'
+- unit test TaskFilter with testing-library ; add ID ; need keyCode refactor
 `
 
 export default function Changelog() {
