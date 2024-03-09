@@ -1,6 +1,6 @@
 export default function InputEdit({defaultValue, saveHandler, className}) {
     const onOrderKeyPressed = e => {
-        if (e.keyCode === 13) { // ENTER
+        if (e.code === 'Enter') { // ENTER
             saveHandler(e)
         }
     };

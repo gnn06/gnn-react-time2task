@@ -38,9 +38,9 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
   }
 
   const onKeyDown = (e) => {
-    if (e.keyCode === 27) { // ESC
+    if (e.code === 'Escape') { // ESC
         setShow(false)
-    } else if (e.keyCode === 13) { // ENTER
+    } else if (e.code === 'Enter') { // ENTER
       onInputChange && onInputChange(value)
     }
   }
