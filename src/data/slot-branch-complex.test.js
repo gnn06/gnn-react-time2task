@@ -120,6 +120,15 @@ describe('slotIsInOtherBranch', () => {
             {type:'branch',value:['this_month', 'this_week', 'lundi']});
         expect(result).toBeFalsy()
     })
+
+    test('subbranch for flag', () => {
+        const result = slotIsInOtherBranch(
+            { type: 'branch', value: [ 'this_week', 
+                { type: 'branch', value: [ 'this_week', 'jeudi' ], flags: ['EVERY2'] }
+            ] }
+            ,{ type: 'branch', value: [ 'jeudi']});
+        expect(result).toBeTruthy()
+    })
 })
 
 describe('slotCompareTree', () => {

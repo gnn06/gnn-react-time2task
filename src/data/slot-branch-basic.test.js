@@ -6,7 +6,8 @@ jest.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('lowerSlotBranch', () => {
     it('lowerSlot', () => {
-        expect(lowerSlotBranch({type:'branch',value:['S32', 'mercredi', 'matin']})).toEqual({type:'branch',value:['mercredi', 'matin']})
+        expect(lowerSlotBranch({type:'branch',value:['S32', 'mercredi', 'matin']}))
+            .toEqual({type:'branch',value:['mercredi', 'matin']})
     })
 
     it('lowerSlot no lower', () => {
@@ -19,6 +20,15 @@ describe('lowerSlotBranch', () => {
 
     it('lowerSlot multi', () => {
         expect(lowerSlotBranch({type:'branch',value:['this_week', {type:'multi', value:['mercredi','jeudi']}]})).toEqual({type:'multi', value:['mercredi','jeudi']})
+    })
+
+    it('sub branch due of flag', () => {
+        const given = { type:'branch',
+                        value:[
+                            'this_week', 
+                            { type:'branch', value: ['jeudi'], flags: ['chaque']}]}
+        const result = lowerSlotBranch(given);
+        expect(result).toEqual(given.value.at(1))
     })
 })
 

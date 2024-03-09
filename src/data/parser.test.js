@@ -22,7 +22,7 @@ describe('getLevelNode', () => {
     expect(getLevelNode('1')).toEqual(1)
   })
 
-  test('should string number', () => {
+  test('should string chaque', () => {
     expect(getLevelNode('chaque')).toEqual(-1)
   })
 });

@@ -37,7 +37,8 @@ const text = `
 xx/xx/xxxx
 ==========
 - refactor typescript as devDependency
-- fix crash on filter 'mardi mercredi' with error message
+- fix crash when filter 'mardi mercredi' with error message
+- fix 'this_month EVERY2 this_week jeudi' don't filtered by 'jeudi'
 `
 
 export default function Changelog() {

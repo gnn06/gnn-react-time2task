@@ -3,6 +3,8 @@ import { getSlotLevel, getCurrentSlot, weight } from "./slot-path";
 export function lowerSlotBranch(slot) {
     if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
         return slot.value.at(1)
+    } else if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'branch') {
+        return slot.value.at(1);
     } else {
         return { type: slot.type, value: slot.value.slice(1)}
     }
