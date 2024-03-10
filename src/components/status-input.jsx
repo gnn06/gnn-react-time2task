@@ -1,21 +1,8 @@
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import Select from 'react-select';
-import Color from 'color';
+import { STATUS_LST } from "./task-status.js";
 
-function myColor(color) {
-    return Color(color).lighten(0.4).string()
-}
-
-const statusReferentiel = [
-    {value: 'A faire' , color: myColor('#ef4444') },
-    {value: 'en cours', color: myColor('#eab308') },
-    {value: 'fait'    , color: myColor('#22c55e')  },
-    {value: 'terminé' , color: myColor('#14b8a6')  },
-    {value: 'archivé' , color: myColor('#6B7280')  },
-    {value: 'reprendre aujourd\'hui', color: myColor('#a855f7') },
-    {value: 'reprendre demain'      , color: myColor('#d946ef') },
-    {value: 'reprendre semaine'     , color: myColor('#ec4899') },
-].map((item) => { return { ...item, label: item.value }});
+export const statusReferentiel = STATUS_LST.map((item) => { return { ...item, label: item.value }});
 
 export default function SyntaxInput({task}) {
     const [
