@@ -41,6 +41,7 @@ xx/xx/xxxx
 - fix 'this_month EVERY2 this_week jeudi' don't filtered by 'jeudi'
 - unit test TaskFilter with testing-library ; add ID ; need keyCode refactor
 - use status color in slot view
+- add resizable panels
 `
 
 export default function Changelog() {

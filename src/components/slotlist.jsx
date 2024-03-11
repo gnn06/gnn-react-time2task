@@ -5,7 +5,7 @@ import Slot from './slot';
 export default function SlotList()  {
     const slotRedux = useSelector(state => state.tasks.slots);
     return (
-        <div className="m-1 basis-1/2">
+        <div className="m-1 ">
             <h1>Slots</h1>
             {slotRedux.map((slot, index) => {
                 return <Slot key={slot.id} slot={slot} />
