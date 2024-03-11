@@ -31,7 +31,9 @@ export default function TaskFilter() {
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
                 <div className="w-full">
                     <SyntaxInput id="task-filter" items={filters}
-                        placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} onInputChange={onChange}/>
+                        placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
+                        closeIcon={true}
+                        onInputChange={onChange}/>
                     { error && <div className="m-1 text-red-500">{error}</div>}
                 </div>
             <DialogHelpExpression/>            
