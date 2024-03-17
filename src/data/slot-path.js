@@ -41,6 +41,10 @@ export const slotKeyWords = [
     'disable', 'chaque', 'EVERY2'
 ];
 
+export function getExprKeywords() {
+    return slotIdList.concat(slotKeyWords)
+}
+
 /*
  * returns the default slot of the given level
  * getCurrentSlot(1) = this_month

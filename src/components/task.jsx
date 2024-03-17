@@ -2,7 +2,7 @@ import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSli
 import { useSelector } from "react-redux";
 
 import './task.css'
-import { slotIdList, slotKeyWords } from "../data/slot-path.js";
+import { getExprKeywords } from "../data/slot-path.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';
@@ -54,7 +54,7 @@ export default function Task({task}) {
     return <tr className={myClassName} >
             <td><InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/></td>
             <td>                
-                <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={slotIdList.concat(slotKeyWords)}
+                <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={getExprKeywords()}
                     onInputChange={onSlotExprChange}/>
             </td>
             <td><InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-10"/></td>

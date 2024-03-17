@@ -8,5 +8,5 @@ export default function InputEdit({defaultValue, saveHandler, className}) {
         e.stopPropagation();
     }
     return <input defaultValue={defaultValue} onKeyDown={onOrderKeyPressed} onBlur={saveHandler} onClick={noPropagation} 
-                  className={"bg-transparent " + className}/>
+                  className={"border p-1 bg-transparent " + className}/>
 }
