@@ -42,9 +42,9 @@ xx/xx/xxxx
 - unit test TaskFilter with testing-library ; add ID ; need keyCode refactor
 - use status color in slot view
 - add resizable panels
-- filter dropdown with current word
-- dropdown appears on clicking and typying, hide on enter, refactor hidden
---- TODO remove starting partial item
+- better dropdown (filtering, showing)
+- edit task in dialog
+- enterNumpad
 `
 
 export default function Changelog() {

@@ -44,13 +44,17 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
   }
 
   function getFilterLst() {
-    return items.filter(item => item.indexOf(currentWord()) === 0)
+    if (items.indexOf(currentWord()) >= 0)
+      // to let choose an other item with mouse
+      return items
+    else
+      return items.filter(item => item.indexOf(currentWord()) === 0)
   }
 
   const onChange = (e) => {
     const word = wordBefore(e.target.value, e.target.selectionStart)
     const newLst = items.filter(item => item.indexOf(word) === 0)
-    if (newLst.length === 1) { setSelected(0) }
+    if (newLst.length === 1) { setSelected(0) } else { setSelected(-1) }
     setShow(true)
     // console.log('setValue')
     setValue(e.target.value)
@@ -79,10 +83,11 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
   }
 
   const onKeyDown = (e) => {
+    //console.log(e.code)
     if (e.code === 'Escape') { // ESC
         setShow(false)
         setSelected(-1)
-    } else if (e.code === 'Enter') { // ENTER
+    } else if (e.code === 'Enter' || e.code === 'NumpadEnter') { // ENTER
       if (selected > -1) {
         insertItemInInputFOOO(getFilterLst()[selected])
         setSelected(-1)
@@ -124,7 +129,7 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
         {onInputFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onInputClick} />
       { closeIcon && <CloseIcon className={classNameIconn} onClick={onInputClear}/>} <KeyboardArrowDownIcon className={classNameIconn} />
     </div>
-    {show && Dropdown}
+    {show && getFilterLst().length > 0 && Dropdown}
     </div>
   ;
 };

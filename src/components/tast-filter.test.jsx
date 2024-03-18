@@ -17,9 +17,9 @@ test('bad filter, check error message', async () => {
 
   const input = screen.getByLabelText('Filtre :')
 
-  await userEvent.type(input, 'mardi mercredi')
+  await userEvent.type(input, 'mardi mercredi{Escape}{Enter}')
   // Need change application code that use deprecated keyCode to use {enter}
-  fireEvent.keyDown(input, { key: 'enter', code: 'Enter', keyCode: 13 })
+  //fireEvent.keyDown(input, { key: 'enter', code: 'Enter', keyCode: 13 })
   const error = screen.getByText('filter error')
   expect(error).toBeDefined()
 

@@ -59,3 +59,20 @@ test('use mouse', async () => {
     expect(screen.getByText('first')).toBeDefined()
     expect(screen.getByText('second')).toBeDefined()    
 })
+
+
+test('no suggestion + enter, no crash', async () => {
+    const items = ['first','second'];
+    const handler = jest.fn();
+    render(<SyntaxInput 
+                id="task-filter"
+                items={items}
+                placeHolderInput="placeholder"
+                onInputChange={handler}/>)
+
+    const input = screen.getByPlaceholderText('placeholder')
+    
+    await userEvent.type(input, 'title:foo{Enter}')
+    
+    expect(handler).toHaveBeenCalled()
+})
