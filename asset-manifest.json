@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/gnn-react-time2task/static/css/main.e4b658b5.css",
-    "main.js": "/gnn-react-time2task/static/js/main.278f97ce.js",
+    "main.css": "/gnn-react-time2task/static/css/main.a7b993f9.css",
+    "main.js": "/gnn-react-time2task/static/js/main.684f6b9f.js",
     "static/js/289.521b52be.chunk.js": "/gnn-react-time2task/static/js/289.521b52be.chunk.js",
     "static/media/roboto-latin-500-normal.woff2": "/gnn-react-time2task/static/media/roboto-latin-500-normal.f25d774ecfe0996f8eb5.woff2",
     "static/media/roboto-latin-700-normal.woff2": "/gnn-react-time2task/static/media/roboto-latin-700-normal.227c93190fe7f82de3f8.woff2",
@@ -60,12 +60,12 @@
     "static/media/roboto-greek-ext-400-normal.woff": "/gnn-react-time2task/static/media/roboto-greek-ext-400-normal.f708607d2a7290fb8bfa.woff",
     "static/media/roboto-greek-ext-700-normal.woff": "/gnn-react-time2task/static/media/roboto-greek-ext-700-normal.249853776d22a271b2b5.woff",
     "index.html": "/gnn-react-time2task/index.html",
-    "main.e4b658b5.css.map": "/gnn-react-time2task/static/css/main.e4b658b5.css.map",
-    "main.278f97ce.js.map": "/gnn-react-time2task/static/js/main.278f97ce.js.map",
+    "main.a7b993f9.css.map": "/gnn-react-time2task/static/css/main.a7b993f9.css.map",
+    "main.684f6b9f.js.map": "/gnn-react-time2task/static/js/main.684f6b9f.js.map",
     "289.521b52be.chunk.js.map": "/gnn-react-time2task/static/js/289.521b52be.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e4b658b5.css",
-    "static/js/main.278f97ce.js"
+    "static/css/main.a7b993f9.css",
+    "static/js/main.684f6b9f.js"
   ]
 }
