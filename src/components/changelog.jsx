@@ -45,6 +45,10 @@ const text = `
 - better dropdown (filtering, showing)
 - edit task in dialog
 - enterNumpad
+
+xx/03/2024
+==========
+- when 'jeudi|(caret)', this_month is not automaticaly selected in the drpodown
 `
 
 export default function Changelog() {

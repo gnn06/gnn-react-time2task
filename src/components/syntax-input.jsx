@@ -45,7 +45,7 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
 
   function getFilterLst() {
     if (items.indexOf(currentWord()) >= 0)
-      // to let choose an other item with mouse
+      // current is exactly in the list then don't show a list limited to only one item but show a full list to used it with mouse
       return items
     else
       return items.filter(item => item.indexOf(currentWord()) === 0)
@@ -53,7 +53,8 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
 
   const onChange = (e) => {
     const word = wordBefore(e.target.value, e.target.selectionStart)
-    const newLst = items.filter(item => item.indexOf(word) === 0)
+    //const newLst = items.filter(item => item.indexOf(word) === 0)
+    const newLst = getFilterLst()
     if (newLst.length === 1) { setSelected(0) } else { setSelected(-1) }
     setShow(true)
     // console.log('setValue')

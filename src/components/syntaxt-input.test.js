@@ -76,3 +76,21 @@ test('no suggestion + enter, no crash', async () => {
     
     expect(handler).toHaveBeenCalled()
 })
+
+
+test('no selection when full suggestion after word', async () => {
+    const items = ['first','second'];
+    const handler = jest.fn();
+    render(<SyntaxInput 
+                id="task-filter"
+                items={items}
+                placeHolderInput="placeholder"
+                onInputChange={handler}/>)
+
+    const input = screen.getByPlaceholderText('placeholder')
+    
+    await userEvent.type(input, 'first')
+    
+    // check no item selected
+    expect(screen.getByText('first')).not.toHaveClass('bg-gray-300')
+})
