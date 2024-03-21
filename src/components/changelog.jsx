@@ -49,6 +49,7 @@ const text = `
 xx/03/2024
 ==========
 - when 'jeudi|(caret)', this_month is not automaticaly selected in the drpodown
+- add icon on unique task
 `
 
 export default function Changelog() {

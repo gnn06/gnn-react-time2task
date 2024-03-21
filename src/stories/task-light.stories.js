@@ -13,6 +13,15 @@ const task = {
   order: 12
 };
 
+const taskUnique = {
+  id: 12,
+  title: 'titre',
+  slotExpr: 'lundi',
+  status: 'en cours',
+  order: 12
+};
+
+
 export const MockedState = {
   tasks: [],
   status: 'idle',
@@ -51,5 +60,10 @@ export default {
  */
 export const Default = {
   args: { task },
+  decorators: [(story) => <Mockstore taskboxState={MockedState}><table><tr>{story()}</tr></table></Mockstore>],
+};
+
+export const Uniq = {
+  args: { task: taskUnique },
   decorators: [(story) => <Mockstore taskboxState={MockedState}><table><tr>{story()}</tr></table></Mockstore>],
 };

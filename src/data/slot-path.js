@@ -1,5 +1,5 @@
 import { Parser } from './parser'
-import { slotIsInOtherBranch, isSlotRepeat1Branch, isSlotRepeat2Branch, slotCompareBranch, isSlotSimpleBranch } from './slot-branch'
+import { slotIsInOtherBranch, isSlotRepeat1Branch, isSlotRepeat2Branch, slotCompareBranch, isSlotSimpleBranch, isSlotUniqueBranch } from './slot-branch'
 
 /**
  * give the level of a slot
@@ -104,6 +104,12 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
     const tree1 = parser.parse(slotExpr)
     const tree2 = parser.parse(otherSlotExpr)
     return slotIsInOtherBranch(tree1, tree2)
+}
+
+export function isSlotUnique(slotExpr) {
+    const parser = new Parser()
+    const tree = parser.parse(slotExpr)
+    return isSlotUniqueBranch(tree)
 }
 
 export function isSlotRepeat1(slotExpr) {

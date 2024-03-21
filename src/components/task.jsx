@@ -2,12 +2,13 @@ import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSli
 import { useSelector } from "react-redux";
 
 import './task.css'
-import { getExprKeywords } from "../data/slot-path.js";
+import { getExprKeywords, isSlotUnique } from "../data/slot-path.js";
 
 import Button from '../components/button';
 import SyntaxInput from './syntax-input';
 import StatusInput from './status-input.jsx'
 import InputEdit from "./edit-input.jsx";
+import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 
 export default function Task({task}) {
     
@@ -59,6 +60,7 @@ export default function Task({task}) {
             </td>
             <td><InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-10"/></td>
             <td><StatusInput task={task}/></td>
+            <td>{isSlotUnique(task.slotExpr) && <LooksOneIcon/>}</td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
 }

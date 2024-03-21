@@ -19,7 +19,14 @@ export default function TaskList() {
                 <h1>Tasks</h1>
                 <table className="w-full">
                     <thead>
-                    <tr><th>Titre</th><th>Créneau (expression)</th></tr>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Créneau (expression)</th>
+                        <th>Ordre</th>
+                        <th>Statut</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody>
                     {tasks.map((task, index) => <Task key={task.id} task={task} />)}

@@ -111,6 +111,10 @@ export function slotIsInOtherBranch(slotExpr, otherSlotExpr) {
     }
 }
 
+export function isSlotUniqueBranch(slot) {
+    return isSlotSimpleBranch(slot) && !isSlotRepeat1Branch(slot);
+}
+
 export function isSlotRepeat1Branch(slot) {
     return applyTestOnBranch(slot, 
         (slot) => slot.flags !== undefined && (slot.flags.indexOf('chaque') > -1 || slot.flags.indexOf('EVERY2') > -1))

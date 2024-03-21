@@ -1,5 +1,5 @@
 import { lowerSlotBranch, completeSlotBranch, getCurrentPathBranch, chooseSlotForSortBranch, 
-         removeDisableBranch, isSlotSimpleBranch } from './slot-branch.js';
+         removeDisableBranch, isSlotSimpleBranch, isSlotUniqueBranch } from './slot-branch.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -180,4 +180,34 @@ test('isSlotSimple flag', () => {
     const result = isSlotSimpleBranch(
         {type:'branch', value: ['this_week', 'lundi'], flags: ['chaque']})
     expect(result).toBeFalsy()
+})
+
+test('isSlotUnique chaque', () => {
+    const result = isSlotUniqueBranch(
+        {type:'branch', value: ['this_week', 'lundi'], flags: ['chaque']})
+    expect(result).toBeFalsy()
+})
+
+test('isSlotUnique every2', () => {
+    const result = isSlotUniqueBranch(
+        {type:'branch', value: ['this_week', 'lundi'], flags: ['EVERY2']})
+    expect(result).toBeFalsy()
+})
+
+test('isSlotUnique chaque at level2', () => {
+    const result = isSlotUniqueBranch(
+        {type:'branch', value: ['this_week', {type:'branch', value: ['lundi'], flags: ['chaque']}]})
+    expect(result).toBeFalsy()
+})
+
+test('isSlotUnique multi', () => {
+    const result = isSlotUniqueBranch(
+        {type:'multi', value: ['lundi', 'mardi']})
+    expect(result).toBeFalsy()
+})
+
+test('isSlotUnique branch', () => {
+    const result = isSlotUniqueBranch(
+        {type:'branch', value: ['this_week', 'mardi']})
+    expect(result).toBeTruthy()
 })
