@@ -124,7 +124,7 @@ export function isSlotRepeat2(slotExpr) {
     return isSlotRepeat2Branch(tree)
 }
 
-/* check if only branch and no multi */
+/* check if only branch and no multi, used in filter */
 export function isSlotSimple(slotExpr) {
     const parser = new Parser()
     const tree = parser.parse(slotExpr)

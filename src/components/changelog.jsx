@@ -50,6 +50,7 @@ xx/03/2024
 ==========
 - when 'jeudi|(caret)', this_month is not automaticaly selected in the drpodown
 - add icon on unique task
+- add Group
 `
 
 export default function Changelog() {

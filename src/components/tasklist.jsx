@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Task from './task';
 import AddTaskForm from "../components/AddTaskForm";
+import TaskGroup from "../components/task-group";
 
 import { filterSlotExpr } from '../data/task.js';
 import { useGetTasksQuery } from "../features/apiSlice.js";
@@ -10,13 +12,27 @@ export default function TaskList() {
     const userId = useSelector(state => state.tasks.user.id);
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
+    const [group, setGroup] = useState(null);
     
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentTaskFilter);
         return (
             <div className="m-1 ">
-                <h1>Tasks</h1>
+                <div className="flex flex-row justify-end">
+                    <label>
+                        Regrouper par :
+                        <select onChange={(e) => setGroup(e.target.value)} className="m-1">
+                            <option value="0">Rien</option>
+                            <option value="1">Mois</option>
+                            <option value="2">Semaine</option>
+                            <option value="3">Jour</option>
+                            <option value="4">Heure</option>
+                        </select>
+                    </label>
+                </div>
+                
+                
                 <table className="w-full">
                     <thead>
                     <tr>
@@ -29,7 +45,7 @@ export default function TaskList() {
                     </tr>
                     </thead>
                     <tbody>
-                    {tasks.map((task, index) => <Task key={task.id} task={task} />)}
+                        <TaskGroup tasks={tasks} group={group}/>
                     </tbody>
                 </table>
                 <AddTaskForm />

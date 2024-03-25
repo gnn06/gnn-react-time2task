@@ -1,4 +1,7 @@
-import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2 } from "./task";
+import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
+        taskGroup } from "./task";
+import { completeSlotBranch, slotTruncateBranch, getHashBranch } from './slot-branch.js';
+import { Parser } from './parser.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -393,3 +396,60 @@ describe('findTaskBySlotExpr', () => {
         expect(result).toEqual(expected);
     })
 })
+
+describe('groupTask', () => {
+    test('taskGroup level 1', () => {
+        const task1 = { id: 'task1', slotExpr: 'this_week mardi matin' }
+        const task2 = { id: 'task2', slotExpr: 'this_week mardi aprem' }
+        const task3 = { id: 'task3', slotExpr: 'next_week mardi aprem' }
+        const tasks = [ task1, task2, task3 ]
+        const result = taskGroup(tasks, 2)
+        expect(result).toEqual({'this_month this_week': [task1, task2] ,
+                                'this_month next_week': [task3] })
+    })
+    
+    test('taskGroup level2', () => {
+        const task1 = { slotExpr: 'this_week mardi matin'  }
+        const task2 = { slotExpr: 'this_week mardi aprem'  }
+        const task3 = { slotExpr: 'this_week mercredi aprem'  }
+        const tasks = [ task1, task2, task3 ]
+        const result = taskGroup(tasks, 3)
+        expect(result).toEqual({'this_month this_week mardi':    [task1, task2],
+                                'this_month this_week mercredi': [task3] })
+    })
+    
+    test('taskGroup level 3', () => {
+        const task1 = { slotExpr: 'this_week mardi matin' }
+        const task2 = { slotExpr: 'this_week mardi aprem' }
+        const task3 = { slotExpr: 'this_week mercredi aprem'  }
+        const tasks = [ task1, task2, task3 ]
+        const result = taskGroup(tasks,4)
+        expect(result).toEqual({'this_month this_week mardi matin': [task1],
+                                'this_month this_week mardi aprem': [task2],
+                                'this_month this_week mercredi aprem': [task3]})
+    })    
+});
+
+
+test('foo', () => {
+    const parser = new Parser()
+    const given1 = 'chaque lundi aprem chaque jeudi mercredi matin';
+    const result1 = parser.parse(given1)
+    const result2 = slotTruncateBranch(result1, 4)
+    const result3 = completeSlotBranch(result2)
+    const result4 = getHashBranch(result3)
+    
+    expect(result4).toEqual('this_month this_week lundi aprem')
+});
+
+
+test('foo', () => {
+    const parser = new Parser()
+    const given1 = 'chaque lundi aprem';
+    const result1 = parser.parse(given1)
+    const result2 = completeSlotBranch(result1)
+    const result3 = slotTruncateBranch(result2, 2)
+    const result4 = getHashBranch(result3)
+    
+    expect(result4).toEqual('this_month this_week')
+});

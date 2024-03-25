@@ -18,15 +18,21 @@ export function firstSlotBranch(slotExpr) {
 export function completeSlotBranch(givenSlotExpr, targetLevel) {
     if (targetLevel === undefined) targetLevel = 1
     if (givenSlotExpr === undefined) return undefined;
-    const first = firstSlotBranch(givenSlotExpr);
-    const level = getSlotLevel(first);
-    let newValue = givenSlotExpr.value;
-    for (let i = level - 1; i >= targetLevel; i--) {
-        newValue = [getCurrentSlot(i)].concat(newValue)
-    }
-    return { type: givenSlotExpr.type,
-        flags: givenSlotExpr.flags,
-        value: newValue
+    if (givenSlotExpr.type === 'multi') {
+        return { ...givenSlotExpr,
+                 value: givenSlotExpr.value.map(item => completeSlotBranch(item, targetLevel))
+               }
+    } else {
+        const first = firstSlotBranch(givenSlotExpr);
+        const level = getSlotLevel(first);
+        let newValue = givenSlotExpr.value;
+        for (let i = level - 1; i >= targetLevel; i--) {
+            newValue = [getCurrentSlot(i)].concat(newValue)
+        }
+        return { type: givenSlotExpr.type,
+            flags: givenSlotExpr.flags,
+            value: newValue
+        }
     }
 }
 
@@ -130,6 +136,45 @@ function applyTestOnBranch(slot, testFunc) {
         return slot.value.some(item => applyTestOnBranch(item, testFunc))
     } else {
         return testFunc(slot) || slot.value.slice(1).some(item => (typeof item === 'object') && applyTestOnBranch(item, testFunc))
+    }
+}
+
+export function slotTruncateBranch (tree, level) {
+    if (tree.type === 'multi') {
+        return { ...tree, value: tree.value.map(item => slotTruncateBranch(item, level)) }
+    } else {
+        const result = []
+        for (const item of tree.value) {
+            if (typeof item === 'object') {
+                result.push(slotTruncateBranch(item, level))
+            } else { // string
+                if (getSlotLevel(item) <= level) {
+                    result.push(item)
+                } else {
+                    break;
+                }            
+            }
+        }
+        return {...tree, value: result}
+    }
+}
+
+export function getHashBranch(tree) {
+    if (tree.type === 'multi') {
+        return getHashBranch(chooseSlotForSortBranch(tree))
+    } else { // type branch
+        const result = []
+        for (const item of tree.value) {
+            if (typeof item === 'string') {
+                result.push(item)
+            } else {
+                const subresult = getHashBranch(item)
+                if (subresult !== '') { 
+                    result.push(subresult)
+                }
+            }
+        }
+        return result.join(' ');
     }
 }
 

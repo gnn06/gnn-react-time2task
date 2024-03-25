@@ -1,5 +1,8 @@
 import { slotCompare, slotIsInOther, slotEqual, isSlotRepeat1, isSlotRepeat2 } from "./slot-path";
+import { slotTruncateBranch, getHashBranch, completeSlotBranch } from "./slot-branch";
 import { makeFilter }  from './filter-engine.js';
+import { Parser } from "./parser";
+import _ from 'lodash';
 
 export function taskPredicateEqualAndInclude(task, filter) {
     return slotIsInOther(task.slotExpr, filter)
@@ -59,4 +62,11 @@ export function findTaskBySlotExpr(tasks, slot) {
     } else {
         return tasks.filter(task => slotIsInOther(task.slotExpr, slot.path));
     }
+}
+
+const parser = new Parser()
+
+export function taskGroup(tasks, level) {
+    const toto = _.groupBy(tasks, item => getHashBranch(slotTruncateBranch(completeSlotBranch(parser.parse(item.slotExpr)), level)))
+    return toto;
 }
