@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '20/03/2024'
+export const RELEASE = '27/03/2024'
 
 const text = `
 21/02/2024
@@ -46,7 +46,7 @@ const text = `
 - edit task in dialog
 - enterNumpad
 
-xx/03/2024
+27/03/2024
 ==========
 - when 'jeudi|(caret)', this_month is not automaticaly selected in the drpodown
 - when 'title:something|(caret)' show all possible suggestions
