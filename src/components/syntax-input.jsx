@@ -47,8 +47,15 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
     if (items.indexOf(currentWord()) >= 0)
       // current is exactly in the list then don't show a list limited to only one item but show a full list to used it with mouse
       return items
-    else
-      return items.filter(item => item.indexOf(currentWord()) === 0)
+    else {
+      const filtered = items.filter(item => item.indexOf(currentWord()) === 0)
+      if (filtered.length === 0) {
+        // no suggestion starting with current word => show all suggestion
+        return items
+      } else {
+        return filtered
+      }
+    }      
   }
 
   const onChange = (e) => {

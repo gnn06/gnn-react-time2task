@@ -94,3 +94,19 @@ test('no selection when full suggestion after word', async () => {
     // check no item selected
     expect(screen.getByText('first')).not.toHaveClass('bg-gray-300')
 })
+
+test('full suggestion after wrong keyword', async () => {
+    const items = ['first','second'];
+    const handler = jest.fn();
+    render(<SyntaxInput 
+                id="task-filter"
+                items={items}
+                placeHolderInput="placeholder"
+                onInputChange={handler}/>)
+
+    const input = screen.getByPlaceholderText('placeholder')
+    
+    await userEvent.type(input, 'tata')
+    
+    expect(screen.getByText('first')).toBeDefined()
+})

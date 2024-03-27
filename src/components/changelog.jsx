@@ -49,6 +49,7 @@ const text = `
 xx/03/2024
 ==========
 - when 'jeudi|(caret)', this_month is not automaticaly selected in the drpodown
+- when 'title:something|(caret)' show all possible suggestions
 - add icon on unique task
 - add Group
 `
