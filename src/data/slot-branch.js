@@ -1,4 +1,4 @@
-import { getSlotLevel, getCurrentSlot, weight } from "./slot-path";
+import { getSlotLevel, getCurrentSlot, weight, getPreviousSlot } from "./slot-path";
 
 export function lowerSlotBranch(slot) {
     if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
@@ -229,4 +229,11 @@ export function slotCompareBranch(obj1, obj2) {
 
 export function isSlotSimpleBranch(tree) {
     return tree.type === 'branch' && tree.flags === undefined;
+}
+
+export function slotShift (slot) {
+    const first = firstSlotBranch(slot)
+    const repeat = slot.flags && slot.flags.indexOf("EVERY2") > -1
+    const previous = getPreviousSlot(first, repeat)
+    return {...slot, value: [ previous ].concat(slot.value.slice(1)) };
 }

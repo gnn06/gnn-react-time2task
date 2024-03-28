@@ -68,6 +68,22 @@ export function getCurrentSlot(level) {
         return '';
 }
 
+const SLOTS_BY_LEVEL = {
+    '1': ['this_month', 'next_month'],
+    '2': ['this_week', 'next_week', 'following_week'],
+    '3': ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],
+    '4': ['matin', 'aprem']
+}
+
+export function getPreviousSlot(slot, restart) {
+    const level = getSlotLevel(slot)
+    const slots = SLOTS_BY_LEVEL[level.toString()]
+    const index = slots.indexOf(slot)
+    const lastIndex = slots.length - 1
+    const result = slots[index === 0 ? (restart ? lastIndex : index) : index-1]
+    return result
+}
+
 /**
  * 
  * @param { mono or multi complete slotPath} obj1 obj2. if a multi slot is given, compare on first slot

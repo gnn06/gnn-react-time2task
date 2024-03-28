@@ -52,6 +52,10 @@ const text = `
 - when 'title:something|(caret)' show all possible suggestions
 - add icon on unique task
 - add Group
+
+xx/xx/2024
+==========
+- shift slot
 `
 
 export default function Changelog() {
