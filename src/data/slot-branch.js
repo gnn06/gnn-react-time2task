@@ -1,4 +1,4 @@
-import { getSlotLevel, getCurrentSlot, weight } from "./slot-path";
+import { getSlotLevel, getCurrentSlot, weight, getPreviousSlot } from "./slot-path";
 
 export function lowerSlotBranch(slot) {
     if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
@@ -178,6 +178,11 @@ export function getHashBranch(tree) {
     }
 }
 
+export function slotToExpr(slot) {
+    return (slot.flags !== undefined ? slot.flags.join(' ') + ' ' : '')
+        + slot.value.map(item => typeof item === 'object' ? slotToExpr(item) : item).join(' ')
+}
+
 export function slotCompareBranch(obj1, obj2) {
     if (obj1 === undefined || (obj1.flags && obj1.flags.indexOf('disable') >= 0))
         return 1;
@@ -229,4 +234,29 @@ export function slotCompareBranch(obj1, obj2) {
 
 export function isSlotSimpleBranch(tree) {
     return tree.type === 'branch' && tree.flags === undefined;
+}
+
+export function slotShift (tree, shiftSlot) {
+    if (tree.type === 'multi') {
+        return { type: 'multi', value: tree.value.map(it => slotShift(it, shiftSlot))}
+    } else { // type branch
+        const newValue = []
+        for (const item of tree.value) {
+            if (typeof item === 'object') {
+                const subresult = slotShift(item, shiftSlot)
+                if (subresult !== '') { 
+                    newValue.push(subresult)
+                }
+            } else {
+                if (getSlotLevel(item) === getSlotLevel(shiftSlot)) {
+                    const repeat = tree.flags && tree.flags.indexOf("EVERY2") > -1
+                    const previous = getPreviousSlot(item, repeat)
+                    newValue.push(previous)
+                } else {
+                    newValue.push(item)
+                }
+            }
+        }
+        return { ...tree, value: newValue }
+    }
 }

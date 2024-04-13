@@ -1,5 +1,5 @@
 import { slotCompare, slotIsInOther, slotEqual, isSlotRepeat1, isSlotRepeat2 } from "./slot-path";
-import { slotTruncateBranch, getHashBranch, completeSlotBranch } from "./slot-branch";
+import { slotTruncateBranch, getHashBranch, completeSlotBranch, slotShift, slotToExpr } from "./slot-branch";
 import { makeFilter }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
@@ -69,4 +69,21 @@ const parser = new Parser()
 export function taskGroup(tasks, level) {
     const toto = _.groupBy(tasks, item => getHashBranch(slotTruncateBranch(completeSlotBranch(parser.parse(item.slotExpr)), level)))
     return toto;
+}
+
+/**
+ * tasks shift, returns only task that shift, put oldSlotExpr into task 
+ */
+export function taskShiftFilter(tasks) {
+    const tasksTree = tasks.map(item => parser.parse(item.slotExpr))
+    
+    const newTree = tasksTree.map(item => slotShift(item, 'week'))
+
+    const result = []
+    for (let i = 0; i < newTree.length; i++) {
+        if (!_.isEqual(newTree[i], tasksTree[i])) {
+            result.push({...tasks[i], slotExpr: slotToExpr(newTree[i]), oldSlotExpr: tasks[i].slotExpr})
+        }
+    }
+    return result
 }

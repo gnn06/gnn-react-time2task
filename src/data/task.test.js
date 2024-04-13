@@ -1,5 +1,5 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
-        taskGroup } from "./task";
+        taskGroup, taskShiftFilter} from "./task";
 import { completeSlotBranch, slotTruncateBranch, getHashBranch } from './slot-branch.js';
 import { Parser } from './parser.js';
 
@@ -430,26 +430,43 @@ describe('groupTask', () => {
     })    
 });
 
-
-test('foo', () => {
-    const parser = new Parser()
-    const given1 = 'chaque lundi aprem chaque jeudi mercredi matin';
-    const result1 = parser.parse(given1)
-    const result2 = slotTruncateBranch(result1, 4)
-    const result3 = completeSlotBranch(result2)
-    const result4 = getHashBranch(result3)
+describe('truncate', () => {
+    test('multi', () => {
+        const parser = new Parser()
+        const given1 = 'chaque lundi aprem chaque jeudi mercredi matin';
+        const result1 = parser.parse(given1)
+        const result2 = slotTruncateBranch(result1, 4)
+        const result3 = completeSlotBranch(result2)
+        const result4 = getHashBranch(result3)
+        
+        expect(result4).toEqual('this_month this_week lundi aprem')
+    });
     
-    expect(result4).toEqual('this_month this_week lundi aprem')
+    
+    test('branch', () => {
+        const parser = new Parser()
+        const given1 = 'chaque lundi aprem';
+        const result1 = parser.parse(given1)
+        const result2 = completeSlotBranch(result1)
+        const result3 = slotTruncateBranch(result2, 2)
+        const result4 = getHashBranch(result3)
+        
+        expect(result4).toEqual('this_month this_week')
+    });
 });
 
+describe('taskShiftFilter', () => {
+    test('shift list with filtering', () => {
+        const given    = [ { slotExpr: 'next_week' }, { slotExpr: 'lundi' } ] 
+        const expected = [ { slotExpr: 'this_week', oldSlotExpr: 'next_week' } ] ;
+        const result = taskShiftFilter(given)
+        expect(result).toEqual(expected)
+    });
 
-test('foo', () => {
-    const parser = new Parser()
-    const given1 = 'chaque lundi aprem';
-    const result1 = parser.parse(given1)
-    const result2 = completeSlotBranch(result1)
-    const result3 = slotTruncateBranch(result2, 2)
-    const result4 = getHashBranch(result3)
-    
-    expect(result4).toEqual('this_month this_week')
+    test('expression with space', () => {
+        const given    = [ { slotExpr: 'this_week ' } ] 
+        const expected = [  ] ;
+        const result = taskShiftFilter(given)
+        expect(result).toEqual(expected)
+    })
 });

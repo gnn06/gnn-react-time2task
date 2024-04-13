@@ -1,4 +1,4 @@
-import { slotEqual, slotCompare } from './slot-path.js';
+import { slotEqual, slotCompare, getPreviousSlot } from './slot-path.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -90,3 +90,43 @@ describe('slotEqual', () => {
         expect(result).toEqual(false);
     })    
 })
+
+
+describe('getPreviousSlot', () => {
+    test('month', () => {
+        const given    = "next_month";
+        const expected = "this_month"
+        const result   = getPreviousSlot(given);
+        expect(result).toEqual(expected)
+    });
+    test('week', () => {
+        const given    = "next_week";
+        const expected = "this_week"
+        const result   = getPreviousSlot(given);
+        expect(result).toEqual(expected)
+    });
+    test('day', () => {
+        const given    = "mercredi";
+        const expected = "mardi"
+        const result   = getPreviousSlot(given);
+        expect(result).toEqual(expected)
+    });
+    test('hour', () => {
+        const given    = "aprem";
+        const expected = "matin"
+        const result   = getPreviousSlot(given);
+        expect(result).toEqual(expected)
+    });
+    test('stay on first', () => {
+        const given    = "this_week";
+        const expected = "this_week"
+        const result   = getPreviousSlot(given);
+        expect(result).toEqual(expected)
+    });
+    test('restart', () => {
+        const given    = "this_week";
+        const expected = "following_week"
+        const result   = getPreviousSlot(given, true);
+        expect(result).toEqual(expected)
+    });
+});

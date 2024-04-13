@@ -1,5 +1,5 @@
 import { lowerSlotBranch, completeSlotBranch, getCurrentPathBranch, chooseSlotForSortBranch, 
-         removeDisableBranch, isSlotSimpleBranch, isSlotUniqueBranch, slotTruncateBranch, getHashBranch } from './slot-branch.js';
+         removeDisableBranch, isSlotSimpleBranch, isSlotUniqueBranch, slotTruncateBranch, getHashBranch, slotToExpr } from './slot-branch.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -302,7 +302,7 @@ describe('hashBranch', () => {
         expect(result).toEqual('lundi')
     });
 
-    test('multi', () => {
+    test('branch with multi', () => {
         const given = { type: 'branch',
                         value: [ 'lundi',
                             { type: 'multi',
@@ -315,4 +315,34 @@ describe('hashBranch', () => {
         expect(result).toEqual('lundi')
     })
 
+});
+
+describe('slotToExpr', () => {
+    test('Name of the group', () => {
+        const given    = { value: [ 'lundi', 'aprem' ] }
+        const expected = 'lundi aprem'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+    
+    test('sub', () => {
+        const given    = { value: [ 'this_week', { value: [ 'lundi' ] } ] }
+        const expected = 'this_week lundi'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+    
+    test('wiht flags', () => {
+        const given    = { value: [ 'lundi', 'aprem' ], flags: [ 'disable', 'every2'] }
+        const expected = 'disable every2 lundi aprem'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+    
+    test('multi', () => {
+        const given    = { value: [ { value: [ 'lundi', 'matin' ] }, { value: [ 'mardi', 'aprem' ] } ] }
+        const expected = 'lundi matin mardi aprem'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    }); 
 });

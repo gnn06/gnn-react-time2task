@@ -47,7 +47,7 @@ export default function Task({task}) {
     const onDeleteClick = e => {
         const isConfirm = window.confirm('Supprimer la tâche ?');
         if (isConfirm) {
-            deleteTask(task.id)
+        deleteTask(task.id)
         }
         e.stopPropagation();
     }
@@ -55,11 +55,11 @@ export default function Task({task}) {
     return <tr className={myClassName} >
             <td><InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/></td>
             <td>                
-                <SyntaxInput initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={getExprKeywords()}
+                <SyntaxInput key={task.slotExpr} initialInputValue={task.slotExpr} classNameInput="bg-transparent" items={getExprKeywords()}
                     onInputChange={onSlotExprChange}/>
             </td>
             <td><InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-10"/></td>
-            <td><StatusInput task={task}/></td>
+            <td><StatusInput key={task.status} task={task}/></td>
             <td>{isSlotUnique(task.slotExpr) && <LooksOneIcon/>}</td>
             <td><Button label="Delete" clickToto={onDeleteClick} /></td>
         </tr>;
