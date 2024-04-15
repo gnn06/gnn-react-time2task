@@ -93,7 +93,7 @@ export default function TaskList() {
                 { shiftDialog.show && 
                     <Confirm 
                         titre="Confirmez-vous le décalage des tâches ?" 
-                        contenu={<><div>{`${shiftDialog.tasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next and EVERY2 this devient EVERY2 following).`}</div>
+                        contenu={<><div>{`${shiftDialog.tasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next and EVERY2 this devient EVERY2 following). Ce décalage ne concerne que les créneaux 'semaine' ; les créneaux mois ou jour ne sont pas concernés (next_month ne devient pas this_month).`}</div>
                                 <div className="grid grid-cols-3 gap-4 mt-5 ">
                                 { shiftDialog.tasks.map(t => (<React.Fragment><div>{t.title}</div><div className='font-mono'>{t.oldSlotExpr}</div><div className='font-mono'>{t.slotExpr}</div></React.Fragment>)) }
                                 </div>
