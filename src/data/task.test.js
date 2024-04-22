@@ -428,9 +428,19 @@ describe('groupTask', () => {
                                 'this_month this_week mardi aprem': [task2],
                                 'this_month this_week mercredi aprem': [task3]})
     })    
+
+    test('taskGroup with shift', () => {
+        const task1 = { slotExpr: 'this_week' }
+        const task2 = { slotExpr: 'next_week' }
+        const task3 = { slotExpr: 'this_week + 1'  }
+        const tasks = [ task1, task2, task3 ]
+        const result = taskGroup(tasks, 2)
+        expect(result).toEqual({'this_month next_week':     [task2, task3],
+                                'this_month this_week':     [task1]})
+    })
 });
 
-describe('truncate', () => {
+describe('grouping', () => {
     test('multi', () => {
         const parser = new Parser()
         const given1 = 'chaque lundi aprem chaque jeudi mercredi matin';
@@ -453,11 +463,31 @@ describe('truncate', () => {
         
         expect(result4).toEqual('this_month this_week')
     });
+
+    test('shift', () => {
+        const parser = new Parser()
+        const given1 = 'this_week + 1';
+        const result1 = parser.parse(given1)
+        const result2 = completeSlotBranch(result1)
+        const result3 = slotTruncateBranch(result2, 2)
+        const result4 = getHashBranch(result3)        
+        expect(result4).toEqual('this_month next_week')
+    });
+
+    test('shift month', () => {
+        const parser = new Parser()
+        const given1 = 'this_month + 1';
+        const result1 = parser.parse(given1)
+        const result2 = completeSlotBranch(result1)
+        const result3 = slotTruncateBranch(result2, 2)
+        const result4 = getHashBranch(result3)        
+        expect(result4).toEqual('this_month + 1')
+    })
 });
 
 describe('taskShiftFilter', () => {
     test('shift list with filtering', () => {
-        const given    = [ { slotExpr: 'next_week' }, { slotExpr: 'lundi' } ] 
+        const given    = [ { slotExpr: 'next_week' }, { slotExpr: 'lundi' }, { slotExpr: 'next_month'}, { slotExpr: 'this_month + 1'} ] 
         const expected = [ { slotExpr: 'this_week', oldSlotExpr: 'next_week' } ] ;
         const result = taskShiftFilter(given)
         expect(result).toEqual(expected)

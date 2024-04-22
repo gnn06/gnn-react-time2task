@@ -7,11 +7,11 @@ import { slotIsInOtherBranch, isSlotRepeat1Branch, isSlotRepeat2Branch, slotComp
  * public used by parser.js
  */
 export function getSlotLevel(slot) {
-    if (slot === 'this_month' || slot === 'next_month')
+    if (slot === 'month' || slot === 'this_month' || slot === 'next_month')
         return 1;
     if (slot === 'week' || slot === 'next_week' || slot === 'following_week' || slot === 'this_week')
         return 2;
-    else if (slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
+    else if (slot === 'day' || slot === 'lundi' || slot === 'mardi' || slot === 'mercredi' || slot === 'jeudi' || slot === 'vendredi')
         return 3;
     else if (slot === 'matin' || slot === 'aprem')
         return 4;
@@ -75,8 +75,9 @@ const SLOTS_BY_LEVEL = {
     '4': ['matin', 'aprem']
 }
 
-export function getPreviousSlot(slot, restart) {
+export function getPreviousSlot(slot, restart, limitLevel) {
     const level = getSlotLevel(slot)
+    if (limitLevel && limitLevel !== level) { return slot }
     const slots = SLOTS_BY_LEVEL[level.toString()]
     const index = slots.indexOf(slot)
     const lastIndex = slots.length - 1

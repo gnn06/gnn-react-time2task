@@ -212,6 +212,15 @@ describe('shiftReduce', () => {
     ])
     expect(parser.input).toEqual(['$end'])
   });
+
+  test('next+1', () => {
+    const parser = new Parser(
+      [ '+', '1', '$end'],
+      [ { type: 'branch', value: [ 'next_week' ] } ]);
+    parser.shiftReduce();
+    expect(parser.stack).toEqual([ { type: 'branch', value: [ 'next_week' ], shift: 1 } ])
+    expect(parser.input).toEqual(['$end'])
+  })
 });
 
 describe('parser number', () => {
@@ -555,6 +564,20 @@ describe('parser string', () => {
       }
     );  
   })
+
+  describe('shift', () => {
+    test('next_week + 1', () => {
+      const parser = new Parser();
+      const result = parser.parse('next_week + 1');
+      expect(result).toEqual({ type: 'branch', value: ['next_week'], shift: 1 })
+    })
+  
+    test('next_week + 1 mardi', () => {
+      const parser = new Parser();
+      const result = parser.parse('next_week + 1 mardi');
+      expect(result).toEqual({ type: 'branch', value: [ 'next_week', 'mardi' ], shift: 1 })
+    })
+  });
 });
 
 describe('parse wrong expression', () => {

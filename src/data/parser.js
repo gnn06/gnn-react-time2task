@@ -7,7 +7,7 @@ export class Parser {
     stack = [];
 
     parseKeyWords = [...slotIdList,
-            ...slotKeyWords, '1', '2', '3', '$end'];
+            ...slotKeyWords, '+', '1', '2', '3', '$end'];
 
     constructor(Pinput, Pstack) {
         this.input = Pinput;
@@ -33,6 +33,12 @@ export class Parser {
             return
         }
         const last = this.stack.at(-1);
+        if (current === '+') {
+            const shiftNumber = this.input.shift();
+            this.stack.pop();
+            this.stack.push({ ...last, shift: parseInt(shiftNumber) })
+            return
+        }
         if (isRupture(current, last)) {
             // Rupture de niveau ou apparition d'un flag
             // on essaie de reduire au maximum et sinon on empile
@@ -135,10 +141,10 @@ export function reduceMulti(previous, last) {
 export function reduceConcatBranch(previous, last) {
     if (last.flags === undefined) {
         // on conserve la structure last
-        return { type: 'branch', value: previous.value.concat(last.value) };
+        return { ...previous, type: 'branch', value: previous.value.concat(last.value) };
     } else {
         // on met les valeur à plat
-        return { type: 'branch', value: previous.value.concat(last) , flags: previous.flags };
+        return { ...previous, type: 'branch', value: previous.value.concat(last) , flags: previous.flags };
     }    
 }
 

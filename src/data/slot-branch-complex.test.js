@@ -129,6 +129,27 @@ describe('slotIsInOtherBranch', () => {
             ,{ type: 'branch', value: [ 'jeudi']});
         expect(result).toBeTruthy()
     })
+
+    describe('shift', () => {
+        test('next + 1', () => {
+            const result = slotIsInOtherBranch(
+                { type: 'branch', value: [ 'this_week'], shift: 1 },
+                { type: 'branch', value: [ 'next_week']});
+            expect(result).toBeTruthy()
+        });
+        test('next + 1 other', () => {
+            const result = slotIsInOtherBranch(
+                { type: 'branch', value: [ 'next_week']},
+                { type: 'branch', value: [ 'this_week'], shift: 1 });
+            expect(result).toBeTruthy()
+        })
+        test('this + 1 don\'t match this', () => {
+            const result = slotIsInOtherBranch(
+                { type: 'branch', value: [ 'this_week', 'mardi'], shift: 1 },
+                { type: 'branch', value: [ 'this_week']});
+            expect(result).toBeFalsy()
+        });
+    });
 })
 
 describe('slotCompareTree', () => {

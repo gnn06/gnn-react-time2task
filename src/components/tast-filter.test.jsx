@@ -32,7 +32,7 @@ test('show Aide', async () => {
   render(<Provider store={store}><TaskFilter /></Provider>)
 
   await userEvent.click(screen.getByText('Aide'))
-  const toto = screen.getByText('Exemples de créneau')
+  const toto = screen.getByText('Aide Créneaux / Etats')
   expect(toto).toBeDefined();
 
   // fireEvent.click(screen.getByText('Aide'))

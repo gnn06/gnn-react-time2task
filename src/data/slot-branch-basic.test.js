@@ -1,5 +1,5 @@
 import { lowerSlotBranch, completeSlotBranch, getCurrentPathBranch, chooseSlotForSortBranch, 
-         removeDisableBranch, isSlotSimpleBranch, isSlotUniqueBranch, slotTruncateBranch, getHashBranch, slotToExpr } from './slot-branch.js';
+         removeDisableBranch, isSlotSimpleBranch, isSlotUniqueBranch, slotTruncateBranch, getHashBranch, slotToExpr, appendToBranch } from './slot-branch.js';
 
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -34,8 +34,8 @@ describe('lowerSlotBranch', () => {
 
 describe('completeSlotBranch', () => {
     it('completeSlot level1', () => {
-        const result = completeSlotBranch({type:'branch',value:['week']});
-        expect(result).toEqual({type:'branch',value:['this_month', 'week']});
+        const result = completeSlotBranch({type:'branch',value:['this_week']});
+        expect(result).toEqual({type:'branch',value:['this_month', 'this_week']});
     })
 
     it('completeSlot level2', () => {
@@ -95,6 +95,22 @@ describe('completeSlotBranch', () => {
                 { type: 'branch', value: ['this_month', 'next_week', 'vendredi'] } ]
             });
     })
+
+    describe('shift', () => {
+        test('shift', () => {
+            const result = completeSlotBranch(
+                { type: 'branch', value: [ 'this_week' ], shift: 1 });
+            expect(result).toEqual(
+                { type: 'branch', value: ['this_month', { type: 'branch', value: [ 'this_week' ], shift: 1 } ] });
+        });
+
+        test('shift month', () => {
+            const result = completeSlotBranch(
+                { type: 'branch', value: [ 'this_month' ], shift: 1 });
+            expect(result).toEqual(
+                { type: 'branch', value: ['this_month' ], shift: 1 });
+        });
+    });
 })
 
 describe('getCurrentPathBranch', () => {
@@ -315,6 +331,18 @@ describe('hashBranch', () => {
         expect(result).toEqual('lundi')
     })
 
+    test('shift with alias', () => {
+        const given = { type: 'branch', value: [ 'this_week', 'lundi' ], shift: 1 };
+        const result = getHashBranch(given)
+        expect(result).toEqual('next_week lundi')
+    });
+
+    test('shift with alias + 4', () => {
+        const given = { type: 'branch', value: [ 'this_week', 'lundi' ], shift: 4 };
+        const result = getHashBranch(given)
+        expect(result).toEqual('this_week + 4 lundi')
+    });
+
 });
 
 describe('slotToExpr', () => {
@@ -340,9 +368,49 @@ describe('slotToExpr', () => {
     });
     
     test('multi', () => {
-        const given    = { value: [ { value: [ 'lundi', 'matin' ] }, { value: [ 'mardi', 'aprem' ] } ] }
+        const given    = { type: 'multi', value: [ { value: [ 'lundi', 'matin' ] }, { value: [ 'mardi', 'aprem' ] } ] }
         const expected = 'lundi matin mardi aprem'
         const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    }); 
+
+    test('shift', () => {
+        const given    = { value: [ 'this_week' ], shift: 3 }
+        const expected = 'this_week + 3'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+
+    test('shift with alias', () => {
+        const given    = { value: [ 'this_week' ], shift: 1 }
+        const expected = 'next_week'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+
+    test('shift 0', () => {
+        const given    = { value: [ 'this_week' ], shift: 0 }
+        const expected = 'this_week'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
+});
+
+describe('appendToBranch', () => {
+    test('simple branch', () => {
+        const given = { type: 'branch', value: [ 'mardi' ] }
+        
+        const result = appendToBranch('this_week', given)
+        
+        const expected = { type: 'branch', value: [ 'this_week', 'mardi' ] }
+        
+        expect(result).toEqual(expected)
+    })
+    
+    test('branch with flags', () => {
+        const given = { type: 'branch', value: [ 'mardi' ], flags: [ 'chaque' ] }
+        const result = appendToBranch('this_week', given)
+        const expected = { type: 'branch', value: [ 'this_week', { type: 'branch', value: [ 'mardi' ], flags: [ 'chaque' ] } ] }
         expect(result).toEqual(expected)
     }); 
 });
