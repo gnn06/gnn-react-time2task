@@ -74,10 +74,10 @@ export function taskGroup(tasks, level) {
 /**
  * tasks shift, returns only task that shift, put oldSlotExpr into task 
  */
-export function taskShiftFilter(tasks) {
+export function taskShiftFilter(tasks, level) {
     const tasksTree = tasks.map(item => parser.parse(item.slotExpr))
     
-    const newTree = tasksTree.map(item => slotShift(item, 'week'))
+    const newTree = tasksTree.map(item => slotShift(item, level))
 
     const result = []
     for (let i = 0; i < newTree.length; i++) {

@@ -489,14 +489,14 @@ describe('taskShiftFilter', () => {
     test('shift list with filtering', () => {
         const given    = [ { slotExpr: 'next_week' }, { slotExpr: 'lundi' }, { slotExpr: 'next_month'}, { slotExpr: 'this_month + 1'} ] 
         const expected = [ { slotExpr: 'this_week', oldSlotExpr: 'next_week' } ] ;
-        const result = taskShiftFilter(given)
+        const result = taskShiftFilter(given, 'week')
         expect(result).toEqual(expected)
     });
 
     test('expression with space', () => {
         const given    = [ { slotExpr: 'this_week ' } ] 
         const expected = [  ] ;
-        const result = taskShiftFilter(given)
+        const result = taskShiftFilter(given, 'week')
         expect(result).toEqual(expected)
     })
 });

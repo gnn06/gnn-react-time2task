@@ -6,7 +6,8 @@ export const RELEASE = 'xx/xx/2024'
 const text = `
 xx/xx/2024
 ==========
-- manage next_(week|month) + 1, sort, filter, slot view, group, shift BUT UI only offer week shift.
+- manage next_(week|month) + 1, sort, filter, slot view, group, shift
+- Can choose level to shift
 
 13/04/2024
 ==========
