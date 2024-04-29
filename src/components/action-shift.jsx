@@ -38,8 +38,8 @@ export default function ShiftAction() {
         setShiftDialog(false)
         setHideErrorDialog(false)
         for (const item of shiftedTasks) {
-            //updateTask({id: item.id, slotExpr: item.slotExpr))
-            console.log(item.id, item.oldSlotExpr, item.slotExpr)
+            updateTask({id: item.id, slotExpr: item.slotExpr})
+            console.log(item.id, item.title, 'old=', item.oldSlotExpr, 'new=', item.slotExpr)
         }
     }
 
