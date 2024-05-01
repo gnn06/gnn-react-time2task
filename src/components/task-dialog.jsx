@@ -32,10 +32,15 @@ export default function TaskDialog({task, onClose}) {
         updateTask({id:taskId, slotExpr})
     };
 
-    const onOrderChange = e => {
+    const onOrderChange = event => {
         const taskId = task.id;
-        const order = Number(e.target.value);
+        const order = event.target.value === '' ? null : Number(event.target.value);
         updateTask({id:taskId, order})
+    };
+
+    const onStatusChange = (value) => {
+        const taskId = task.id;
+        updateTask({id:taskId, status: value})
     };
 
     return <div>
@@ -49,7 +54,7 @@ export default function TaskDialog({task, onClose}) {
                     <InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/>
                     <SyntaxInput initialInputValue={task.slotExpr} classNameInput="" items={getExprKeywords()}
                         onInputChange={onSlotExprChange} closeIcon/>
-                    <StatusInput task={task}/>
+                    <StatusInput task={task} saveHandler={onStatusChange}/>
                     <InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-full"/>
                 </div>
             </div>

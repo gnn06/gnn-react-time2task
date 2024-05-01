@@ -33,6 +33,7 @@ export default function DialogHelpExpression() {
                 <li><span className="font-mono font-bold">chaque lundi jeudi</span> pour une tache à faire chaque lundi mais aussi ce jeudi exceptionnnel ; par exemple, si vous n'avez pas pu la finir lundi</li>
                 <li><span className="font-mono font-bold">disable chaque lundi jeudi</span> pour une tache qu'on fait habituellement le lundi mais qu'on fera cette semaine exceptionnellement le jeudi</li>
                 <li><span className="font-mono font-bold">this_month this_week lundi aprepm</span> est un créneau complet mais on peut omettre les 1° créneaux.</li>
+                <li><span className="font-mono font-bold">this_week + 1, next_week + 1, following_week + 1</span>. Idem avec <span className="font-mono font-bold">this_month + 1, next_month + 1</span>. Le shift fait passer de next_week + 3 à next_week + 2.</li>
                 <li><span className="font-mono font-bold">EVERY2 this_week lundi</span> pour une tache qu'on fait une semaine sur 2. Chaque semaine, on changera en séquence le créneau de this_week, next_week, following_week.</li>
                 <li>La liste de tous les créneaux : <span className="font-mono font-bold">this_month, next_month, this_week, next_week, following_week, lundi, mardi, mercredi, jeudi, vendredi, matin,     aprem </span> </li>
             </ul>

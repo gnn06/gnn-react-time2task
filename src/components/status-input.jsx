@@ -4,7 +4,7 @@ import { STATUS_LST } from "./task-status.js";
 
 export const statusReferentiel = STATUS_LST.map((item) => { return { ...item, label: item.value }});
 
-export default function SyntaxInput({task}) {
+export default function SyntaxInput({task, saveHandler}) {
     const [
         updateTask,
         { isLoading: isUpdating }, // This is the destructured mutation result
@@ -12,9 +12,7 @@ export default function SyntaxInput({task}) {
     
     
     const onChange = (value, action) => {
-        const taskId = task.id;
-        const taskStatus = value.value;
-        updateTask({id:taskId, status: taskStatus})
+        saveHandler(value.value)
     };
     
     const onClick = e => {
@@ -63,5 +61,5 @@ export default function SyntaxInput({task}) {
                     styles={colorStyle} onChange={onChange}
                     components={{
                         IndicatorSeparator: () => null
-                    }}/>
+                    }} isDisabled={task === undefined}/>
 }

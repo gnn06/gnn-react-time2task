@@ -1,11 +1,11 @@
 import React from 'react';
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import AddTaskForm from "../components/AddTaskForm";
 import TaskGroup from "../components/task-group";
+import TaskNew from './task-new';
 
 import { filterSlotExpr } from '../data/task.js';
-import { useGetTasksQuery } from "../features/apiSlice.js";
+import { useGetTasksQuery, useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
 import ShiftAction from './action-shift';
 import TodoAction from './action-todo';
 
@@ -13,6 +13,8 @@ export default function TaskList() {
     // eslint-disable-next-line
     const userId = useSelector(state => state.tasks.user.id);
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
+    const [ addTask ] = useAddTaskMutation()
+    const [ updateTask, { isLoading: isUpdating } ] = useUpdateTaskMutation()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     const [group, setGroup] = useState(null);
     
@@ -47,11 +49,11 @@ export default function TaskList() {
                     </tr>
                     </thead>
                     <tbody>
-                        <TaskGroup tasks={tasks} group={group}/>
+                        <TaskGroup tasks={tasks} group={group} api={updateTask}/>
+                        <TaskNew api={addTask}/>
                     </tbody>
                 </table>
                 { `${tasks.length} tâche(s)` }
-                <AddTaskForm />
             </div>
             )        
         }

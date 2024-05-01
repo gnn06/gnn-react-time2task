@@ -34,3 +34,9 @@ test('empty value is keeped', () => {
     const expected = { prem: 12, deuse: '' };
     expect(mapProperties(given, mapping)).toEqual(expected);
 })
+
+test('null', () => {
+    const given = {a:null, b:'123'};
+    const expected = { prem: null, deuse: '123' };
+    expect(mapProperties(given, mapping)).toEqual(expected);
+})

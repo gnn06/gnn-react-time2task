@@ -1,4 +1,4 @@
-export default function InputEdit({defaultValue, saveHandler, className}) {
+export default function InputEdit({defaultValue, saveHandler, className, placeHolder}) {
     const onOrderKeyPressed = e => {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { // ENTER
             saveHandler(e)
@@ -8,5 +8,5 @@ export default function InputEdit({defaultValue, saveHandler, className}) {
         e.stopPropagation();
     }
     return <input defaultValue={defaultValue} onKeyDown={onOrderKeyPressed} onBlur={saveHandler} onClick={noPropagation} 
-                  className={"border p-1 bg-transparent " + className}/>
+                  className={"border p-1 bg-transparent " + className} placeholder={placeHolder}/>
 }

@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/xx/2024'
+export const RELEASE = '30/04/2024'
 
 const text = `
-xx/xx/2024
+30/04/2024
+==========
+- create new task with last row of table
+
+25/04/2024
 ==========
 - manage next_(week|month) + 1, sort, filter, slot view, group, shift
 - Can choose level to shift
@@ -13,6 +17,7 @@ xx/xx/2024
 ==========
 - add an action to shift slots
 - add an action to set task to 'to do'
+- add an empty row to create new task
 
 27/03/2024
 ==========
