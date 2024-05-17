@@ -1,4 +1,4 @@
-import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
+import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery,
         taskGroup, taskShiftFilter} from "./task";
 import { completeSlotBranch, slotTruncateBranch, getHashBranch } from './slot-branch.js';
 import { Parser } from './parser.js';
@@ -192,7 +192,7 @@ describe('taskFilterPredicateByNoRepeat', () => {
     });
     test('every2', () => {
         const task = { slotExpr: 'EVERY2 this_week mardi aprem' }
-        const result = taskPredicateEvery2(task)
+        const result = taskPredicateEvery(task)
         expect(result).toBeTruthy()
     });
 })

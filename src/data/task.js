@@ -16,7 +16,7 @@ export function taskPredicateNoRepeat(task) {
     return !isSlotRepeat1(task.slotExpr);
 }
 
-export function taskPredicateEvery2(task) {
+export function taskPredicateEvery(task) {
     return isSlotRepeat2(task.slotExpr);
 }
 

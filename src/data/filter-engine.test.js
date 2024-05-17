@@ -85,7 +85,7 @@ describe('makeFilter', () => {
     })
     
     test('EVERY2 filter', () => {
-        const result = data.filter(makeFilter('EVERY2').func);
+        const result = data.filter(makeFilter('EVERY').func);
         expect(result).toEqual([task6])
     })
 

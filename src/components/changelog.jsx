@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '30/04/2024'
+export const RELEASE = '17/05/2024'
 
 const text = `
+17/05/2024
+==========
+- 'every n', 'EVERY2' is deprecated
+
+01/05/2024
+==========
+- create new task with last row of table
+
 30/04/2024
 ==========
 - create new task with last row of table

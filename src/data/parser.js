@@ -7,7 +7,7 @@ export class Parser {
     stack = [];
 
     parseKeyWords = [...slotIdList,
-            ...slotKeyWords, '+', '1', '2', '3', '$end'];
+            ...slotKeyWords, 'EVERY2', '+', '1', '2', '3', '$end'];
 
     constructor(Pinput, Pstack) {
         this.input = Pinput;
@@ -28,15 +28,20 @@ export class Parser {
     shiftReduce() {
         const current = this.input.shift();
         if (this.parseKeyWords.indexOf(current) === -1) return;
-        if (this.stack.length === 0) {
-            this.stack.push(shiftBranchOrFlag(current));
-            return
-        }
         const last = this.stack.at(-1);
         if (current === '+') {
             const shiftNumber = this.input.shift();
             this.stack.pop();
             this.stack.push({ ...last, shift: parseInt(shiftNumber) })
+            return
+        }
+        if (current === 'every') {
+            const shiftNumber = this.input.shift();
+            this.stack.push({ type: 'repetition', value: parseInt(shiftNumber) })
+            return
+        }
+        if (this.stack.length === 0) {
+            this.stack.push(shiftBranchOrFlag(current));
             return
         }
         if (isRupture(current, last)) {
@@ -84,6 +89,12 @@ export class Parser {
                     this.stack.push(reduceFlag(previous, last));
                     this.input.unshift(current);
                     return
+                } else if (previous.type === 'repetition' && (last.type === 'branch')) {
+                    this.stack.pop();
+                    this.stack.pop();
+                    this.stack.push(reduceRepetition(previous, last));
+                    this.input.unshift(current);
+                    return
                 } else {
                     this.stack.pop();
                     this.stack.pop();
@@ -127,8 +138,12 @@ function isRupture(current, last) {
 }
 
 export function shiftBranchOrFlag(current) {
-    if (current === 'disable' || current === 'chaque' || current === 'EVERY2') {
+    if (current === 'disable' || current === 'chaque') {
         return { type: 'flag', value: current };
+    } if (current === 'every') {
+        return { type: 'repetition', value: current };
+    } if (current === 'EVERY2') {
+        return { type: 'repetition', value: 2 };
     } else {
         return { type: 'branch', value: [current] };
     }
@@ -139,12 +154,12 @@ export function reduceMulti(previous, last) {
 }
 
 export function reduceConcatBranch(previous, last) {
-    if (last.flags === undefined) {
+    if (last.flags === undefined && last.shift === undefined && last.repetition === undefined) {
         // on conserve la structure last
         return { ...previous, type: 'branch', value: previous.value.concat(last.value) };
     } else {
         // on met les valeur à plat
-        return { ...previous, type: 'branch', value: previous.value.concat(last) , flags: previous.flags };
+        return { ...previous, type: 'branch', value: previous.value.concat(last) };
     }    
 }
 
@@ -168,4 +183,8 @@ export function reduceFlag(previous, last) {
         last.value.at(0).flags = flags
         return last;
     }
+}
+
+export function reduceRepetition(previous, last) {
+    return {...last, repetition: previous.value};
 }

@@ -1,4 +1,4 @@
-import { getSlotLevel, getCurrentSlot, weight, getPreviousSlot } from "./slot-path";
+import { getSlotLevel, getCurrentSlot, weight, getPreviousSlotBis, getFirstLevelSlot } from "./slot-path";
 
 export function lowerSlotBranch(slot) {
     if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
@@ -122,13 +122,13 @@ export function isSlotUniqueBranch(slot) {
 }
 
 export function isSlotRepeat1Branch(slot) {
-    return applyTestOnBranch(slot, 
-        (slot) => slot.flags !== undefined && (slot.flags.indexOf('chaque') > -1 || slot.flags.indexOf('EVERY2') > -1))
+    return applyTestOnBranch(slot, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
+                                             || (slot.repetition !== undefined && slot.repetition >= 1))
 }
 
 export function isSlotRepeat2Branch(slot) {
     return applyTestOnBranch(slot, 
-        (slot) => slot.flags !== undefined && (slot.flags.indexOf('EVERY2') > -1))
+        (slot) => slot.repetition !== undefined && slot.repetition >= 2)
 }
 
 function applyTestOnBranch(slot, testFunc) {
@@ -196,6 +196,9 @@ export function slotToExpr(slot) {
     }
     slot = slotAlias(slot)
     if (slot.flags !== undefined) { result = result.concat(slot.flags) }
+    if (slot.repetition !== undefined) {
+        result = result.concat('every', slot.repetition)
+    }
     result = result.concat(slot.value.at(0))
     if (slot.shift !== undefined && slot.shift > 0) {
         result.push('+')
@@ -258,27 +261,49 @@ export function isSlotSimpleBranch(tree) {
     return tree.type === 'branch' && tree.flags === undefined;
 }
 
-export function slotShift (slot, levelToShift) {
-    if (typeof slot === 'string') {
-        return getPreviousSlot(slot, false, getSlotLevel(levelToShift))
-    }
-    if (slot.type === 'branch' && slot.value.length === 1) {
-        const repeat = slot.flags && slot.flags.indexOf("EVERY2") > -1
-        if (slot.shift !== undefined) {
-            const newShift = 
-                getSlotLevel(slot.value.at(0)) === getSlotLevel(levelToShift) 
-                    ? slot.shift === 0 ? (repeat ? 2 : 0) : slot.shift - 1
-                    : slot.shift;
-            return {...slot, shift: newShift }
+export function getPreviousOrShift(branch) {
+    if (branch.shift !== undefined) {
+        const newShift = branch.shift === 0 ? (branch.repetition !== undefined ? branch.repetition : 0) : branch.shift - 1;
+        return {...branch, shift: newShift }
+    } else {
+        const slotId = firstSlotBranch(branch);
+        const repetition = branch.repetition
+        const newSlotId = getPreviousSlotBis(slotId, repetition)
+        if (newSlotId === null) {
+            const first = getFirstLevelSlot(getSlotLevel(firstSlotBranch(branch)))
+            if (repetition === undefined) {
+                return {...branch, value: [first].concat(branch.value.slice(1)) }
+            } else {
+                return {...branch, value: [first].concat(branch.value.slice(1)), shift: repetition }
+            }
         } else {
-            return {...slot, value: [ getPreviousSlot(slot.value.at(0), repeat, getSlotLevel(levelToShift)) ]}
+            return {...branch, value: [newSlotId].concat(branch.value.slice(1)) }
         }
     }
-    if (slot.type === 'branch' && slot.value.length > 1) {
-        const head = slotShift({...slot, value: slot.value.slice(0, 1)}, levelToShift)
-        const tail = slot.value.slice(1).map(el => slotShift(el, levelToShift))
-        return {...head, value: head.value.concat(tail)}
+}
+
+export function slotShift (slot, levelToShift) {
+    if (typeof slot === 'string') {
+        if (getSlotLevel(slot) === getSlotLevel(levelToShift)) {
+            return getPreviousSlotBis(slot, slot.repetition)
+        } else {
+            return slot
+        }
     }
+    if (slot.type === 'branch') {
+        let head;
+        if (getSlotLevel(slot.value.at(0)) === getSlotLevel(levelToShift)) {
+            head = getPreviousOrShift(slot)
+        } else {
+            head = slot;
+        }
+        if (slot.value.length > 1) {
+            const tail = slot.value.slice(1).map(el => slotShift(el, levelToShift))
+            return {...head, value: head.value.slice(0,1).concat(tail)}
+        } else {
+            return head;
+        }
+    }    
     if (slot.type === 'multi') {
         return {...slot, value: slot.value.map(el => slotShift(el, levelToShift))}
     }

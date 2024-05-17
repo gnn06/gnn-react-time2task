@@ -52,13 +52,21 @@ describe('repeat1', () => {
             expect(result).toBeFalsy();
         });    
 
-        test('EVERY2', () => {
+        test('every 2', () => {
             const result = isSlotRepeat1Branch(
                 {type:'branch', value: [
                     'this_week'               
-                ], flags: ['EVERY2']});
+                ], repetition: 2});
             expect(result).toBeTruthy();
-        })    
+        })
+
+        test('every 1', () => {
+            const result = isSlotRepeat1Branch(
+                {type:'branch', value: [
+                    'this_week'               
+                ], repetition: 1});
+            expect(result).toBeTruthy();
+        })
     });
 
     describe('multi', () => {
@@ -106,7 +114,7 @@ describe('repeat1', () => {
                 {type:'branch', value: [
                     'this_month', 
                     {type:'multi', value: [
-                        {type:'branch', value: ['this_week', 'lundi'], flags:['EVERY2']},
+                        {type:'branch', value: ['this_week', 'lundi'], repetition: 2},
                         {type:'branch', value: ['next_week', 'mardi']}
                     ]}
                 ]});
@@ -116,7 +124,7 @@ describe('repeat1', () => {
         test('multi at level 1, EVERY2 on branch one', () => {
             const result = isSlotRepeat2Branch(
                 {type:'multi', value: [
-                    {type:'branch', value: ['this_week', 'lundi'], flags:['EVERY2']},
+                    {type:'branch', value: ['this_week', 'lundi'], repetition: 2},
                     {type:'branch', value: ['next_week', 'mardi']}
                 ]});
             expect(result).toBeTruthy();
@@ -152,7 +160,7 @@ describe('Repeat2', () => {
         const result = isSlotRepeat2Branch(
             {type:'branch', value: [
                 'this_week'               
-            ], flags: ['EVERY2']});
+            ], repetition: 2});
         expect(result).toBeTruthy();
     })
 

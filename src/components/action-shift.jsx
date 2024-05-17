@@ -68,7 +68,7 @@ export default function ShiftAction() {
                 <label htmlFor='level' className='flex flex-row items-baseline' >Niveau de créneau à décaler : 
                     <Select className="ml-2" name="level" options={options} defaultValue={level} onChange={handleChangeLevel}/>
                 </label>
-                <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next next + 3 devient next + 2 et EVERY2 this devient EVERY2 following).`}</div>    
+                <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next, next + 3 devient next + 2 et every 2  this devient every 2 following).`}</div>    
                 <div className="grid grid-cols-3 gap-4 mt-5 ">
                     { shiftedTasks.map(t => (<React.Fragment><div>{t.title}</div><div className='font-mono'>{t.oldSlotExpr}</div><div className='font-mono'>{t.slotExpr}</div></React.Fragment>)) }
                 </div>

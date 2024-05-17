@@ -1,65 +1,60 @@
-import { slotShift, getWeightBranch, slotCompareBranch, slotAlias } from './slot-branch'
+import { slotShift, getWeightBranch, slotCompareBranch, slotAlias, getPreviousOrShift } from './slot-branch'
 
 describe('slotShift', () => {
-    test('nominal', () => {
-        const given = { type: 'branch', value: [ 'next_week' ] };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'this_week' ] };
-        expect(result).toEqual(expected)
-    });
-    
-    test('last', () => {
-        const given = { type: 'branch', value: [ 'following_week' ] };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'next_week' ] };
-        expect(result).toEqual(expected)
-    });
-    
-    test('restart on NO repeat', () => {
-        const given = { type: 'branch', value: [ 'this_week' ] };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'this_week' ] };
-        expect(result).toEqual(expected)
-    });
-    
-    test('different level', () => {
-        const given = { type: 'branch', value: [ 'mardi' ] };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'mardi' ] };
-        expect(result).toEqual(expected)
-    });
-    
-    test('sub branch', () => {
-        const given = { type: 'branch', value: [ 'this_month', 'next_week' ] };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'this_month', 'this_week' ] };
-        expect(result).toEqual(expected)
-    });
+    describe('no shift, no repetition', () => {
+        test('nominal', () => {
+            const given = { type: 'branch', value: [ 'next_week' ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_week' ] };
+            expect(result).toEqual(expected)
+        });
+        
+        test('last', () => {
+            const given = { type: 'branch', value: [ 'following_week' ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'next_week' ] };
+            expect(result).toEqual(expected)
+        });
+        
+        test('restart on NO repeat', () => {
+            const given = { type: 'branch', value: [ 'this_week' ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_week' ] };
+            expect(result).toEqual(expected)
+        });
+        
+        test('different level', () => {
+            const given = { type: 'branch', value: [ 'mardi' ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'mardi' ] };
+            expect(result).toEqual(expected)
+        });
+        
+        test('sub branch', () => {
+            const given = { type: 'branch', value: [ 'this_month', 'next_week' ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_month', 'this_week' ] };
+            expect(result).toEqual(expected)
+        });
 
-    test('multi', () => {
-        const result = slotShift(
-            {type:'multi',value:[{ type: 'branch', value: [ 'next_week', 'mardi'    ] }, 
-                                 { type: 'branch', value: [ 'next_week', 'mercredi' ] }]}
-            , 'week')
-        expect(result).toEqual(
-            {type:'multi',value:[
-                { type: 'branch', value: [ 'this_week', 'mardi'    ] }, 
-                { type: 'branch', value: [ 'this_week', 'mercredi' ] }]})
+        test('multi', () => {
+            const result = slotShift(
+                {type:'multi',value:[{ type: 'branch', value: [ 'next_week', 'mardi'    ] }, 
+                                     { type: 'branch', value: [ 'next_week', 'mercredi' ] }]}
+                , 'week')
+            expect(result).toEqual(
+                {type:'multi',value:[
+                    { type: 'branch', value: [ 'this_week', 'mardi'    ] }, 
+                    { type: 'branch', value: [ 'this_week', 'mercredi' ] }]})
+        });
+    
+        test('string', () => {
+            const result = slotShift('next_week', 'week')
+            expect(result).toEqual('this_week')
+        })
     });
-
-    test('string', () => {
-        const result = slotShift('next_week', 'week')
-        expect(result).toEqual('this_week')
-    })
 
     describe('shift', () => {
-        test('shift', () => {
-            const given = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], shift: 2 } ] };
-            const result = slotShift(given, 'week');
-            const expected = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], shift: 1 } ] };
-            expect(result).toEqual(expected)
-        })    
-
         test('shift 2', () => {
             expect(
                 slotShift(
@@ -70,7 +65,17 @@ describe('slotShift', () => {
             )
         });
 
-        test('shift without EVERY2', () => {
+        test('shift 6', () => {
+            expect(
+                slotShift(
+                    { type: 'branch', value: [ 'this_week' ], shift: 6 }
+                , 'week')
+            ).toEqual(
+                { type: 'branch', value: [ 'this_week' ], shift: 5 }
+            )
+        });
+
+        test('no shift because on start', () => {
             expect(
                 slotShift(
                     { type: 'branch', value: [ 'this_week' ], shift: 0 }
@@ -80,56 +85,91 @@ describe('slotShift', () => {
             )
         });
 
-        test('shift with EVERY2', () => {
+        test('shift on sub level', () => {
+            const given = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], shift: 2 } ] };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], shift: 1 } ] };
+            expect(result).toEqual(expected)
+        })    
+
+        test('no shift because month', () => {
+            const given = { type: 'branch', value: [ 'next_month' ], shift: 1 };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'next_month' ], shift: 1 };
+            expect(result).toEqual(expected)
+        });
+    });
+    
+    describe('repetition', () => {
+        test('no restart', () => {
             const result = slotShift(
-                { type: 'branch', value: [ 'this_week' ], shift: 0, flags: ['EVERY2'] }
-                , 'week'
-            )
+                { type: 'branch', value: [ 'next_week' ], repetition: 2 }
+                , 'week')
             expect(result).toEqual(
-                { type: 'branch', value: [ 'this_week' ], shift: 2, flags: ['EVERY2'] }
+                { type: 'branch', value: [ 'this_week' ], repetition: 2 }
             )
+        })
+
+        test('restart', () => {
+            const result = slotShift(
+                { type: 'branch', value: [ 'this_week' ], repetition: 2 }
+                , 'week')
+            expect(result).toEqual(
+                { type: 'branch', value: [ 'following_week' ], repetition: 2 }
+            )
+        })      
+
+        test('restart with shift', () => {
+            const given = { type: 'branch', value: [ 'this_week' ], repetition: 6 };
+            const result = slotShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_week' ], shift: 6, repetition: 6 };
+            expect(result).toEqual(expected)
+        });
+
+        describe('shift month', () => {
+            test('no shift month', () => {
+                const given = { type: 'branch', value: [ 'next_month', 'next_week' ] };
+                const result = slotShift(given, 'month');
+                const expected = { type: 'branch', value: [ 'this_month', 'next_week' ] };
+                expect(result).toEqual(expected)
+            });
+
+            test('shift month, no shift because already at start', () => {
+                const given = { type: 'branch', value: [ 'this_month' ] };
+                const result = slotShift(given, 'month');
+                const expected = { type: 'branch', value: [ 'this_month' ] };
+                expect(result).toEqual(expected)
+            });
+            
+            test('shift month, restart', () => {
+                const given = { type: 'branch', value: [ 'this_month' ], repetition: 2 };
+                const result = slotShift(given, 'month');
+                const expected = { type: 'branch', value: [ 'this_month' ], shift: 2, repetition: 2 };
+                expect(result).toEqual(expected)
+            });
         });
     });
 
-    describe('every2', () => {
-        test('next_week with every2', () => {
+    describe('shift and repetition', () => {
+        test('shift with every 2', () => {
             const result = slotShift(
-                { type: 'branch', value: [ 'next_week' ], flags: [ 'EVERY2' ] }
-                , 'week')
-            expect(result).toEqual(
-                { type: 'branch', value: [ 'this_week' ], flags: ['EVERY2'] }
+                { type: 'branch', value: [ 'this_week' ], shift: 0, repetition: 2 }
+                , 'week'
             )
-        })
+            expect(result).toEqual(
+                { type: 'branch', value: [ 'this_week' ], shift: 2, repetition: 2 }
+            )
+        });
 
-        test('next_week with every2 which restart', () => {
+        test('shift restart with every 6', () => {
             const result = slotShift(
-                { type: 'branch', value: [ 'this_week' ], flags: [ 'EVERY2' ] }
-                , 'week')
-            expect(result).toEqual(
-                { type: 'branch', value: [ 'following_week' ], flags: ['EVERY2'] }
+                { type: 'branch', value: [ 'this_week' ], shift: 0, repetition: 6 }
+                , 'week'
             )
-        })
-
-        test('restart on repeat', () => {
-            const given = { type: 'branch', value: [ 'this_week' ], flags: [ 'EVERY2' ] };
-            const result = slotShift(given, 'week');
-            const expected = { type: 'branch', value: [ 'following_week' ], flags: [ 'EVERY2' ] };
-            expect(result).toEqual(expected)
-        });        
-    });
-
-    test('no shift month', () => {
-        const given = { type: 'branch', value: [ 'next_month', 'next_week' ] };
-        const result = slotShift(given, 'month');
-        const expected = { type: 'branch', value: [ 'this_month', 'next_week' ] };
-        expect(result).toEqual(expected)
-    });
-
-    test('shift month', () => {
-        const given = { type: 'branch', value: [ 'next_month' ], shift: 1 };
-        const result = slotShift(given, 'week');
-        const expected = { type: 'branch', value: [ 'next_month' ], shift: 1 };
-        expect(result).toEqual(expected)
+            expect(result).toEqual(
+                { type: 'branch', value: [ 'this_week' ], shift: 6, repetition: 6 }
+            )
+        });
     });
 });
 
@@ -193,8 +233,8 @@ describe('slotCompare with shift and compplete', () => {
 describe('slotAlias', () => {
     test('should trransform this + 1 into next', () => {
         // Also test keeping subbranch
-        const given    = { value: ['this_week', 'mardi'], shift: 1, flags: ['EVERY2'] }
-        const expected = { value: ['next_week', 'mardi'], flags: ['EVERY2'] }
+        const given    = { value: ['this_week', 'mardi'], shift: 1, repetition: 2 }
+        const expected = { value: ['next_week', 'mardi'], repetition: 2 }
         const result = slotAlias(given)
         expect(result).toEqual(expected)
     });
@@ -226,4 +266,42 @@ describe('slotAlias', () => {
         const result = slotAlias(given)
         expect(result).toEqual(expected)
     });
+});
+
+describe('getXXXX', () => {
+    test('should create shift when repeat and retrieve null', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3 })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3, shift: 3 })
+        
+    });
+
+    test('should keep when no repeat', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'] })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'] })
+    });
+
+    test('previousSlot', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['next_week', 'mardi'] })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'] })
+    });
+
+    test('restart without shift', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 2 })
+        expect(result).toEqual({ type: 'branch', value: ['following_week', 'mardi'], repetition: 2 })
+    })
+
+    test('branch with shift', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], shift: 2 })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 1 })
+    })
+
+    test('shift =  0 no repetition', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], shift: 0 })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 0 })
+    })
+
+    test('shift =  0 with repetition', () => {
+        const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], shift: 0 , repetition: 4})
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 4, repetition: 4 })
+    })
 });

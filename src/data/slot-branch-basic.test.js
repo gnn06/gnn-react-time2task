@@ -394,6 +394,13 @@ describe('slotToExpr', () => {
         const result = slotToExpr(given)
         expect(result).toEqual(expected)
     });
+
+    test('repetition', () => {
+        const given    = { value: [ 'this_week' ], repetition: 6 }
+        const expected = 'every 6 this_week'
+        const result = slotToExpr(given)
+        expect(result).toEqual(expected)
+    });
 });
 
 describe('appendToBranch', () => {

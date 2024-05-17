@@ -72,8 +72,86 @@ describe('reduce functions', () => {
                     {type:'branch',value:['last'], flags:['chaque']} ],
           flags:['disable'] })
     });
-  
+
+    test('chaque on second', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'] },
+        {type:'branch', value:['last'],     flags:['chaque']})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], flags:['chaque']} ],
+        })
+    });
     
+    test('chaque on first', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'], flags:['chaque']},
+        {type:'branch', value:['last']})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 'last' ],
+          flags:['chaque']
+        })
+    })    
+
+    test('shift on first', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'], shift: 4},
+        {type:'branch', value:['last']})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 'last' ],
+          shift: 4
+        })
+    })
+
+    test('shift on second', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'] },
+        {type:'branch', value:['last'],     shift: 4})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], shift: 4} ]
+        })
+    });
+
+    test('shift on two', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'], shift: 2 },
+        {type:'branch', value:['last'],     shift: 4})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], shift: 4} ],
+          shift: 2
+        })
+    });
+
+    test('shift and disable', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'], shift: 2, flags: [ 'disable' ] },
+        {type:'branch', value:['last'],     shift: 4, flags: [ 'chaque' ]})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], shift: 4, flags: ['chaque']} ],
+          shift: 2,
+          flags: ['disable']
+        })
+    });
+
+    test('repetition on second', () => {
+      const result = reduceConcatBranch(
+        {type:'branch', value:['previous'] },
+        {type:'branch', value:['last'],     repetition: 4})
+      expect(result).toEqual(
+        { type: 'branch',
+          value: [ 'previous', 
+                    {type:'branch',value:['last'], repetition: 4} ]
+        })
+    });
   });
 
   test('reduceConcatBranchMulti', () => {
@@ -395,7 +473,19 @@ describe('parser number', () => {
 })
 
 describe('parser string', () => {
-  test('slot jour', () => {
+  test('simple', () => {
+    const parser = new Parser();
+    const result = parser.parse('lundi');
+    expect(result).toEqual({type:'branch',value:['lundi']})
+  })
+
+  test('two level', () => {
+    const parser = new Parser();
+    const result = parser.parse('lundi aprem');
+    expect(result).toEqual({type:'branch',value:['lundi', 'aprem']})
+  })
+
+  test('multi upper node', () => {
     const parser = new Parser();
     const result = parser.parse('this_week mardi mercredi next_month');
     expect(result).toEqual({type:'multi',value:[
@@ -454,8 +544,8 @@ describe('parser string', () => {
     ]
   })
   })
-  
-  describe('chaque and every2', () => {
+
+  describe('chaque', () => {
     test('deep 1 chaque at 1', () => {
       const parser = new Parser();
       const result = parser.parse('chaque this_week');
@@ -476,7 +566,7 @@ describe('parser string', () => {
           { type:'branch', value:[ 'mardi'  ], flags: ['chaque'] }         
         ]})
     })
-    
+  
     test('deep 3, chaque at 1', () => {
       const parser = new Parser();
       const result = parser.parse('chaque this_week mardi aprem');
@@ -484,7 +574,7 @@ describe('parser string', () => {
         { type:'branch', value:[ 'this_week', 'mardi', 'aprem' ], flags: ['chaque'] }
       )
     })
-    
+
     test('deep 3, chaque at 2', () => {
       const parser = new Parser();
       const result = parser.parse('this_week chaque mardi aprem');
@@ -502,18 +592,45 @@ describe('parser string', () => {
           'this_week', 'mardi', { type:'branch', value:[ 'aprem' ], flags: ['chaque'] }         
         ]})
     })
-  
+  });
+ 
+  describe('every2', () => {
     test('EVERY2', () => {
       const parser = new Parser();
       const result = parser.parse('EVERY2 mardi');
-      expect(result).toEqual({ type: 'branch', value: ['mardi'], flags: ['EVERY2'] });    
+      expect(result).toEqual({ type: 'branch', value: ['mardi'], repetition: 2 });    
     })
-    
+
     test('EVERY2 at middle branch', () => {
       const result = new Parser().parse('this_month EVERY2 next_week jeudi')
-      expect(result).toEqual({ type: 'branch', value: ['this_month', { type: 'branch', value: ['next_week', 'jeudi'], flags: ['EVERY2'] }] })
+      expect(result).toEqual({ type: 'branch', value: ['this_month', { type: 'branch', value: ['next_week', 'jeudi'], repetition: 2 }] })
     })
-  })
+  });
+
+  describe('every', () => {
+    test('smple', () => {
+      const parser = new Parser();
+      const result = parser.parse('every 6 this_month');
+      expect(result).toEqual({ type: 'branch', value: ['this_month'], repetition: 6 })
+    });
+  
+    test('every at middle', () => {
+      const parser = new Parser();
+      const result = parser.parse('this_month every 4 this_week mardi');
+      expect(result).toEqual({ type: 'branch', 
+                               value: ['this_month', 
+                                       { type: 'branch', value: ['this_week', 'mardi'], repetition: 4 }]  })
+    });
+
+    test('every at begining', () => {
+      const parser = new Parser();
+      const result = parser.parse('every 4 this_month this_week mardi');
+      expect(result).toEqual({ type: 'branch', 
+                               value: ['this_month', 'this_week', 'mardi'], 
+                               repetition: 4  })
+    });
+  });
+
 
   test('chaque and multi', () => {
     const parser = new Parser();
@@ -572,10 +689,24 @@ describe('parser string', () => {
       expect(result).toEqual({ type: 'branch', value: ['next_week'], shift: 1 })
     })
   
+    const parser = new Parser();
+      
     test('next_week + 1 mardi', () => {
-      const parser = new Parser();
       const result = parser.parse('next_week + 1 mardi');
       expect(result).toEqual({ type: 'branch', value: [ 'next_week', 'mardi' ], shift: 1 })
+    })
+
+    test('shift on second node', () => {
+      const given =  'next_month this_week + 4 jeudi aprem'
+      const expected = {  type: 'branch',
+                          value: [ 'next_month', 
+                                    { type: 'branch',
+                                      value: [ 'this_week', 'jeudi', 'aprem' ],
+                                      shift: 4
+                                    } ]
+                      }
+      const result = parser.parse(given)
+      expect(result).toEqual(expected)
     })
   });
 });

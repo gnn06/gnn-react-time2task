@@ -38,7 +38,7 @@ export const weight = {
 export const slotIdList = ['this_month', 'next_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
 
 export const slotKeyWords = [
-    'disable', 'chaque', 'EVERY2'
+    'disable', 'chaque', 'every'
 ];
 
 export function getExprKeywords() {
@@ -75,14 +75,28 @@ const SLOTS_BY_LEVEL = {
     '4': ['matin', 'aprem']
 }
 
-export function getPreviousSlot(slot, restart, limitLevel) {
+export function getFirstLevelSlot(level) {
+    const slots = SLOTS_BY_LEVEL[level.toString()]
+    return slots[0]
+    
+}
+
+export function getPreviousSlotBis(slot, repetition) {
     const level = getSlotLevel(slot)
-    if (limitLevel && limitLevel !== level) { return slot }
     const slots = SLOTS_BY_LEVEL[level.toString()]
     const index = slots.indexOf(slot)
-    const lastIndex = slots.length - 1
-    const result = slots[index === 0 ? (restart ? lastIndex : index) : index-1]
-    return result
+    if (index === 0 && repetition === undefined) {
+        return null
+    }
+    if (index === 0 && repetition === slots.length - 1) {
+        return slots[slots.length - 1];
+    }
+    if (index === 0 && repetition > slots.length - 1) {
+        return null
+    }
+    else {
+        return slots[index - 1]
+    }
 }
 
 /**
