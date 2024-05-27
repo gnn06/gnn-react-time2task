@@ -93,64 +93,56 @@ describe('slotEqual', () => {
 
 
 describe('getPreviousSlot', () => {
-    test('month', () => {
-        const given    = "next_month";
-        const expected = "this_month"
-        const result   = getPreviousSlotBis(given);
-        expect(result).toEqual(expected)
-    });
-    test('week', () => {
-        const given    = "next_week";
-        const expected = "this_week"
-        const result   = getPreviousSlotBis(given);
-        expect(result).toEqual(expected)
-    });
-    test('day', () => {
-        const given    = "mercredi";
-        const expected = "mardi"
-        const result   = getPreviousSlotBis(given);
-        expect(result).toEqual(expected)
-    });
-    test('hour', () => {
-        const given    = "aprem";
-        const expected = "matin"
-        const result   = getPreviousSlotBis(given);
-        expect(result).toEqual(expected)
-    });
-    test('stay on first', () => {
-        const given    = "this_week";
-        const expected = "this_week"
-        const result   = getPreviousSlotBis(given);
-        expect(result).toEqual(null)
-    });
-    test('restart', () => {
-        const given    = "this_week";
-        const expected = "following_week"
-        const result   = getPreviousSlotBis(given, 2);
-        expect(result).toEqual(expected)
-    });
-
-    describe('getPreviousBis', () => {
+    describe('no repetition', () => {
+        test('month', () => {
+            const given    = "next_month";
+            const expected = "this_month"
+            const result   = getPreviousSlotBis(given);
+            expect(result).toEqual(expected)
+        });
+        test('week', () => {
+            const given    = "next_week";
+            const expected = "this_week"
+            const result   = getPreviousSlotBis(given);
+            expect(result).toEqual(expected)
+        });
+        test('day', () => {
+            const given    = "mercredi";
+            const expected = "mardi"
+            const result   = getPreviousSlotBis(given);
+            expect(result).toEqual(expected)
+        });
+        test('hour', () => {
+            const given    = "aprem";
+            const expected = "matin"
+            const result   = getPreviousSlotBis(given);
+            expect(result).toEqual(expected)
+        });
+        test('should return null when reach begin', () => {
+            const result = getPreviousSlotBis('this_week')
+            expect(result).toEqual('this_week')
+        });
         test('should return previous bis', () => {
             const result = getPreviousSlotBis('following_week')
             expect(result).toEqual('next_week')
         });
-
         test('should return previous', () => {
             const result = getPreviousSlotBis('next_week')
             expect(result).toEqual('this_week')
         });
-    
-        test('should return null when reach begin', () => {
-            const result = getPreviousSlotBis('this_week')
-            expect(result).toEqual(null)
+    });
+
+    describe('repetition', () => {
+        test('restart', () => {
+            const given    = "this_week";
+            const expected = "following_week"
+            const result   = getPreviousSlotBis(given, 2);
+            expect(result).toEqual(expected)
         });
-    
         test('should return last', () => {
             const result = getPreviousSlotBis('this_week', 2)
             expect(result).toEqual('following_week')
-        });
-    
+        });    
         test('should return null when repetition over end', () => {
             const result = getPreviousSlotBis('this_week', 3)
             expect(result).toEqual(null)

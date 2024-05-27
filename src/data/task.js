@@ -81,8 +81,12 @@ export function taskShiftFilter(tasks, level) {
 
     const result = []
     for (let i = 0; i < newTree.length; i++) {
-        if (!_.isEqual(newTree[i], tasksTree[i])) {
-            result.push({...tasks[i], slotExpr: slotToExpr(newTree[i]), oldSlotExpr: tasks[i].slotExpr})
+        try {
+            if (!_.isEqual(newTree[i], tasksTree[i])) {
+                result.push({...tasks[i], slotExpr: slotToExpr(newTree[i]), oldSlotExpr: tasks[i].slotExpr})
+            }
+        } catch (error) {
+            console.error(error, 'caused by ', tasks[i], tasksTree[i], newTree[i])
         }
     }
     return result

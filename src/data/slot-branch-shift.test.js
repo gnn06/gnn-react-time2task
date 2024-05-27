@@ -171,6 +171,16 @@ describe('slotShift', () => {
             )
         });
     });
+
+    test('subbranch', () => {
+        const result = slotShift(
+            { type: 'branch', flags: ['chaque'], value: [ 'this_month', 'this_week', 'lundi', 'aprem' ] }
+            , 'week'
+        )
+        expect(result).toEqual(
+            { type: 'branch', flags: ['chaque'], value: [ 'this_month', 'this_week', 'lundi', 'aprem' ] }
+        )
+    });
 });
 
 test('multi', () => {
@@ -268,7 +278,7 @@ describe('slotAlias', () => {
     });
 });
 
-describe('getXXXX', () => {
+describe('getPreviousOrShift', () => {
     test('should create shift when repeat and retrieve null', () => {
         const result = getPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3 })
         expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3, shift: 3 })

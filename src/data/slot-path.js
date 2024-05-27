@@ -86,7 +86,7 @@ export function getPreviousSlotBis(slot, repetition) {
     const slots = SLOTS_BY_LEVEL[level.toString()]
     const index = slots.indexOf(slot)
     if (index === 0 && repetition === undefined) {
-        return null
+        return slot
     }
     if (index === 0 && repetition === slots.length - 1) {
         return slots[slots.length - 1];
