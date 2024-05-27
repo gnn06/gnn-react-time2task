@@ -47,7 +47,8 @@ export default function ShiftAction() {
         setHideErrorDialog(true)
     }    
 
-    const shiftedTasks = taskShiftFilter(tasksRedux, level.value)
+    const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
+
 
     return <div>
         <Button label="Shift" clickToto={onShift}/>
