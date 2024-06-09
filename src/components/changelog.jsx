@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '17/05/2024'
+export const RELEASE = '09/06/2024'
 
 const text = `
+09/06/2024
+==========
+- fix 'every 2 this_week next_week', Refact Parser.
+
 17/05/2024
 ==========
 - 'every n', 'EVERY2' is deprecated
-- fix 'every 2 this_week next_week', Refact Parser.
 
 01/05/2024
 ==========
