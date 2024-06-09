@@ -7,6 +7,7 @@ const text = `
 17/05/2024
 ==========
 - 'every n', 'EVERY2' is deprecated
+- fix 'every 2 this_week next_week', Refact Parser.
 
 01/05/2024
 ==========

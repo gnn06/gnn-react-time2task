@@ -1,56 +1,109 @@
+import { RepeatOnOutlined } from "@mui/icons-material";
 import { tokenizer } from "../utils/stringUtil";
-import { getSlotLevel, slotIdList, slotKeyWords } from "./slot-path";
+import { getExprKeywords, getSlotLevel, slotIdList, slotKeyWords } from "./slot-path";
 
 export class Parser {
 
     input = [];
     stack = [];
+    parsing = '';
 
     parseKeyWords = [...slotIdList,
             ...slotKeyWords, 'EVERY2', '+', '1', '2', '3', '$end'];
 
-    constructor(Pinput, Pstack) {
+    constructor(Pinput, Pstack, Pparsing) {
         this.input = Pinput;
         this.stack = Pstack;
+        this.parsing = Pparsing === undefined ? 'node' : Pparsing;
     }
 
+    /**
+     * 
+     * @returns undefined if error
+     */
     parse(inputP) {
-        if (inputP === undefined) return undefined;
+        try {
+            if (inputP === undefined) return undefined;
 
-        this.input = tokenizer(inputP).concat('$end');
-        this.stack = [];
-        while (this.input.length > 0) {
-            this.shiftReduce();
+            this.input = tokenizer(inputP).concat('$end');
+            this.stack = [];
+            while (this.input.length > 0) {
+                if (this.parsing === 'node' || this.parsing === '') {
+                    this.shiftReduceNode();
+                } else if (this.parsing === 'branch') {
+                    this.shiftReduceBranch();
+                }
+            }
+            return this.stack.at(0);
+        } catch (error) {
+            console.error(error, ' caused by ', inputP)
+            return undefined
         }
-        return this.stack.at(0);
     }
 
-    shiftReduce() {
+    shiftReduceNode() {
         const current = this.input.shift();
-        if (this.parseKeyWords.indexOf(current) === -1) return;
-        const last = this.stack.at(-1);
-        if (current === '+') {
-            const shiftNumber = this.input.shift();
-            this.stack.pop();
-            this.stack.push({ ...last, shift: parseInt(shiftNumber) })
+        const last     = this.stack.at(-1);
+        const previous = this.stack.at(-2);
+        if (current === 'disable' && (last === undefined || last.type !== 'node')) {
+            this.stack.push(shiftBranchOrFlag(current));
             return
         }
-        if (current === 'every') {
+        if (current === 'every' && (last === undefined || last.type !== 'node')) {
             const shiftNumber = this.input.shift();
             this.stack.push({ type: 'repetition', value: parseInt(shiftNumber) })
             return
         }
-        if (this.stack.length === 0) {
+        if (current === 'EVERY2' && (last === undefined || last.type !== 'node')) {
             this.stack.push(shiftBranchOrFlag(current));
             return
         }
-        if (isRupture(current, last)) {
+        if (current === 'chaque' && (last === undefined || last.type !== 'node')) {
+            this.stack.push(shiftBranchOrFlag(current));
+            return
+        }
+        if (slotIdList.indexOf(current) > -1 && (last === undefined || last.type !== 'node')) {
+            this.stack.push({ type: 'node', value: current })
+            return ;
+        }
+        if (current === '+') {
+            const shiftNumber = this.input.shift();
+            const last = this.stack.pop();
+            this.stack.push({ ...last, shift: parseInt(shiftNumber) })
+            return
+        }
+        //if (current === '$end' || slotIdList.indexOf(current) > -1) {
+            if (previous !== undefined && previous.type === 'flag' && last !== undefined && last.type === 'node') {
+                this.stack.pop();
+                this.stack.pop();
+                this.stack.push(reduceFlag(previous, last));
+                this.input.unshift(current);
+                return
+            }
+            if (previous !== undefined && previous.type === 'repetition' && last !== undefined && last.type === 'node') {
+                this.stack.pop();
+                this.stack.pop();
+                this.stack.push(reduceRepetition(previous, last));
+                this.input.unshift(current);
+                return
+            }
+            this.parsing = 'branch';
+            this.input.unshift(current);
+            return
+        //}
+    }
+    
+    shiftReduceBranch() {
+        const current = this.input.shift();
+        if (this.parseKeyWords.indexOf(current) === -1) return;
+        const last = this.stack.at(-1);
+        if (last !== undefined && isRupture(current, last)) {
             // Rupture de niveau ou apparition d'un flag
             // on essaie de reduire au maximum et sinon on empile
             if (this.stack.length >= 2) {
                 const previous = this.stack.at(-2);
                 if (previous.type === 'branch' && last.type === 'branch') {
-                    if (getLevelNode(previous) === getLevelNode(last) || getLevelNode(previous) > getLevelNode(last)) {
+                    if (getLevelNode(previous) >= getLevelNode(last)) {
                         this.stack.pop();
                         this.stack.pop();
                         this.stack.push(reduceMulti(previous, last));
@@ -83,29 +136,27 @@ export class Parser {
                     this.stack.push(reduceMulti(previous, last))
                     this.input.unshift(current);
                     return
-                } else if (previous.type === 'flag' && (last.type === 'branch' || last.type === 'multi')) {
-                    this.stack.pop();
-                    this.stack.pop();
-                    this.stack.push(reduceFlag(previous, last));
-                    this.input.unshift(current);
-                    return
-                } else if (previous.type === 'repetition' && (last.type === 'branch')) {
-                    this.stack.pop();
-                    this.stack.pop();
-                    this.stack.push(reduceRepetition(previous, last));
-                    this.input.unshift(current);
-                    return
-                } else {
-                    this.stack.pop();
-                    this.stack.pop();
-                    this.stack.push(reduceConcatBranch(previous, last));
-                    this.input.unshift(current);
-                    return
+                } else if (previous.type === 'branch' && last.type === 'node') {
+                    if (getLevelNode(previous) < getLevelNode(last)) {
+                        // this_week mardi
+                        this.stack.pop();
+                        this.stack.pop();
+                        this.stack.push(reduceConcatBranch(previous, last));
+                        this.input.unshift(current);
+                        return
+                    }
                 }
-            }
+            } // pas de previous
+        } // Not Rupture
+        if (last !== undefined && last.type === 'node') {
+            this.stack.pop();
+            this.stack.push(reduceNode(last));
+            this.input.unshift(current);
+            return
         }
-        if (current !== '$end') {
-            this.stack.push(shiftBranchOrFlag(current));
+        if ([...slotIdList, ...slotKeyWords, 'EVERY2'].indexOf(current) > -1) {
+            this.parsing = 'node';
+            this.input.unshift(current);
             return
         }
     }
@@ -122,6 +173,9 @@ export function getLevelNode(node) {
     }
     if (node.type === 'branch') {
         return getLevelNode(node.value.at(0));
+    }
+    if (node.type === 'node') {
+        return getLevelNode(node.value);
     }
     if (node.type === 'multi') {
         return getLevelNode(node.value.at(0));
@@ -157,6 +211,8 @@ export function reduceConcatBranch(previous, last) {
     if (last.flags === undefined && last.shift === undefined && last.repetition === undefined) {
         // on conserve la structure last
         return { ...previous, type: 'branch', value: previous.value.concat(last.value) };
+    } if (last.type === 'node') {
+        return { ...previous, type: 'branch', value: previous.value.concat({...last, type: 'branch', value: [last.value]}) };
     } else {
         // on met les valeur à plat
         return { ...previous, type: 'branch', value: previous.value.concat(last) };
@@ -172,7 +228,7 @@ export function reduceConcatBranchMulti2Multi(previous, last) {
 }
 
 export function reduceFlag(previous, last) {
-    if (last.type === 'branch') {
+    if (last.type === 'branch' || last.type === 'node') {
         const flag = previous.value;
         const flags = last.flags ? [ flag ].concat(last.flags) : [ flag ];
         last.flags = flags
@@ -186,5 +242,15 @@ export function reduceFlag(previous, last) {
 }
 
 export function reduceRepetition(previous, last) {
-    return {...last, repetition: previous.value};
+    if (last.type === 'branch') {
+        return {...last, repetition: previous.value};
+    } else if (last.type === 'node') {
+        return {...last, repetition: previous.value};
+    } else {
+        return {...last, value: [{...last.value[0], repetition: previous.value}].concat(last.value.slice(1))};
+    }
+}
+
+export function reduceNode(last) {
+    return {...last, type: 'branch', value: [ last.value ] }
 }

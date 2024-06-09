@@ -35,7 +35,7 @@ export const weight = {
     aprem     : 2
 }
 
-export const slotIdList = ['this_month', 'next_month', 'this_week', 'next_week', 'following_week', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
+export const slotIdList = ['month', 'this_month', 'next_month', 'week', 'this_week', 'next_week', 'following_week', 'day', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
 
 export const slotKeyWords = [
     'disable', 'chaque', 'every'
@@ -140,7 +140,7 @@ export function slotIsInOther(slotExpr, otherSlotExpr) {
 export function isSlotUnique(slotExpr) {
     const parser = new Parser()
     const tree = parser.parse(slotExpr)
-    return isSlotUniqueBranch(tree)
+    return tree !== undefined ? isSlotUniqueBranch(tree) : false
 }
 
 export function isSlotRepeat1(slotExpr) {
