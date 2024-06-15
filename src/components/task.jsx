@@ -4,10 +4,6 @@ import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSli
 
 import './task.css'
 import Button from '../components/button';
-import SyntaxInput from './syntax-input';
-import StatusInput from './status-input.jsx'
-import InputEdit from "./edit-input.jsx";
-import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 import TaskRow from './task-row'
 
 export default function Task({task, api}) {

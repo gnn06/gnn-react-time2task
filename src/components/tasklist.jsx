@@ -14,7 +14,7 @@ export default function TaskList() {
     const userId = useSelector(state => state.tasks.user.id);
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
     const [ addTask ] = useAddTaskMutation()
-    const [ updateTask, { isLoading: isUpdating } ] = useUpdateTaskMutation()
+    const [ updateTask, /*{ isLoading: isUpdating }*/ ] = useUpdateTaskMutation()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     const [group, setGroup] = useState(null);
     
