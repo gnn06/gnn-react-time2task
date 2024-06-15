@@ -1,5 +1,5 @@
 import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery } from './task.js';
-import { isSlotSimple } from './slot-path.js';
+import { isSlotSimple } from './slot-expr.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
 

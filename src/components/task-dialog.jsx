@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
-import { getExprKeywords } from "../data/slot-path.js";
+import { getSlotIdAndKeywords } from "../data/slot-id.js";
 
 
 export default function TaskDialog({task, onClose}) {
@@ -52,7 +52,7 @@ export default function TaskDialog({task, onClose}) {
                 </div>
                 <div className="m-5">
                     <InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/>
-                    <SyntaxInput initialInputValue={task.slotExpr} classNameInput="" items={getExprKeywords()}
+                    <SyntaxInput initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
                         onInputChange={onSlotExprChange} closeIcon/>
                     <StatusInput task={task} saveHandler={onStatusChange}/>
                     <InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-full"/>

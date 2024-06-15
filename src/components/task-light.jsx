@@ -3,7 +3,7 @@ import Color from 'color';
 
 import './task.css'
 import { STATUS_LST } from "./task-status.js";
-import { isSlotUnique } from '../data/slot-path.js'
+import { isTaskUnique } from '../data/task.js'
 
 import TaskDialog from './task-dialog'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -21,7 +21,7 @@ export default function TaskLight({task}) {
     
     const myClassName =   'rounded p-1 my-1 hover:bg-'+colorTail+'-100 bg-'+colorTail+'-200 border-gray-500 border-2 ';
 
-    const isUnique = isSlotUnique(task.slotExpr)
+    const isUnique = isTaskUnique(task)
 
     return <div className={myClassName}>
         {task.title}

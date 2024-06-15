@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { setTaskFilter } from "../features/taskSlice";
-import { slotIdList } from "../data/slot-path";
+import { SLOTIDS_LST } from "../data/slot-id";
 
 import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
@@ -24,7 +24,7 @@ export default function TaskFilter() {
         }
     }
     
-    const filters = slotIdList.concat(FILTER_KEYWORDS);
+    const filters = SLOTIDS_LST.concat(FILTER_KEYWORDS);
 
     return <div className="w-full"> 
         <div className="w-full flex flex-row space-x-1 items-baseline">

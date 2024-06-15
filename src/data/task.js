@@ -1,15 +1,16 @@
-import { slotCompare, slotIsInOther, slotEqual, isSlotRepeat1, isSlotRepeat2 } from "./slot-path";
-import { slotTruncateBranch, getHashBranch, completeSlotBranch, slotShift, slotToExpr } from "./slot-branch";
+import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotUnique } from './slot-expr';
 import { makeFilter }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
+import { branchComplete, branchToExpr, branchTruncate, getBranchHash } from './slot-branch';
+import { branchShift } from './slot-branch++';
 
 export function taskPredicateEqualAndInclude(task, filter) {
-    return slotIsInOther(task.slotExpr, filter)
+    return isSlotEqualOrInclude(task.slotExpr, filter)
 }
 
 export function taskPredicateEqual(task, filter) {
-    return slotEqual(task.slotExpr, filter)
+    return isSlotEqual(task.slotExpr, filter)
 }
 
 export function taskPredicateNoRepeat(task) {
@@ -58,9 +59,9 @@ export function filterSlotExpr(tasks, filter) {
  */
 export function findTaskBySlotExpr(tasks, slot) {
     if (slot.inner !== undefined && slot.inner.length !== 0) {
-        return tasks.filter(task => slotEqual(task.slotExpr, slot.path));
+        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path));
     } else {
-        return tasks.filter(task => slotIsInOther(task.slotExpr, slot.path));
+        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path));
     }
 }
 
@@ -68,7 +69,7 @@ const parser = new Parser()
 
 export function taskGroup(tasks, level) {
     const toto = _.groupBy(tasks, item => {try {
-        return getHashBranch(slotTruncateBranch(completeSlotBranch(parser.parse(item.slotExpr)), level))
+        return getBranchHash(branchTruncate(branchComplete(parser.parse(item.slotExpr)), level))
     } catch (error) {
         console.error(error, ' caused by ', item)
         return ''
@@ -83,17 +84,21 @@ export function taskGroup(tasks, level) {
 export function taskShiftFilter(tasks, level) {
     const tasksTree = tasks.map(item => parser.parse(item.slotExpr))
     
-    const newTree = tasksTree.map(item => slotShift(item, level))
+    const newTree = tasksTree.map(item => branchShift(item, level))
 
     const result = []
     for (let i = 0; i < newTree.length; i++) {
         try {
             if (!_.isEqual(newTree[i], tasksTree[i])) {
-                result.push({...tasks[i], slotExpr: slotToExpr(newTree[i]), oldSlotExpr: tasks[i].slotExpr})
+                result.push({...tasks[i], slotExpr: branchToExpr(newTree[i]), oldSlotExpr: tasks[i].slotExpr})
             }
         } catch (error) {
             console.error(error, 'caused by ', tasks[i], tasksTree[i], newTree[i])
         }
     }
     return result
+}
+
+export function isTaskUnique(task) {
+    return isSlotUnique(task.slotExpr)
 }

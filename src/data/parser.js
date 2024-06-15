@@ -1,6 +1,6 @@
 import { RepeatOnOutlined } from "@mui/icons-material";
 import { tokenizer } from "../utils/stringUtil";
-import { getExprKeywords, getSlotLevel, slotIdList, slotKeyWords } from "./slot-path";
+import { getSlotIdLevel, SLOTIDS_LST, EXPR_KEYWORDS } from "./slot-id";
 
 export class Parser {
 
@@ -8,8 +8,8 @@ export class Parser {
     stack = [];
     parsing = '';
 
-    parseKeyWords = [...slotIdList,
-            ...slotKeyWords, 'EVERY2', '+', '1', '2', '3', '$end'];
+    parseKeyWords = [...SLOTIDS_LST,
+            ...EXPR_KEYWORDS, 'EVERY2', '+', '1', '2', '3', '$end'];
 
     constructor(Pinput, Pstack, Pparsing) {
         this.input = Pinput;
@@ -62,7 +62,7 @@ export class Parser {
             this.stack.push(shiftBranchOrFlag(current));
             return
         }
-        if (slotIdList.indexOf(current) > -1 && (last === undefined || last.type !== 'node')) {
+        if (SLOTIDS_LST.indexOf(current) > -1 && (last === undefined || last.type !== 'node')) {
             this.stack.push({ type: 'node', value: current })
             return ;
         }
@@ -154,7 +154,7 @@ export class Parser {
             this.input.unshift(current);
             return
         }
-        if ([...slotIdList, ...slotKeyWords, 'EVERY2'].indexOf(current) > -1) {
+        if ([...SLOTIDS_LST, ...EXPR_KEYWORDS, 'EVERY2'].indexOf(current) > -1) {
             this.parsing = 'node';
             this.input.unshift(current);
             return
@@ -169,7 +169,7 @@ export function getLevelNode(node) {
     if (typeof node === 'string' && !isNaN(node))
         return Number(node)
     if (typeof node === 'string') {
-        return getSlotLevel(node)
+        return getSlotIdLevel(node)
     }
     if (node.type === 'branch') {
         return getLevelNode(node.value.at(0));

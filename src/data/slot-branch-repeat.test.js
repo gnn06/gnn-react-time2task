@@ -1,22 +1,22 @@
-import { isSlotRepeat1Branch, isSlotRepeat2Branch } from './slot-branch.js';
+import { isBranchRepeat1, isBranchRepeat2 } from './slot-branch.js';
 
 describe('repeat1', () => {
     describe('branch', () => {
         test('branch with recurrence 1', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 { type:'branch', value: ['lundi'], flags:['chaque']});
             expect(result).toBeTruthy();
         });
 
         test('branch with recurrence 2', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 { type:'branch', value: ['this_week', 
                     { type:'branch', value: ['lundi'], flags:['chaque']}] });
             expect(result).toBeTruthy();
         })
 
         test('branch with recurrence 3', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 { type:'branch', value: ['this_month', 
                     { type:'branch', value: ['this_week', 
                         { type:'branch', value: ['lundi'], flags:['chaque'] } 
@@ -25,35 +25,35 @@ describe('repeat1', () => {
         })
 
         test('branch deep 3 repeat at level 2', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 { type:'branch', value: ['this_month', 
                     { type:'branch', value: ['this_week', 'lundi' ], flags:['chaque'] } ] });
             expect(result).toBeTruthy();
         })
 
         test('branch deep 1 without recurrence', () => {
-            const result = isSlotRepeat1Branch({type:'branch', value: ['lundi']});
+            const result = isBranchRepeat1({type:'branch', value: ['lundi']});
             expect(result).toBeFalsy();
         })
 
         test('branch deep 2 without recurrence', () => {
-            const result = isSlotRepeat1Branch({type:'branch', value: ['this_week', 'lundi']});
+            const result = isBranchRepeat1({type:'branch', value: ['this_week', 'lundi']});
             expect(result).toBeFalsy();
         })
 
         test('branch deep 3 without recurrence', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 { type:'branch', value: ['this_month', 'this_week', 'lundi'] });
             expect(result).toBeFalsy();
         })
         
         test('branch without recurrence but disable', () => {
-            const result = isSlotRepeat1Branch({type:'branch', value: ['lundi'], flags:['disable']});
+            const result = isBranchRepeat1({type:'branch', value: ['lundi'], flags:['disable']});
             expect(result).toBeFalsy();
         });    
 
         test('every 2', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 {type:'branch', value: [
                     'this_week'               
                 ], repetition: 2});
@@ -61,7 +61,7 @@ describe('repeat1', () => {
         })
 
         test('every 1', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 {type:'branch', value: [
                     'this_week'               
                 ], repetition: 1});
@@ -72,7 +72,7 @@ describe('repeat1', () => {
     describe('multi', () => {
         describe('multi at level 1', () => {
             test('multi with recurrence on first', () => {
-                const result = isSlotRepeat1Branch(
+                const result = isBranchRepeat1(
                     {type:'multi', value: [
                         {type:'branch', value: ['lundi'], flags:['chaque']},
                         {type:'branch', value: ['mardi']}
@@ -81,7 +81,7 @@ describe('repeat1', () => {
             });
             
             test('multi with recurrence on second', () => {
-                const result = isSlotRepeat1Branch({type:'multi', value: [
+                const result = isBranchRepeat1({type:'multi', value: [
                     {type:'branch', value: ['lundi']},
                     {type:'branch', value: ['mardi'], flags:['chaque']}
                 ]});
@@ -89,7 +89,7 @@ describe('repeat1', () => {
             });
             
             test('multi without recurrence', () => {
-                const result = isSlotRepeat1Branch({type:'multi', value: [
+                const result = isBranchRepeat1({type:'multi', value: [
                     {type:'branch', value: ['lundi']},
                     {type:'branch', value: ['mardi']}
                 ]});
@@ -98,7 +98,7 @@ describe('repeat1', () => {
         });
 
         test('multi at final depth' , () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 {type:'branch', value: [
                     'this_month', 'this_week',
                     {type:'multi', value: [
@@ -110,7 +110,7 @@ describe('repeat1', () => {
         });
 
         test('multi at middle depth', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 {type:'branch', value: [
                     'this_month', 
                     {type:'multi', value: [
@@ -122,7 +122,7 @@ describe('repeat1', () => {
         });
 
         test('multi at level 1, EVERY2 on branch one', () => {
-            const result = isSlotRepeat2Branch(
+            const result = isBranchRepeat2(
                 {type:'multi', value: [
                     {type:'branch', value: ['this_week', 'lundi'], repetition: 2},
                     {type:'branch', value: ['next_week', 'mardi']}
@@ -131,7 +131,7 @@ describe('repeat1', () => {
         });
 
         test('multi at level1, no repeat', () => {
-            const result = isSlotRepeat2Branch(
+            const result = isBranchRepeat2(
                 {type:'multi', value: [
                     {type:'branch', value: ['this_week', 'lundi']},
                     {type:'branch', value: ['next_week', 'mardi']}
@@ -140,7 +140,7 @@ describe('repeat1', () => {
         })
 
         test('deep multi without recurrence', () => {
-            const result = isSlotRepeat1Branch(
+            const result = isBranchRepeat1(
                 {type:'branch', value: [
                     'this_week',
                     {type:'multi', value: [
@@ -157,7 +157,7 @@ describe('repeat1', () => {
 
 describe('Repeat2', () => {
     test('isRepeat with EVERY2', () => {
-        const result = isSlotRepeat2Branch(
+        const result = isBranchRepeat2(
             {type:'branch', value: [
                 'this_week'               
             ], repetition: 2});
@@ -165,7 +165,7 @@ describe('Repeat2', () => {
     })
 
     test('isRepeat with chaque', () => {
-        const result = isSlotRepeat2Branch(
+        const result = isBranchRepeat2(
             {type:'branch', value: [
                 'this_week'               
             ], flags: ['chaque']});

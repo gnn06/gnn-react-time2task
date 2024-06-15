@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '09/06/2024'
+export const RELEASE = '15/06/2024'
 
 const text = `
+15/06/2024
+==========
+- introduces 'month', 'week' or 'day' ; 'chaque lundi' is deprecated, replace by 'week lundi'. Fix 'chaque lundi' invisible in slot view.
+
 09/06/2024
 ==========
 - fix 'every 2 this_week next_week', Refact Parser.

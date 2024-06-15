@@ -1,5 +1,5 @@
-import { slotIsInOtherBranch, slotCompareBranch } from './slot-branch.js';
-import { slotIsInOther } from './slot-path.js';
+import { branchCompare, isBranchEqualOrInclude } from './slot-branch++.js';
+import { isSlotEqualOrInclude } from './slot-expr.js';
     
 jest.useFakeTimers()
 jest.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -7,78 +7,78 @@ jest.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('slotIsInOtherBranch', () => {
     it('slotIsInOther true by first level', () => {
-        const result = slotIsInOther('this_week mercredi matin','this_week');
+        const result = isSlotEqualOrInclude('this_week mercredi matin','this_week');
         expect(result).toBeTruthy();
     })
     
     it('slotIsInOtherBranch true by first level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week']});
         expect(result).toBeTruthy();
     })
 
     it('slotIsInOtherBranch true by second level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week', 'mercredi']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week', 'mercredi']});
         expect(result).toBeTruthy();
     })
 
     it('slotIsInOtherBranch true by last level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week', 'mercredi', 'matin']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'matin']},{type:'branch',value:['this_week', 'mercredi', 'matin']});
         expect(result).toBeTruthy();
     })
 
     it('slotIsInOtherBranch false by last level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'mercredi', 'matin']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'mercredi', 'matin']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch false by second level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'lundi', 'aprem']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'lundi', 'aprem']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch false by first level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['next_week', 'mercredi', 'aprem']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['next_week', 'mercredi', 'aprem']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch true other less deeper', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'mercredi']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'mercredi']});
         expect(result).toBeTruthy()
     })
 
     it('slotIsInOtherBranch false other less deeper', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'lundi']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week', 'lundi']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch true other has 1 level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['this_week']});
         expect(result).toBeTruthy()
     })
 
     it('slotIsInOtherBranch false other has 1 level', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['next_week']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi', 'aprem']},{type:'branch',value:['next_week']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch incomplet expr', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['next_week']},{type:'branch',value:['next_week']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['next_week']},{type:'branch',value:['next_week']});
         expect(result).toBeTruthy()
     })
 
     it('slotIsInOtherBranch incomplet expr trop précis', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['next_week']},{type:'branch',value:['next_week', 'mercredi']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['next_week']},{type:'branch',value:['next_week', 'mercredi']});
         expect(result).toBeFalsy()
     })
 
     it('slotIsInOtherBranch incomplet expr false', () => {
-        const result = slotIsInOtherBranch({type:'branch',value:['this_week', 'mercredi']},{type:'branch',value:['next_week']});
+        const result = isBranchEqualOrInclude({type:'branch',value:['this_week', 'mercredi']},{type:'branch',value:['next_week']});
         expect(result).toBeFalsy()
     })
 
     describe('check behabior of slotIsInOtherBranch on multi', () => {
         it('on first slot', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 {type:'multi',value:[
                     {type:'branch',value:['mercredi']},
                     {type:'branch',value:['jeudi']}]},
@@ -87,7 +87,7 @@ describe('slotIsInOtherBranch', () => {
         })
 
         it('on second slot', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 {type:'multi',value:[
                     {type:'branch',value:['mercredi']},
                     {type:'branch',value:['jeudi']}]},
@@ -96,7 +96,7 @@ describe('slotIsInOtherBranch', () => {
         })
 
         it('multi on depth 3', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 {type:'branch',value:['this_month', 'this_week',
                     {type:'multi',value:[
                         {type:'branch',value:['mercredi']},
@@ -107,44 +107,44 @@ describe('slotIsInOtherBranch', () => {
         })
 
         it('different depth first', () => {
-            const result = slotIsInOtherBranch(
-                {type:'branch',value:[              'this_week', 'jeudi']},
+            const result = isBranchEqualOrInclude(
+                {type:'branch',value:['this_month', 'this_week', 'jeudi']},
                 {type:'branch',value:['this_month', 'this_week', 'jeudi']});
             expect(result).toBeTruthy()
         })
 
     })
     test('disable', () => {
-        const result = slotIsInOtherBranch(
+        const result = isBranchEqualOrInclude(
         {type:'branch',value:['this_month', 'this_week', 'lundi'], flags: ['disable']},
             {type:'branch',value:['this_month', 'this_week', 'lundi']});
         expect(result).toBeFalsy()
     })
 
     test('subbranch for flag', () => {
-        const result = slotIsInOtherBranch(
-            { type: 'branch', value: [ 'this_week', 
+        const result = isBranchEqualOrInclude(
+            { type: 'branch', value: [ 'this_month', 
                 { type: 'branch', value: [ 'this_week', 'jeudi' ], flags: ['EVERY2'] }
             ] }
-            ,{ type: 'branch', value: [ 'jeudi']});
+            ,{ type: 'branch', value: [ 'this_month', 'this_week', 'jeudi']});
         expect(result).toBeTruthy()
     })
 
     describe('shift', () => {
         test('next + 1', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 { type: 'branch', value: [ 'this_week'], shift: 1 },
                 { type: 'branch', value: [ 'next_week']});
             expect(result).toBeTruthy()
         });
         test('next + 1 other', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 { type: 'branch', value: [ 'next_week']},
                 { type: 'branch', value: [ 'this_week'], shift: 1 });
             expect(result).toBeTruthy()
         })
         test('this + 1 don\'t match this', () => {
-            const result = slotIsInOtherBranch(
+            const result = isBranchEqualOrInclude(
                 { type: 'branch', value: [ 'this_week', 'mardi'], shift: 1 },
                 { type: 'branch', value: [ 'this_week']});
             expect(result).toBeFalsy()
@@ -155,7 +155,7 @@ describe('slotIsInOtherBranch', () => {
 describe('slotCompareTree', () => {
     
     function inner_test (op1, op2, expected) {
-        const result = slotCompareBranch(op1, op2);
+        const result = branchCompare(op1, op2);
         expect(result).toEqual(expected);
     }
 
@@ -233,7 +233,9 @@ describe('slotCompareTree', () => {
 
     describe('delta at depth 1', () => {
         it('different level first', () => {
-            inner_test({type:'branch',value:['this_month', 'next_week', 'mercredi']}, {type:'branch',value:['this_week', 'mardi']}, 1)
+            inner_test(
+                {type:'branch',value:['this_month', 'next_week', 'mercredi']}, 
+                {type:'branch',value:['this_month', 'this_week', 'mardi']}, 1)
         })
     
         it('different level second', () => {
@@ -247,7 +249,9 @@ describe('slotCompareTree', () => {
         })
 
         it('delta at depth 3', () => {
-            inner_test({type:'branch',value:['this_month', 'this_week', 'mercredi']}, {type:'branch',value:['mardi']}, 1)
+            inner_test(
+                {type:'branch',value:['this_month', 'this_week', 'mercredi']}, 
+                {type:'branch',value:['this_month', 'this_week', 'mardi']}, 1)
         }) 
     });
 

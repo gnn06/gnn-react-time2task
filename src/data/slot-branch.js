@@ -1,68 +1,115 @@
-import { getSlotLevel, getCurrentSlot, weight, getPreviousSlotBis, getFirstLevelSlot } from "./slot-path";
+import { isBranchEqualOrInclude } from "./slot-branch++";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric } from "./slot-id";
 
-export function lowerSlotBranch(slot) {
-    if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'multi') {
-        return slot.value.at(1)
-    } else if (typeof slot.value.at(1) === 'object' && slot.value.at(1).type === 'branch') {
-        return slot.value.at(1);
+export function getBranchFirstSlot(branch) {
+    return branch.value[0];
+}
+
+export function getBranchLowerSlot(branch) {
+    if (typeof branch.value.at(1) === 'object' && branch.value.at(1).type === 'multi') {
+        return branch.value.at(1)
+    } else if (typeof branch.value.at(1) === 'object' && branch.value.at(1).type === 'branch') {
+        return branch.value.at(1);
     } else {
-        return { type: slot.type, value: slot.value.slice(1)}
+        return { type: branch.type, value: branch.value.slice(1)}
     }
     
 }
 
-export function firstSlotBranch(slotExpr) {
-    return slotExpr.value[0];
+export function getBranchHead(branch) {
+    return {...branch, value: branch.value.slice(0,1)}
+}
+
+export function getBranchTail(branch) {
+    const temp = branch.value.slice(1)
+    if (typeof temp[0] === 'object') {
+        return temp[0];
+    } else {
+        return { type: 'branch', value: temp}
+    }
+}
+
+/**
+ * create a branch for given level
+ */
+export function getBranchCurrentPath(level) {
+    const branch = [];
+    if (level <= 1) {
+        branch.push(getSlotIdCurrent(1))
+    }
+    if (level <= 2) {
+        branch.push(getSlotIdCurrent(2))
+    }
+    if (level <= 3) {
+        branch.push(getSlotIdCurrent(3))
+    }
+    return {type:'branch',value:branch};
+}
+
+/*
+ * give a weigth managing shift, weigth use only weigth on first slot. weight(this_week + 1) = get(this_week) + 1
+ */
+export function getBranchWeight(branch) {
+    return weight[branch.value.at(0)] + (branch.shift === undefined ? 0 : branch.shift)
+}
+
+/**
+ * equal on first level
+ * Used by isBranchEqualDeep, branchSlotIsInOther
+ */
+export function isBranchEqualShallow(branch1, branch2) {
+    if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
+        return true
+    } else {
+        return getBranchWeight(branch1) === getBranchWeight(branch2)
+    }
 }
 
 /*
  * vendredi, 1 => this_month, this_week, vendredi
  * vendredi, 2 => this_week, vendredi
  */
-export function completeSlotBranch(givenSlotExpr, targetLevel) {
+export function branchComplete(branch, targetLevel) {
     if (targetLevel === undefined) targetLevel = 1
-    if (givenSlotExpr === undefined) return undefined;
-    if (givenSlotExpr.type === 'multi') {
-        return { ...givenSlotExpr,
-                 value: givenSlotExpr.value.map(item => completeSlotBranch(item, targetLevel))
+    if (branch === undefined) return undefined;
+    if (branch.type === 'multi') {
+        return { ...branch,
+                 value: branch.value.map(item => branchComplete(item, targetLevel))
                }
     } else {
-        const first = firstSlotBranch(givenSlotExpr);
-        const level = getSlotLevel(first);
+        const first = getBranchFirstSlot(branch);
+        const level = getSlotIdLevel(first);
         for (let i = level - 1; i >= targetLevel; i--) {
-            givenSlotExpr = appendToBranch(getCurrentSlot(i), givenSlotExpr)
+            branch = _appendToBranch(getSlotIdCurrent(i), branch)
         }
-        return givenSlotExpr
+        return branch
     }
 }
 
-export function getCurrentPathBranch(level) {
-    const branch = [];
-    if (level <= 1) {
-        branch.push(getCurrentSlot(1))
-    }
-    if (level <= 2) {
-        branch.push(getCurrentSlot(2))
-    }
-    if (level <= 3) {
-        branch.push(getCurrentSlot(3))
-    }
-    return {type:'branch',value:branch};
-}
-
-export function chooseSlotForSortBranch (multi) {
-    multi = removeDisableBranch(multi)
-    const level = getSlotLevel(multi.value.at(0).value.at(0))
-    const todaySlot = getCurrentPathBranch(level);
-    const hasToday = multi.value.find(slot => slotIsInOtherBranch(slot, todaySlot));
-    if (hasToday) {
-        return hasToday
+/**
+ * this_month this_week lundi with level 2 = this_month this_week
+ */
+export function branchTruncate (tree, level) {
+    if (tree.type === 'multi') {
+        return { ...tree, value: tree.value.map(item => branchTruncate(item, level)) }
     } else {
-        return multi.value[0];
+        const result = []
+        for (const item of tree.value) {
+            if (typeof item === 'object') {
+                result.push(branchTruncate(item, level))
+            } else { // string
+                if (getSlotIdLevel(item) <= level) {
+                    result.push(item)
+                } else {
+                    break;
+                }            
+            }
+        }
+        return {...tree, value: result}
     }
 }
 
-export function removeDisableBranch(node) {
+export function branchRemoveDisable(node) {
     if (node.type === 'multi') {
         return {
             type: node.type,
@@ -78,102 +125,62 @@ export function removeDisableBranch(node) {
     }
 }
 
-export function slotIsInOtherBranch(slotExpr, otherSlotExpr) {
-    if (slotExpr === undefined || otherSlotExpr === undefined) return false;
-    if (otherSlotExpr.type !== 'branch') {
-        throw new Error('slotIsInOtherBranch param otherSlotExpr should not be multi');
-    }
-    slotExpr = removeDisableBranch(slotExpr)
-    if (slotExpr === null) return false;
-    if (slotExpr.type === 'branch' && otherSlotExpr.type === 'branch') {
-        let first = firstSlotBranch(slotExpr)
-        let firstOther = firstSlotBranch(otherSlotExpr)
-        const level1 = getSlotLevel(first)
-        const level2 = getSlotLevel(firstOther)
-        if (level1 < level2) {
-            otherSlotExpr = completeSlotBranch(otherSlotExpr, level1)
-            firstOther = firstSlotBranch(otherSlotExpr)
-        } else if (level1 > level2) {
-            slotExpr = completeSlotBranch(slotExpr, level2)
-            first = firstSlotBranch(slotExpr)
-        }
-        //slotExpr = completeSlotBranch(slotExpr)
-        //otherSlotExpr = completeSlotBranch(otherSlotExpr)
-        // first level is different, no need to go next level
-        if (getWeightBranch(slotExpr) !== getWeightBranch(otherSlotExpr))
-            return false;
-        else {
-            const lower = lowerSlotBranch(slotExpr);
-            const lowerOther = lowerSlotBranch(otherSlotExpr);
-            // other has no more level so previous level egality is enough
-            if (lowerOther.value.length === 0) 
-                return true;
-            else
-                // need to check at next level
-                return slotIsInOtherBranch(lower, lowerOther);   
-        }
-    } else if (slotExpr.type === 'multi' && otherSlotExpr.type === 'branch') {
-        return slotExpr.value.some(slot => slotIsInOtherBranch(slot, otherSlotExpr))
-    }
+export function isBranchSimple(tree) {
+    return tree.type === 'branch' && tree.flags === undefined;
 }
 
-export function isSlotUniqueBranch(slot) {
-    return isSlotSimpleBranch(slot) && !isSlotRepeat1Branch(slot);
+export function isBranchUnique(branch) {
+    return isBranchSimple(branch) && !isBranchRepeat1(branch);
 }
 
-export function isSlotRepeat1Branch(slot) {
-    return applyTestOnBranch(slot, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
+export function isBranchRepeat1(branch) {
+    return _applyTestOnBranch(branch, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
                                              || (slot.repetition !== undefined && slot.repetition >= 1))
 }
 
-export function isSlotRepeat2Branch(slot) {
-    return applyTestOnBranch(slot, 
+export function isBranchRepeat2(branch) {
+    return _applyTestOnBranch(branch, 
         (slot) => slot.repetition !== undefined && slot.repetition >= 2)
 }
 
-function applyTestOnBranch(slot, testFunc) {
-    if (slot.type === 'multi') {
-        return slot.value.some(item => applyTestOnBranch(item, testFunc))
-    } else {
-        return testFunc(slot) || slot.value.slice(1).some(item => (typeof item === 'object') && applyTestOnBranch(item, testFunc))
+/*
+ * Used to regenerate an expression after shifting
+ */
+export function branchToExpr(branch) {
+    let result = []
+    if (branch.type === 'multi') {
+        return branch.value.map(it => branchToExpr(it)).join(' ')
     }
-}
-
-export function slotTruncateBranch (tree, level) {
-    if (tree.type === 'multi') {
-        return { ...tree, value: tree.value.map(item => slotTruncateBranch(item, level)) }
-    } else {
-        const result = []
-        for (const item of tree.value) {
-            if (typeof item === 'object') {
-                result.push(slotTruncateBranch(item, level))
-            } else { // string
-                if (getSlotLevel(item) <= level) {
-                    result.push(item)
-                } else {
-                    break;
-                }            
-            }
-        }
-        return {...tree, value: result}
+    branch = _branchAlias(branch)
+    if (branch.flags !== undefined) { result = result.concat(branch.flags) }
+    if (branch.repetition !== undefined) {
+        result = result.concat('every', branch.repetition)
     }
+    result = result.concat(branch.value.at(0))
+    if (branch.shift !== undefined && branch.shift > 0) {
+        result.push('+')
+        result.push(branch.shift)
+    }
+    branch.value.slice(1).forEach(item => result.push(typeof item === 'object' ? branchToExpr(item) : item))
+    return result.join(' ')
 }
 
 /* 
+ * make unique (remove shift, disable, remove multi, apply alias)
  * Used by Group
  */
-export function getHashBranch(tree) {
+export function getBranchHash(tree) {
     if (tree.type === 'multi') {
-        return getHashBranch(chooseSlotForSortBranch(tree))
+        return getBranchHash(_chooseSlotForSortBranch(tree))
     } else { // type branch
-        tree = slotAlias(tree)
+        tree = _branchAlias(tree)
         const result = []
         for (let i = 0; i < tree.value.length; i++) {
             const item = tree.value[i];
             if (typeof item === 'string') {
                 result.push(item)
             } else {
-                const subresult = getHashBranch(item)
+                const subresult = getBranchHash(item)
                 if (subresult !== '') { 
                     result.push(subresult)
                 }
@@ -186,91 +193,42 @@ export function getHashBranch(tree) {
     }
 }
 
-/*
- * Used to regenerate an expression after shifting
+/**
+ * replace 'this_week + 1' into 'next_week'.
+ * Use before grouping and toExpr
  */
-export function slotToExpr(slot) {
-    let result = []
-    if (slot.type === 'multi') {
-        return slot.value.map(it => slotToExpr(it)).join(' ')
+export function _branchAlias(branch) {
+    
+    function transformBranch(node, aliasID) {
+        const { shift, ...tmp } = {...node, value: [aliasID, ...node.value.slice(1)]}
+        return tmp
     }
-    slot = slotAlias(slot)
-    if (slot.flags !== undefined) { result = result.concat(slot.flags) }
-    if (slot.repetition !== undefined) {
-        result = result.concat('every', slot.repetition)
+    
+    if (branch.value[0] === 'this_week' && branch.shift && branch.shift === 1) {
+        return transformBranch(branch, 'next_week')
     }
-    result = result.concat(slot.value.at(0))
-    if (slot.shift !== undefined && slot.shift > 0) {
-        result.push('+')
-        result.push(slot.shift)
+    
+    if (branch.value[0] === 'this_week' && branch.shift && branch.shift === 2) {
+        return transformBranch(branch, 'following_week')
     }
-    slot.value.slice(1).forEach(item => result.push(typeof item === 'object' ? slotToExpr(item) : item))
-    return result.join(' ')
+
+    if (branch.value[0] === 'next_week' && branch.shift && branch.shift === 1) {
+        return transformBranch(branch, 'following_week')
+    }
+    
+    return branch
 }
 
-export function slotCompareBranch(obj1, obj2) {
-    if (obj1 === undefined || (obj1.flags && obj1.flags.indexOf('disable') >= 0))
-        return 1;
-    if (obj2 === undefined || (obj2.flags && obj2.flags.indexOf('disable') >= 0))
-        return -1;
-    if (obj1.type === 'branch' && obj2.type === 'branch') {
-        let first1 = obj1.value.at(0);
-        let first2 = obj2.value.at(0);
-        let level1 = getSlotLevel(first1);
-        let level2 = getSlotLevel(first2)
-        if (level1 < level2) {
-            const current = getCurrentSlot(level1);
-            obj2 = appendToBranch(current, obj2)
-            first2 = current;
-            level2 = level1;
-        } else if (level1 > level2) {
-            const current = getCurrentSlot(level2);
-            obj1 = appendToBranch(current, obj1)
-            first1 = current;
-            level1 = level2;
-        }
-        const weight1 = getWeightBranch(obj1);
-        const weight2 = getWeightBranch(obj2);
-        if (weight1 < weight2)
-            return -1
-        else if (weight1 > weight2)
-            return 1
-        else {
-            const lower1 = lowerSlotBranch(obj1)
-            const lower2 = lowerSlotBranch(obj2)
-            if (lower1.value.length === 0 && lower2.value.length === 0)
-                return 0
-            if (lower1.value.length !== 0 && lower2.value.length !== 0) 
-                return slotCompareBranch(lower1, lower2)
-            if (lower1.value.length !== 0 && lower2.value.length === 0) 
-                return -1
-            else
-                return 1
-        }
-    } else if (obj1.type === 'multi' && obj2.type === 'branch') {
-        return slotCompareBranch(chooseSlotForSortBranch(obj1), obj2)
-    } else if (obj1.type === 'branch' && obj2.type === 'multi') {
-        return slotCompareBranch(obj1, chooseSlotForSortBranch(obj2))
-    } else if (obj1.type === 'multi' && obj2.type === 'multi') {
-        return slotCompareBranch(chooseSlotForSortBranch(obj1), chooseSlotForSortBranch(obj2))
-    }
-
-}
-
-export function isSlotSimpleBranch(tree) {
-    return tree.type === 'branch' && tree.flags === undefined;
-}
-
-export function getPreviousOrShift(branch) {
+export function _getBranchPreviousOrShift(branch) {
     if (branch.shift !== undefined) {
         const newShift = branch.shift === 0 ? (branch.repetition !== undefined ? branch.repetition : 0) : branch.shift - 1;
         return {...branch, shift: newShift }
     } else {
-        const slotId = firstSlotBranch(branch);
+        const slotId = getBranchFirstSlot(branch);
         const repetition = branch.repetition
-        const newSlotId = getPreviousSlotBis(slotId, repetition)
+        const newSlotId = getSlotIdPrevious(slotId, repetition)
         if (newSlotId === null) {
-            const first = getFirstLevelSlot(getSlotLevel(firstSlotBranch(branch)))
+            const first = getSlotIdFirstLevel(getSlotIdLevel(getBranchFirstSlot(branch)))
             if (repetition === undefined) {
                 return {...branch, value: [first].concat(branch.value.slice(1)) }
             } else {
@@ -282,66 +240,36 @@ export function getPreviousOrShift(branch) {
     }
 }
 
-export function slotShift (slot, levelToShift) {
-    if (typeof slot === 'string') {
-        if (getSlotLevel(slot) === getSlotLevel(levelToShift)) {
-            return getPreviousSlotBis(slot, slot.repetition)
-        } else {
-            return slot
-        }
+/**
+ * internal use to transform a multi into a mono
+ */
+export function _chooseSlotForSortBranch (multi) {
+    multi = branchRemoveDisable(multi)
+    const level = getSlotIdLevel(multi.value.at(0).value.at(0))
+    const todaySlot = getBranchCurrentPath(level);
+    const hasToday = multi.value.find(slot => isBranchEqualOrInclude(slot, todaySlot));
+    if (hasToday) {
+        return hasToday
+    } else {
+        return multi.value[0];
     }
-    if (slot.type === 'branch') {
-        let head;
-        if (getSlotLevel(slot.value.at(0)) === getSlotLevel(levelToShift)) {
-            head = getPreviousOrShift(slot)
-        } else {
-            head = slot;
-        }
-        if (slot.value.length > 1) {
-            const tail = slot.value.slice(1).map(el => slotShift(el, levelToShift))
-            return {...head, value: head.value.slice(0,1).concat(tail)}
-        } else {
-            return head;
-        }
-    }    
-    if (slot.type === 'multi') {
-        return {...slot, value: slot.value.map(el => slotShift(el, levelToShift))}
+}
+
+function _applyTestOnBranch(branch, testFunc) {
+    if (branch.type === 'multi') {
+        return branch.value.some(item => _applyTestOnBranch(item, testFunc))
+    } else {
+        return testFunc(branch) || branch.value.slice(1).some(item => (typeof item === 'object') && _applyTestOnBranch(item, testFunc))
     }
 }
 
 /**
  * append at starting
  */
-export function appendToBranch(toAppend, branch) {
+export function _appendToBranch(toAppend, branch) {
     if (branch.flags !== undefined || branch.shift !== undefined) {
         return { type: 'branch', value: [ toAppend, branch ] };
     } else {
         return { type: 'branch', value: [ toAppend ].concat(branch.value) };
     }
-}
-
-export function getWeightBranch(branch) {
-    return weight[branch.value.at(0)] + (branch.shift === undefined ? 0 : branch.shift)
-}
-
-export function slotAlias(slot) {
-    
-    function transformBranch(node, aliasID) {
-        const { shift, ...tmp } = {...node, value: [aliasID, ...node.value.slice(1)]}
-        return tmp
-    }
-    
-    if (slot.value[0] === 'this_week' && slot.shift && slot.shift === 1) {
-        return transformBranch(slot, 'next_week')
-    }
-    
-    if (slot.value[0] === 'this_week' && slot.shift && slot.shift === 2) {
-        return transformBranch(slot, 'following_week')
-    }
-
-    if (slot.value[0] === 'next_week' && slot.shift && slot.shift === 1) {
-        return transformBranch(slot, 'following_week')
-    }
-    
-    return slot
 }

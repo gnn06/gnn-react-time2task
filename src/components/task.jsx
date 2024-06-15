@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 
 import { useUpdateTaskMutation, useDeleteTaskMutation } from "../features/apiSlice.js";
-import { getExprKeywords, isSlotUnique } from "../data/slot-path.js";
 
 import './task.css'
 import Button from '../components/button';

@@ -1,6 +1,6 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery,
         taskGroup, taskShiftFilter} from "./task";
-import { completeSlotBranch, slotTruncateBranch, getHashBranch } from './slot-branch.js';
+import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 
 jest.useFakeTimers()
@@ -239,16 +239,16 @@ describe('findTaskBySlotExpr', () => {
     it('feuille', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'this_month week mardi'
+            slotExpr: 'this_month this_week mardi'
         }, {
             id: 'task3',
-            slotExpr: 'this_month week jeudi'
+            slotExpr: 'this_month this_week jeudi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week mardi' };
+        const slot = { id: 'slot1', path: 'this_month this_week mardi' };
         const result = findTaskBySlotExpr(tasks, slot);
         const expected = [ {
             id: 'task1',
-            slotExpr: 'this_month week mardi'
+            slotExpr: 'this_month this_week mardi'
         }];
         expect(result).toEqual(expected);
     });
@@ -273,20 +273,20 @@ describe('findTaskBySlotExpr', () => {
     it('pas feuille', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'this_month week mardi'
+            slotExpr: 'this_month this_week mardi'
         }, {
             id: 'task3',
-            slotExpr: 'this_month week jeudi'
+            slotExpr: 'this_month this_week jeudi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week mardi',
-            inner: [ { id: 'slot2', path: 'this_month week mardi aprem',
+        const slot = { id: 'slot1', path: 'this_month this_week mardi',
+            inner: [ { id: 'slot2', path: 'this_month this_week mardi aprem',
                 inner: []
             }]
         };
         const result = findTaskBySlotExpr(tasks, slot);
         const expected = [ {
             id: 'task1',
-            slotExpr: 'this_month week mardi'
+            slotExpr: 'this_month this_week mardi'
         }];
         expect(result).toEqual(expected);
     })
@@ -338,7 +338,7 @@ describe('findTaskBySlotExpr', () => {
     it('test findTaskBySlotExpr exact max', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'this_week'
         }, {
             id: 'task2',
             slotExpr: 'next_week'
@@ -365,15 +365,15 @@ describe('findTaskBySlotExpr', () => {
     it('endWith not on final', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'week mardi'
+            slotExpr: 'this_week mardi'
         },{
             id: 'task2',
-            slotExpr: 'week vendredi'
+            slotExpr: 'this_week vendredi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week mardi' };
+        const slot = { id: 'slot1', path: 'this_month this_week mardi' };
         const expected = [{
             id: 'task1',
-            slotExpr: 'week mardi'
+            slotExpr: 'this_week mardi'
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
@@ -382,15 +382,15 @@ describe('findTaskBySlotExpr', () => {
     it('endWith on final', () => {
         const tasks = [ {
             id: 'task1',
-            slotExpr: 'week'
+            slotExpr: 'this_week'
         },{
             id: 'task2',
-            slotExpr: 'week vendredi'
+            slotExpr: 'this_week vendredi'
         }];
-        const slot = { id: 'slot1', path: 'this_month week vendredi' };
+        const slot = { id: 'slot1', path: 'this_month this_week vendredi' };
         const expected = [{
             id: 'task2',
-            slotExpr: 'week vendredi'
+            slotExpr: 'this_week vendredi'
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
@@ -445,9 +445,9 @@ describe('grouping', () => {
         const parser = new Parser()
         const given1 = 'chaque lundi aprem chaque jeudi mercredi matin';
         const result1 = parser.parse(given1)
-        const result2 = slotTruncateBranch(result1, 4)
-        const result3 = completeSlotBranch(result2)
-        const result4 = getHashBranch(result3)
+        const result2 = branchTruncate(result1, 4)
+        const result3 = branchComplete(result2)
+        const result4 = getBranchHash(result3)
         
         expect(result4).toEqual('this_month this_week lundi aprem')
     });
@@ -457,9 +457,9 @@ describe('grouping', () => {
         const parser = new Parser()
         const given1 = 'chaque lundi aprem';
         const result1 = parser.parse(given1)
-        const result2 = completeSlotBranch(result1)
-        const result3 = slotTruncateBranch(result2, 2)
-        const result4 = getHashBranch(result3)
+        const result2 = branchComplete(result1)
+        const result3 = branchTruncate(result2, 2)
+        const result4 = getBranchHash(result3)
         
         expect(result4).toEqual('this_month this_week')
     });
@@ -468,9 +468,9 @@ describe('grouping', () => {
         const parser = new Parser()
         const given1 = 'this_week + 1';
         const result1 = parser.parse(given1)
-        const result2 = completeSlotBranch(result1)
-        const result3 = slotTruncateBranch(result2, 2)
-        const result4 = getHashBranch(result3)        
+        const result2 = branchComplete(result1)
+        const result3 = branchTruncate(result2, 2)
+        const result4 = getBranchHash(result3)        
         expect(result4).toEqual('this_month next_week')
     });
 
@@ -478,9 +478,9 @@ describe('grouping', () => {
         const parser = new Parser()
         const given1 = 'this_month + 1';
         const result1 = parser.parse(given1)
-        const result2 = completeSlotBranch(result1)
-        const result3 = slotTruncateBranch(result2, 2)
-        const result4 = getHashBranch(result3)        
+        const result2 = branchComplete(result1)
+        const result3 = branchTruncate(result2, 2)
+        const result4 = getBranchHash(result3)        
         expect(result4).toEqual('this_month + 1')
     })
 });
@@ -489,14 +489,14 @@ describe('taskShiftFilter', () => {
     test('shift list with filtering', () => {
         const given    = [ { slotExpr: 'next_week' }, { slotExpr: 'lundi' }, { slotExpr: 'next_month'}, { slotExpr: 'this_month + 1'} ] 
         const expected = [ { slotExpr: 'this_week', oldSlotExpr: 'next_week' } ] ;
-        const result = taskShiftFilter(given, 'week')
+        const result = taskShiftFilter(given, 'this_week')
         expect(result).toEqual(expected)
     });
 
     test('expression with space', () => {
         const given    = [ { slotExpr: 'this_week ' } ] 
         const expected = [  ] ;
-        const result = taskShiftFilter(given, 'week')
+        const result = taskShiftFilter(given, 'this_week')
         expect(result).toEqual(expected)
     })
 });

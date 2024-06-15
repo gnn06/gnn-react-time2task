@@ -4,7 +4,9 @@ import StatusInput from './status-input.jsx'
 import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 import Button from '../components/button';
 
-import { getExprKeywords, isSlotUnique } from "../data/slot-path.js";
+import { getSlotIdAndKeywords } from "../data/slot-id.js";
+import { isTaskUnique } from "../data/task.js";
+
 
 export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onStatusChange, button}) {
 
@@ -18,12 +20,12 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
     return <tr className={myClassName}>
             <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
             <td>                
-                <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getExprKeywords()}
+                <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getSlotIdAndKeywords()}
                     onInputChange={onSlotExprChange} placeHolderInput={ task.id === undefined && "Créneau"}/>
             </td>
             <td><InputEdit key={task.order} defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
-            <td>{task && isSlotUnique(task.slotExpr) && <LooksOneIcon/>}</td>
+            <td>{task && isTaskUnique(task) && <LooksOneIcon/>}</td>
             <td>{button}</td>
         </tr>;
 }
