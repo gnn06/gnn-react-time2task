@@ -1,10 +1,12 @@
 export const weight = {
+    month     : 1,
     this_month: 1,
     next_month: 2,
     week      : 1,
     this_week : 2,
     next_week : 3,
     following_week: 4,
+    day       : 1,
     lundi     : 1,
     mardi     : 2,
     mercredi  : 3,

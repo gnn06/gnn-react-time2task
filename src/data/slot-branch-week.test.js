@@ -20,8 +20,8 @@ describe('path', () => {
         })
     });
     
-    test.skip('getSlotPrevious', () => {
-        expect(getSlotIdPrevious('week', undefined)).toEqual(undefined)
+    test('getSlotPrevious', () => {
+        expect(getSlotIdPrevious('week', undefined)).toEqual('week')
     });
     
     describe('isGeneric', () => {
@@ -42,11 +42,11 @@ test('isRepetition', () => {
 });
 
 describe('branch', () => {
-    test.skip('weigth', () => {
+    test('weigth', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'week' ] })
         expect(result).toEqual(1)
     });
-    test.skip('month', () => {
+    test('month', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'month' ] })
         expect(result).toEqual(1)
     })
