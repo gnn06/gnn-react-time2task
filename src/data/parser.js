@@ -219,7 +219,7 @@ export function reduceConcatBranch(previous, last) {
 }
 
 export function reduceConcatBranchMulti(previous, last) {
-    return { type: 'branch', value: previous.value.concat(last) };
+    return {...previous, value: previous.value.concat(last),  };
 }
 
 export function reduceConcatBranchMulti2Multi(previous, last) {

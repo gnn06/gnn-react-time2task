@@ -170,9 +170,9 @@ describe('reduce functions', () => {
   
   test('reduceConcatBranchMulti', () => {
     expect(reduceConcatBranchMulti(
-      { type: 'branch', value: ['previous'] }, 
+      { type: 'branch', value: ['previous'], repetition: 2 }, 
       { type: 'multi',  value: ['toto', 'titi'] })
-    ).toEqual({ type: 'branch', value: [ 'previous', { type: 'multi',  value: ['toto', 'titi'] } ] })
+    ).toEqual({ type: 'branch', value: [ 'previous', { type: 'multi',  value: ['toto', 'titi'] } ], repetition: 2 })
   });
 
   test('reduceConcatBranchMulti2Multi', () => {
@@ -671,6 +671,22 @@ describe('parser string', () => {
             { type: 'branch', value: ['this_week'] }
           ]}
         )
+      })
+      test('branch wth repetition multi', () => {
+        const parser = new Parser();
+        const result = parser.parse('every 2 this_week lundi matin vendredi aprem');
+        const expected = {   type: "branch",
+        value: [ "this_week",
+          { type: "multi",
+            value: [
+              { type: "branch", value: [ "lundi", "matin" ] },
+              { type: "branch", value: [ "vendredi", "aprem" ] },
+            ],
+          },
+        ],
+        repetition: 2
+    }
+        expect(result).toEqual(expected)
       })
     })
   });
