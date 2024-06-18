@@ -221,7 +221,7 @@ export function _branchAlias(branch) {
 
 export function _getBranchPreviousOrShift(branch) {
     if (branch.shift !== undefined) {
-        const newShift = branch.shift === 0 ? (branch.repetition !== undefined ? branch.repetition : 0) : branch.shift - 1;
+        const newShift = branch.shift === 0 ? (branch.repetition !== undefined ? branch.repetition - 1 : 0) : branch.shift - 1;
         return {...branch, shift: newShift }
     } else {
         const slotId = getBranchFirstSlot(branch);
@@ -232,7 +232,7 @@ export function _getBranchPreviousOrShift(branch) {
             if (repetition === undefined) {
                 return {...branch, value: [first].concat(branch.value.slice(1)) }
             } else {
-                return {...branch, value: [first].concat(branch.value.slice(1)), shift: repetition }
+                return {...branch, value: [first].concat(branch.value.slice(1)), shift: repetition - 1 }
             }
         } else {
             return {...branch, value: [newSlotId].concat(branch.value.slice(1)) }

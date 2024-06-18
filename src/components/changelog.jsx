@@ -4,6 +4,10 @@ import Markdown from 'react-markdown'
 export const RELEASE = '15/06/2024'
 
 const text = `
+xx/xx/2024
+==========
+- FIX : shift 'every 2 this_week' = 'every 2 next_week'
+
 15/06/2024
 ==========
 - introduces 'month', 'week' or 'day' ; 'chaque lundi' is deprecated, replace by 'week lundi'. Fix 'chaque lundi' invisible in slot view.

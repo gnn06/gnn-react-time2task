@@ -1,6 +1,23 @@
 import { _branchAlias, _getBranchPreviousOrShift, getBranchWeight } from "./slot-branch";
 import { branchCompare, branchShift } from "./slot-branch++";
 
+/**
+ * Au début ou non      START 
+ * Shift ou non         SHIFT 
+ * Répétition ou non    REPEAT 
+ * Nb alias             NB_ALIAS_<_REPEAT 
+ * Generic              GENERIC 
+ * Multi                MULTI 
+ * Level demandé        LEVEL 
+ * 
+ * GENERIC 
+ * NOT GENERIC, NOT START, NOT SHIFT 
+ * NOT GENERIC, NOT START, SHIFT 
+ * NOT GENERIC, START, NOT REPEAT 
+ * NOT GENERIC, START, REPEAT, NB_ALIAS_INF 
+ * NOT GENERIC, START, REPEAT, NOT NB_ALIAS_INF  
+ */
+
 describe('slotShift', () => {
     describe('no shift, no repetition', () => {
         test('nominal', () => {
@@ -116,14 +133,21 @@ describe('slotShift', () => {
                 { type: 'branch', value: [ 'this_week' ], repetition: 2 }
                 , 'week')
             expect(result).toEqual(
-                { type: 'branch', value: [ 'following_week' ], repetition: 2 }
+                { type: 'branch', value: [ 'next_week' ], repetition: 2 }
             )
         })      
 
         test('restart with shift', () => {
             const given = { type: 'branch', value: [ 'this_week' ], repetition: 6 };
             const result = branchShift(given, 'week');
-            const expected = { type: 'branch', value: [ 'this_week' ], shift: 6, repetition: 6 };
+            const expected = { type: 'branch', value: [ 'this_week' ], shift: 5, repetition: 6 };
+            expect(result).toEqual(expected)
+        });
+
+        test('no restart with shift and repetition', () => {
+            const given = { type: 'branch', value: [ 'this_week' ], repetition: 6, shift: 5 };
+            const result = branchShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_week' ], repetition: 6, shift: 4 };
             expect(result).toEqual(expected)
         });
 
@@ -145,7 +169,7 @@ describe('slotShift', () => {
             test('shift month, restart', () => {
                 const given = { type: 'branch', value: [ 'this_month' ], repetition: 2 };
                 const result = branchShift(given, 'month');
-                const expected = { type: 'branch', value: [ 'this_month' ], shift: 2, repetition: 2 };
+                const expected = { type: 'branch', value: [ 'this_month' ], shift: 1, repetition: 2 };
                 expect(result).toEqual(expected)
             });
         });
@@ -158,7 +182,7 @@ describe('slotShift', () => {
                 , 'week'
             )
             expect(result).toEqual(
-                { type: 'branch', value: [ 'this_week' ], shift: 2, repetition: 2 }
+                { type: 'branch', value: [ 'this_week' ], shift: 1, repetition: 2 }
             )
         });
 
@@ -168,7 +192,7 @@ describe('slotShift', () => {
                 , 'week'
             )
             expect(result).toEqual(
-                { type: 'branch', value: [ 'this_week' ], shift: 6, repetition: 6 }
+                { type: 'branch', value: [ 'this_week' ], shift: 5, repetition: 6 }
             )
         });
     });
@@ -282,7 +306,7 @@ describe('slotAlias', () => {
 describe('getPreviousOrShift', () => {
     test('should create shift when repeat and retrieve null', () => {
         const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3 })
-        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3, shift: 3 })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3, shift: 2 })
         
     });
 
@@ -298,7 +322,7 @@ describe('getPreviousOrShift', () => {
 
     test('restart without shift', () => {
         const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 2 })
-        expect(result).toEqual({ type: 'branch', value: ['following_week', 'mardi'], repetition: 2 })
+        expect(result).toEqual({ type: 'branch', value: ['next_week', 'mardi'], repetition: 2 })
     })
 
     test('branch with shift', () => {
@@ -313,6 +337,6 @@ describe('getPreviousOrShift', () => {
 
     test('shift =  0 with repetition', () => {
         const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], shift: 0 , repetition: 4})
-        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 4, repetition: 4 })
+        expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 3, repetition: 4 })
     })
 });

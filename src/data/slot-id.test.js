@@ -35,7 +35,7 @@ describe('getPreviousSlot', () => {
     });
     test('restart', () => {
         const given    = "this_week";
-        const expected = "following_week"
+        const expected = "next_week"
         const result   = getSlotIdPrevious(given, 2);
         expect(result).toEqual(expected)
     });
@@ -58,7 +58,7 @@ describe('getPreviousSlot', () => {
     
         test('should return last', () => {
             const result = getSlotIdPrevious('this_week', 2)
-            expect(result).toEqual('following_week')
+            expect(result).toEqual('next_week')
         });
     
         test('should return null when repetition over end', () => {
