@@ -30,7 +30,7 @@ export default function DialogHelpExpression() {
                 <li><span className="font-mono font-bold">mardi mercredi</span> pour une tache à faire 2 fois dans la semaine sur 2 créneaux différents</li>
                 
                 <li><span className="font-mono font-bold">month, week, day</span> pour des taches qui se répetent.</li>
-                <li><span className="font-mono font-bold">week lundi</span> ou <span className="font-mono font-bold">chaque lundi</span> pour une tache à faire chaque semaine le lundi</li>
+                <li><span className="font-mono font-bold">week lundi</span> pour une tache à faire chaque semaine le lundi (anciennement <span className="font-mono font-bold">chaque lundi</span> devenu obsolète)</li>
                 <li><span className="font-mono font-bold">week lundi jeudi</span> pour une tache à faire chaque semaine 2 fois dans la semaine</li>
                 <li><span className="font-mono font-bold">
                     week lundi this_week jeudi</span> pour une tache à faire chaque lundi mais aussi ce jeudi exceptionnnel ; par exemple, si vous n'avez pas pu la finir lundi</li>
