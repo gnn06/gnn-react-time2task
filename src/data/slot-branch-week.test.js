@@ -241,8 +241,7 @@ describe('grouping', () => {
         const task3 = { id: 'task3', slotExpr: 'next_week' }
         const tasks = [ task1, task2, task3 ]
         const result = taskGroup(tasks, 2)
-        expect(result).toEqual({'this_month week':      [task1] ,
-                                'this_month this_week': [task2] ,
+        expect(result).toEqual({'this_month this_week': [task1, task2] ,
                                 'this_month next_week': [task3] })
     })
 });

@@ -178,7 +178,11 @@ export function getBranchHash(tree) {
         for (let i = 0; i < tree.value.length; i++) {
             const item = tree.value[i];
             if (typeof item === 'string') {
-                result.push(item)
+                if (isSlotIdGeneric(item)) {
+                    result.push(getSlotIdFirstLevel(getSlotIdLevel(item)))
+                } else {
+                    result.push(item)
+                }
             } else {
                 const subresult = getBranchHash(item)
                 if (subresult !== '') { 

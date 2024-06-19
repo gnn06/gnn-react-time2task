@@ -344,6 +344,18 @@ describe('hashBranch', () => {
         expect(result).toEqual('this_week + 4 lundi')
     });
 
+    test('generic', () => {
+        const given = { type: 'branch', value: [ 'week', 'lundi' ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_week lundi')
+    });
+
+    test('generic month', () => {
+        const given = { type: 'branch', value: [ 'month', 'this_week' ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_month this_week')
+    });
+
 });
 
 describe('slotToExpr', () => {
