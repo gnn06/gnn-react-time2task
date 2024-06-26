@@ -83,6 +83,12 @@ describe('makeFilter', () => {
     const result = data.filter(makeFilter('mercredi NONE').func);
     expect(result).toEqual([task3])
     })
+
+    test('NONE only match this and not next', () => {
+        const data = [{title:'toto', slotExpr: 'this_week mercredi'}, {title:'titi', slotExpr: 'next_week mercredi'}]
+        const result = data.filter(makeFilter('mercredi NONE').func);
+        expect(result).toEqual([{title:'toto', slotExpr: 'this_week mercredi'}])
+    })
     
     test('EVERY2 filter', () => {
         const result = data.filter(makeFilter('EVERY').func);

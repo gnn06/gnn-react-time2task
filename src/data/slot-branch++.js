@@ -14,9 +14,13 @@ export function isBranchEqualDeep(branch1, branch2) {
     } else if (branch1.value.length !== branch2.value.length) {
         return false
     } else {
-        const tail1 = getBranchTail(branch1)
-        const tail2 = getBranchTail(branch2)
-        return isBranchEqualDeep(tail1, tail2)
+        if (isBranchEqualShallow(branch1, branch2) === false) {
+            return false
+        } else {
+            const tail1 = getBranchTail(branch1)
+            const tail2 = getBranchTail(branch2)
+            return isBranchEqualDeep(tail1, tail2)
+        }
     }
 }
 

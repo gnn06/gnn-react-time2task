@@ -9,6 +9,7 @@ xx/xx/2024
 - FIX : shift 'every 2 this_week' = 'every 2 next_week'
 - fix : shift 'every 2 this_week lundi matin vendredi aprem' (parsing error)
 - fix : group 'week' with 'this_week'
+- fix : 'mercredi  NONE' don't match next_week
 
 15/06/2024
 ==========

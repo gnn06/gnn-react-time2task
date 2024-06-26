@@ -112,6 +112,19 @@ describe('branch', () => {
                 { branch: 'branch', value: [ 'this_month', 'next_week' ] })
             expect(result).toBeFalsy()
         })
+        test('same depth = 3, first level equal, second differs', () => {
+            const result = isBranchEqualDeep(
+                { branch: 'branch', value: [ 'this_month', 'next_week', 'lundi' ] },
+                { branch: 'branch', value: [ 'this_month', 'this_week', 'lundi' ] })
+            expect(result).toBeFalsy()
+        })
+
+        test('same depth = 3, first level differs', () => {
+            const result = isBranchEqualDeep(
+                { branch: 'branch', value: [ 'this_month', 'next_week', 'lundi' ] },
+                { branch: 'branch', value: [ 'next_month', 'this_week', 'lundi' ] })
+            expect(result).toBeFalsy()
+        })
         test('with flag', () => {
             const result = isBranchEqualDeep(
                 { type: 'branch', value: [ 'this_month', 'this_week', {type: 'branch', value: ['lundi'], flags: ['chaque'] } ] },
