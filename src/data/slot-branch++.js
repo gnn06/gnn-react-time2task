@@ -5,10 +5,15 @@ import { getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
 /**
  * differs from isBranchEqualOrInclude isBranchEqualDeep('this_week lundi', 'this_week') = false)
  * require params should be completed
+ * param branch1 complete
+ * param branch2 complete and mono
  * used by slotEqual
  * used by filtering with NONE, slotView on not terminal node (findTaskBySlotExpr)
  */
 export function isBranchEqualDeep(branch1, branch2) {
+    if (branch1.type === 'multi') {
+        return branch1.value.some(branch => isBranchEqualDeep(branch, branch2))
+    }
     if (branch1.value.length === 1 && branch2.value.length === 1) {
         return isBranchEqualShallow(branch1, branch2)
     } else if (branch1.value.length !== branch2.value.length) {

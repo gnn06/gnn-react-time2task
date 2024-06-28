@@ -89,6 +89,12 @@ describe('makeFilter', () => {
         const result = data.filter(makeFilter('mercredi NONE').func);
         expect(result).toEqual([{title:'toto', slotExpr: 'this_week mercredi'}])
     })
+
+    test('jeudi NONE with week mardi jeudi', () => {
+        const data = [{title:'toto', slotExpr: 'week mardi jeudi'}]
+        const result = data.filter(makeFilter('jeudi NONE').func);
+        expect(result).toEqual(data)
+    })
     
     test('EVERY2 filter', () => {
         const result = data.filter(makeFilter('EVERY').func);

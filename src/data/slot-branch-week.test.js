@@ -131,6 +131,13 @@ describe('branch', () => {
                 { type: 'branch', value: [ 'this_month', 'this_week', 'lundi']});
             expect(result).toBeTruthy()
         })
+        test('multi', () => {
+            const result = isBranchEqualDeep(
+                { type: 'multi', value: [ { type: 'branch', value: [ 'mardi' ]},
+                                          { type: 'branch', value: [ 'jeudi' ]} ] },
+                { type: 'branch', value: [ 'jeudi' ]});
+            expect(result).toBeTruthy()
+        })
     })
 });
 

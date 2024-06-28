@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '15/06/2024'
+export const RELEASE = 'xx/xx/2024'
 
 const text = `
+xx/xx/2024
+==========
+- fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
+
 xx/xx/2024
 ==========
 - FIX : shift 'every 2 this_week' = 'every 2 next_week'
