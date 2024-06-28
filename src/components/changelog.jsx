@@ -8,7 +8,7 @@ xx/xx/2024
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
 
-xx/xx/2024
+27/06/2024
 ==========
 - FIX : shift 'every 2 this_week' = 'every 2 next_week'
 - fix : shift 'every 2 this_week lundi matin vendredi aprem' (parsing error)
