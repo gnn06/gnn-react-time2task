@@ -67,6 +67,18 @@ describe('repeat1', () => {
                 ], repetition: 1});
             expect(result).toBeTruthy();
         })
+
+        test('week', () => {
+            const result = isBranchRepeat1(
+                {type:'branch', value: [ 'week' ]});
+            expect(result).toBeTruthy();
+        })
+
+        test('lundi', () => {
+            const result = isBranchRepeat1(
+                {type:'branch', value: [ 'lundi' ]});
+            expect(result).toBeFalsy();
+        })
     });
 
     describe('multi', () => {
@@ -169,6 +181,18 @@ describe('Repeat2', () => {
             {type:'branch', value: [
                 'this_week'               
             ], flags: ['chaque']});
+        expect(result).toBeFalsy();
+    })
+
+    test('generic', () => {
+        const result = isBranchRepeat2(
+            {type:'branch', value: ['week']});
+        expect(result).toBeFalsy();
+    })
+
+    test('simple', () => {
+        const result = isBranchRepeat2(
+            {type:'branch', value: ['lundi']});
         expect(result).toBeFalsy();
     })
 });

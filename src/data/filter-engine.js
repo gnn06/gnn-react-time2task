@@ -1,4 +1,4 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1 } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
@@ -11,7 +11,9 @@ export const makeTitleFilterFunc = (task, title) => task.title.toLowerCase().ind
 /* export for test */
 export const makeNoRepeatFilterFunc = (task) => taskPredicateNoRepeat(task)
 
-export const makeEveryFilterFunc = (task) => taskPredicateEvery(task)
+export const makeEvery1FilterFunc = (task) => taskPredicateEvery1(task)
+
+export const makeEvery2FilterFunc = (task) => taskPredicateEvery2(task)
 
 
 /* public, used slot-filter.js by */
@@ -30,8 +32,10 @@ export function makeFilter(filterExpr) {
         return {func: (task) => makeTitleFilterFunc(task, title)};
     } else if (filterExpr === 'NOREPEAT') {
         return {func: makeNoRepeatFilterFunc};
-    } else if (filterExpr === 'EVERY') {
-        return {func: makeEveryFilterFunc};
+    } else if (filterExpr === 'EVERY1') {
+        return {func: makeEvery1FilterFunc};
+    } else if (filterExpr === 'EVERY2') {
+        return {func: makeEvery2FilterFunc};
     } else {
         if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
         if (filterExpr.endsWith(' NONE')) {
@@ -42,4 +46,4 @@ export function makeFilter(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY', 'AND', 'OR'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2', 'AND', 'OR'];

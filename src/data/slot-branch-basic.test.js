@@ -243,6 +243,12 @@ describe('isBranchUnique', () => {
             {type:'branch', value: ['this_week', 'mardi']})
         expect(result).toBeTruthy()
     })
+
+    test('generic', () => {
+        const result = isBranchUnique(
+            {type:'branch', value: ['week']})
+        expect(result).toBeFalsy()
+    })
 });
 
 describe('slotTruncate', () => {

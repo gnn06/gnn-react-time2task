@@ -7,6 +7,7 @@ const text = `
 xx/xx/2024
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
+- create filter EVERY1 (and rename EVERY2)
 
 27/06/2024
 ==========

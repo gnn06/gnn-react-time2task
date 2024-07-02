@@ -1,12 +1,14 @@
 import { makeFilter, makeTitleFilterFunc, makeNoRepeatFilterFunc } from './filter-engine';
 
-const task1 = {title:'toto', slotExpr: 'lundi jeudi'};
-const task2 = {title:'titi', slotExpr: 'this_week mardi'};
-const task3 = {title:'TATA', slotExpr: 'mercredi'};
-const task4 = {title:'tutu', slotExpr: 'mercredi aprem'};
+const task1 = {title:'toto',  slotExpr: 'lundi jeudi'};
+const task2 = {title:'titi',  slotExpr: 'this_week mardi'};
+const task3 = {title:'TATA',  slotExpr: 'mercredi'};
+const task4 = {title:'tutu',  slotExpr: 'mercredi aprem'};
 const task5 = {title:'task5', slotExpr: 'chaque vendredi'};
-const task6 = {title:'task5', slotExpr: 'EVERY2 this_week mardi'};
-const data = [task1, task2, task3, task4, task5, task6];
+const task6 = {title:'task6', slotExpr: 'EVERY2 this_week mardi'};
+const task7 = {title:'task7', slotExpr: 'every 2 this_week vendredi'};
+const task8 = {title:'task8', slotExpr: 'week vendredi'};
+const data = [task1, task2, task3, task4, task5, task6, task7, task8];
 
 describe('makeFilter', () => {
     test('slotExpr with task complete', () => {
@@ -97,8 +99,13 @@ describe('makeFilter', () => {
     })
     
     test('EVERY2 filter', () => {
-        const result = data.filter(makeFilter('EVERY').func);
-        expect(result).toEqual([task6])
+        const result = data.filter(makeFilter('EVERY2').func);
+        expect(result).toEqual([task6, task7])
+    })
+
+    test('EVERY filter', () => {
+        const result = data.filter(makeFilter('EVERY1').func);
+        expect(result).toEqual([task5, task6, task7, task8])
     })
 
     test('error', () => {

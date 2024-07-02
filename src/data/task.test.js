@@ -1,5 +1,6 @@
-import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery,
-        taskGroup, taskShiftFilter} from "./task";
+import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
+        taskGroup, taskShiftFilter,
+        taskPredicateEvery1} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 
@@ -174,7 +175,7 @@ describe('taskFilterExact', () => {
     })
 })
 
-describe('taskFilterPredicateByNoRepeat', () => {
+describe('taskFilterPredicate Repeat', () => {
     test('norepeat keep true', () => {
         const task = { slotExpr: 'mardi' }
         const result = taskPredicateNoRepeat(task)
@@ -192,7 +193,37 @@ describe('taskFilterPredicateByNoRepeat', () => {
     });
     test('every2', () => {
         const task = { slotExpr: 'EVERY2 this_week mardi aprem' }
-        const result = taskPredicateEvery(task)
+        const result = taskPredicateEvery2(task)
+        expect(result).toBeTruthy()
+    });
+    test('bug', () => {
+        const task = { slotExpr: 'lundi' }
+        const result = taskPredicateEvery2(task)
+        expect(result).toBeFalsy()
+    });
+    test('generic false', () => {
+        const task = { slotExpr: 'week mardi aprem' }
+        const result = taskPredicateEvery2(task)
+        expect(result).toBeFalsy()
+    });
+    test('chaque', () => {
+        const task = { slotExpr: 'chaque this_week mardi aprem' }
+        const result = taskPredicateEvery1(task)
+        expect(result).toBeTruthy()
+    });
+    test('every 1', () => {
+        const task = { slotExpr: 'every 1 this_week mardi aprem' }
+        const result = taskPredicateEvery1(task)
+        expect(result).toBeTruthy()
+    });
+    test('every 2', () => {
+        const task = { slotExpr: 'every 2 this_week mardi aprem' }
+        const result = taskPredicateEvery1(task)
+        expect(result).toBeTruthy()
+    });
+    test('generic', () => {
+        const task = { slotExpr: 'week mardi aprem' }
+        const result = taskPredicateEvery1(task)
         expect(result).toBeTruthy()
     });
 })

@@ -135,7 +135,8 @@ export function isBranchUnique(branch) {
 
 export function isBranchRepeat1(branch) {
     return _applyTestOnBranch(branch, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
-                                             || (slot.repetition !== undefined && slot.repetition >= 1))
+                                             || (slot.repetition !== undefined && slot.repetition >= 1)
+                                             || isSlotIdGeneric(getBranchFirstSlot(slot)))
 }
 
 export function isBranchRepeat2(branch) {
