@@ -50,7 +50,12 @@ export class Parser {
         }
         if (current === 'every' && (last === undefined || last.type !== 'node')) {
             const shiftNumber = this.input.shift();
-            this.stack.push({ type: 'repetition', value: parseInt(shiftNumber) })
+            let value = parseInt(shiftNumber)
+            if (isNaN(value)) {
+                value = 1
+                this.input.unshift(shiftNumber);
+            }
+            this.stack.push({ type: 'repetition', value: value })
             return
         }
         if (current === 'EVERY2' && (last === undefined || last.type !== 'node')) {

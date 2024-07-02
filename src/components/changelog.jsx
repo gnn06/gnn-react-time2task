@@ -8,6 +8,8 @@ xx/xx/2024
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
 - create filter EVERY1 (and rename EVERY2)
+- 'every this_week' = 'every 1 this_week'
+- fix : 'lundi NONE' matches 'week lundi'
 
 27/06/2024
 ==========

@@ -685,9 +685,15 @@ describe('parser string', () => {
           },
         ],
         repetition: 2
-    }
+        }
         expect(result).toEqual(expected)
       })
+      
+      test('every without number', () => {
+        const parser = new Parser();
+        const result = parser.parse('every this_week');
+        expect(result).toEqual({ type: "branch", value: [ "this_week" ], repetition: 1 })
+      });
     })
   });
 
