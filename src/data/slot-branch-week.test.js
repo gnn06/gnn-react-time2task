@@ -138,6 +138,12 @@ describe('branch', () => {
                 { type: 'branch', value: [ 'jeudi' ]});
             expect(result).toBeTruthy()
         })
+        test('undefined', () => {
+            const result = isBranchEqualDeep(
+                undefined,
+                { type: 'branch', value: [ 'jeudi' ]});
+            expect(result).toBeFalsy()
+        })
     })
 });
 

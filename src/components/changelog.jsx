@@ -7,6 +7,7 @@ const text = `
 xx/xx/xxxx
 ==========
 - task without order at end
+- fix : crash when a task has no slot
 
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)

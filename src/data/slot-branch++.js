@@ -11,6 +11,7 @@ import { getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
  * used by filtering with NONE, slotView on not terminal node (findTaskBySlotExpr)
  */
 export function isBranchEqualDeep(branch1, branch2) {
+    if (branch1 === undefined) return false;
     if (branch1.type === 'multi') {
         return branch1.value.some(branch => isBranchEqualDeep(branch, branch2))
     }
