@@ -8,6 +8,7 @@ xx/xx/xxxx
 ==========
 - task without order at end
 - fix : crash when a task has no slot
+- fix : order 0 not persisted
 
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
