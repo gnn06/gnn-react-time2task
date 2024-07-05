@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '03/07/2024'
+export const RELEASE = 'xx/xx/2024'
 
 const text = `
-03/07/2024
+xx/xx/xxxx
+==========
+- task without order at end
+
 ==========
 - fix : 'jeudi NONE' don't match 'week mardi jeudi' (multi)
 - create filter EVERY1 (and rename EVERY2)

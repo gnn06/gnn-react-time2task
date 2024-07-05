@@ -31,8 +31,8 @@ export function taskCompare(task1, task2) {
     const slotComp = slotCompare(task1.slotExpr, task2.slotExpr)
     if (slotComp === 0) {
         // put no order task at begin
-        const order1 = task1.order === undefined ? 0 : task1.order
-        const order2 = task2.order === undefined ? 0 : task2.order
+        const order1 = task1.order === undefined || task1.order === null ? 999 : task1.order
+        const order2 = task2.order === undefined || task2.order === null ? 999 : task2.order
         if (order1 < order2) {
             return -1
         } else if (order1 > order2) {

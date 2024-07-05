@@ -40,12 +40,19 @@ describe('taskCompare', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi'}
         const task2 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(-1) 
+        expect(result).toBe(1) 
     })
 
     it('compare task by slot and order with param2 undefined', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const task2 = { slotExpr: 'this_month this_week jeudi'}
+        const result = taskCompare(task1, task2)
+        expect(result).toBe(-1) 
+    })
+
+    it('compare task with null', () => {
+        const task1 = { slotExpr: 'this_month', order: null }
+        const task2 = { slotExpr: 'this_month', order: 2    }
         const result = taskCompare(task1, task2)
         expect(result).toBe(1) 
     })
