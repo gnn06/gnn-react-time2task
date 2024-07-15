@@ -35,6 +35,12 @@ export default function Task({task, api}) {
         api({id:taskId, order})
     };
 
+    const onActivityChange = activity => {
+        const taskId = task.id;
+        if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
+        api({id:taskId, activity})
+    };
+
     const onStatusChange = (value) => {
         const taskId = task.id;
         updateTask({id:taskId, status: value})
@@ -50,6 +56,7 @@ export default function Task({task, api}) {
 
     return <TaskRow task={task} selected={selected} 
                 onTitleChange={onTitleChange} onSlotExprChange={onSlotExprChange} onOrderChange={onOrderChange}
+                onActivityChange={onActivityChange}
                 onStatusChange={onStatusChange} 
                 button={<Button label="Delete" clickToto={onDeleteClick} />}/>;
 }

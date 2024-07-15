@@ -6,6 +6,7 @@ const mapping = [
     { old: 'slotExpr', new: 'slotExpr' },
     { old: 'status',   new: 'Etat' },
     { old: 'order',    new: 'ordre' },
+    { old: 'activity', new: 'Activity' },
     { old: 'title',    new: 'Sujet' },
 ];
 
@@ -26,7 +27,17 @@ export const apiSlice = createApi({
 
     endpoints: builder => ({
         getTasks: builder.query({
-            query: (user) => `/tasks?and=(Etat.neq.archivé),user.eq.${user})`,            
+            query: (param) => {
+                const { userId, activity } = param
+                //console.log("params=",userId, activity)
+                if (activity === 0) {
+                    return `/tasks?Etat=neq.archivé&user=eq.${userId}&Activity=is.null`
+                } else if (activity ) {
+                    return `/tasks?Etat=neq.archivé&user=eq.${userId}&Activity=eq.${activity}`
+                } else {
+                    return `/tasks?Etat=neq.archivé&user=eq.${userId}`
+                }                
+            },
             transformResponse: (response, meta, arg) => 
                 response.map(
                     item => ({
@@ -34,7 +45,8 @@ export const apiSlice = createApi({
                         title: item.Sujet,
                         slotExpr: item.slotExpr,
                         status: item.Etat,
-                        order: item.ordre
+                        order: item.ordre,
+                        activity: item.Activity
                     }))
                     // Don't need to check MultiSlot as compare sort on  first slot
                     .sort(taskCompare),
@@ -54,7 +66,7 @@ export const apiSlice = createApi({
             query: (patch) => ({
                 url: '/tasks',
                 method: 'POST',
-                body: { Sujet: patch.title, slotExpr: patch.slotExpr, ordre: patch.order, Etat: patch.status, user: patch.user }
+                body: { Sujet: patch.title, slotExpr: patch.slotExpr, ordre: patch.order, Activity: patch.activity, Etat: patch.status, user: patch.user }
             }),
             invalidatesTags: () => [{ type: 'Tasks', id: 'LIST' }]
         }),

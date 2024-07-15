@@ -11,8 +11,9 @@ import TodoAction from './action-todo';
 
 export default function TaskList() {
     // eslint-disable-next-line
-    const userId = useSelector(state => state.tasks.user.id);
-    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
+    const userId   = useSelector(state => state.tasks.user.id);
+    const activity = useSelector(state => state.tasks.currentActivity);
+    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
     const [ addTask ] = useAddTaskMutation()
     const [ updateTask, /*{ isLoading: isUpdating }*/ ] = useUpdateTaskMutation()
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
@@ -24,8 +25,8 @@ export default function TaskList() {
         return (
             <div className="m-1 ">
                 <div className="flex flex-row justify-end space-x-1">
-                    <ShiftAction/>  
-                    <TodoAction/>
+                    <ShiftAction tasks={tasksRedux}/>  
+                    <TodoAction tasks={tasksRedux}/>
                     <label>
                         Regrouper par :
                         <select onChange={(e) => setGroup(e.target.value)} className="m-1">
@@ -43,6 +44,7 @@ export default function TaskList() {
                         <th>Titre</th>
                         <th>Créneau (expression)</th>
                         <th>Ordre</th>
+                        <th>Activité</th>
                         <th>Statut</th>
                         <th></th>
                         <th></th>

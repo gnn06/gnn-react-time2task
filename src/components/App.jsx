@@ -17,7 +17,7 @@ function App() {
         { userId ? (
           <div className='p-0'>
             <AppMenu className=''/>
-            <TaskFilter className=''/>
+            <TaskFilter />
             <PanelGroup direction="horizontal" className=''>
                 <Panel className='' collapsible={true} minSize={20}>
                   <TaskList />

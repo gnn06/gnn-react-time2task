@@ -5,9 +5,10 @@ import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique } from "../data/task.js";
+import ActivityInput from "./activity-input.jsx";
 
 
-export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onStatusChange, button}) {
+export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button}) {
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -22,7 +23,8 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                 <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getSlotIdAndKeywords()}
                     onInputChange={onSlotExprChange} placeHolderInput={ task.id === undefined && "Créneau"}/>
             </td>
-            <td><InputEdit key={task.order} defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
+            <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
+            <td><ActivityInput key={task.activity} task={task} saveHandler={(value) => onActivityChange(value)}/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
             <td>{task && isTaskUnique(task) && <LooksOneIcon/>}</td>
             <td>{button}</td>

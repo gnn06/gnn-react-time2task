@@ -75,7 +75,8 @@ const initialState = {
     selectedSlotId: [],
     association: {},
     user: retrieveUser(),
-    accessToken: retrieveAccessToken()
+    accessToken: retrieveAccessToken(),
+    activity: null
 };
 
 export const taskSlice = createSlice({
@@ -113,10 +114,13 @@ export const taskSlice = createSlice({
         },
         accessToken: (state, action) => {
             state.accessToken = action.payload;
-        }
+        },
+        setActivity: (state, action) => {
+            state.currentActivity = action.payload.activity;
+        },
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter, login, logout, accessToken } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, login, logout, accessToken, setActivity } = taskSlice.actions
 
 export default taskSlice.reducer

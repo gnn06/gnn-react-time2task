@@ -6,23 +6,20 @@ import TaskLight from "./task-light";
 
 import { filterSlotExpr, findTaskBySlotExpr } from "../data/task"
 import { selectSlot } from "../features/taskSlice";
-import { useGetTasksQuery } from "../features/apiSlice.js";
 
-export default function Slot({slot}) {
+export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     
     const { id, title, start, end, inner } = slot;
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
-    const userId = useSelector(state => state.tasks.user.id);
-    const { data:taskRedux, isLoading, isError } = useGetTasksQuery(userId)
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     
-    if (isLoading || isError)
-        return 'Loading or Error'
-
-    const tasks = filterSlotExpr(taskRedux, currentTaskFilter);
-    const tasksInSlot = findTaskBySlotExpr(tasks, slot);
+    if (tasks === undefined) {
+        return 'error'
+    }
+    const tasksF = filterSlotExpr(tasks, currentTaskFilter);
+    const tasksInSlot = findTaskBySlotExpr(tasksF, slot);
 
     let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 ";
     if (selected) {
@@ -56,7 +53,7 @@ export default function Slot({slot}) {
             </div>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
-                <Slot key={innerSlot.id} slot={innerSlot} />)}
+                <Slot key={innerSlot.id} slot={innerSlot} tasks={tasks}/>)}
             </div>
         </div>
         )

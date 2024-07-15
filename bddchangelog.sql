@@ -5,3 +5,7 @@ update tasks set "Etat" = 'A faire' where "Etat" is null;
 
 // 02/03/2024
 drop view activetasks
+
+// 08/07/2024
+// create activity
+alter table tasks add column "Activity" int8 default null;

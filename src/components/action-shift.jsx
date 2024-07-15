@@ -1,25 +1,22 @@
 import React from 'react';
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import Dialog from '@mui/material/Dialog';
 import Select from 'react-select';
 
 import Button from "./button";
 import Confirm from './Confirm'
 
-import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import { taskShiftFilter } from '../data/task.js';
 
 const options = [{ value: 'week', label: 'week'}, { value: 'month', label: 'month'}]
 
-export default function ShiftAction() {
+export default function ShiftAction({tasks}) {
 
     const [shiftDialog, setShiftDialog] = useState(false);
     const [hideErrorDialog, setHideErrorDialog] = useState(false);
     const [level, setLevel] = useState(options[0]);
 
-    const userId = useSelector(state => state.tasks.user.id);
-    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
     function onShift() {
@@ -47,7 +44,7 @@ export default function ShiftAction() {
         setHideErrorDialog(true)
     }    
 
-    const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
+    const shiftedTasks = shiftDialog ? taskShiftFilter(tasks, level.value) : []
 
 
     return <div>

@@ -6,28 +6,31 @@ import Button from '../components/button';
 
 export default function TaskNew ({api}) {
 
-    const [ title,    setTitle  ] = useState('')
-    const [ slotExpr, setExpr   ] = useState('')
-    const [ order,    setOrder  ] = useState(null)
-    const [ status,   setStatus ] = useState('A faire')
+    const [ title,    setTitle    ] = useState('')
+    const [ slotExpr, setExpr     ] = useState('')
+    const [ order,    setOrder    ] = useState(null)
+    const [ activity, setActivity ] = useState(null)
+    const [ status,   setStatus   ] = useState('A faire')
     const store = useStore();
 
     const handleSaveTask = () => {
         const user = store.getState().tasks.user;
         // console.log('save', 'task field : '/*, user !== undefined ? user.id : 'no user'*/, title, slotExpr, order, status)
-        api({title, slotExpr, order, status, user: user.id})            
+        api({title, slotExpr, order, activity, status, user: user.id})            
         setTitle('')
         setExpr('')
         setOrder(null)
+        setActivity(null)
         setStatus('A faire')
     };
 
-    const task = { title, slotExpr, order, status }
+    const task = { title, slotExpr, order, activity, status }
       
     return <TaskRow task={task}
                     onTitleChange={(e) => setTitle(e.target.value)} 
                     onSlotExprChange={(e) => setExpr(e)}
                     onOrderChange={(e) => setOrder(e)}
+                    onActivityChange={(e) => setActivity(e === '' || e === null ? null : Number(e))}
                     onStatusChange={(e) => setStatus(e)}
                     button={<Button label="Save" clickToto={handleSaveTask} />}/>
     

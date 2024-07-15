@@ -16,16 +16,19 @@ test ('all fields', async () => {
 
     render(<Provider store={store}><table><tbody><TaskNew api={mockApi}/></tbody></table></Provider>)
 
-    const input = screen.getByPlaceholderText('Titre')
+    let input = screen.getByPlaceholderText('Titre')
     
-    await userEvent.type(input, 'goiwashere{Tab}mardi{Tab}123{Tab}en cours{Enter}')
+    await userEvent.type(input, 'goiwashere{Tab}mardi{Tab}123{Tab}Personnel{Tab}')
+
+    input = screen.getByText('A faire')
+    await userEvent.type(input, 'en cours{Tab}')
 
     const saveButton = screen.getByText('Save')
 
     await userEvent.type(saveButton, '{Enter}')
 
     expect(mockApi).toHaveBeenCalled();
-    expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: 'mardi', order: 123, status: 'en cours', user: 12});
+    expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: 'mardi', order: 123, activity: 2, status: 'en cours', user: 12});
 
 })
 
@@ -44,7 +47,7 @@ test('only title', async () => {
   await userEvent.type(saveButton, '{Enter}')
 
   expect(mockApi).toHaveBeenCalled();
-  expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: '', order: null, status: 'A faire', user: 12});
+  expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: '', order: null, activity: null, status: 'A faire', user: 12});
 
 })
 
@@ -56,31 +59,12 @@ test('only title + tab', async () => {
 
   const input = screen.getByPlaceholderText('Titre')
   
-  await userEvent.type(input, 'goiwashere{Tab}{Tab}{Tab}')
+  await userEvent.type(input, 'goiwashere{Tab}{Tab}{Tab}{Tab}')
 
   const saveButton = screen.getByText('Save')
 
   await userEvent.type(saveButton, '{Enter}')
 
-  expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: '', order: null, status: 'A faire', user: 12});
-
-})
-
-test('order null', async () => {
-   
-  const mockApi = jest.fn();
-
-  render(<Provider store={store}><table><tbody><TaskNew api={mockApi}/></tbody></table></Provider>)
-
-  const input = screen.getByPlaceholderText('Titre')
-  
-  await userEvent.type(input, 'goiwashere')
-
-  const saveButton = screen.getByText('Save')
-
-  await userEvent.type(saveButton, '{Enter}')
-
-  expect(mockApi).toHaveBeenCalled();
-  expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: '', order: null, status: 'A faire', user: 12});
+  expect(mockApi).toHaveBeenCalledWith({title: 'goiwashere', slotExpr: '', order: null, activity: null, status: 'A faire', user: 12});
 
 })

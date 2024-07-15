@@ -6,13 +6,11 @@ import Button from "./button.js";
 import Confirm from './Confirm.jsx'
 import Dialog from '@mui/material/Dialog';
 
-import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import { filterSlotExpr } from '../data/task.js';
 
-export default function TodoAction() {
+export default function TodoAction({tasks}) {
 
-    const userId = useSelector(state => state.tasks.user.id);
-    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery(userId)
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
@@ -20,8 +18,8 @@ export default function TodoAction() {
     const [hideErrorDialog, setHideErrorDialog] = useState(false);
 
     async function onTodo() {
-        const tasks = filterSlotExpr(tasksRedux, currentTaskFilter);
-        setTodoDialog({show: true, tasks: tasks})
+        const tasksFilter = filterSlotExpr(tasks, currentTaskFilter);
+        setTodoDialog({show: true, tasks: tasksFilter})
     }
 
     function handleTodoCancel() {
@@ -31,8 +29,8 @@ export default function TodoAction() {
     function handleTodoConfirm() {
         setTodoDialog({show: false, tasks: []})
         setHideErrorDialog(false)
-        const tasks = filterSlotExpr(tasksRedux, currentTaskFilter);
-        for(const t of tasks) {
+        const tasksFilter = filterSlotExpr(tasks, currentTaskFilter);
+        for(const t of tasksFilter) {
             updateTask({id: t.id, status: 'A faire'})
         }
     }
