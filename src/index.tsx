@@ -8,6 +8,7 @@ import './assets/index.css'
 import store from './features/store'
 import { Provider } from 'react-redux'
 import { createHashRouter, RouterProvider, } from "react-router-dom";
+import Settings from './components/settings';
 
 const router = createHashRouter([
   {
@@ -22,6 +23,10 @@ const router = createHashRouter([
   {
     path: "changelog/",
     element: <Changelog />,
+  },
+  {
+    path: "settings/",
+    element: <Settings />,
   }
 ]);
 

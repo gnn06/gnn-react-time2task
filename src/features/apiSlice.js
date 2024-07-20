@@ -26,6 +26,36 @@ export const apiSlice = createApi({
     }),
 
     endpoints: builder => ({
+        getActivities: builder.query({
+            query: (param) => {
+                return `/Activities`
+            },
+            providesTags: (result) => [{ type: 'Activities', id: 'LIST' }]
+        }),
+        updateActivity: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/Activities?id=eq.${id}`,
+                method: 'PATCH',
+                body: patch,
+            }),
+            invalidatesTags: [{ type: 'Activities', id: 'LIST' }]
+        }),
+        deleteActivity: builder.mutation({
+            query: (id) => ({
+                url: `/Activities?id=eq.${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: (result, error, id) => [{ type: 'Activities', id: 'LIST' }, { type: 'Activity', id }]
+        }),
+        addActivity: builder.mutation({
+            query: (patch) => ({
+                url: '/Activities',
+                method: 'POST',
+                body: { label: patch.label }
+            }),
+            invalidatesTags: () => [{ type: 'Activities', id: 'LIST' }]
+        }),
+
         getTasks: builder.query({
             query: (param) => {
                 const { userId, activity } = param
@@ -81,4 +111,7 @@ export const apiSlice = createApi({
     })
 })
 
-export const { useGetTasksQuery, useUpdateTaskMutation, useAddTaskMutation, useDeleteTaskMutation } = apiSlice
+export const { 
+    useGetTasksQuery, useUpdateTaskMutation, useAddTaskMutation, useDeleteTaskMutation, 
+    useGetActivitiesQuery, useUpdateActivityMutation, useAddActivityMutation, useDeleteActivityMutation
+} = apiSlice

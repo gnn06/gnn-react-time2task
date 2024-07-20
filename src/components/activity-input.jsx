@@ -1,22 +1,5 @@
 import Select from 'react-select';
-
-const ACTIVITY_LST = [ 
-    { value: 1 ,   label: 'Mes Activités' },
-    { value: 2 ,   label: 'Tâche'    },
-    { value: 10,   label: 'Mes Objectifs' },
-    { value: 20,   label: 'Personnel'},
-    { value: 101,  label: 'orga'     },
-    { value: 102,  label: 'oddj'     },
-    { value: 103,  label: 'méthodo'  },
-    { value: 104,  label: 'impact'   },
-    { value: 105,  label: 'team'     },
-    { value: 106,  label: 'sécu'     },
-    { value: 107,  label: 'pca'      },
-    { value: 108,  label: 'upgrade'  },
-    { value: 109,  label: 'Infra'    },
-    { value: 110,  label: 'qualité'  },
-    { value: 0 ,   label: 'Aucune' },
-]
+import { useGetActivitiesQuery } from '../features/apiSlice';
 
 const colorStyle = {
     control: (styles, state) => ({
@@ -48,19 +31,23 @@ const colorStyle = {
 }
 
 export default function ActivityInput({task, saveHandler, className, isClearable}) {
+    const { data, isLoading, isSuccess } = useGetActivitiesQuery()
     const onChange = (value, action) => {
-        saveHandler(value && value.value)
+        saveHandler(value && value.id)
     };
-    const defaultValue = task && ACTIVITY_LST.find(item => item.value === task.activity);
-    return <Select options={ACTIVITY_LST} 
+    //const defaultValue = task && ACTIVITY_LST.find(item => item.value === task.activity);
+    const list = isClearable ? data && data.concat({ id: 0, label: 'Aucune' }) : data
+    const defaultValue = task && list && list.find(item => item.id === task.activity);
+
+    return <Select options={list} 
                 defaultValue={defaultValue} 
                 styles={colorStyle} 
                 onChange={onChange}
-                isClearable={isClearable}
+                isClearable={true}
                 placeholder={task && task.id ? "" : "Activité ..."}
                 components={{
                     IndicatorSeparator: () => null,
-                    DropdownIndicator: () => null,                    
+                    DropdownIndicator: () => null,         
                   }}
                   className={className}
             />
