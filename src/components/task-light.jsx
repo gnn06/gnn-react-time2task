@@ -7,24 +7,27 @@ import { isTaskUnique } from '../data/task.js'
 import TaskDialog from './task-dialog'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
-
-// Needed for tailwindcss
-// eslint-disable-next-line
-const toto = 'bg-red-200 bg-yellow-200 bg-green-200 bg-teal-200 bg-gray-200 bg-purple-200 bg-fuchsia-200 bg-pink-200';
-// eslint-disable-next-line
-const titi = 'hover:bg-red-100 hover:bg-yellow-100 hover:bg-green-100 hover:bg-teal-100 hover:bg-gray-100 hover:bg-purple-100 hover:bg-fuchsia-100 hover:bg-pink-100';
+import { useGetActivitiesQuery } from "../features/apiSlice";
+import { getActivityColor } from "./ui-helper";
+import Color from 'color';
 
 export default function TaskLight({task}) {
 
     const [visible, setVisible] = useState(false)
 
-    const colorTail  = STATUS_LST.find(item => item.value === task.status).colorTail;
+    const { data, isLoading, isSuccess } = useGetActivitiesQuery()
+
+    const activityBgColor = getActivityColor(task.activity, data) || 'rgb(187 247 208)'
+    const activityTextColor = Color(activityBgColor).luminosity() > 0.5 ? 'black' : 'white'
+
+    //const colorTail  = STATUS_LST.find(item => item.value === task.status).colorTail;
     
-    const myClassName =   'rounded p-1 my-1 hover:bg-'+colorTail+'-100 bg-'+colorTail+'-200 border-gray-500 border-2 ';
+    const myClassName =   'rounded p-1 my-1  border-gray-500 border-2 ';
 
     const isUnique = isTaskUnique(task)
 
-    return <div className={myClassName}>
+    // use style for color styling => avoid using tailwindcss color
+    return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
         {task.title}
         { isUnique && <UniqueIcon/> }
         <MoreHorizIcon onClick={() => setVisible(true)}/>
