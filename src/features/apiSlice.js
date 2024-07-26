@@ -45,7 +45,7 @@ export const apiSlice = createApi({
                 url: `/Activities?id=eq.${id}`,
                 method: 'DELETE'
             }),
-            invalidatesTags: (result, error, id) => [{ type: 'Activities', id: 'LIST' }, { type: 'Activity', id }]
+            invalidatesTags: (result, error, id) => [{ type: 'Activities', id: 'LIST' }, { type: 'Activity', id }, { type: 'Tasks', id: 'LIST' }]
         }),
         addActivity: builder.mutation({
             query: (patch) => ({

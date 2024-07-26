@@ -19,12 +19,12 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
 
     return <tr className={myClassName}>
             <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
+            <td><ActivityInput key={task.activity} task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
             <td>                
                 <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getSlotIdAndKeywords()}
                     onInputChange={onSlotExprChange} placeHolderInput={ task.id === undefined && "Créneau"}/>
             </td>
             <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
-            <td><ActivityInput key={task.activity} task={task} saveHandler={(value) => onActivityChange(value)} isClearable={false}/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
             <td>{task && isTaskUnique(task) && <LooksOneIcon/>}</td>
             <td>{button}</td>

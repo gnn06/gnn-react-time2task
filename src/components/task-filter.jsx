@@ -45,7 +45,7 @@ export default function TaskFilter() {
             <label>Activité&nbsp;:&nbsp;</label>
             <ActivityInput 
                 task={null} saveHandler={(value) => onActivityChange(value)}
-                 className="w-1/6" isClearable={true} />
+                 className="w-1/6" isFilter={true} />
         </div>
     </div>;
 };

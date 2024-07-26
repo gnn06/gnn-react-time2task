@@ -2,8 +2,9 @@ import Select from 'react-select';
 import { useGetActivitiesQuery } from '../features/apiSlice';
 import Color from 'color';
 import { getActivityColor } from './ui-helper';
+import _ from 'lodash';
 
-const colorStyle = (isClearable) => ({
+const colorStyle = (isFilter) => ({
     control: (styles, state) => ({
         ...styles,
         backgroundColor: 'transparent',
@@ -21,12 +22,12 @@ const colorStyle = (isClearable) => ({
     }),
     option: (styles, {data}) => ({ ...styles,
         backgroundColor: data.color,
-        color: !isClearable ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' :  styles.color,
+        color: !isFilter ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' :  styles.color,
     }),
     singleValue: (baseStyle, {data}) => ({
         ...baseStyle,
         backgroundColor: data.color,
-        color: !isClearable ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' : baseStyle.color,
+        color: !isFilter ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' : baseStyle.color,
         borderRadius: 4,
         paddingTop: 2,
         paddingLeft: 2,
@@ -35,27 +36,32 @@ const colorStyle = (isClearable) => ({
     })
 })
 
-export default function ActivityInput({task, saveHandler, className, isClearable}) {
+export default function ActivityInput({task, saveHandler, className, isFilter}) {
     const { data, isLoading, isSuccess } = useGetActivitiesQuery()
     const onChange = (value, action) => {
         saveHandler(value && value.id)
     };
-    //const defaultValue = task && ACTIVITY_LST.find(item => item.value === task.activity);
-    const list = 
-        data === undefined ? []
-        : (isClearable ? 
-              data.concat({ id: 0, label: 'Aucune' })
-            : data.map((item, index) => (
-                {...item, 
-                    color: getActivityColor(item.id, data),
-                })))
+    
+    // console.log(data ? 'loaded' : 'undefined')
+
+    if (data === undefined) return <div></div>
+
+    let list = _.orderBy(data, ['label'])
+    if (isFilter) {
+            list = list.concat({ id: 0, label: 'Aucune activité' })    
+    }
+    if (!isFilter) {
+        list = list.map((item, index) => (
+            {...item, 
+                color: getActivityColor(item.id, data),
+            }))
+    }
+                
     const defaultValue = task && list && list.find(item => item.id === task.activity);
-
-    console.log(data)
-
+    
     return <Select options={list} 
                 defaultValue={defaultValue} 
-                styles={colorStyle(isClearable)} 
+                styles={colorStyle(isFilter)} 
                 onChange={onChange}
                 isClearable={true}
                 placeholder={task && task.id ? "" : "Activité ..."}

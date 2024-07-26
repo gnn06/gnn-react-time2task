@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
+import ActivityInput from "./activity-input";
 
 
 export default function TaskDialog({task, onClose}) {
@@ -38,13 +39,19 @@ export default function TaskDialog({task, onClose}) {
         updateTask({id:taskId, order})
     };
 
+    const onActivityChange = activity => {
+        const taskId = task.id;
+        if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
+        updateTask({id:taskId, activity})
+    };
+
     const onStatusChange = (value) => {
         const taskId = task.id;
         updateTask({id:taskId, status: value})
     };
 
     return <div>
-        <Dialog onClose={onClose} open={true}  maxWidth="lg">
+        <Dialog onClose={onClose} open={true}  maxWidth="md" fullWidth={true}>
             <div className="p-3">
                 <div className="flex flex-row">
                     <h1 className=" text-lg mb-4 grow">Détail de tâche</h1>
@@ -54,6 +61,7 @@ export default function TaskDialog({task, onClose}) {
                     <InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/>
                     <SyntaxInput initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
                         onInputChange={onSlotExprChange} closeIcon/>
+                    <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
                     <StatusInput task={task} saveHandler={onStatusChange}/>
                     <InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-full"/>
                 </div>
