@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from "react-redux";
 
 import TaskRow from './task-row'
-import Button from '../components/button';
+import Button from '../components/button.jsx';
 
 export default function TaskNew ({api}) {
 
@@ -16,7 +16,7 @@ export default function TaskNew ({api}) {
     const handleSaveTask = () => {
         const user = store.getState().tasks.user;
         // console.log('save', 'task field : '/*, user !== undefined ? user.id : 'no user'*/, title, slotExpr, order, status)
-        api({title, slotExpr, order, activity, status, user: user.id})            
+        api({title, activity, slotExpr, order, status, user: user.id})            
         setTitle('')
         setExpr('')
         setOrder(null)

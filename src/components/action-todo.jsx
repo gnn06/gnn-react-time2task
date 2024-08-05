@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import Button from "./button.js";
+import Button from "./button.jsx";
 import Confirm from './Confirm.jsx'
 import Dialog from '@mui/material/Dialog';
 

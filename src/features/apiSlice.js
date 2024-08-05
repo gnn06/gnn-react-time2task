@@ -17,13 +17,14 @@ const mapping = [
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery:   fetchBaseQuery({
-        baseUrl : process.env.REACT_APP_API_URL,
+        baseUrl : import.meta.env.VITE_API_URL,
         prepareHeaders: (headers, { getState }) => {
             const state = getState()            
-            headers.set("apiKey", process.env.REACT_APP_API_KEY)
+            headers.set("apiKey", import.meta.env.VITE_API_KEY)
             headers.set("Authorization", 'Bearer ' + state.tasks.accessToken)
         },
     }),
+    tagTypes: ['Activities'],
 
     endpoints: builder => ({
         getActivities: builder.query({

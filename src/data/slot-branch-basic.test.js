@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch, 
          branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendToBranch, 
          getBranchHead, getBranchTail } from './slot-branch.js';
 
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('lowerSlotBranch', () => {
     it('lowerSlot', () => {

@@ -1,7 +1,8 @@
+import { vi } from "vitest";
 import { isSlotEqual, slotCompare } from "./slot-expr.js";
 
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('slotCompare', () => {
     

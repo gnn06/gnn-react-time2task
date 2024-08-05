@@ -7,6 +7,7 @@ const text = `
 29/07/2024
 ==========
 - acitivty with color (except error et UT)
+- migrate from create-react-app to vite & vitest + testing library with msw
 
 15/07/2024
 ==========

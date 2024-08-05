@@ -1,7 +1,8 @@
+import { vi } from 'vitest';
 import { getSlotIdPrevious, getSlotIdFirstLevel } from './slot-id.js';
 
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('getPreviousSlot', () => {
     test('month', () => {

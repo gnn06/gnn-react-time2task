@@ -1,8 +1,9 @@
+import { vi } from 'vitest';
 import { branchCompare, isBranchEqualOrInclude } from './slot-branch++.js';
 import { isSlotEqualOrInclude } from './slot-expr.js';
     
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
     
 
 describe('slotIsInOtherBranch', () => {

@@ -3,9 +3,10 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
         taskPredicateEvery1} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
+import { vi } from "vitest";
 
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('taskCompare', () => {
     it('compare task by slot', () => {
@@ -109,7 +110,7 @@ describe('taskCompare', () => {
     })
 
     it('debug', () => {
-        jest.setSystemTime(new Date('2024-2-9')) // vendredi
+        vi.setSystemTime(new Date('2024-2-9')) // vendredi
         const tasks = [{ id:0, slotExpr: 'this_week vendredi aprem',                       order: 40 }, // 5
                        { id:1, slotExpr: 'vendredi aprem',                                 order: 50 }, // 6
                        { id:2, slotExpr: 'vendredi aprem',                                 order: 10 }, // 1

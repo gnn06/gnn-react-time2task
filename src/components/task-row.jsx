@@ -19,7 +19,7 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
 
     return <tr className={myClassName}>
             <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
-            <td><ActivityInput key={task.activity} task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
+            <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
             <td>                
                 <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getSlotIdAndKeywords()}
                     onInputChange={onSlotExprChange} placeHolderInput={ task.id === undefined && "Créneau"}/>

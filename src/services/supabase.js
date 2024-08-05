@@ -1,4 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
 
-export const supabase = createClient(process.env.REACT_APP_AUTH_URL, process.env.REACT_APP_API_KEY);
+export const supabase = createClient(import.meta.env.VITE_APP_AUTH_URL, import.meta.env.VITE_API_KEY);
 

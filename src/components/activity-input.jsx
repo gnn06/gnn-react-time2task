@@ -42,8 +42,6 @@ export default function ActivityInput({task, saveHandler, className, isFilter}) 
         saveHandler(value && value.id)
     };
     
-    // console.log(data ? 'loaded' : 'undefined')
-
     if (data === undefined) return <div></div>
 
     let list = _.orderBy(data, ['label'])

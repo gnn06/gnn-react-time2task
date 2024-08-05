@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react' // (or /dom, 
 import userEvent from '@testing-library/user-event'
 
 import SyntaxInput from './syntax-input'
+import {vi} from 'vitest'
 
 test('use kayboard arrow', async () => {
     const items = ['first','second'];
@@ -63,7 +64,7 @@ test('use mouse', async () => {
 
 test('no suggestion + enter, no crash', async () => {
     const items = ['first','second'];
-    const handler = jest.fn();
+    const handler = vi.fn();
     render(<SyntaxInput 
                 id="task-filter"
                 items={items}
@@ -80,7 +81,7 @@ test('no suggestion + enter, no crash', async () => {
 
 test('no selection when full suggestion after word', async () => {
     const items = ['first','second'];
-    const handler = jest.fn();
+    const handler = vi.fn();
     render(<SyntaxInput 
                 id="task-filter"
                 items={items}
@@ -97,7 +98,7 @@ test('no selection when full suggestion after word', async () => {
 
 test('full suggestion after wrong keyword', async () => {
     const items = ['first','second'];
-    const handler = jest.fn();
+    const handler = vi.fn();
     render(<SyntaxInput 
                 id="task-filter"
                 items={items}

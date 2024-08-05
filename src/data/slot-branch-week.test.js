@@ -3,9 +3,10 @@ import { getBranchWeight, isBranchEqualShallow } from './slot-branch';
 import { isBranchEqualDeep, isBranchEqualOrInclude, branchCompare, branchShift } from "./slot-branch++";
 import { filterSlotExpr, findTaskBySlotExpr, taskGroup } from "./task";
 import { Parser } from "./parser";
+import { vi } from "vitest";
     
-jest.useFakeTimers()
-jest.setSystemTime(new Date('2023-12-20')) // mercredi
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('path', () => {
     describe('getSlotLevel', () => {
