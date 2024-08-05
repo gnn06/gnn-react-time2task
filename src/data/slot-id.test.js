@@ -29,10 +29,9 @@ describe('getPreviousSlot', () => {
         const result   = getSlotIdPrevious(given);
         expect(result).toEqual(expected)
     });
-    test('stay on first', () => {
-        const given    = "this_week";
-        const result   = getSlotIdPrevious(given);
-        expect(result).toEqual("this_week")
+    test('should return null when reach begin', () => {
+        const result = getSlotIdPrevious('this_week')
+        expect(result).toEqual('this_week')
     });
     test('restart', () => {
         const given    = "this_week";
@@ -41,32 +40,30 @@ describe('getPreviousSlot', () => {
         expect(result).toEqual(expected)
     });
 
-    describe('getPreviousBis', () => {
-        test('should return previous bis', () => {
-            const result = getSlotIdPrevious('following_week')
-            expect(result).toEqual('next_week')
-        });
-
-        test('should return previous', () => {
-            const result = getSlotIdPrevious('next_week')
-            expect(result).toEqual('this_week')
-        });
-    
-        test('should return null when reach begin', () => {
-            const result = getSlotIdPrevious('this_week')
-            expect(result).toEqual('this_week')
-        });
-    
-        test('should return last', () => {
-            const result = getSlotIdPrevious('this_week', 2)
-            expect(result).toEqual('next_week')
-        });
-    
-        test('should return null when repetition over end', () => {
-            const result = getSlotIdPrevious('this_week', 3)
-            expect(result).toEqual(null)
-        }); 
+    test('should return previous bis', () => {
+        const result = getSlotIdPrevious('following_week')
+        expect(result).toEqual('next_week')
     });
+
+    test('should return previous', () => {
+        const result = getSlotIdPrevious('next_week')
+        expect(result).toEqual('this_week')
+    });
+
+    test('should return last', () => {
+        const result = getSlotIdPrevious('this_week', 2)
+        expect(result).toEqual('next_week')
+    });
+
+    test('should return null when repetition over end', () => {
+        const result = getSlotIdPrevious('this_week', 3)
+        expect(result).toEqual(null)
+    }); 
+
+    test('repetition = 1', () => {
+        const result = getSlotIdPrevious('this_week', 1)
+        expect(result).toEqual(null)
+    })
 });
 
 describe('getFirstLevelSlot', () => {

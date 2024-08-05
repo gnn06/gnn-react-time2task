@@ -95,7 +95,7 @@ export function getSlotIdPrevious(slotId, repetition) {
         // this becomes next and not following
         return slots[slots.length - 2];
     }
-    if (index === 0 && repetition > slots.length - 1) {
+    if (index === 0) {
         return null
     }
     else {

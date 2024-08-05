@@ -8,6 +8,7 @@ const text = `
 ==========
 - acitivty with color (except error et UT)
 - migrate from create-react-app to vite & vitest + testing library with msw
+- fix this_week disappearing when shift of 'every 1 this_week'
 
 15/07/2024
 ==========

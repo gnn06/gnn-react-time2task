@@ -173,6 +173,13 @@ describe('slotShift', () => {
                 expect(result).toEqual(expected)
             });
         });
+
+        test('repetition of 1', () => {
+            const given = { type: 'branch', value: [ 'this_week' ], repetition: 1 };
+            const result = branchShift(given, 'week');
+            const expected = { type: 'branch', value: [ 'this_week' ], repetition: 1 };
+            expect(result).toEqual(expected)
+        })
     });
 
     describe('shift and repetition', () => {
@@ -303,7 +310,7 @@ describe('slotAlias', () => {
     });
 });
 
-describe('getPreviousOrShift', () => {
+describe('_getBranchPreviousOrShift', () => {
     test('should create shift when repeat and retrieve null', () => {
         const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3 })
         expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], repetition: 3, shift: 2 })
@@ -338,5 +345,9 @@ describe('getPreviousOrShift', () => {
     test('shift =  0 with repetition', () => {
         const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week', 'mardi'], shift: 0 , repetition: 4})
         expect(result).toEqual({ type: 'branch', value: ['this_week', 'mardi'], shift: 3, repetition: 4 })
+    })
+    test('repetition = 1', () => {
+        const result = _getBranchPreviousOrShift({ type: 'branch', value: ['this_week'] , repetition: 1})
+        expect(result).toEqual({ type: 'branch', value: ['this_week'], repetition: 1 })
     })
 });

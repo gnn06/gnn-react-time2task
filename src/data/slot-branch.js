@@ -234,10 +234,10 @@ export function _getBranchPreviousOrShift(branch) {
         const newSlotId = getSlotIdPrevious(slotId, repetition)
         if (newSlotId === null) {
             const first = getSlotIdFirstLevel(getSlotIdLevel(getBranchFirstSlot(branch)))
-            if (repetition === undefined) {
+            if (repetition === undefined || repetition === 1) {
                 return {...branch, value: [first].concat(branch.value.slice(1)) }
             } else {
-                return {...branch, value: [first].concat(branch.value.slice(1)), shift: repetition - 1 }
+                return {...branch, value: [first].concat(branch.value.slice(1)), shift: repetition - 1 }                
             }
         } else {
             return {...branch, value: [newSlotId].concat(branch.value.slice(1)) }
