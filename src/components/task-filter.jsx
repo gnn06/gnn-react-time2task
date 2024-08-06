@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { setTaskFilter, setActivity } from "../features/taskSlice";
+import { setTaskFilter, setActivity, setFilterIsMulti } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
 
 import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilter} from '../data/filter-engine'
 import ActivityInput from "./activity-input";
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 export default function TaskFilter() {
     
     const dispatch = useDispatch();
     const [error, setError] = useState('')
+    const [isMultiFilter, setIsMultiFilter] = useState(false)
 
     const onChange = (e) => {
         const filter = e;
@@ -31,6 +33,11 @@ export default function TaskFilter() {
         dispatch(setActivity({activity}));
     }
 
+    const onIsMultiFilter = () => {
+        dispatch(setFilterIsMulti({filter: !isMultiFilter}))
+        setIsMultiFilter(!isMultiFilter)
+    }
+
     return <div className="m-1"> 
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
@@ -46,6 +53,7 @@ export default function TaskFilter() {
             <ActivityInput 
                 task={null} saveHandler={(value) => onActivityChange(value)}
                  className="w-1/6" isFilter={true} />
+            <FormControlLabel control={<Checkbox value={isMultiFilter} onChange={onIsMultiFilter}/>} label="is multi"  />
         </div>
     </div>;
 };

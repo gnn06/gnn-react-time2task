@@ -1,16 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Slot from './slot';
-import { useGetTasksQuery } from "../features/apiSlice.js";
 
-export default function SlotList()  {
+export default function SlotList({tasks})  {
     const slotRedux = useSelector(state => state.tasks.slots);
-    const userId = useSelector(state => state.tasks.user.id);
-    const activity = useSelector(state => state.tasks.currentActivity);
-    const { data:tasks, isLoading, isError } = useGetTasksQuery({userId, activity})
-
-    if (isLoading || isError)
-        return 'Loading or Error'
 
     return (
         <div className="m-1 ">

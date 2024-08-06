@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import './slot.css';
 import TaskLight from "./task-light";
 
-import { filterSlotExpr, findTaskBySlotExpr } from "../data/task"
+import { findTaskBySlotExpr } from "../data/task"
 import { selectSlot } from "../features/taskSlice";
 
 export default function Slot({slot, tasks}) {
@@ -13,13 +13,10 @@ export default function Slot({slot, tasks}) {
     const { id, title, start, end, inner } = slot;
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
 
-    const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
-    
     if (tasks === undefined) {
         return 'error'
     }
-    const tasksF = filterSlotExpr(tasks, currentTaskFilter);
-    const tasksInSlot = findTaskBySlotExpr(tasksF, slot);
+    const tasksInSlot = findTaskBySlotExpr(tasks, slot);
 
     let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 ";
     if (selected) {

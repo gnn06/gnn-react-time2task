@@ -7,6 +7,7 @@ const initialState = {
     tasks : [],
     selectedTaskId: [],
     currentTaskFilter: 'no-filter',
+    currentFilterIsMulti: false,
     slots: [{
         id: 'this_month',
         title: 'ce mois ci',
@@ -105,6 +106,9 @@ export const taskSlice = createSlice({
         setTaskFilter: (state, action) => {
             state.currentTaskFilter = action.payload.filter;
         },
+        setFilterIsMulti: (state, action) => {
+            state.currentFilterIsMulti = action.payload.filter;
+        },
         login: (state, action) => {
             state.user = action.payload;
         },
@@ -121,6 +125,6 @@ export const taskSlice = createSlice({
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter, login, logout, accessToken, setActivity } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, login, logout, accessToken, setActivity } = taskSlice.actions
 
 export default taskSlice.reducer

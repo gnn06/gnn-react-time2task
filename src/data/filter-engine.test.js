@@ -1,4 +1,4 @@
-import { makeFilter, makeTitleFilterFunc, makeNoRepeatFilterFunc } from './filter-engine';
+import { makeFilter, makeTitleFilterFunc, makeNoRepeatFilterFunc, makeIsMultiFilterFunc, makeFilterMulti, makeFilterCombine } from './filter-engine';
 
 const task1 = {title:'toto',  slotExpr: 'lundi jeudi'};
 const task2 = {title:'titi',  slotExpr: 'this_week mardi'};
@@ -8,7 +8,8 @@ const task5 = {title:'task5', slotExpr: 'chaque vendredi'};
 const task6 = {title:'task6', slotExpr: 'EVERY2 this_week mardi'};
 const task7 = {title:'task7', slotExpr: 'every 2 this_week vendredi'};
 const task8 = {title:'task8', slotExpr: 'week vendredi'};
-const data = [task1, task2, task3, task4, task5, task6, task7, task8];
+const task9 = {title:'task9', slotExpr: 'every 2 next_week lundi this_week vendredi'};
+const data = [task1, task2, task3, task4, task5, task6, task7, task8, task9];
 
 describe('makeFilter', () => {
     test('slotExpr with task complete', () => {
@@ -100,12 +101,12 @@ describe('makeFilter', () => {
     
     test('EVERY2 filter', () => {
         const result = data.filter(makeFilter('EVERY2').func);
-        expect(result).toEqual([task6, task7])
+        expect(result).toEqual([task6, task7, task9])
     })
 
     test('EVERY filter', () => {
         const result = data.filter(makeFilter('EVERY1').func);
-        expect(result).toEqual([task5, task6, task7, task8])
+        expect(result).toEqual([task5, task6, task7, task8, task9])
     })
 
     test('error', () => {
@@ -113,6 +114,37 @@ describe('makeFilter', () => {
         expect(result.error).toBeDefined();
         expect(data.filter(result.func)).toEqual(data)
     })
+
+    describe('isMulti', () => {
+        test('isMulti true', () => {
+            const result = data.filter(makeFilterMulti(true).func);
+            expect(result).toEqual([task1, task9])
+        })
+    
+        test('isMulti false', () => {
+            const result = data.filter(makeFilterMulti(false).func);
+            expect(result).toEqual(data)
+        })
+    });
+    
+    describe('filter combine', () => {
+        test('expr and multi filter', () => {
+            const result = data.filter(makeFilterCombine(null, true).func);
+            expect(result).toEqual([task1, task9])
+        })
+        test('only expr', () => {
+            const result = data.filter(makeFilterCombine('vendredi', false).func);
+            expect(result).toEqual([task5, task7, task8, task9])
+        })
+        test('expr and isMulti', () => {
+            const result = data.filter(makeFilterCombine('vendredi', true).func);
+            expect(result).toEqual([task9])
+        })
+        test('no expr and no isMulti', () => {
+            const result = data.filter(makeFilterCombine(null, false).func);
+            expect(result).toEqual(data)
+        })
+    });
 });
 
 describe('makexxxFilterFunc', () => {
@@ -124,5 +156,10 @@ describe('makexxxFilterFunc', () => {
     test('makeNoRepeatFilterFunc', () => {
         const result = data.filter(task => makeNoRepeatFilterFunc(task));
         expect(result).toEqual([task1, task2, task3, task4])
+    })
+
+    test('makeIsMultiFilterFunc', () => {
+        const result = data.filter(task => makeIsMultiFilterFunc(task));
+        expect(result).toEqual([task1, task9])
     })
 });

@@ -1,4 +1,4 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1 } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
@@ -15,6 +15,31 @@ export const makeEvery1FilterFunc = (task) => taskPredicateEvery1(task)
 
 export const makeEvery2FilterFunc = (task) => taskPredicateEvery2(task)
 
+export const makeIsMultiFilterFunc = (task) => taskPredicateMulti(task)
+
+
+export function makeFilterCombine(filterExpr, filterIsMulti) {
+    
+    const filterExprFunc   = filterExpr    && makeFilter(filterExpr).func;
+    const filterIsMultiFunc = filterIsMulti && makeIsMultiFilterFunc;
+    if (filterExprFunc && filterIsMultiFunc) {
+        return {func: (task) => filterExprFunc(task) && filterIsMultiFunc(task)}
+    } else if (filterExprFunc) {
+        return {func: filterExprFunc};
+    } else if (filterIsMultiFunc) {
+        return {func: filterIsMultiFunc};
+    } else {
+        return {func: () => true};
+    }
+}
+
+export function makeFilterMulti(filterMulti) {
+    if (filterMulti) {
+        return {func: (task) => makeIsMultiFilterFunc(task)};
+    } else {
+        return {func: () => true};
+    }
+}
 
 /* public, used slot-filter.js by */
 export function makeFilter(filterExpr) {

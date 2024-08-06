@@ -1,4 +1,4 @@
-import { isBranchRepeat1, isBranchRepeat2 } from './slot-branch.js';
+import { isBranchRepeat1, isBranchRepeat2, isBranchMulti } from './slot-branch.js';
 
 describe('repeat1', () => {
     describe('branch', () => {
@@ -196,3 +196,29 @@ describe('Repeat2', () => {
         expect(result).toBeFalsy();
     })
 });
+
+describe('isMulti', () => {
+    test('first multi', () => {
+        const given = { type: 'multi', value: [
+            { type: 'branch', value: ['this_week'] },
+            { type: 'branch', value: ['next_week'] }
+        ] }
+        const result = isBranchMulti(given)
+        expect(result).toEqual(true)
+    })
+    
+    test('first not multi', () => {
+        const given = { type: 'branch', value: ['this_week'] }
+        const result = isBranchMulti(given)
+        expect(result).toEqual(false)
+    })
+    test('multi at level 2', () => {
+        const given = { type: 'branch',
+            value: ['this_month', { type: 'multi', value: [
+                { type: 'branch', value: ['this_week'] },
+                { type: 'branch', value: ['next_week'] }
+        ] }] }
+        const result = isBranchMulti(given)
+        expect(result).toEqual(true)
+    })
+})

@@ -2,20 +2,26 @@ import React from 'react';
 import { useState } from "react";
 import Dialog from '@mui/material/Dialog';
 import Select from 'react-select';
+import { useSelector } from "react-redux";
 
 import Button from "./button";
 import Confirm from './Confirm'
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
+import { useGetTasksQuery } from "../features/apiSlice.js";
 import { taskShiftFilter } from '../data/task.js';
 
 const options = [{ value: 'week', label: 'week'}, { value: 'month', label: 'month'}]
 
-export default function ShiftAction({tasks}) {
+export default function ShiftAction() {
 
     const [shiftDialog, setShiftDialog] = useState(false);
     const [hideErrorDialog, setHideErrorDialog] = useState(false);
     const [level, setLevel] = useState(options[0]);
+
+    const userId   = useSelector(state => state.tasks.user.id);
+    const activity = useSelector(state => state.tasks.currentActivity);
+    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
 
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
@@ -44,8 +50,9 @@ export default function ShiftAction({tasks}) {
         setHideErrorDialog(true)
     }    
 
-    const shiftedTasks = shiftDialog ? taskShiftFilter(tasks, level.value) : []
+    if (isLoading) return;
 
+    const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
 
     return <div>
         <Button label="Shift" clickToto={onShift}/>

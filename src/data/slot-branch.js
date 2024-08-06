@@ -144,6 +144,15 @@ export function isBranchRepeat2(branch) {
         (slot) => slot.repetition !== undefined && slot.repetition >= 2)
 }
 
+export function isBranchMulti(branch) {
+    if (branch.type === 'multi') {
+        return true;
+    } else {
+        const tail = getBranchTail(branch)
+        return tail.value.length > 0 ? isBranchMulti(tail) : false
+    }
+}
+
 /*
  * Used to regenerate an expression after shifting
  */

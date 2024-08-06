@@ -1,25 +1,21 @@
 import React from 'react';
 import { useState } from "react";
-import { useSelector } from "react-redux";
 
 import Button from "./button.jsx";
 import Confirm from './Confirm.jsx'
 import Dialog from '@mui/material/Dialog';
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
-import { filterSlotExpr } from '../data/task.js';
 
 export default function TodoAction({tasks}) {
 
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
-    const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     const [todoDialog, setTodoDialog] = useState({show: false, task:[]});
     const [hideErrorDialog, setHideErrorDialog] = useState(false);
 
     async function onTodo() {
-        const tasksFilter = filterSlotExpr(tasks, currentTaskFilter);
-        setTodoDialog({show: true, tasks: tasksFilter})
+        setTodoDialog({show: true, tasks})
     }
 
     function handleTodoCancel() {
@@ -29,8 +25,7 @@ export default function TodoAction({tasks}) {
     function handleTodoConfirm() {
         setTodoDialog({show: false, tasks: []})
         setHideErrorDialog(false)
-        const tasksFilter = filterSlotExpr(tasks, currentTaskFilter);
-        for(const t of tasksFilter) {
+        for(const t of tasks) {
             updateTask({id: t.id, status: 'A faire'})
         }
     }

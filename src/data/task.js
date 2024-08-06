@@ -1,8 +1,8 @@
 import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotUnique } from './slot-expr';
-import { makeFilter }  from './filter-engine.js';
+import { makeFilter, makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
-import { branchComplete, branchToExpr, branchTruncate, getBranchHash } from './slot-branch';
+import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchMulti } from './slot-branch';
 import { branchShift } from './slot-branch++';
 
 export function taskPredicateEqualAndInclude(task, filter) {
@@ -23,6 +23,11 @@ export function taskPredicateEvery1(task) {
 
 export function taskPredicateEvery2(task) {
     return isSlotRepeat2(task.slotExpr);
+}
+
+export function taskPredicateMulti(task) {
+    const branch = parser.parse(task.slotExpr)
+    return isBranchMulti(branch)
 }
 
 /* public, used by apiSlice.js */
@@ -46,12 +51,12 @@ export function taskCompare(task1, task2) {
 
 /**
  * filter a task list on a filter expression
- * @param {string} filter expression. (mono incomplet slotPath) with OR
+ * @param {string} filterExpr expression. (mono incomplet slotPath) with OR
  * public, used by slot.jsx and tasklist.jsx
  */
-export function filterSlotExpr(tasks, filter) {
-    if (filter === 'no-filter') return tasks;
-    return tasks.filter(makeFilter(filter).func);
+export function filterSlotExpr(tasks, filterExpr, filterIsMulti) {
+    // if (filterExpr === 'no-filter') return tasks;
+    return tasks.filter(makeFilterCombine(filterExpr === 'no-filter' ? null : filterExpr, filterIsMulti).func);
 }
 
 /**
