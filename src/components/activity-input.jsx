@@ -20,10 +20,10 @@ const colorStyle = (isFilter) => ({
         padding: 2,
         margin: 2
     }),
-    option: (styles, {data}) => ({ ...styles,
-        backgroundColor: data.color,
-        color: !isFilter ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' :  styles.color,
-    }),
+    option: (styles, {data}) => {console.log(styles.color, styles.backgroundColor); return { ...styles,
+        backgroundColor: data.color || '#999999',
+        color: data.color ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' :  'black',
+    }},
     singleValue: (baseStyle, {data}) => ({
         ...baseStyle,
         backgroundColor: data.color,
