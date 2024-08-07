@@ -1,5 +1,6 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
+import { composeFuncAnd } from '../utils/predicateUtil.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
 
@@ -17,22 +18,29 @@ export const makeEvery2FilterFunc = (task) => taskPredicateEvery2(task)
 
 export const makeIsMultiFilterFunc = (task) => taskPredicateMulti(task)
 
+export const makeIsDisableFilterFunc = (task) => taskPredicateDisable(task)
 
-export function makeFilterCombine(filterExpr, filterIsMulti) {
-    
-    const filterExprFunc   = filterExpr    && makeFilter(filterExpr).func;
-    const filterIsMultiFunc = filterIsMulti && makeIsMultiFilterFunc;
-    if (filterExprFunc && filterIsMultiFunc) {
-        return {func: (task) => filterExprFunc(task) && filterIsMultiFunc(task)}
-    } else if (filterExprFunc) {
-        return {func: filterExprFunc};
-    } else if (filterIsMultiFunc) {
-        return {func: filterIsMultiFunc};
-    } else {
-        return {func: () => true};
+/**
+ * return { func: (task) => boolean, error: string}
+ */
+export function makeFilterCombine(filterExpr, filterIsMulti, filterIsDisable) {
+    const filters = []
+    if (filterExpr) {
+        filters.push(makeFilterExpr(filterExpr).func)
     }
+    if (filterIsMulti) {
+        filters.push(taskPredicateMulti)
+    }
+    if (filterIsDisable) {
+        filters.push(taskPredicateDisable)
+    }
+
+    return { func: composeFuncAnd(filters) }
 }
 
+/**
+ * return { func: (task) => boolean, error: string}
+ */
 export function makeFilterMulti(filterMulti) {
     if (filterMulti) {
         return {func: (task) => makeIsMultiFilterFunc(task)};
@@ -42,15 +50,18 @@ export function makeFilterMulti(filterMulti) {
 }
 
 /* public, used slot-filter.js by */
-export function makeFilter(filterExpr) {
+/**
+ * return { func: (task) => boolean, error: string}
+ */
+export function makeFilterExpr(filterExpr) {
     if (filterExpr === '' || filterExpr === 'no-filter') return {func: () => true};
     const filtersAnd = filterExpr.split(' AND ');
     if (filtersAnd.length >= 2) {
-        return {func: (task) => filtersAnd.every(filter => makeFilter(filter).func(task))};
+        return {func: (task) => filtersAnd.every(filter => makeFilterExpr(filter).func(task))};
     }
     const filtersOr = filterExpr.split(' OR ');
     if (filtersOr.length >= 2) {
-        return {func: (task) => filtersOr.some(filter => makeFilter(filter).func(task))};
+        return {func: (task) => filtersOr.some(filter => makeFilterExpr(filter).func(task))};
     }
     if (filterExpr.startsWith('title:')) {
         const title = filterExpr.replace('title:', '')

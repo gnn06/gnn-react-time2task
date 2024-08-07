@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '29/07/2024'
+export const RELEASE = 'xx/xx/2024'
 
 const text = `
+xx/xx/2024
+==========
+- create isMulti filter and isDisable filter
+
 29/07/2024
 ==========
 - acitivty with color (except error et UT)

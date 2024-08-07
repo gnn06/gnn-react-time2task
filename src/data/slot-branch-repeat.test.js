@@ -1,4 +1,4 @@
-import { isBranchRepeat1, isBranchRepeat2, isBranchMulti } from './slot-branch.js';
+import { isBranchRepeat1, isBranchRepeat2, isBranchMulti, isBranchDisable } from './slot-branch.js';
 
 describe('repeat1', () => {
     describe('branch', () => {
@@ -219,6 +219,47 @@ describe('isMulti', () => {
                 { type: 'branch', value: ['next_week'] }
         ] }] }
         const result = isBranchMulti(given)
+        expect(result).toEqual(true)
+    })
+})
+
+describe('isDisable', () => {
+    test('simple case, true', () => {
+        const given = { type: 'branch', value: ['this_week'], flags: ['disable'] }
+        const result = isBranchDisable(given)
+        expect(result).toEqual(true)
+    })
+    test('simple case, false', () => {
+        const given = { type: 'branch', value: ['this_week'] }
+        const result = isBranchDisable(given)
+        expect(result).toEqual(false)
+    })
+    test('deep, true,', () => {
+        const given = { type: 'branch', value: ['this_week', { type: 'branch', value: ['lundi'], flags: ['disable'] }] }
+        const result = isBranchDisable(given)
+        expect(result).toEqual(true)
+    })
+    test('deep, false,', () => {
+        const given = { type: 'branch', value: ['this_week', { type: 'branch', value: ['lundi'] }] }
+        const result = isBranchDisable(given)
+        expect(result).toEqual(false)
+    })
+    test('multi, false,', () => {
+        const given = { type: 'branch',
+            value: ['this_month', { type: 'multi', value: [
+                { type: 'branch', value: ['this_week'] },
+                { type: 'branch', value: ['next_week'] }
+        ] }] }
+        const result = isBranchDisable(given)
+        expect(result).toEqual(false)
+    })
+    test('multi, true,', () => {
+        const given = { type: 'branch',
+            value: ['this_month', { type: 'multi', value: [
+                { type: 'branch', value: ['this_week'], flags: ['disable'] },
+                { type: 'branch', value: ['next_week'] }
+        ] }] }
+        const result = isBranchDisable(given)
         expect(result).toEqual(true)
     })
 })

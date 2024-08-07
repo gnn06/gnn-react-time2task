@@ -134,14 +134,18 @@ export function isBranchUnique(branch) {
 }
 
 export function isBranchRepeat1(branch) {
-    return _applyTestOnBranch(branch, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
+    return _applyTestOnBranchOr(branch, (slot) =>    (slot.flags      !== undefined && slot.flags.indexOf('chaque') > -1)
                                              || (slot.repetition !== undefined && slot.repetition >= 1)
                                              || isSlotIdGeneric(getBranchFirstSlot(slot)))
 }
 
 export function isBranchRepeat2(branch) {
-    return _applyTestOnBranch(branch, 
+    return _applyTestOnBranchOr(branch, 
         (slot) => slot.repetition !== undefined && slot.repetition >= 2)
+}
+
+export function isBranchDisable(branch) {
+    return _applyTestOnBranchOr(branch, branch => branch.flags && branch.flags.indexOf('disable') > -1)
 }
 
 export function isBranchMulti(branch) {
@@ -269,11 +273,19 @@ export function _chooseSlotForSortBranch (multi) {
     }
 }
 
-function _applyTestOnBranch(branch, testFunc) {
+function _applyTestOnBranchOr(branch, testFunc) {
     if (branch.type === 'multi') {
-        return branch.value.some(item => _applyTestOnBranch(item, testFunc))
+        return branch.value.some(item => _applyTestOnBranchOr(item, testFunc))
     } else {
-        return testFunc(branch) || branch.value.slice(1).some(item => (typeof item === 'object') && _applyTestOnBranch(item, testFunc))
+        return testFunc(branch) || branch.value.slice(1).some(item => (typeof item === 'object') && _applyTestOnBranchOr(item, testFunc))
+    }
+}
+
+function _applyTestOnBranchAnd(branch, testFunc) {
+    if (branch.type === 'multi') {
+        return branch.value.some(item => _applyTestOnBranchAnd(item, testFunc))
+    } else {
+        return testFunc(branch) && branch.value.slice(1).some(item => (typeof item === 'object') && _applyTestOnBranchAnd(item, testFunc))
     }
 }
 

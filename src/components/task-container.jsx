@@ -13,10 +13,11 @@ export default function TaskContainer() {
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
     const currentTaskFilter = useSelector(state => state.tasks.currentTaskFilter);
     const currentFilterIsMulti = useSelector(state => state.tasks.currentFilterIsMulti);
+    const currentFilterIsDisable = useSelector(state => state.tasks.currentFilterIsDisable);
     
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
-        const tasks = filterSlotExpr(tasksFetched, currentTaskFilter, currentFilterIsMulti);
+        const tasks = filterSlotExpr(tasksFetched, currentTaskFilter, currentFilterIsMulti, currentFilterIsDisable);
         return (
             <PanelGroup direction="horizontal" className=''>
             <Panel className='' collapsible={true} minSize={20}>

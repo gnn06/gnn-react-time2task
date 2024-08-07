@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { setTaskFilter, setActivity, setFilterIsMulti } from "../features/taskSlice";
+import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
 
 import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
-import {FILTER_KEYWORDS, makeFilter} from '../data/filter-engine'
+import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import ActivityInput from "./activity-input";
 import { Checkbox, FormControlLabel } from "@mui/material";
 
@@ -15,10 +15,11 @@ export default function TaskFilter() {
     const dispatch = useDispatch();
     const [error, setError] = useState('')
     const [isMultiFilter, setIsMultiFilter] = useState(false)
+    const [isDisableFilter, setIsDisableFilter] = useState(false)
 
     const onChange = (e) => {
         const filter = e;
-        const {func, error} = makeFilter(filter)
+        const {func, error} = makeFilterExpr(filter)
         if (error) {
             setError(error)
         } else {
@@ -38,6 +39,11 @@ export default function TaskFilter() {
         setIsMultiFilter(!isMultiFilter)
     }
 
+    const onIsDisableFilter = () => {
+        dispatch(setFilterIsDisable({filter: !isDisableFilter}))
+        setIsDisableFilter(!isDisableFilter)
+    }
+
     return <div className="m-1"> 
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
@@ -54,6 +60,7 @@ export default function TaskFilter() {
                 task={null} saveHandler={(value) => onActivityChange(value)}
                  className="w-1/6" isFilter={true} />
             <FormControlLabel control={<Checkbox value={isMultiFilter} onChange={onIsMultiFilter}/>} label="is multi"  />
+            <FormControlLabel control={<Checkbox value={isDisableFilter} onChange={onIsDisableFilter}/>} label="is disable"  />
         </div>
     </div>;
 };
