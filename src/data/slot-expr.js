@@ -1,5 +1,5 @@
 import { Parser } from './parser'
-import { branchComplete, isBranchRepeat1, isBranchRepeat2, isBranchSimple, isBranchUnique } from './slot-branch'
+import { branchComplete, isBranchRepeat1, isBranchRepeat2, isBranchSimple, isBranchUnique, isBranchMulti } from './slot-branch'
 import { branchCompare, isBranchEqualDeep, isBranchEqualOrInclude } from './slot-branch++'
 
 /* check if only branch and no multi, used in filter */
@@ -25,6 +25,12 @@ export function isSlotUnique(slotExpr) {
     const parser = new Parser()
     const tree = parser.parse(slotExpr)
     return tree !== undefined ? isBranchUnique(tree) : false
+}
+
+export function isSlotMulti(slotExpr) {
+    const parser = new Parser()
+    const tree = parser.parse(slotExpr)
+    return tree !== undefined ? isBranchMulti(tree) : false
 }
 
 /**

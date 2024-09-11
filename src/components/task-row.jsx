@@ -4,7 +4,7 @@ import StatusInput from './status-input.jsx'
 import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
-import { isTaskUnique } from "../data/task.js";
+import { isTaskUnique, isTaskMulti } from "../data/task.js";
 import ActivityInput from "./activity-input.jsx";
 
 
@@ -26,7 +26,9 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
             </td>
             <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
-            <td>{task && isTaskUnique(task) && <LooksOneIcon/>}</td>
+            <td>{task && isTaskMulti(task) && 'M'}
+                {task && !isTaskMulti(task) && isTaskUnique(task) && <LooksOneIcon/>}
+                </td>
             <td>{button}</td>
         </tr>;
 }

@@ -1,4 +1,4 @@
-import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotUnique } from './slot-expr';
+import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotUnique, isSlotMulti } from './slot-expr';
 import { makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
@@ -115,4 +115,8 @@ export function taskShiftFilter(tasks, level) {
 
 export function isTaskUnique(task) {
     return isSlotUnique(task.slotExpr)
+}
+
+export function isTaskMulti(task) {
+    return isSlotMulti(task.slotExpr)
 }
