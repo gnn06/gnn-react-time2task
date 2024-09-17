@@ -18,7 +18,7 @@ export function isSlotRepeat2(slotExpr) {
 export function isSlotRepeat1(slotExpr) {
     const parser = new Parser()
     const tree = parser.parse(slotExpr)
-    return isBranchRepeat1(tree)
+    return tree !== undefined ? isBranchRepeat1(tree) : false
 }
 
 export function isSlotUnique(slotExpr) {

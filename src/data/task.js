@@ -120,3 +120,7 @@ export function isTaskUnique(task) {
 export function isTaskMulti(task) {
     return isSlotMulti(task.slotExpr)
 }
+
+export function isTaskRepeat(task) {
+    return isSlotRepeat1(task.slotExpr)    
+}
