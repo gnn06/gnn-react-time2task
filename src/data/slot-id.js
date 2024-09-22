@@ -22,7 +22,7 @@ export const EXPR_KEYWORDS = [
 
 export const SLOTIDS_LST = ['month', 'this_month', 'next_month', 'week', 'this_week', 'next_week', 'following_week', 'day', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
 
-const SLOTIDS_BY_LEVEL = {
+export const SLOTIDS_BY_LEVEL = {
     '1': ['this_month', 'next_month'],
     '2': ['this_week', 'next_week', 'following_week'],
     '3': ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],

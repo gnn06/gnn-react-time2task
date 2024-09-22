@@ -72,7 +72,7 @@ export function filterSlotExpr(tasks, filterExpr, filterIsMulti, filterIsDisable
  * public, used by slot.jsx 
  */
 export function findTaskBySlotExpr(tasks, slot) {
-    if (slot.inner !== undefined && slot.inner.length !== 0) {
+    if (slot.inner !== undefined && slot.inner && slot.inner.length !== 0) {
         return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path));
     } else {
         return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path));

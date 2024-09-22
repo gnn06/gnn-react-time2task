@@ -9,71 +9,16 @@ const initialState = {
     currentTaskFilter: 'no-filter',
     currentFilterIsMulti: false,
     currentFilterIsDisable: false,
-    slots: [{
-        id: 'this_month',
-        title: 'ce mois ci',
-        path: 'this_month',
-        inner: [
-            { id:    'this_week',
-              title: 'semaine',
-              path: 'this_month this_week',
-              inner: [
-                {   id:    'lundi',
-                    title: 'lundi',
-                    path:  'this_month this_week lundi',
-                    inner: [
-                        { id: 'lundi_matin', title: 'matin', path: 'this_month this_week lundi matin' },
-                        { id: 'lundi_aprem', title: 'aprem', path: 'this_month this_week lundi aprem' }
-                    ]},
-                {   id:    'mardi',
-                    title: 'mardi',
-                    path:  'this_month this_week mardi',
-                    inner: [
-                        { id: 'mardi_matin', title: 'matin', path: 'this_month this_week mardi matin' },
-                        { id: 'mardi_aprem', title: 'aprem', path: 'this_month this_week mardi aprem' }
-                    ] },
-                {   id:    'mercredi',
-                    title: 'mercredi',
-                    path:  'this_month this_week mercredi',
-                    inner: [
-                        { id: 'mercredi_matin', title: 'matin', path: 'this_month this_week mercredi matin' },
-                        { id: 'mercredi_aprem', title: 'aprem', path: 'this_month this_week mercredi aprem' }
-                    ]
-                },
-                {   id:    'jeudi',
-                    title: 'jeudi',
-                    path:  'this_month this_week jeudi',
-                    inner: [
-                        { id: 'jeudi_matin', title: 'matin', path: 'this_month this_week jeudi matin' },
-                        { id: 'jeudi_aprem', title: 'aprem', path: 'this_month this_week jeudi aprem' }
-                    ]
-                },
-                {   id:    'vendredi',
-                    title: 'vendredi',
-                    path:  'this_month this_week vendredi',
-                    inner: [
-                        { id: 'vendredi_matin', title: 'matin', path: 'this_month this_week vendredi matin' },
-                        { id: 'vendredi_aprem', title: 'aprem', path: 'this_month this_week vendredi aprem' }
-                    ] }
-              ]
-            },
-            { id:    'next_week',
-              title: 'semaine prochaine',
-              path:  'this_month next_week',
-              inner: []
-            },
-            {
-              id: 'following_week',
-              title: 'semaine suivante',
-              path: 'this_month following_week',
-              inner: []
-            }
-        ]
-    },{
-        id:    'next_month',
-        title: 'mois prochain',
-        path:  'next_month'
-    }],
+    slotViewFilterConf: {
+        collapse: [
+          "this_month next_week",
+          "this_month following_week",
+          "next_month"
+        ],
+        remove: [],
+        levelMin: null,
+        levelMaxIncluded: null
+    },
     selectedSlotId: [],
     association: {},
     user: retrieveUser(),
@@ -126,9 +71,14 @@ export const taskSlice = createSlice({
         setActivity: (state, action) => {
             state.currentActivity = action.payload.activity;
         },
+        setSlotViewFilterConf: (state, action) => {
+            state.slotViewFilterConf = { ...state.slotViewFilterConf, levelMaxIncluded: action.payload.level };
+        },
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, login, logout, accessToken, setActivity } = taskSlice.actions
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, login, logout, accessToken, setActivity,
+    setSlotViewFilterConf
+} = taskSlice.actions
 
 export default taskSlice.reducer
