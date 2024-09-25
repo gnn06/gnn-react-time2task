@@ -4,7 +4,7 @@ import tailwindcss from "tailwindcss";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/gnn-react-time2task',
   plugins: [react()],
   css: {
     postcss: {
