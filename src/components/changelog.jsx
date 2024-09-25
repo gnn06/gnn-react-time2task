@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/xx/2024'
+export const RELEASE = '25/09/2024'
 
 const text = `
-xx/xx/2024
+25/09/2024
 ==========
 - create isMulti filter and isDisable filter
+- add 1, M, R for Unique, Multi Repear
+- add choose of max level of slot view
 
 29/07/2024
 ==========
