@@ -23,6 +23,7 @@
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "color": "^4.2.3",
+    "immer": "^10.1.1",
     "lodash": "^4.17.21",
     "material-react-table": "^2.13.0",
     "react": "^18.2.0",
