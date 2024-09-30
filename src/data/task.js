@@ -27,11 +27,13 @@ export function taskPredicateEvery2(task) {
 
 export function taskPredicateMulti(task) {
     const branch = parser.parse(task.slotExpr)
+    if (branch === undefined) return false;
     return isBranchMulti(branch)
 }
 
 export function taskPredicateDisable(task) {
     const branch = parser.parse(task.slotExpr)
+    if (branch === undefined) return false;
     return isBranchDisable(branch)
 }
 
