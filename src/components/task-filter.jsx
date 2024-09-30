@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable } from "../features/taskSlice";
+import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
 
 import SyntaxInput from './syntax-input';
@@ -16,6 +16,7 @@ export default function TaskFilter() {
     const [error, setError] = useState('')
     const [isMultiFilter, setIsMultiFilter] = useState(false)
     const [isDisableFilter, setIsDisableFilter] = useState(false)
+    const [isStatusARepo, setIsStatusARepo] = useState(false)
 
     const onChange = (e) => {
         const filter = e;
@@ -44,6 +45,11 @@ export default function TaskFilter() {
         setIsDisableFilter(!isDisableFilter)
     }
 
+    const onStatusARepoFilter = () => {
+        dispatch(setFilterIsStatusARepo({filter: !isStatusARepo}))
+        setIsStatusARepo(!isStatusARepo)
+    }
+
     return <div className="m-1"> 
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
@@ -61,6 +67,7 @@ export default function TaskFilter() {
                  className="w-1/6" isFilter={true} />
             <FormControlLabel control={<Checkbox value={isMultiFilter} onChange={onIsMultiFilter}/>} label="is multi"  />
             <FormControlLabel control={<Checkbox value={isDisableFilter} onChange={onIsDisableFilter}/>} label="is disable"  />
+            <FormControlLabel control={<Checkbox value={isStatusARepo} onChange={onStatusARepoFilter}/>} label="is à repo"  />
         </div>
     </div>;
 };

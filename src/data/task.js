@@ -37,6 +37,10 @@ export function taskPredicateDisable(task) {
     return isBranchDisable(branch)
 }
 
+export function taskPredicateStatus(task) {
+    return ['fait-à repositinner'].indexOf(task.status) > -1;
+}
+
 /* public, used by apiSlice.js */
 export function taskCompare(task1, task2) {
     // if multi slot, compare on the first one
@@ -61,9 +65,9 @@ export function taskCompare(task1, task2) {
  * @param {string} filterExpr expression. (mono incomplet slotPath) with OR
  * public, used by slot.jsx and tasklist.jsx
  */
-export function filterSlotExpr(tasks, filterExpr, filterIsMulti, filterIsDisable) {
+export function filterSlotExpr(tasks, filter) {
     // if (filterExpr === 'no-filter') return tasks;
-    return tasks.filter(makeFilterCombine(filterExpr === 'no-filter' ? null : filterExpr, filterIsMulti, filterIsDisable).func);
+    return tasks.filter(makeFilterCombine(filter).func);
 }
 
 /**

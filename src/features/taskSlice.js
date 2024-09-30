@@ -6,9 +6,12 @@ import { retrieveAccessToken, retrieveUser } from '../services/browser-storage';
 const initialState = {
     tasks : [],
     selectedTaskId: [],
-    currentTaskFilter: 'no-filter',
-    currentFilterIsMulti: false,
-    currentFilterIsDisable: false,
+    currentFilter: {
+        expression: 'no-filter',
+        isMulti: false,
+        isDisable: false,
+        isStatusARepo: false,
+    },
     slotViewFilterConf: {
         collapse: [
           "this_month next_week",
@@ -43,20 +46,23 @@ export const taskSlice = createSlice({
             state.association[task] = slot;
         },
         associateSelected: (state, action) => {
-            const selectedTask = state.selectedTaskId;
+            const selectedTask = state.selectedTapskId;
             const selectedSlot = state.selectedSlotId[0];
             selectedTask.every(task => state.association[task] = selectedSlot);
             state.selectedTaskId = [];
             state.selectedSlotId = [];
         },
         setTaskFilter: (state, action) => {
-            state.currentTaskFilter = action.payload.filter;
+            state.currentFilter = {... state.currentFilter, expression: action.payload.filter }
         },
         setFilterIsMulti: (state, action) => {
-            state.currentFilterIsMulti = action.payload.filter;
+            state.currentFilter = {... state.currentFilter, isMulti: action.payload.filter }
         },
         setFilterIsDisable: (state, action) => {
-            state.currentFilterIsDisable = action.payload.filter;
+            state.currentFilter = {... state.currentFilter, isDisable: action.payload.filter }
+        },
+        setFilterIsStatusARepo: (state, action) => {
+            state.currentFilter = {... state.currentFilter, isStatusARepo: action.payload.filter }
         },
         login: (state, action) => {
             state.user = action.payload;
@@ -77,7 +83,7 @@ export const taskSlice = createSlice({
     }
 })
 
-export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, login, logout, accessToken, setActivity,
+export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConf
 } = taskSlice.actions
 

@@ -129,19 +129,19 @@ describe('makeFilter', () => {
     
     describe('filter combine', () => {
         test('expr and multi filter', () => {
-            const result = data.filter(makeFilterCombine(null, true).func);
+            const result = data.filter(makeFilterCombine({expression:null, isMulti: true}).func);
             expect(result).toEqual([task1, task9])
         })
         test('only expr', () => {
-            const result = data.filter(makeFilterCombine('vendredi', false).func);
+            const result = data.filter(makeFilterCombine({expression: 'vendredi', isMulti: false}).func);
             expect(result).toEqual([task5, task7, task8, task9])
         })
         test('expr and isMulti', () => {
-            const result = data.filter(makeFilterCombine('vendredi', true).func);
+            const result = data.filter(makeFilterCombine({expression: 'vendredi', isMulti: true}).func);
             expect(result).toEqual([task9])
         })
         test('no expr and no isMulti', () => {
-            const result = data.filter(makeFilterCombine(null, false).func);
+            const result = data.filter(makeFilterCombine({expression: null, isMulti: false}).func);
             expect(result).toEqual(data)
         })
     });

@@ -246,7 +246,7 @@ describe('filterSlotExpr', () => {
 
     it('level1 don\'t match level1 level2', () => {
         const tasks = [ { slotExpr: 'this_week mercredi' } ];
-        const result = filterSlotExpr(tasks, 'next_week');
+        const result = filterSlotExpr(tasks, {expression: 'next_week'});
         expect(result).toEqual([])
     })
 
