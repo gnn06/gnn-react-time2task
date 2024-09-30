@@ -5,6 +5,13 @@ function isSet(array) {
     return array.reduce((acc, current) => acc + current) !== -4
 }
 
+function Cell({items, cell, onChange}) {
+    return <select onChange={e => onChange(cell, e.target.value)}>
+            <option value={-1}>aucun</option>
+            {items.map((item, index) => <option value={index}>{item}</option>)}
+        </select>
+}
+
 function Row({value, setValue, row}) {
     function modValue(col, newValue) {
         const newArray = produce(value, draft => {
@@ -14,30 +21,11 @@ function Row({value, setValue, row}) {
         })
         setValue(newArray)
     }
-    return <div key={row}>
-        <select onChange={e => modValue(0, e.target.value)}>
-            <option value="-1">aucun</option>
-            <option value="0">this_month</option>
-            <option value="1">next_month</option>
-        </select>
-        <select onChange={e => modValue(1, e.target.value)}>
-            <option value="-1">aucun</option>
-            <option value="0">this_week</option>
-            <option value="1">next_week</option>
-        </select>
-        <select onChange={e => modValue(2, e.target.value)}>
-            <option value="-1">aucun</option>
-            <option value="0">lundi</option>
-            <option value="1">mardi</option>
-            <option value="2">mercredi</option>
-            <option value="3">jeudi</option>
-            <option value="4">vendredi</option>
-        </select>
-        <select onChange={e => modValue(3, e.target.value)}>
-            <option value="-1">aucun</option>
-            <option value="0">matin</option>
-            <option value="1">aprem</option>
-        </select>
+    return <div>
+        <Cell items={['this_month', 'next_month']} cell={0} onChange={modValue}/>
+        <Cell items={['this_week',  'next_week']}  cell={1} onChange={modValue}/>
+        <Cell items={['lundi',  'mardi', 'mercredi', 'jeudi', 'vendredi']}  cell={2} onChange={modValue}/>
+        <Cell items={['matin',  'aprem']}  cell={3} onChange={modValue}/>
     </div>
 }
 export default function Temp() {
