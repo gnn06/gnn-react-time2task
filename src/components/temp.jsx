@@ -11,17 +11,28 @@ function Cell({items, cell, onChange}) {
             {items.map((item, index) => <option value={index}>{item}</option>)}
         </select>
 }
-function Cell2({items, cell}) {
-    const [value, setValue] = useState([-1])
-    const onChange = (val) => {
-        if (val !== -1) {
-            setValue([...value, -1])
-        }
-    }
-    return <div className="flex flex-col">{value.map(val => <select onChange={e => onChange(e.target.value)}>
+
+function Cell3({items, value, onChangeValue}) {
+    return (
+        <select value={value} onChange={e => onChangeValue(e.target.value)}>
             <option value={-1}>aucun</option>
             {items.map((item, index) => <option value={index}>{item}</option>)}
-        </select>)}</div>
+        </select>)
+}
+
+function Cell2({items, cell}) {
+    const [value, setValue] = useState([])
+    const onUpdate = (val, row) => {
+        setValue(value[row] = val)
+    }
+    const onAdd = (val) => {
+        console.log('add', [...value, val])
+        setValue([val, ...value])
+    }
+    return <div className="flex flex-col">
+        {value.map((val, index) => <Cell3 items={items} value={value[index]} onChangeValue={onUpdate}/>)}
+        <Cell3 items={items} value={-1} onChangeValue={onAdd}/>
+    </div>
 }
 
 function Row({value, setValue, row}) {
