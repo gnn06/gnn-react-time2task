@@ -11,6 +11,18 @@ function Cell({items, cell, onChange}) {
             {items.map((item, index) => <option value={index}>{item}</option>)}
         </select>
 }
+function Cell2({items, cell}) {
+    const [value, setValue] = useState([-1])
+    const onChange = (val) => {
+        if (val !== -1) {
+            setValue([...value, -1])
+        }
+    }
+    return <div className="flex flex-col">{value.map(val => <select onChange={e => onChange(e.target.value)}>
+            <option value={-1}>aucun</option>
+            {items.map((item, index) => <option value={index}>{item}</option>)}
+        </select>)}</div>
+}
 
 function Row({value, setValue, row}) {
     function modValue(col, newValue) {
@@ -21,11 +33,11 @@ function Row({value, setValue, row}) {
         })
         setValue(newArray)
     }
-    return <div>
+    return <div className="flex flex-row">
         <Cell items={['this_month', 'next_month']} cell={0} onChange={modValue}/>
         <Cell items={['this_week',  'next_week']}  cell={1} onChange={modValue}/>
         <Cell items={['lundi',  'mardi', 'mercredi', 'jeudi', 'vendredi']}  cell={2} onChange={modValue}/>
-        <Cell items={['matin',  'aprem']}  cell={3} onChange={modValue}/>
+        <Cell2 items={['matin',  'aprem']}  cell={3} />
     </div>
 }
 export default function Temp() {
