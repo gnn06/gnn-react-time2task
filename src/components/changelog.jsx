@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '07/10/2024'
+export const RELEASE = 'x/x/2024'
 
 const text = `
+xx/xx/2024
+==========
+- fix crash on error expression
+
 07/10/2024
 ==========
 - create isStatusARepo filter

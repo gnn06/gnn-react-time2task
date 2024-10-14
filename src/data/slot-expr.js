@@ -4,33 +4,58 @@ import { branchCompare, isBranchEqualDeep, isBranchEqualOrInclude } from './slot
 
 /* check if only branch and no multi, used in filter */
 export function isSlotSimple(slotExpr) {
-    const parser = new Parser()
-    const tree = parser.parse(slotExpr)
-    return isBranchSimple(tree)
+    try {
+        const parser = new Parser()
+        const tree = parser.parse(slotExpr)
+        return isBranchSimple(tree)
+    } catch (error) {
+        console.error(error, 'caused by ', slotExpr)
+        return false;
+    }
 }
 
 export function isSlotRepeat2(slotExpr) {
-    const parser = new Parser()
-    const tree = parser.parse(slotExpr)
-    return isBranchRepeat2(tree)
+    try {
+        const parser = new Parser()
+        const tree = parser.parse(slotExpr)
+        return isBranchRepeat2(tree)
+    } catch (error) {
+        console.error(error, 'caused by ', slotExpr)
+        return false;
+    }
 }
 
 export function isSlotRepeat1(slotExpr) {
-    const parser = new Parser()
-    const tree = parser.parse(slotExpr)
-    return tree !== undefined ? isBranchRepeat1(tree) : false
+    try {
+        const parser = new Parser()
+        const tree = parser.parse(slotExpr)
+        return tree !== undefined ? isBranchRepeat1(tree) : false
+    } catch (error) {
+        console.error(error, 'caused by ', slotExpr)
+        return false;
+    }
 }
 
 export function isSlotUnique(slotExpr) {
-    const parser = new Parser()
-    const tree = parser.parse(slotExpr)
-    return tree !== undefined ? isBranchUnique(tree) : false
+    try {
+        const parser = new Parser()
+        const tree = parser.parse(slotExpr)
+        return tree !== undefined ? isBranchUnique(tree) : false
+    } catch (error) {
+        console.error(error, 'caused by ', slotExpr)
+        return false;
+    }
 }
 
 export function isSlotMulti(slotExpr) {
-    const parser = new Parser()
-    const tree = parser.parse(slotExpr)
-    return tree !== undefined ? isBranchMulti(tree) : false
+    try {
+        const parser = new Parser()
+        const tree = parser.parse(slotExpr)
+        return tree !== undefined ? isBranchMulti(tree) : false
+    } catch (error) {
+        console.error(error, 'caused by ', slotExpr)
+        return false;
+    }
 }
 
 /**
