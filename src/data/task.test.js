@@ -1,6 +1,7 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
         taskGroup, taskShiftFilter,
-        taskPredicateEvery1} from "./task";
+        taskPredicateEvery1,
+        taskPredicateError} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -232,6 +233,16 @@ describe('taskFilterPredicate Repeat', () => {
     test('generic', () => {
         const task = { slotExpr: 'week mardi aprem' }
         const result = taskPredicateEvery1(task)
+        expect(result).toBeTruthy()
+    });
+    test('error', () => {
+        const task = { slotExpr: 'lundi' }
+        const result = taskPredicateError(task)
+        expect(result).toBeFalsy()
+    });
+    test('error', () => {
+        const task = { slotExpr: 'every 1 ' }
+        const result = taskPredicateError(task)
         expect(result).toBeTruthy()
     });
 })

@@ -41,6 +41,15 @@ export function taskPredicateStatus(task) {
     return ['fait-à repositinner'].indexOf(task.status) > -1;
 }
 
+export function taskPredicateError(task) {
+    try {
+        const branch = parser.parse(task.slotExpr)
+        return branch === undefined || ['branch', 'multi'].indexOf(branch.type) === -1;
+    } catch (error) {
+        return true        
+    }
+}
+
 /* public, used by apiSlice.js */
 export function taskCompare(task1, task2) {
     // if multi slot, compare on the first one

@@ -7,6 +7,7 @@ const text = `
 xx/xx/2024
 ==========
 - fix crash on error expression
+- create text filter ERROR
 
 07/10/2024
 ==========

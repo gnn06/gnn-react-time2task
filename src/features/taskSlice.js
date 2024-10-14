@@ -11,6 +11,7 @@ const initialState = {
         isMulti: false,
         isDisable: false,
         isStatusARepo: false,
+        isError: false,
     },
     slotViewFilterConf: {
         collapse: [

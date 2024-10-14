@@ -1,4 +1,4 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
 import { composeFuncAnd } from '../utils/predicateUtil.js';
 
@@ -22,6 +22,8 @@ export const makeIsDisableFilterFunc = (task) => taskPredicateDisable(task)
 
 export const makeStatusFilterFunc = (task) => taskPredicateStatus(task)
 
+export const makeErrorFilterFunc = (task) => taskPredicateError(task)
+
 /**
  * return { func: (task) => boolean, error: string}
  */
@@ -38,6 +40,9 @@ export function makeFilterCombine(filter) {
         filters.push(taskPredicateDisable)
     }
     if (filter.isStatusARepo) {
+        filters.push(makeStatusFilterFunc)
+    }
+    if (filter.isError) {
         filters.push(makeStatusFilterFunc)
     }
 
@@ -80,6 +85,8 @@ export function makeFilterExpr(filterExpr) {
         return {func: makeEvery2FilterFunc};
     } else if (filterExpr === 'STATUS_A_REPO') {
         return {func: makeStatusFilterFunc};
+    } else if (filterExpr === 'ERROR') {
+        return {func: makeErrorFilterFunc};
     } else {
         if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
         if (filterExpr.endsWith(' NONE')) {
@@ -90,4 +97,4 @@ export function makeFilterExpr(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2', 'STATUS_A_REPO', 'AND', 'OR'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2', 'STATUS_A_REPO', 'ERROR', 'AND', 'OR'];
