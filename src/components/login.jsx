@@ -11,6 +11,7 @@ export default function Login() {
 
     const dispatch = useDispatch();
     supabase.auth.onAuthStateChange((event, session) => {
+        console.log('onAuthStateChange')
         if (event === 'TOKEN_REFRESHED') {
             // handle token refreshed event
             console.info('token refresh', session)
@@ -21,6 +22,7 @@ export default function Login() {
       })
 
     async function loginHandle(e) {
+        console.log('loginHandle')
         e.preventDefault()
         const formData = new FormData(e.target);
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -48,6 +50,7 @@ export default function Login() {
         dispatch(accessToken(data.session.access_token));
        }
     }
+    console.log('goi')
 
     return (
     <div className="h-screen flex items-center justify-center" >

@@ -5,14 +5,29 @@ import { useGetTasksQuery } from "../features/apiSlice.js";
 import TaskList from './tasklist';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SlotList from "./slotlist.jsx";
+import { supabase } from '../services/supabase'
+import { login, accessToken } from "../features/taskSlice";
+import { useDispatch } from "react-redux";
+import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
 
 export default function TaskContainer() {
     // eslint-disable-next-line
     const userId   = useSelector(state => state.tasks.user.id);
     const activity = useSelector(state => state.tasks.currentActivity);
-    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
+    const { data:tasksRedux, isLoading, isSuccess, error } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
-    
+    const dispatch = useDispatch();
+    async function tryRefreshToken(e) {
+      console.log('try refresh token')  
+      const { data, error } = await supabase.auth.refreshSession()
+      console.log('token refreshed', data.session, error)
+      storeAccessToken(data.session.access_token)
+      dispatch(accessToken(data.session.access_token))
+    }
+    console.log('container (isloading, error)', isLoading, error)
+    if (error && error.status === 401) {
+      tryRefreshToken()
+    }
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentFilter);
