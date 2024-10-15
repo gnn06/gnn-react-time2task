@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'x/x/2024'
+export const RELEASE = '15/10/2024'
 
 const text = `
-xx/xx/2024
+15/10/2024
 ==========
 - fix crash on error expression
 - create text filter ERROR
