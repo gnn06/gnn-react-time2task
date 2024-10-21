@@ -12,8 +12,10 @@ import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../s
 
 export default function TaskContainer() {
     // eslint-disable-next-line
-    const userId   = useSelector(state => state.tasks.user.id);
-    const activity = useSelector(state => state.tasks.currentActivity);
+    const userId      = useSelector(state => state.tasks.user.id);
+    const activity    = useSelector(state => state.tasks.currentActivity);
+    // unused AccessToken used to make a refresh on refreshToken
+    const TMP_AccessToken = useSelector(state => state.tasks.accessToken);
     const { data:tasksRedux, isLoading, isSuccess, error } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const dispatch = useDispatch();
@@ -24,7 +26,7 @@ export default function TaskContainer() {
       storeAccessToken(data.session.access_token)
       dispatch(accessToken(data.session.access_token))
     }
-    console.log('container (isloading, error)', isLoading, error)
+    console.log('container (token, isloading, error)', TMP_AccessToken.substring(0,5),  isLoading, error)
     if (error && error.status === 401) {
       tryRefreshToken()
     }
