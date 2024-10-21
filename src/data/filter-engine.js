@@ -81,7 +81,7 @@ export function makeFilterExpr(filterExpr) {
         return {func: makeNoRepeatFilterFunc};
     } else if (filterExpr === 'EVERY1') {
         return {func: makeEvery1FilterFunc};
-    } else if (filterExpr === 'EVERY2') {
+    } else if (filterExpr === 'EVERY2+') {
         return {func: makeEvery2FilterFunc};
     } else if (filterExpr === 'STATUS_A_REPO') {
         return {func: makeStatusFilterFunc};
@@ -97,4 +97,4 @@ export function makeFilterExpr(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2', 'STATUS_A_REPO', 'ERROR', 'AND', 'OR'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2+', 'STATUS_A_REPO', 'ERROR', 'AND', 'OR'];
