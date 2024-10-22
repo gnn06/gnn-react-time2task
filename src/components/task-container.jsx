@@ -26,7 +26,7 @@ export default function TaskContainer() {
       storeAccessToken(data.session.access_token)
       dispatch(accessToken(data.session.access_token))
     }
-    console.log('container (token, isloading, error)', TMP_AccessToken.substring(0,5),  isLoading, error)
+    console.log('container (token, isloading, error)', TMP_AccessToken.substring(71,71+20) + "..." + TMP_AccessToken.substring(TMP_AccessToken.length - 20,),  isLoading, error)
     if (error && error.status === 401) {
       tryRefreshToken()
     }
