@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
@@ -12,11 +12,12 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 
 export default function TaskFilter() {
     
-    const dispatch = useDispatch();
+    const currentFilter = useSelector(state => state.tasks.currentFilter.expression);
     const [error, setError] = useState('')
     const [isMultiFilter, setIsMultiFilter] = useState(false)
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const [isStatusARepo, setIsStatusARepo] = useState(false)
+    const dispatch = useDispatch();    
 
     const onChange = (e) => {
         const filter = e;
@@ -57,7 +58,7 @@ export default function TaskFilter() {
                 <SyntaxInput id="task-filter" items={filters}
                     placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
                     closeIcon={true}
-                    onInputChange={onChange}/>
+                    onInputChange={onChange} initialInputValue={currentFilter}/>
                 { error && <div className="m-1 text-red-500">{error}</div>}
             </div>
             <DialogHelpExpression/>            

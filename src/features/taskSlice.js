@@ -7,7 +7,7 @@ const initialState = {
     tasks : [],
     selectedTaskId: [],
     currentFilter: {
-        expression: 'no-filter',
+        expression: '',
         isMulti: false,
         isDisable: false,
         isStatusARepo: false,
