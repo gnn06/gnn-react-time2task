@@ -16,7 +16,7 @@ export default function TaskContainer() {
     const activity    = useSelector(state => state.tasks.currentActivity);
     // unused AccessToken used to make a refresh on refreshToken
     const TMP_AccessToken = useSelector(state => state.tasks.accessToken);
-    const { data:tasksRedux, isLoading, isSuccess, error, refetch } = useGetTasksQuery({userId, activity, TMP_AccessToken})
+    const { data:tasksRedux, isLoading, isFetching, isSuccess, error, refetch } = useGetTasksQuery({userId, activity, TMP_AccessToken})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const dispatch = useDispatch();
     async function tryRefreshToken(e) {
@@ -29,7 +29,7 @@ export default function TaskContainer() {
       // can use refetch() to make RTK query make a call with the new token
       // using accessToken as argument of useQuery make Redux refetch data when accessToken change !
     }
-    console.log('container (token, isloading, error)', TMP_AccessToken.substring(71,71+20) + "..." + TMP_AccessToken.substring(TMP_AccessToken.length - 20,),  isLoading, error)
+    console.log('container (token, isloading, isFetching, error, userid, activity, filter, tasks)', TMP_AccessToken.substring(71,71+20) + "..." + TMP_AccessToken.substring(TMP_AccessToken.length - 20,),  isLoading, isFetching, error, userId, activity, currentFilter, tasksRedux === undefined ? 'empty' : tasksRedux.length)
     if (error && error.status === 401) {
       tryRefreshToken()
     }
