@@ -7,11 +7,11 @@ import TaskLight from "./task-light";
 import { findTaskBySlotExpr } from "../data/task"
 import { selectSlot } from "../features/taskSlice";
 
-export default function Slot({slot, tasks, handleSelection}) {
+export default function Slot({slot, tasks, selection, handleSelection}) {
     const dispatch = useDispatch();
     
     const { id, title, path, start, end, inner } = slot;
-    const [ selected, setSelected ] = useState(false)
+    const [ selected, setSelected ] = useState(selection.indexOf(path) >= 0)
 
     if (tasks === undefined) {
         return 'error'
@@ -48,7 +48,7 @@ export default function Slot({slot, tasks, handleSelection}) {
             </div>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
-                <Slot key={innerSlot.id} slot={innerSlot} tasks={tasks} handleSelection={(val) => handleSelection && handleSelection(val)}/>)}
+                <Slot key={innerSlot.id} slot={innerSlot} tasks={tasks} selection={selection} handleSelection={(val) => handleSelection && handleSelection(val)}/>)}
             </div>
         </div>
         )

@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { slotViewFilter } from "../data/slot-view";
 import SlotView from "./slotview";
 
 export default function Test() {
+
+    const [initialSelection, setInitialSelection] = useState([ 'this_month this_week jeudi aprem', 'this_month next_week' ])
 
     const conf = {
         collapse: [
@@ -14,13 +17,14 @@ export default function Test() {
         levelMaxIncluded: null
     }
 
-    const slot = slotViewFilter(conf)
-
     const handleSelection = (path) => {
-        console.log(path)
+        setInitialSelection(initialSelection.concat(path))
     }
     
+    const slot = slotViewFilter(conf)
+
     return <div>
-        <SlotView tasks={[]} conf={conf} handleSelection={handleSelection}/>
+        <SlotView tasks={[]} conf={conf} selection={initialSelection} handleSelection={handleSelection}/>
+        { initialSelection }
     </div>
 }
