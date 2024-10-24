@@ -15,8 +15,12 @@ export default function Test() {
     }
 
     const slot = slotViewFilter(conf)
+
+    const handleSelection = (path) => {
+        console.log(path)
+    }
     
     return <div>
-        <SlotView tasks={[]} conf={conf}/>
+        <SlotView tasks={[]} conf={conf} handleSelection={handleSelection}/>
     </div>
 }

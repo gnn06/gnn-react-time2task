@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import './slot.css';
@@ -7,11 +7,11 @@ import TaskLight from "./task-light";
 import { findTaskBySlotExpr } from "../data/task"
 import { selectSlot } from "../features/taskSlice";
 
-export default function Slot({slot, tasks}) {
+export default function Slot({slot, tasks, handleSelection}) {
     const dispatch = useDispatch();
     
-    const { id, title, start, end, inner } = slot;
-    const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
+    const { id, title, path, start, end, inner } = slot;
+    const [ selected, setSelected ] = useState(false)
 
     if (tasks === undefined) {
         return 'error'
@@ -30,11 +30,9 @@ export default function Slot({slot, tasks}) {
         slotStyle += "hover:bg-blue-100 ";
     }
 
-    const onSlotClick = e => {
-        const slotId = slot.id;
-        dispatch(
-            selectSlot(slotId)
-        );
+    const onSlotClick = (e) => {
+        setSelected(!selected)
+        handleSelection && handleSelection(path)
     }
 
     const innerClass = 'ml-3' 
@@ -42,7 +40,7 @@ export default function Slot({slot, tasks}) {
 
     return (
         <div>
-            <div className={slotStyle}>
+            <div className={slotStyle} onClick={onSlotClick}>
                 <div className="title">{title} <span className="italic text-sm">({id})</span></div>
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
                 { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
@@ -50,7 +48,7 @@ export default function Slot({slot, tasks}) {
             </div>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
-                <Slot key={innerSlot.id} slot={innerSlot} tasks={tasks}/>)}
+                <Slot key={innerSlot.id} slot={innerSlot} tasks={tasks} handleSelection={(val) => handleSelection && handleSelection(val)}/>)}
             </div>
         </div>
         )
