@@ -1,5 +1,5 @@
 import { slotViewFilter } from "../data/slot-view";
-import SlotList from "./slotlist";
+import SlotView from "./slotview";
 
 export default function Test() {
 
@@ -17,6 +17,6 @@ export default function Test() {
     const slot = slotViewFilter(conf)
     
     return <div>
-        <SlotList tasks={[]}/>
+        <SlotView tasks={[]} conf={conf}/>
     </div>
 }
