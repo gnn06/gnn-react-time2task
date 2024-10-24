@@ -18,7 +18,11 @@ export default function Test() {
     }
 
     const handleSelection = (path) => {
-        setInitialSelection(initialSelection.concat(path))
+        if (initialSelection.indexOf(path) > -1) {
+            setInitialSelection(initialSelection.filter(item => item !== path))
+        } else {
+            setInitialSelection(initialSelection.concat(path))
+        }
     }
     
     const slot = slotViewFilter(conf)
