@@ -44,7 +44,7 @@
     "test": "vitest",
     "test.coverage": "vitest run --coverage --watch=false",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
