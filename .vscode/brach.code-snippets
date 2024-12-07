@@ -26,5 +26,14 @@
 		"body": "expect($1).toEqual($2)",
 		"prefix": "expect",
 		"description": "expect equals"
+	},
+	"name": {
+		"scope": "javascript",
+		"body": ["const given = $1",
+				"const expected = $2",
+				"const result = $3(given)",
+				"expect(result).toEqual(expected)"],
+		"prefix": "givenexpected",
+		"description": "given, expeted, result, equal"
 	}
 }

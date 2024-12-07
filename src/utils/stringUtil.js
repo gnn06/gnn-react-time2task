@@ -26,6 +26,16 @@ export function wordBefore(str, pos) {
     return result && result.length ? result[0] : '';
 }
 
+// sépare autour des blancs sauf quand " + 12"
 export function tokenizer(expr) {
     return expr.trim().split(/\s+/)
+}
+
+// sépare autour des blancs sauf quand " + 12"
+export function IDizer(expr) {
+    return expr.trim().match(/\S+(\s+\+\s+\d+)?/g)
+}
+
+export function appendWithSpace(str1, str2) {
+    return str1 + (str1 === "" ? "" : " ")  + str2
 }

@@ -1,17 +1,13 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Grid, MenuItem, Select, Tooltip } from "@mui/material";
 
-import Slot from './slot';
 import { setSlotViewFilterConf } from "../features/taskSlice";
-import { slotViewFilter } from "../data/slot-view";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
+import SlotView from "./slotview";
 
 export default function SlotList({tasks})  {
     const conf   = useSelector(state => state.tasks.slotViewFilterConf);
     const dispatch = useDispatch();
-
-    const slotRedux = slotViewFilter(conf)
 
     const onChange = (event) => {
         const level = event.target.value
@@ -30,9 +26,7 @@ export default function SlotList({tasks})  {
                     </Select>
                 </Tooltip>
             </Grid>
-            {slotRedux.map((slot, index) => {
-                return <Slot key={slot.id} slot={slot} tasks={tasks} />
-            })}
+            <SlotView tasks={tasks} conf={conf} />
         </div>
         )
     }

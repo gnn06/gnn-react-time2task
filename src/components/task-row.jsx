@@ -6,6 +6,7 @@ import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";
 import ActivityInput from "./activity-input.jsx";
+import SyntaxInputWithSelection from "./syntax-input-select.jsx";
 
 
 export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button}) {
@@ -21,8 +22,14 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
             <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
             <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
             <td>                
-                <SyntaxInput key={task && task.slotExpr} initialInputValue={task && task.slotExpr} classNameInput="bg-transparent" items={getSlotIdAndKeywords()}
-                    onInputChange={onSlotExprChange} placeHolderInput={ task.id === undefined && "Créneau"}/>
+                <SyntaxInputWithSelection 
+                    key={task && task.slotExpr} 
+                    items={getSlotIdAndKeywords()}
+                    initialInputValue={task && task.slotExpr}  
+                    onInputChange={onSlotExprChange} 
+                    placeHolderInput={ task.id === undefined && "Créneau"}
+                    title={task.title}
+                    classNameInput="bg-transparent" />
             </td>
             <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>

@@ -24,7 +24,7 @@ describe('repeat1', () => {
             expect(result).toBeTruthy();
         })
 
-        test('branch deep 3 repeat at level 2', () => {
+        test('branch deep 3 repetition at level 2', () => {
             const result = isBranchRepeat1(
                 { type:'branch', value: ['this_month', 
                     { type:'branch', value: ['this_week', 'lundi' ], flags:['chaque'] } ] });
@@ -142,7 +142,7 @@ describe('repeat1', () => {
             expect(result).toBeTruthy();
         });
 
-        test('multi at level1, no repeat', () => {
+        test('multi at level1, no repetition', () => {
             const result = isBranchRepeat2(
                 {type:'multi', value: [
                     {type:'branch', value: ['this_week', 'lundi']},

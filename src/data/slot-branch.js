@@ -23,7 +23,11 @@ export function getBranchHead(branch) {
 export function getBranchTail(branch) {
     const temp = branch.value.slice(1)
     if (typeof temp[0] === 'object') {
-        return temp[0];
+        if (temp.length >= 2 && typeof temp[1] === 'object') {
+            return {...temp[0], value: temp[0].value.concat(temp[1])}
+        } else {
+            return temp[0];
+        }
     } else {
         return { type: 'branch', value: temp}
     }
@@ -80,7 +84,7 @@ export function branchComplete(branch, targetLevel) {
         const first = getBranchFirstSlot(branch);
         const level = getSlotIdLevel(first);
         for (let i = level - 1; i >= targetLevel; i--) {
-            branch = _appendToBranch(getSlotIdCurrent(i), branch)
+            branch = _appendStartToBranch(getSlotIdCurrent(i), branch)
         }
         return branch
     }
@@ -292,10 +296,18 @@ function _applyTestOnBranchAnd(branch, testFunc) {
 /**
  * append at starting
  */
-export function _appendToBranch(toAppend, branch) {
-    if (branch.flags !== undefined || branch.shift !== undefined) {
+export function _appendStartToBranch(toAppend, branch) {
+    if (branch.flags !== undefined || branch.shift !== undefined || branch.repetition !== undefined) {
         return { type: 'branch', value: [ toAppend, branch ] };
     } else {
         return { type: 'branch', value: [ toAppend ].concat(branch.value) };
+    }
+}
+
+export function branchAppendEnd(toAppend, branch) {
+    if (toAppend.flags !== undefined || toAppend.shift !== undefined || toAppend.repetition !== undefined) {
+        return {...branch, value: branch.value.concat(toAppend)}
+    } else {
+        return {...branch, value: branch.value.concat(toAppend.value)}
     }
 }

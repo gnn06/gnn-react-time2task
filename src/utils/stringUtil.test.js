@@ -1,4 +1,4 @@
-import {insertSeparator, tokenizer, wordBefore, insertItemInInput } from './stringUtil'
+import {insertSeparator, tokenizer, wordBefore, insertItemInInput, IDizer } from './stringUtil'
 
 test('insertSeparator, empty, empty', () => {
     const result = insertSeparator('', '', 'toto')
@@ -56,14 +56,27 @@ test('insertItemInInput suggestion', () => {
     expect(result).toBe('before toto after')
 })
 
-test('split one space middle', () => {
-    expect(tokenizer('aaa bbb')).toEqual(['aaa','bbb'])
-    expect(tokenizer('aaa    bbb')).toEqual(['aaa','bbb'])
-    expect(tokenizer('aaa   bbb  ')).toEqual(['aaa','bbb'])
-    expect(tokenizer('   aaa   bbb')).toEqual(['aaa','bbb'])
-    expect(tokenizer('   aaa   bbb    ')).toEqual(['aaa','bbb'])
+describe('tokenizer', () => {
+    test('split one space middle', () => {
+        expect(tokenizer('aaa bbb')).toEqual(['aaa','bbb'])
+        expect(tokenizer('aaa    bbb')).toEqual(['aaa','bbb'])
+        expect(tokenizer('aaa   bbb  ')).toEqual(['aaa','bbb'])
+        expect(tokenizer('   aaa   bbb')).toEqual(['aaa','bbb'])
+        expect(tokenizer('   aaa   bbb    ')).toEqual(['aaa','bbb'])
+        expect(tokenizer('aaa + 1')).toEqual(['aaa', '+', '1'])
+    });
+    
+    
+    test('split one space middle', () => {
+        expect(IDizer('aaa bbb')).toEqual(['aaa','bbb'])
+        expect(IDizer('aaa    bbb')).toEqual(['aaa','bbb'])
+        expect(IDizer('aaa   bbb  ')).toEqual(['aaa','bbb'])
+        expect(IDizer('   aaa   bbb')).toEqual(['aaa','bbb'])
+        expect(IDizer('   aaa   bbb    ')).toEqual(['aaa','bbb'])
+        expect(IDizer('aaa + 1')).toEqual(['aaa + 1'])
+        expect(IDizer('sss aaa + 1  bbb')).toEqual(["sss", 'aaa + 1', "bbb"])
+    });
 });
-
 
 test('wordBefore empty', () => {
     //                 0

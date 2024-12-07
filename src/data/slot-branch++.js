@@ -12,13 +12,13 @@ import { getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
  */
 export function isBranchEqualDeep(branch1, branch2) {
     if (branch1 === undefined) return false;
+    branch1 = branchRemoveDisable(branch1)
+    if (branch1 === null) return false;
     if (branch1.type === 'multi') {
         return branch1.value.some(branch => isBranchEqualDeep(branch, branch2))
     }
     if (branch1.value.length === 1 && branch2.value.length === 1) {
         return isBranchEqualShallow(branch1, branch2)
-    } else if (branch1.value.length !== branch2.value.length) {
-        return false
     } else {
         if (isBranchEqualShallow(branch1, branch2) === false) {
             return false
@@ -48,8 +48,8 @@ export function isBranchEqualOrInclude(branch1, branch2) {
         if (!isBranchEqualShallow(branch1, branch2))
             return false;
         else {
-            const lower = getBranchLowerSlot(branch1);
-            const lowerOther = getBranchLowerSlot(branch2);
+            const lower = getBranchTail(branch1);
+            const lowerOther = getBranchTail(branch2);
             // other has no more level so previous level egality is enough
             if (lowerOther.value.length === 0) 
                 return true;

@@ -1,7 +1,8 @@
 import { vi } from 'vitest';
 import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch, 
-         branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendToBranch, 
-         getBranchHead, getBranchTail } from './slot-branch.js';
+         branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendStartToBranch, 
+         getBranchHead, getBranchTail, 
+         branchAppendEnd} from './slot-branch.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -112,6 +113,13 @@ describe('completeSlotBranch', () => {
             expect(result).toEqual(
                 { type: 'branch', value: ['this_month' ], shift: 1 });
         });
+    });
+    test('repetetition', () => {
+        const given = { type: 'branch', value: [ 'this_week', 'mercredi' ], repetition: 1 }
+        const expected = { type: 'branch', value: ['this_month', { type: 'branch', value: [ 'this_week', 'mercredi' ], repetition: 1 } ] }
+        const result = branchComplete(given);
+        expect(result).toEqual(
+            expected);
     });
 })
 
@@ -427,7 +435,7 @@ describe('appendToBranch', () => {
     test('simple branch', () => {
         const given = { type: 'branch', value: [ 'mardi' ] }
         
-        const result = _appendToBranch('this_week', given)
+        const result = _appendStartToBranch('this_week', given)
         
         const expected = { type: 'branch', value: [ 'this_week', 'mardi' ] }
         
@@ -436,10 +444,33 @@ describe('appendToBranch', () => {
     
     test('branch with flags', () => {
         const given = { type: 'branch', value: [ 'mardi' ], flags: [ 'chaque' ] }
-        const result = _appendToBranch('this_week', given)
+        const result = _appendStartToBranch('this_week', given)
         const expected = { type: 'branch', value: [ 'this_week', { type: 'branch', value: [ 'mardi' ], flags: [ 'chaque' ] } ] }
         expect(result).toEqual(expected)
     }); 
+    test('branch with repetition', () => {
+        const given = { type: 'branch', value: [ 'this_week' ], repetition: 12 }
+        const result = _appendStartToBranch('this_month', given)
+        const expected = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], repetition: 12 } ] }
+        expect(result).toEqual(expected)
+    })
+});
+
+describe('branchAppendEnd', () => {
+    test('unique and unique with properties', () => {
+        const givenToAppend = { type: 'branch', value: ['this_week'], repetition: 12, flags: ['disable']}
+        const givenBranch = { type: 'branch', value: [ 'this_month'] };
+        const expected = { type: 'branch', value: [ 'this_month', { type: 'branch', value: ['this_week'], repetition: 12, flags: ['disable']}] }
+        const result = branchAppendEnd(givenToAppend, givenBranch)
+        expect(result).toEqual(expected)
+    });
+    test('unique and unique with no properties', () => {
+        const givenToAppend = { type: 'branch', value: ['this_week']}
+        const givenBranch = { type: 'branch', value: [ 'this_month'] };
+        const expected = { type: 'branch', value: [ 'this_month', 'this_week'] }
+        const result = branchAppendEnd(givenToAppend, givenBranch)
+        expect(result).toEqual(expected)
+    });
 });
 
 describe('foo', () => {
@@ -448,6 +479,10 @@ describe('foo', () => {
         const result = getBranchHead(branch)
         expect(result).toEqual({ type: 'branch', value: [ 'this_week' ], shift: 12 })
     });
+});
+
+describe('getTail', () => {
+    const branch = { type: 'branch', value: [ 'this_week', 'lundi', 'aprem' ], shift: 12 }
     test('tail', () => {
         const result = getBranchTail(branch)
         expect(result).toEqual({ type: 'branch', value: [ 'lundi', 'aprem' ] })
@@ -455,5 +490,19 @@ describe('foo', () => {
     test('tail on subbranch', () => {
         const result = getBranchTail({ type: 'branch', value: [ 'this_week', {type: 'branch', value: ['lundi'], flags: ['chaque'] } ] })
         expect(result).toEqual({type: 'branch', value: ['lundi'], flags: ['chaque'] })
+    });
+    test('every and disable', () => {
+        const given = {"type":"branch","value":[
+                        "this_month",
+                        {"type":"branch","value":["this_week"],"repetition":1},
+                        {"type":"multi","value":[
+                            {"type":"branch","value":["lundi"],"flags":["disable"]},
+                            {"type":"branch","value":["mardi"]}]}]};
+        const expected = {"type":"branch","repetition":1,"value":["this_week",
+                        {"type":"multi","value":[
+                            {"type":"branch","value":["lundi"],"flags":["disable"]},
+                            {"type":"branch","value":["mardi"]}]}]};
+        const result = getBranchTail(given)
+        expect(result).toEqual(expected)
     });
 });

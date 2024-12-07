@@ -9,6 +9,8 @@ import store from './features/store'
 import { Provider } from 'react-redux'
 import { createHashRouter, RouterProvider, } from "react-router-dom";
 import Settings from './components/settings';
+import Test from './components/test';
+import TestExpr from './components/test-expr';
 
 const router = createHashRouter([
   {
@@ -27,6 +29,14 @@ const router = createHashRouter([
   {
     path: "settings/",
     element: <Settings />,
+  },
+  {
+    path: "test/",
+    element: <Test />,
+  },
+  {
+    path: "test-expr/",
+    element: <TestExpr />,
   }
 ]);
 

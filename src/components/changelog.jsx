@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '15/10/2024'
+export const RELEASE = '07/12/2024'
 
 const text = `
+07/12/2024
+==========
+- new slot selection window, manage add, remove, repeat, disable, shift command, open with double click
+- fix task with disable not showed 
+
 15/10/2024
 ==========
 - fix crash on error expression

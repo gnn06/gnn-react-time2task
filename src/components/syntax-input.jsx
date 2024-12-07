@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 import { wordBefore, insertItemInInput } from "../utils/stringUtil";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
 /**
  * when CLICK inside => show dropdown
@@ -18,12 +19,14 @@ import CloseIcon from '@mui/icons-material/Close';
  * when only one suggestion, select it
  */
 
-export default function SyntaxInput({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon}) {
+export default function SyntaxInput({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, showEdit}) {
 
-  const [value, setValue] = useState(initialInputValue || '');
+  const [value, setValue] = useState(initialInputValue || '');  
   const [show, setShow] = useState(false);
   const [selected, setSelected] = useState(-1);
   const inputRef = useRef(null);
+
+  useEffect(() => { setValue(initialInputValue || '') }, [initialInputValue])
 
   function insertItemInInputFOOO  (valueToInsert) {
     // selectionEnd is first not selected 'x[xx]x'=> start = 1 and end = 3
@@ -134,8 +137,10 @@ export default function SyntaxInput({id, items, placeHolderInput, initialInputVa
   return <div className="flex-1 ">
     <div className="flex flex-row items-center border rounded focus-within:border-red-500 p-0.5">
       <input id={id} ref={inputRef} className={'focus:outline-none  p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus=
-        {onInputFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onInputClick} />
-      { closeIcon && <CloseIcon className={classNameIconn} onClick={onInputClear}/>} <KeyboardArrowDownIcon className={classNameIconn} />
+        {onInputFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onInputClick} onDoubleClick={showEdit} />
+      { closeIcon && <CloseIcon className={classNameIconn} onClick={onInputClear}/>} 
+      <KeyboardArrowDownIcon className={classNameIconn} />
+      { showEdit && <EditIcon className={classNameIconn} onClick={showEdit}/> }
     </div>
     {show && getFilterLst().length > 0 && Dropdown}
     </div>

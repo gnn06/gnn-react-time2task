@@ -80,7 +80,13 @@ export function getSlotIdFirstLevel(level) {
     const slots = SLOTIDS_BY_LEVEL[level.toString()]
     return slots[0]
 }
- 
+
+/**
+ * 
+ * @param {*} slotId 
+ * @param {number or undefined} repetition 
+ * @returns 
+ */
 export function getSlotIdPrevious(slotId, repetition) {
     if (isSlotIdGeneric(slotId)) {
         return slotId
@@ -105,4 +111,39 @@ export function getSlotIdPrevious(slotId, repetition) {
 
 export function isSlotIdGeneric(slotId) {
     return GENERIC_SLOTIDS.indexOf(slotId) > -1   
+}
+
+export function getSlotIdNextPrev(slotId, direction) {
+    const IdRegExp = slotId.match(/(\S+) ?\+? ?(\d*)/)
+    const id = IdRegExp[1]
+    const shift = IdRegExp[2] !== '' ? parseInt(IdRegExp[2]) : undefined
+
+    if (shift === undefined) {
+        const level = getSlotIdLevel(id)
+        const slots = SLOTIDS_BY_LEVEL[level.toString()]
+        const index = slots.indexOf(id)
+        if (direction === 1) {
+            if (index < slots.length - 1) {
+                return slots[index + 1]
+            } else {
+                return id + " + 1"
+            }
+        } else {
+            if (index > 0) {
+                return slots[index - 1]
+            } else {
+                return id
+            }                
+        }
+    } else {
+        if (direction === 1) {
+            return id + " + " + (shift + 1)
+        } else {
+            if (shift > 2) {
+                return id + " + " + (shift - 1)
+            } else {
+                return id                
+            }
+        }
+    }
 }

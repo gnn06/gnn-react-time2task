@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
-import { getSlotIdPrevious, getSlotIdFirstLevel } from './slot-id.js';
+import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev } from './slot-id.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
-describe('getPreviousSlot', () => {
+describe('getSlotIdPrevious', () => {
     test('month', () => {
         const given    = "next_month";
         const expected = "this_month"
@@ -75,5 +75,52 @@ describe('getFirstLevelSlot', () => {
     test('week', () => {
         const result = getSlotIdFirstLevel(2) 
         expect(result).toEqual('this_week')
+    })
+});
+
+describe('getSlotIdNext', () => {
+    describe('next', () => {
+        test('nominal', () => {
+            const given    = "this_week"
+            const expected = "next_week"
+            const result = getSlotIdNextPrev(given, 1)
+            expect(result).toEqual(expected)
+        });
+        test('max', () => {
+            const given    = "following_week"
+            const expected = "following_week + 1"
+            const result = getSlotIdNextPrev(given, 1)
+            expect(result).toEqual(expected)
+        });
+        test('shift', () => {
+            const given    = "this_week + 3"
+            const expected = "this_week + 4"
+            const result = getSlotIdNextPrev(given, 1)
+            expect(result).toEqual(expected)
+        });
+    });
+    test('previous', () => {
+        const given    = "next_week"
+        const expected = "this_week"
+        const result = getSlotIdNextPrev(given, -1)
+        expect(result).toEqual(expected)
+    })
+    test('previous not exist', () => {
+        const given    = "this_week"
+        const expected = "this_week"
+        const result = getSlotIdNextPrev(given, -1)
+        expect(result).toEqual(expected)
+    })
+    test('previous shift', () => {
+        const given    = "this_week + 4"
+        const expected = "this_week + 3"
+        const result = getSlotIdNextPrev(given, -1)
+        expect(result).toEqual(expected)
+    })
+    test('previous shift 1', () => {
+        const given    = "this_week + 1"
+        const expected = "this_week"
+        const result = getSlotIdNextPrev(given, -1)
+        expect(result).toEqual(expected)
     })
 });

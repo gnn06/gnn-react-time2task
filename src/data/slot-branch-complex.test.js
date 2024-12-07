@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
-import { branchCompare, isBranchEqualOrInclude } from './slot-branch++.js';
-import { isSlotEqualOrInclude } from './slot-expr.js';
+import { branchCompare, isBranchEqualDeep, isBranchEqualOrInclude } from './slot-branch++.js';
+import { isSlotEqual, isSlotEqualOrInclude } from './slot-expr.js';
     
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -151,6 +151,21 @@ describe('slotIsInOtherBranch', () => {
             expect(result).toBeFalsy()
         });
     });
+    test('debug1', () => {
+        //this_month every 1 this_week disable lundi mardi
+        const given1 = {"type":"branch","value":["this_month",{"type":"branch","value":["this_week"],"repetition":1},{"type":"multi","value":[{"type":"branch","value":["lundi"],"flags":["disable"]},{"type":"branch","value":["mardi"]}]}]}
+        const given2 = {"type":"branch","value":["this_month","this_week","lundi"]}
+        const result = isBranchEqualDeep(given1, given2);
+        expect(result).toBeFalsy()
+    });
+    test('debug2', () => {
+        // this_month every 1 this_week disable lundi mardi aprem
+        const given1 = {"type":"branch","value":["this_month",{"type":"branch","value":["this_week"],"repetition":1},{"type":"multi","value":[{"type":"branch","value":["lundi"],"flags":["disable"]},{"type":"branch","value":["mardi","aprem"]}]}]}
+        const given2 = {"type":"branch","value":["this_month","this_week","mardi","aprem"]}
+        const result = isBranchEqualOrInclude(given1, given2);
+        expect(result).toBeTruthy()
+    })
+    
 })
 
 describe('slotCompareTree', () => {

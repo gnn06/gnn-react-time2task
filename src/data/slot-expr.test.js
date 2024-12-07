@@ -90,4 +90,8 @@ describe('slotEqual', () => {
         const result = isSlotEqual('this_week', 'this_week lundi');
         expect(result).toEqual(false);
     })    
+    it("every (don't check  length)", () => {
+        const result = isSlotEqual('this_month every 2 this_week jeudi', 'this_month this_week jeudi');
+        expect(result).toEqual(true);
+    })
 })
