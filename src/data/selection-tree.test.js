@@ -1,4 +1,4 @@
-import { branchToTree, isInsideSelected, selectionToTree, selectionShift, selectionDelete, treetoBranch, treeToSelection, selectionAdd } from "./selection-tree";
+import { branchToTree, isInsideSelected, selectionToTree, selectionShift, selectionDelete, treetoBranch, treeToSelection, selectionAdd, _makeBranch } from "./selection-tree";
 
 describe('treeToBranch', () => {
   test('undefined ', () => {
@@ -91,9 +91,28 @@ describe('treeToBranch', () => {
             }]},
           { type:'branch',value: ['next_week']}
         ]}
-      ]})
+      ]})     
   })
-
+  test('root -1 branch', () => {
+    const result = treetoBranch(
+      { value:-1, child: [
+        { value: 'this_week', child: [] }
+      ]})
+    expect(result).toEqual(
+      { type:'branch', value: [ 'this_week' ]})
+    })
+    test('root -1 multi', () => {
+    const result = treetoBranch(
+      { value:-1, child: [
+        { value: 'this_week', child: [] },
+        { value: 'next_week', child: [] }
+      ]})
+    expect(result).toEqual(
+      { type:'multi', value: [
+        { type:'branch',value: [ 'this_week' ]},
+        { type:'branch',value: [ 'next_week' ]}
+      ]})
+    })
   // describe('with properties', () => {
     test('final case ', () => {
       const result = treetoBranch({ value: 'aprem', child: [], repetition: 12, disable: true })  
@@ -478,3 +497,29 @@ describe("selection manipulation", () => {
     })
   })
 })
+
+describe('makeBranch', () => {
+  test('multi', () => {
+    const givenChild = [1,1]
+    const givenTree  = {}
+    const expected   = { type: 'multi', value: [1,1] }
+    const result = _makeBranch('multi', givenChild, givenTree)
+    expect(result).toEqual(expected)
+  });
+  test('chaque', () => {
+    const givenType = 'branch'
+    const givenChild = [1]
+    const givenTree  = { value: "this_week", child: [], chaque: true, }
+    const expected   = { type: 'branch', value: [1], flags:['chaque'] }
+    const result = _makeBranch(givenType, givenChild, givenTree)
+    expect(result).toEqual(expected)
+  });
+  test('chaque and disable', () => {
+    const givenType = 'branch'
+    const givenChild = [1]
+    const givenTree  = { value: "this_week", child: [], chaque: true, disable: true }
+    const expected   = { type: 'branch', value: [1], flags:['disable','chaque'] }
+    const result = _makeBranch(givenType, givenChild, givenTree)
+    expect(result).toEqual(expected)
+  })  
+});

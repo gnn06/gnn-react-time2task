@@ -70,11 +70,14 @@ export function treeToSelection(tree, currentString = '') {
     return result;
 }  
 
-function _makeBranch(type, value, tree) {
-    const {repetition, disable, shift} = tree;
+export function _makeBranch(type, value, tree) {
+    const {repetition, disable, shift, chaque} = tree;
+    const flags = []
+    if (disable) { flags.push('disable') }
+    if (chaque) { flags.push('chaque') }
     return { type: type, value: value, 
         ...( repetition && { repetition }), 
-        ...( disable && { flags: ['disable']}),
+        ...( flags.length > 0 && { flags }),
         ...( shift && { shift: shift})
     }
 }
@@ -97,6 +100,14 @@ export function treetoBranch(tree) {
 
     const { value, child } = tree
 
+    if (value === -1) {
+        if (child.length > 1) {
+            return { type: 'multi', value: child.map(el => treetoBranch(el))}
+        } else {
+            return treetoBranch(child[0])
+        }
+    }
+
     if (child && child.length === 1) {
         const childT = treetoBranch(child[0])
         // const childBranch = _makeBranch('branch', childT.value, childT)
@@ -104,7 +115,7 @@ export function treetoBranch(tree) {
         return branchAppendEnd(childT, branch)
     } else if (child && child.length > 1) {
         const childTArray = child.map(item => treetoBranch(item))
-        const branchChild = _makeBranch('multi', childTArray, tree )
+        const branchChild = _makeBranch('multi', childTArray, {} )
         return _makeBranch('branch', [tree.value].concat(branchChild), tree)
     } else {
         return _makeBranch('branch', [tree.value], tree)

@@ -1,4 +1,4 @@
-import { indexOfSiblingLevel, insideOrEqual, insideStrict } from "./arrayUtil";
+import { indexOfSiblingLevel, insideOrEqual, insideStrict, splitPredicate } from "./arrayUtil";
 
 describe('from start', () => {
     test('should find a split with same level', () => {
@@ -104,6 +104,52 @@ describe('insideStrit', () => {
         const givenPath2 = ["thism"]
         const expected = true
         const result = insideStrict(givenPath1, givenPath2)
+        expect(result).toEqual(expected)
+    })
+});
+
+describe('splitByPredicate', () => {
+    const Fn = (el) => el === 1;
+    test('nominal', () => {
+        const given = [1, 2, 3, 1, 2, 1]
+        const expected = [[1, 2, 3],[1, 2], [1]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    });
+    test('empty', () => {
+        const given = []
+        const expected = [[]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    })
+    test('no splt', () => {
+        const given = [2, 3, 4]
+        const expected = [[2, 3, 4]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    })
+    test('starting', () => {
+        const given = [1, 1, 2, 3, 4]
+        const expected = [[1],[1, 2, 3, 4]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    })
+    test('ending', () => {
+        const given = [2, 3, 4, 1]
+        const expected = [[2, 3, 4],[1]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    })
+    test('only once', () => {
+        const given = [1]
+        const expected = [[1]]
+        const result = splitPredicate(given, Fn)
+        expect(result).toEqual(expected)
+    })
+    test('only twice', () => {
+        const given = [1, 1]
+        const expected = [[1], [1]]
+        const result = splitPredicate(given, Fn)
         expect(result).toEqual(expected)
     })
 });

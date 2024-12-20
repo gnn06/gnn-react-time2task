@@ -4,7 +4,7 @@ export function arrayPut(array, item) {
         array.push(item);
     } else {
         array.splice(index, 1);
-    }    
+    }
 }
 
 export function indexOfSiblingLevel(tab, start) {
@@ -42,25 +42,40 @@ export function insideOrEqual(array1, array2) {
  */
 export function insideStrict(array1, array2) {
     let equal = true
-    for(let i=0; i < array1.length && i < array2.length; i++) {
+    for (let i = 0; i < array1.length && i < array2.length; i++) {
         if (array1[i] !== array2[i]) {
-            equal = false 
+            equal = false
             break
         }
     }
     if (equal) {
         /* common part is equal, differ by length */
         if (array1.length === array2.length) {
-          return false
-        } else if (array1.length < array2.length ) {
-          return true
+            return false
+        } else if (array1.length < array2.length) {
+            return true
         } else if (array2.length < array1.length) {
-          return false
+            return false
         } else {
-          return false
+            return false
         }
-      } else {
+    } else {
         /* differ by value */
         return false
-      }
+    }
+}
+
+export function splitPredicate(input, predicateFn) {
+    const result = []
+    let temp = []
+    for (let i = 0; i < input.length; i++) {
+        const item = input[i];
+        if (predicateFn(item) && temp.length > 0) {
+            result.push(temp)
+            temp = []
+        }
+        temp.push(item)
+    }
+    result.push(temp)
+    return result
 }

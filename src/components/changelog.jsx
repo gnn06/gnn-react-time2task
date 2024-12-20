@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '07/12/2024'
+export const RELEASE = '20/12/2024'
 
 const text = `
+20/12/2024
+==========
+- FIX 'every this_week mardi disable jeudi' ; refactor parser
+
 07/12/2024
 ==========
 - new slot selection window, manage add, remove, repeat, disable, shift command, open with double click

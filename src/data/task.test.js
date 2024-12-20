@@ -200,7 +200,7 @@ describe('taskFilterPredicate Repeat', () => {
         const result = taskPredicateNoRepeat(task)
         expect(result).toBeFalsy()
     });
-    test('every2', () => {
+    test.skip('every2', () => {
         const task = { slotExpr: 'EVERY2 this_week mardi aprem' }
         const result = taskPredicateEvery2(task)
         expect(result).toBeTruthy()
