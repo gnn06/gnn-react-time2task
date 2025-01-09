@@ -27,11 +27,11 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                     items={getSlotIdAndKeywords()}
                     initialInputValue={task && task.slotExpr}  
                     onInputChange={onSlotExprChange} 
-                    placeHolderInput={ task.id === undefined && "Créneau"}
+                    placeHolderInput={ task.id === undefined ? "Créneau" : "" }
                     title={task.title}
                     classNameInput="bg-transparent" />
             </td>
-            <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined && "Ordre"}/></td>
+            <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined ? "Ordre" : "" }/></td>
             <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
             <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
                 {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}

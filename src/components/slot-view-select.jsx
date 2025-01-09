@@ -88,7 +88,7 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
     setSelection(new Map(selection))
   }
   
-  return <Dialog open="true" onClose={handleClose} maxWidth="lg">
+  return <Dialog open={true} onClose={handleClose} maxWidth="lg">
     <DialogContent>
       <div>Tâche : {title}</div>
       {slotsFromConf.map((slot, index) => {

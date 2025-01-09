@@ -26,7 +26,7 @@ export default function SyntaxInputWithSelection ({id, items, placeHolderInput, 
 
     const onConfirm = (selExpr) => {
         setSelectionExpr(selExpr)
-        console.log('selection change expression from ', initialInputValue, ' to ', selExpr)
+        //console.log('selection change expression from ', initialInputValue, ' to ', selExpr)
         onInputChange(selExpr)
         setShow(false)
     }
