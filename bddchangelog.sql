@@ -29,3 +29,15 @@ using (
 
 alter table public."tasks"
 add constraint tasks_Activity_fkey foreign key ("Activity") references "Activities" (id) on delete set null;
+
+// 09/01/2025
+// add Activities table
+create table
+  public."SnapDates" (
+    userid uuid null default auth.uid (),
+    slotid text not null,
+    date text null,
+    constraint SnapDates_pkey primary key (slotid)
+  ) tablespace pg_default;
+
+// add policy all to authenticated

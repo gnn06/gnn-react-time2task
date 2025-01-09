@@ -6,6 +6,7 @@ import TaskLight from "./task-light";
 
 import { findTaskBySlotExpr } from "../data/task"
 import { selectSlot } from "../features/taskSlice";
+import SlotTitle from "./slot-title";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -43,7 +44,7 @@ export default function Slot({slot, tasks}) {
     return (
         <div>
             <div className={slotStyle}>
-                <div className="title">{title} <span className="italic text-sm">({id})</span></div>
+                <SlotTitle slot={slot}/>
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
                 { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
                 <div className="h-10"/>

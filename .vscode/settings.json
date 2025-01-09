@@ -2,5 +2,6 @@
     "testing.openTesting": "neverOpen",
     "jest.runMode": {
         "type": "on-demand"
-    }
+    },
+    "testing.automaticallyOpenTestResults": "neverOpen"
 }

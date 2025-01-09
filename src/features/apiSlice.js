@@ -136,11 +136,28 @@ export const apiSlice = createApi({
                 method: 'DELETE'
               }),
               invalidatesTags: (result, error, id) => [{ type: 'Tasks', id: 'LIST' }, { type: 'Tasks', id }]
-            })
+            }),
+        // SnapDates [ userid, slotid, date ]
+        getSnapDates: builder.query({
+            query: (param) => {
+                return `/SnapDates`
+            },
+            providesTags: (result) => [{ type: 'SnapDates', id: 'LIST' }]
+        }),
+        updateSnapDate: builder.mutation({
+            query: ({ id: slotid, ...patch }) => ({
+                url: `/SnapDates`,
+                method: 'POST',
+                body: patch,
+                headers: {Prefer: "resolution=merge-duplicates"}  
+            }),
+            invalidatesTags: (result, error, id) => [{ type: 'SnapDates', id: 'LIST' },]
+        }),
     })
 })
 
 export const { 
     useGetTasksQuery, useUpdateTaskMutation, useAddTaskMutation, useDeleteTaskMutation, 
-    useGetActivitiesQuery, useUpdateActivityMutation, useAddActivityMutation, useDeleteActivityMutation
+    useGetActivitiesQuery, useUpdateActivityMutation, useAddActivityMutation, useDeleteActivityMutation,
+    useGetSnapDatesQuery, useUpdateSnapDateMutation
 } = apiSlice

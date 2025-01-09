@@ -1,3 +1,4 @@
+import SlotTitle from './slot-title';
 import SlotViewSelect from './slot-view-select';
 import SyntaxInputWithSelection from './syntax-input-select';
 
@@ -28,7 +29,12 @@ function TestSlotViewSelect() {
 
 }
 
+function TestSlotTitle() {
+    return <div><SlotTitle slot={{id:"this_week"}} /><SlotTitle slot={{id:"this_month"}} /></div>
+}
+
 export default function Test() {
     //return <TestSyntaxInputSelect/>
-    return <TestSlotViewSelect/>
+    //return <TestSlotViewSelect/>
+    return <TestSlotTitle/>
 }

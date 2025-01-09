@@ -16,6 +16,7 @@ import { selectSlot } from "../features/taskSlice";
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, IconButton, Input, TextField } from "@mui/material";
 import { getSlotIdLevel } from "../data/slot-id";
 import { isInsideSelected } from "../data/selection-tree";
+import SlotTitle from "./slot-title";
 
 function showRepeat(id) {
     return getSlotIdLevel(id) <= 2
@@ -77,9 +78,8 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
         <div>
             <div className={slotStyle + " group"} >
                 <div className="flex flex-row">
-                    { id }                    
-                    <div>
-                        
+                    <SlotTitle slot={slot} />
+                    <div>                    
                         {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
                     </div>
                     

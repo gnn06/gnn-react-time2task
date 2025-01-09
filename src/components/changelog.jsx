@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '20/12/2024'
+export const RELEASE = '09/01/2025'
 
 const text = `
-20/12/2024
+09/01/2025
 ==========
 - cleanup js console
 - fix 401
+- add reference date when shift
 
 20/12/2024
 ==========
