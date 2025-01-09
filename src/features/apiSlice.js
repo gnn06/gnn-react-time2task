@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { taskCompare } from '../data/task'
 import { mapProperties } from '../utils/objectUtil'
+import { supabase } from '../services/supabase'
+import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
+import { login, accessToken, logout } from "../features/taskSlice";
 
 const mapping = [
     { old: 'slotExpr', new: 'slotExpr' },
@@ -14,16 +17,41 @@ const mapping = [
  * postgres policy implemented, tasks.id need to be autoincremented
  */
 
+export const baseQuery = fetchBaseQuery({
+    baseUrl : import.meta.env.VITE_API_URL,
+    prepareHeaders: (headers, { getState }) => {
+        const state = getState()            
+        headers.set("apiKey", import.meta.env.VITE_API_KEY)
+        headers.set("Authorization", 'Bearer ' + state.tasks.accessToken)
+    },
+});
+
+export const baseQueryWithReauth = async (args, api, extraOptions) => {
+    // TODO manage concurrent refresh ; not cirtical as refreshToken return same refresh token.
+    let result = await baseQuery(args, api, extraOptions)
+    if (result.error && result.error.status === 401) {
+        console.log('oauth, 401, try to refresh')
+        // try to get a new token
+        const { data, error } = await supabase.auth.refreshSession()
+        if (!error) {
+            console.log('oauth, token refreshed succced')
+            // store refresh token
+            storeAccessToken(data.session.access_token)
+            api.dispatch(accessToken(data.session.access_token))
+            // retry the initial query
+            result = await baseQuery(args, api, extraOptions)
+        } else {
+            // logout
+            console.log('oauth, token refresh failure')
+            api.dispatch(logout())
+        }
+    }
+    return result
+}
+
 export const apiSlice = createApi({
     reducerPath: 'api',
-    baseQuery:   fetchBaseQuery({
-        baseUrl : import.meta.env.VITE_API_URL,
-        prepareHeaders: (headers, { getState }) => {
-            const state = getState()            
-            headers.set("apiKey", import.meta.env.VITE_API_KEY)
-            headers.set("Authorization", 'Bearer ' + state.tasks.accessToken)
-        },
-    }),
+    baseQuery:   baseQueryWithReauth,
     tagTypes: ['Activities'],
 
     endpoints: builder => ({

@@ -6,6 +6,11 @@ export const RELEASE = '20/12/2024'
 const text = `
 20/12/2024
 ==========
+- cleanup js console
+- fix 401
+
+20/12/2024
+==========
 - FIX 'every this_week mardi disable jeudi' ; refactor parser
 
 07/12/2024
