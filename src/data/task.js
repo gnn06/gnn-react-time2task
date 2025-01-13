@@ -37,8 +37,8 @@ export function taskPredicateDisable(task) {
     return isBranchDisable(branch)
 }
 
-export function taskPredicateStatus(task) {
-    return ['fait-à repositinner'].indexOf(task.status) > -1;
+export function taskPredicateStatus(task, status) {
+    return task.status === status;
 }
 
 export function taskPredicateError(task) {

@@ -20,7 +20,7 @@ export const makeIsMultiFilterFunc = (task) => taskPredicateMulti(task)
 
 export const makeIsDisableFilterFunc = (task) => taskPredicateDisable(task)
 
-export const makeStatusFilterFunc = (task) => taskPredicateStatus(task)
+export const makeStatusFilterFunc = (task, status) => taskPredicateStatus(task, status)
 
 export const makeErrorFilterFunc = (task) => taskPredicateError(task)
 
@@ -40,10 +40,10 @@ export function makeFilterCombine(filter) {
         filters.push(taskPredicateDisable)
     }
     if (filter.isStatusARepo) {
-        filters.push(makeStatusFilterFunc)
+        filters.push((task) => makeStatusFilterFunc(task, "fait-à repositionner"))
     }
     if (filter.isError) {
-        filters.push(makeStatusFilterFunc)
+        filters.push(makeErrorFilterFunc)
     }
 
     return { func: composeFuncAnd(filters) }
@@ -77,14 +77,15 @@ export function makeFilterExpr(filterExpr) {
     if (filterExpr.startsWith('title:')) {
         const title = filterExpr.replace('title:', '')
         return {func: (task) => makeTitleFilterFunc(task, title)};
+    } else if (filterExpr.startsWith('status:')) {
+        const status = filterExpr.replace('status:', '')
+        return {func: (task) => makeStatusFilterFunc(task, status)};
     } else if (filterExpr === 'NOREPEAT') {
         return {func: makeNoRepeatFilterFunc};
     } else if (filterExpr === 'EVERY1') {
         return {func: makeEvery1FilterFunc};
     } else if (filterExpr === 'EVERY2+') {
         return {func: makeEvery2FilterFunc};
-    } else if (filterExpr === 'STATUS_A_REPO') {
-        return {func: makeStatusFilterFunc};
     } else if (filterExpr === 'ERROR') {
         return {func: makeErrorFilterFunc};
     } else {
@@ -97,4 +98,4 @@ export function makeFilterExpr(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2+', 'STATUS_A_REPO', 'ERROR', 'AND', 'OR'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2+', 'status:', 'ERROR', 'AND', 'OR'];

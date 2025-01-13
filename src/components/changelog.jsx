@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '09/01/2025'
+export const RELEASE = 'xx/xx/xxxx'
 
 const text = `
+xx/xx/xxxx
+==========
+- create status: filter ; FIX status 'fait-à repositinner' (wihout o)
+
 09/01/2025
 ==========
 - cleanup js console
