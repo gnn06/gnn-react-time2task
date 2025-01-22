@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import SlotSelect from './slot-select';
+import SlotTreeSelect from './slot-tree-select';
 import { slotViewAdd, slotViewFilterSelection } from "../data/slot-view";
 import { branchToTree, selectionToTree, selectionShift, selectionDelete, treeToSelection, treetoBranch, selectionAdd } from '../data/selection-tree';
 import { branchComplete, branchToExpr } from '../data/slot-branch';
@@ -92,7 +92,7 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
     <DialogContent>
       <div>Tâche : {title}</div>
       {slotsFromConf.map((slot, index) => {
-        return <SlotSelect key={slot.id} slot={slot} selection={selection}
+        return <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
           handleSelection={handleSelection} 
           handleShift={handleShift}
           handleDelete={handleDelete}
