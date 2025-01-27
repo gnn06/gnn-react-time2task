@@ -78,14 +78,17 @@ export const taskSlice = createSlice({
         setActivity: (state, action) => {
             state.currentActivity = action.payload.activity;
         },
-        setSlotViewFilterConf: (state, action) => {
+        setSlotViewFilterConfLevel: (state, action) => {
             state.slotViewFilterConf = { ...state.slotViewFilterConf, levelMaxIncluded: action.payload.level };
         },
+        setSlotViewFilterConf: (state, action) => {
+            state.slotViewFilterConf = action.payload.conf;
+        }
     }
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConf
+    setSlotViewFilterConfLevel, setSlotViewFilterConf
 } = taskSlice.actions
 
 export default taskSlice.reducer

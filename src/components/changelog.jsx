@@ -7,6 +7,7 @@ const text = `
 xx/xx/xxxx
 ==========
 - create status: filter ; FIX status 'fait-à repositinner' (wihout o)
+- slot view conf can be change with json view
 
 09/01/2025
 ==========
