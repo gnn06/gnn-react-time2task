@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
+import { IconButton } from "@mui/material";
 import Color from 'color';
 
 import './task.css'
@@ -61,7 +62,8 @@ export default function TaskLight({task}) {
     return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
         {task.title}
         { isUnique && <UniqueIcon/> }
-        <EditIcon className={classNameIconn} onClick={onSlotSelect}/>
+        <IconButton onClick={onSlotSelect}><EditIcon style={{color: activityTextColor}} /></IconButton>
+        
         { showSlotSelect && <SlotViewSelect selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
         <MoreHorizIcon onClick={() => setVisible(true)}/>
         { visible && <TaskDialog task={task} onClose={() => setVisible(false)}/>}
