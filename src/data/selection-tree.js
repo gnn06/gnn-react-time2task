@@ -177,6 +177,18 @@ export function selectionShift(selection, pathExprToShift, direction) {
     return selectionMapIf(selection, pathExprToShift, funcIf, funcShift)
 }
 
+export function selectionMove(selection, pathExprToMove, pathExprDestination) {
+    function funcIf(pathToMove, path) {
+        return arrayInsideOrEqual(pathToMove.IDs, path.IDs)
+    }
+    function funcShift(path, pathToMove) {
+        const level = pathToMove.getLevel()
+        const distance = pathToMove.getDistanceTo(new SlotPath(pathExprDestination))
+        return path.shift(level, distance)
+    }
+    return selectionMapIf(selection, pathExprToMove, funcIf, funcShift)
+}
+
 export function selectionDelete(selection, pathExprToDelete) {
     const pathToDelete = new SlotPath(pathExprToDelete)    
     const lastID = pathToDelete.getLast()

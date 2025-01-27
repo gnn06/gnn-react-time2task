@@ -8,6 +8,7 @@ xx/xx/xxxx
 ==========
 - create status: filter ; FIX status 'fait-à repositinner' (wihout o)
 - slot view conf can be change with json view
+- drag and drop
 
 09/01/2025
 ==========

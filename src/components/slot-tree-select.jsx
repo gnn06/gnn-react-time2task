@@ -1,15 +1,26 @@
 import SlotSelect from "./slot-select";
+import DndContainer from "./dnd-container";
+
+import { isInsideSelected } from "../data/selection-tree";
 
 export default function SlotTreeSelect({slot, selection, handleSelection, handleShift, handleDelete, handleAdd, handleRepetition, handleDisable}) {
-    const { inner } = slot;
+    const { path, inner } = slot;
 
     const innerClass = 'ml-3' 
         + (slot.id === 'this_week' ? ' flex flex-row' : '');
 
+    const selected = selection.get(path) && selection.get(path).selected || false
+    const isInside = isInsideSelected(path, selection)
+
+    const mode = (selected || isInside) ? "drag" : "drop";
+
     return (
-        <div>
-            <SlotSelect slot={slot} selection={selection} handleSelection={handleSelection} handleShift={handleShift} handleDelete={handleDelete} handleAdd={handleAdd} 
+        <div>        
+            <DndContainer id={slot.path} 
+                mode={mode}>
+                <SlotSelect slot={slot} selection={selection} handleSelection={handleSelection} handleShift={handleShift} handleDelete={handleDelete} handleAdd={handleAdd} 
                         handleRepetition={handleRepetition} handleDisable={handleDisable}/>
+            </DndContainer>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
                 <SlotTreeSelect key={innerSlot.id} slot={innerSlot} 
@@ -21,7 +32,7 @@ export default function SlotTreeSelect({slot, selection, handleSelection, handle
                     handleRepetition={handleRepetition}
                     handleDisable={handleDisable}
                 />)}
-            </div>
+            </div>    
         </div>
-        )
-    }
+    )
+}

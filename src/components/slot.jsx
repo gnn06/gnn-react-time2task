@@ -7,13 +7,13 @@ import SlotTitle from "./slot-title";
 import TaskLight from "./task-light";
 
 import { selectSlot } from "../features/taskSlice";
-
-import { findTaskBySlotExpr } from "../data/task"
+import { getSlotIdLevel } from "../data/slot-id";
+import { findTaskBySlotExpr } from "../data/task";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
-    const { id, start, end } = slot;
+    const { id, start, end, inner } = slot;
     const tasksInSlot = findTaskBySlotExpr(tasks, slot);
     const onSlotClick = e => {
         const slotId = slot.id;

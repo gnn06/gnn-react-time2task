@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev } from './slot-id.js';
+import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev, getSlotIdIndex, getSlotIdDistance } from './slot-id.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -123,4 +123,73 @@ describe('getSlotIdNext', () => {
         const result = getSlotIdNextPrev(given, -1)
         expect(result).toEqual(expected)
     })
+    test('2', () => {
+        const given    = "this_week"
+        const expected = "following_week"
+        const result = getSlotIdNextPrev(given, 2)
+        expect(result).toEqual(expected)
+    });
+    test('-2', () => {
+        const given    = "following_week"
+        const expected = "this_week"
+        const result = getSlotIdNextPrev(given, -2)
+        expect(result).toEqual(expected)
+    });
+    test('2 becomes shift', () => {
+        const given    = "following_week"
+        const expected = "following_week + 2"
+        const result = getSlotIdNextPrev(given, 2)
+        expect(result).toEqual(expected)
+    });
+    test('2 shift', () => {
+        const given    = "this_week + 1"
+        const expected = "this_week + 3"
+        const result = getSlotIdNextPrev(given, 2)
+        expect(result).toEqual(expected)
+    });
+    test('-2 shift', () => {
+        const given    = "this_week + 3"
+        const expected = "this_week + 1"
+        const result = getSlotIdNextPrev(given, -2)
+        expect(result).toEqual(expected)
+    });
 });
+
+
+describe('getSlotIdIndex', () => {
+    test('nominal', () => {
+        const given = "next_week"
+        const expected = 1
+        const result = getSlotIdIndex(given)
+        expect(result).toEqual(expected)
+    });
+    test('shift', () => {
+        const given = "next_week + 1"
+        const expected = 2
+        const result = getSlotIdIndex(given)
+        expect(result).toEqual(expected)
+    });
+    test('do not exists', () => {
+        const given = "notexist"
+        const expected = -1
+        const result = getSlotIdIndex(given)
+        expect(result).toEqual(expected)
+    })
+});
+
+describe('getSlotIdDistance', () => {
+    test('nominal', () => {
+        const givenPath1 = "mardi"
+        const givenPath2 = "jeudi"
+        const expected = 2
+        const result = getSlotIdDistance(givenPath1, givenPath2)
+        expect(result).toEqual(expected)
+    });
+    test('nominal', () => {
+        const givenPath1 = "jeudi"
+        const givenPath2 = "mardi"
+        const expected = -2
+        const result = getSlotIdDistance(givenPath1, givenPath2)
+        expect(result).toEqual(expected)
+    });
+})

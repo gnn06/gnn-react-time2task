@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 
 import SlotTreeSelect from './slot-tree-select';
+
+import SlotSelect from './slot-select';
 import { slotViewAdd, slotViewFilterSelection } from "../data/slot-view";
-import { branchToTree, selectionToTree, selectionShift, selectionDelete, treeToSelection, treetoBranch, selectionAdd } from '../data/selection-tree';
+import { branchToTree, selectionToTree, selectionShift, selectionDelete, treeToSelection, treetoBranch, selectionAdd, selectionMove } from '../data/selection-tree';
 import { branchComplete, branchToExpr } from '../data/slot-branch';
 import { Parser } from '../data/parser';
-import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 import { IDizer } from '../utils/stringUtil';
 
 function selectionMapToExpr(selection) {
@@ -87,18 +90,48 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
     selection.set(path, newSelection)
     setSelection(new Map(selection))
   }
+
+  // sensors is necessary to prevent drag even to block click event
+  const sensors = useSensors(
+          useSensor(MouseSensor, {
+            activationConstraint: {
+              distance: 8,
+            },
+          }),
+          useSensor(TouchSensor, {
+            activationConstraint: {
+              delay: 200,
+              tolerance: 6,
+            },
+          }),
+          // useSensor(KeyboardSensor, {
+          //   coordinateGetter: sortableKeyboardCoordinates,
+          // }),
+        );
+
+  function dnd(event) {
+    const source = event.active.id
+    const dest   = (event.over && event.over.id) || undefined
+    if (dest === undefined) return
+    //console.log("dnd source=" + source + ", dest=" + dest)
+    const newSelection = selectionMove(selection, source, dest)
+    setSelection(newSelection)
+    setSlots(makeSlotWithSelection(conf, newSelection))
+  }
   
   return <Dialog open={true} onClose={handleClose} maxWidth="lg">
     <DialogContent>
       <div>Tâche : {title}</div>
       {slotsFromConf.map((slot, index) => {
-        return <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
-          handleSelection={handleSelection} 
-          handleShift={handleShift}
-          handleDelete={handleDelete}
-          handleAdd={handleAdd}
-          handleRepetition={handleRepetition}
-          handleDisable={handleDisable}/>
+        return <DndContext onDragEnd={dnd} sensors={sensors}>
+                  <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
+                    handleSelection={handleSelection} 
+                    handleShift={handleShift}
+                    handleDelete={handleDelete}
+                    handleAdd={handleAdd}
+                    handleRepetition={handleRepetition}
+                    handleDisable={handleDisable}/>
+                </DndContext>
       })}
       {/* {<pre>{JSON.stringify(flatToTree(selection), null, ' ')}</pre>} */}
       {/* {<pre>{JSON.stringify(treetoBranch(flatToTree(selection)), null, ' ')}</pre>} */}

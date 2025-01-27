@@ -1,4 +1,4 @@
-import { branchToTree, isInsideSelected, selectionToTree, selectionShift, selectionDelete, treetoBranch, treeToSelection, selectionAdd, _makeBranch } from "./selection-tree";
+import { branchToTree, isInsideSelected, selectionToTree, selectionShift, selectionDelete, treetoBranch, treeToSelection, selectionAdd, _makeBranch, selectionMove } from "./selection-tree";
 
 describe('treeToBranch', () => {
   test('undefined ', () => {
@@ -417,7 +417,28 @@ describe("selection manipulation", () => {
       const result = selectionShift(given, "this_month next_week", -1)
       expect(result).toEqual(expected)
     })
+    test('2', () => {
+      const given    = new Map([["this_month this_week mercredi", { selected: true }]])
+      const expected = new Map([["this_month following_week mercredi", { selected: true }]])
+      const result = selectionShift(given, "this_month this_week", 2)
+      expect(result).toEqual(expected)
+    })
   });
+
+  describe('selectionMove', () => {
+    test('nominal', () => {
+      const given    = new Map([["this_month this_week mardi", { selected: true }],["this_month this_week vendredi", { selected: true }]])
+      const expected = new Map([["this_month this_week jeudi", { selected: true }],["this_month this_week vendredi", { selected: true }]])
+      const result = selectionMove(given, "this_month this_week mardi", "this_month this_week jeudi")
+      expect(result).toEqual(expected)
+    });
+    test('move upper', () => {
+      const given    = new Map([["this_month this_week mardi", { selected: true }]])
+      const expected = new Map([["this_month next_week mardi", { selected: true }]])
+      const result = selectionMove(given, "this_month this_week", "this_month next_week")
+      expect(result).toEqual(expected)
+    });
+  })
 
   describe('delete', () => {
     test('should ', () => {

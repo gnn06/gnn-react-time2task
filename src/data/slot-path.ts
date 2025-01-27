@@ -1,5 +1,5 @@
 import { IDizer } from "../utils/stringUtil";
-import { getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious } from "./slot-id";
+import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious } from "./slot-id";
 
 export class SlotPath {
 
@@ -48,6 +48,13 @@ export class SlotPath {
 
     getLast(): string {
         return this.IDs !== null && this.IDs.length > 0  ? this.IDs[this.IDs.length - 1] : ""
+    }
+
+    getDistanceTo(otherPath: SlotPath): number {
+        const id = this.getLast()
+        const otherId = otherPath.getLast()
+        const distance = getSlotIdDistance(id, otherId)
+        return distance
     }
 }
 

@@ -113,6 +113,9 @@ export function isSlotIdGeneric(slotId) {
     return GENERIC_SLOTIDS.indexOf(slotId) > -1   
 }
 
+/**
+ * @param direction int 1, -1, n, -n
+ */
 export function getSlotIdNextPrev(slotId, direction) {
     const IdRegExp = slotId.match(/(\S+) ?\+? ?(\d*)/)
     const id = IdRegExp[1]
@@ -121,29 +124,57 @@ export function getSlotIdNextPrev(slotId, direction) {
     if (shift === undefined) {
         const level = getSlotIdLevel(id)
         const slots = SLOTIDS_BY_LEVEL[level.toString()]
-        const index = slots.indexOf(id)
-        if (direction === 1) {
+        const index = 
+        slots.indexOf(id)
+        if (direction > 0) {
             if (index < slots.length - 1) {
-                return slots[index + 1]
+                return slots[index + direction]
             } else {
-                return id + " + 1"
+                return id + " + " + direction
             }
         } else {
             if (index > 0) {
-                return slots[index - 1]
+                return slots[index + direction]
             } else {
                 return id
             }                
         }
-    } else {
-        if (direction === 1) {
-            return id + " + " + (shift + 1)
+    } else { // with shift
+        if (direction > 0) {
+            return id + " + " + (shift + direction)
         } else {
             if (shift > 2) {
-                return id + " + " + (shift - 1)
+                return id + " + " + (shift + direction)
             } else {
                 return id                
             }
         }
     }
+}
+
+/**
+ * 
+ * @returns int, -1 = no index
+ */
+export function getSlotIdIndex(slotId) {
+    const IdRegExp = slotId.match(/(\S+) ?\+? ?(\d*)/)
+    const id = IdRegExp[1]
+    const shift = IdRegExp[2] !== '' ? parseInt(IdRegExp[2]) : undefined
+
+    const level = getSlotIdLevel(id)
+    if (level === -1) return -1
+
+    if (shift) {
+        const index = getSlotIdIndex(id)
+        return index + shift
+    }
+
+    return SLOTIDS_BY_LEVEL[level].indexOf(id)
+}
+
+export function getSlotIdDistance(id1, id2) {
+    const index1 = getSlotIdIndex(id1)
+    const index2 = getSlotIdIndex(id2)
+    return index2 - index1
+    
 }

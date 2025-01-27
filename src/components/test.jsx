@@ -1,6 +1,8 @@
 import SlotTitle from './slot-title';
+import SlotTreeSelect from './slot-tree-select';
 import SlotViewSelect from './slot-view-select';
 import SyntaxInputWithSelection from './syntax-input-select';
+import TestDnd from './test-dnd-onecompo';
 
 function TestSyntaxInputSelect() {
 
@@ -25,7 +27,16 @@ const conf = {
 }
 
 function TestSlotViewSelect() {
-    return <SlotViewSelect selectionExpr="this_month every 1 this_week disable lundi mardi" conf={conf} onConfirm={null} onCancel={null} />
+    // const slot = {id:"this_month", path: "this_month", inner: [
+    //     {id:"this_week", path: "this_month this_week", inner: [
+    //         {id:"lundi", path: "this_month this_week lundi", inner: []},
+    //         {id:"mardi", path: "this_month this_week mardi", inner: []},
+    //         {id:"mercredi", path: "this_month this_week mercredi", inner: []},
+    //         {id:"jeudi", path: "this_month this_week jeudi", inner: []},
+    //     ]}
+    // ]}
+    // return <SlotTreeSelect slot={slot} selection={null} handleSelection={null} handleShift={null} handleDelete={null} handleAdd={null} handleRepetition={null} handleDisable={null}/>
+    return <SlotViewSelect selectionExpr="this_month this_week mardi" conf={conf} onConfirm={null} onCancel={null} />
 
 }
 
@@ -35,6 +46,7 @@ function TestSlotTitle() {
 
 export default function Test() {
     //return <TestSyntaxInputSelect/>
-    //return <TestSlotViewSelect/>
-    return <TestSlotTitle/>
+    // return <TestSlotTitle/>
+    return <TestSlotViewSelect/>
+    // return <TestDnd/>
 }

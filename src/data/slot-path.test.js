@@ -69,3 +69,11 @@ describe('SlotPath', () => {
         expect(result).toEqual(expected)
     });
 });
+
+test('distance', () => {
+    const given1 = new SlotPath("this_month this_week mardi")
+    const given2 = new SlotPath("this_month this_week jeudi")
+    const expected = 2
+    const result = given1.getDistanceTo(given2)
+    expect(result).toEqual(expected)
+});
