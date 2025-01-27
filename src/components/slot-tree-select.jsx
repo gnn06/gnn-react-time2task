@@ -2,12 +2,13 @@ import SlotSelect from "./slot-select";
 import DndContainer from "./dnd-container";
 
 import { isInsideSelected } from "../data/selection-tree";
+import { getSlotIdLevel } from "../data/slot-id";
 
 export default function SlotTreeSelect({slot, selection, handleSelection, handleShift, handleDelete, handleAdd, handleRepetition, handleDisable}) {
     const { path, inner } = slot;
 
     const innerClass = 'ml-3' 
-        + (slot.id === 'this_week' ? ' flex flex-row' : '');
+        + (getSlotIdLevel(slot.id) === getSlotIdLevel('this_week') ? ' flex flex-row' : '');
 
     const selected = selection.get(path) && selection.get(path).selected || false
     const isInside = isInsideSelected(path, selection)

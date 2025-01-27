@@ -1,3 +1,4 @@
+import { getSlotIdLevel } from "../data/slot-id";
 import Slot from "./slot";
 
 export default function SlotTree({slot, tasks}) {
@@ -9,7 +10,7 @@ export default function SlotTree({slot, tasks}) {
     }
 
     const innerClass = 'ml-3' 
-        + (slot.id === 'this_week' ? ' flex flex-row' : '');
+        + (getSlotIdLevel(slot.id) === getSlotIdLevel('this_week') ? ' flex flex-row' : '');
 
     return (
         <div>            

@@ -9,6 +9,7 @@ xx/xx/xxxx
 - create status: filter ; FIX status 'fait-à repositinner' (wihout o)
 - slot view conf can be change with json view
 - drag and drop
+- next_week as row
 
 09/01/2025
 ==========
