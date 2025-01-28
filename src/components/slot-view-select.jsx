@@ -122,17 +122,17 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
   return <Dialog open={true} onClose={handleClose} maxWidth="lg">
     <DialogContent>
       <div>Tâche : {title}</div>
-      {slotsFromConf.map((slot, index) => {
-        return <DndContext onDragEnd={dnd} sensors={sensors}>
-                  <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
+      <DndContext onDragEnd={dnd} sensors={sensors}>
+        {slotsFromConf.map((slot, index) => {
+          return <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
                     handleSelection={handleSelection} 
                     handleShift={handleShift}
                     handleDelete={handleDelete}
                     handleAdd={handleAdd}
                     handleRepetition={handleRepetition}
                     handleDisable={handleDisable}/>
-                </DndContext>
-      })}
+        })}
+      </DndContext>
       {/* {<pre>{JSON.stringify(flatToTree(selection), null, ' ')}</pre>} */}
       {/* {<pre>{JSON.stringify(treetoBranch(flatToTree(selection)), null, ' ')}</pre>} */}
       {/* {selectionMapToExpr(selection)}     */}
