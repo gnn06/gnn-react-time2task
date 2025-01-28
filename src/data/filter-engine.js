@@ -29,7 +29,7 @@ export const makeErrorFilterFunc = (task) => taskPredicateError(task)
  */
 export function makeFilterCombine(filter) {
     const filters = []
-    const expression = filter.expression === 'no-filter' ? null : filter.expression
+    const expression = filter.expression === '' ? null : filter.expression
     if (expression) {
         filters.push(makeFilterExpr(expression).func)
     }
@@ -65,7 +65,7 @@ export function makeFilterMulti(filterMulti) {
  * return { func: (task) => boolean, error: string}
  */
 export function makeFilterExpr(filterExpr) {
-    if (filterExpr === '' || filterExpr === 'no-filter') return {func: () => true};
+    if (filterExpr === '') return {func: () => true};
     const filtersAnd = filterExpr.split(' AND ');
     if (filtersAnd.length >= 2) {
         return {func: (task) => filtersAnd.every(filter => makeFilterExpr(filter).func(task))};

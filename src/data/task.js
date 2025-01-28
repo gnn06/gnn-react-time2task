@@ -75,7 +75,7 @@ export function taskCompare(task1, task2) {
  * public, used by slot.jsx and tasklist.jsx
  */
 export function filterSlotExpr(tasks, filter) {
-    // if (filterExpr === 'no-filter') return tasks;
+    // if (filterExpr === '') return tasks;
     return tasks.filter(makeFilterCombine(filter).func);
 }
 
