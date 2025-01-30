@@ -62,8 +62,8 @@ export default function TaskFilter() {
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
             <div className="flex-grow">
-                <SyntaxInput id="task-filter" inputRef={filterRef} items={filters} 
-                    placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
+                <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
+                    placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
                     closeIcon={true}
                     onInputChange={onChange} initialInputValue={filterExpr}/>
                 { error && <div className="m-1 text-red-500">{error}</div>}
