@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import SyntaxInput from './syntax-input';
 import StatusInput from './status-input.jsx'
 import InputEdit from "./edit-input.jsx";
 import Dialog from '@mui/material/Dialog';
