@@ -27,7 +27,6 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
       level = conf.levelMin - 1;
       for (let j = 0; j < conf.levelMin; j++) {
         _parentPath.append(getSlotIdCurrent(j))
-        parentPath = parentPath + (parentPath === "" ? "" : " ")  + getSlotIdCurrent(j)
       }
     }
     if (level >= SLOTIDS.length) return [];
@@ -36,13 +35,12 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
     if (!conf.levelMaxIncluded || level <= conf.levelMaxIncluded - 1) {
       for (let i = 0; i < IDslevel.length; i++) {
          const id = IDslevel[i];
-         const path = parentPath + (parentPath === "" ? "" : " ") + id;
          const _path = new SlotPath(_parentPath.toExpr()).append(id)
-         const remove = conf.remove.indexOf(path) > -1;
+         const remove = conf.remove.indexOf(_path.toExpr()) > -1;
          if (remove) continue;
-         const collapse = conf.collapse.indexOf(path) > -1;
+         const collapse = conf.collapse.indexOf(_path.toExpr()) > -1;
          let inner = !collapse ? slotViewFilter(conf, level + 1, _path.toExpr()) : []
-         const node = { id: id, path: path, inner: inner }
+         const node = { id: id, path: _path.toExpr(), inner: inner }
          result.push(node)
      }
    };
