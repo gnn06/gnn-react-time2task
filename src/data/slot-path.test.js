@@ -62,7 +62,7 @@ describe('SlotPath', () => {
         const result = given.delete("next_week")
         expect(result).toEqual(expected)
     });
-    test('delete no match', () => {
+    test('delete empty', () => {
         const given = new SlotPath("this_month this_week mercredi")
         const expected = {IDs: []}
         const result = given.delete("this_month")
