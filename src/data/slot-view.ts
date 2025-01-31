@@ -1,12 +1,25 @@
 import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, SLOTIDS_BY_LEVEL } from "./slot-id";
 
+interface SlotViewConf {
+  levelMin:         number,
+  levelMaxIncluded: number,
+  remove: String[],
+  collapse: String[]
+}
+
+interface Slot {
+  id: string,
+  path: string,
+  inner: Slot[]
+}
+
 /**
  * 
  * @returns [ { id: string, path: string 'id1 id2 id3', inner: recursive result }]
  */
 
-export function slotViewFilter(conf, level = 0, parentPath = "") {
+export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") : Slot[]  {
     const SLOTIDS = Object.values(SLOTIDS_BY_LEVEL);
     if (conf.levelMin && level < conf.levelMin) { 
       level = conf.levelMin - 1;
@@ -14,7 +27,7 @@ export function slotViewFilter(conf, level = 0, parentPath = "") {
          parentPath = parentPath + (parentPath === "" ? "" : " ")  + getSlotIdCurrent(j)
       }
     }
-    if (level >= SLOTIDS.length) return null;
+    if (level >= SLOTIDS.length) return [];
     const IDslevel = SLOTIDS[level]
     let result = []
     if (!conf.levelMaxIncluded || level <= conf.levelMaxIncluded - 1) {
@@ -38,9 +51,9 @@ export function slotViewFilter(conf, level = 0, parentPath = "") {
  * @param {[string]} path 
  * @returns 
  */
-export function slotViewAdd(slotView, path, currentPath = "") {
+export function slotViewAdd(slotView: Slot[], path:string, currentPath = "") : Slot[] {
  
-  if (slotView === null) return null
+  if (slotView === null) return []
   if (path.length === 0) return slotView
 
   const id = path[0]
@@ -61,7 +74,7 @@ export function slotViewAdd(slotView, path, currentPath = "") {
   }
 }
 
-export function slotViewFilterSelection(conf, paths) {
+export function slotViewFilterSelection(conf: SlotViewConf, paths: string[]) {
   let  slotView = slotViewFilter(conf)
   paths.forEach(path => {slotView = slotViewAdd(slotView, path)})
   return slotView

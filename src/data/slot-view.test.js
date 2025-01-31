@@ -34,12 +34,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -50,12 +50,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -66,12 +66,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -82,12 +82,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -98,12 +98,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -120,12 +120,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month next_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month next_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -136,12 +136,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month next_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month next_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -152,12 +152,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month next_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month next_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -168,12 +168,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month next_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month next_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -184,12 +184,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month next_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month next_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -206,12 +206,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month following_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month following_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -222,12 +222,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month following_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month following_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -238,12 +238,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month following_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month following_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -254,12 +254,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month following_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month following_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -270,12 +270,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "this_month following_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month following_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -298,12 +298,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month this_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month this_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -314,12 +314,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month this_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month this_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -330,12 +330,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month this_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month this_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -346,12 +346,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month this_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month this_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -362,12 +362,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month this_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month this_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -384,12 +384,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month next_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month next_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -400,12 +400,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month next_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month next_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -416,12 +416,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month next_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month next_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -432,12 +432,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month next_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month next_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -448,12 +448,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month next_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month next_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -470,12 +470,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month following_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month following_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -486,12 +486,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month following_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month following_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -502,12 +502,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month following_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month following_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -518,12 +518,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month following_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month following_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -534,12 +534,12 @@ test('empty conf', () => {
                         {
                            "id": "matin",
                            "path": "next_month following_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "next_month following_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -579,12 +579,12 @@ test('collapse', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -595,12 +595,12 @@ test('collapse', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -611,12 +611,12 @@ test('collapse', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -627,12 +627,12 @@ test('collapse', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -643,12 +643,12 @@ test('collapse', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -693,12 +693,12 @@ test('remove', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week lundi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week lundi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -709,12 +709,12 @@ test('remove', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mardi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mardi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -725,12 +725,12 @@ test('remove', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week mercredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week mercredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -741,12 +741,12 @@ test('remove', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week jeudi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week jeudi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   },
@@ -757,12 +757,12 @@ test('remove', () => {
                         {
                            "id": "matin",
                            "path": "this_month this_week vendredi matin",
-                           "inner": null
+                           "inner": []
                         },
                         {
                            "id": "aprem",
                            "path": "this_month this_week vendredi aprem",
-                           "inner": null
+                           "inner": []
                         }
                      ]
                   }
@@ -850,12 +850,12 @@ test('level filter min', () => {
             {
                "id": "matin",
                "path": "this_month this_week lundi matin",
-               "inner": null
+               "inner": []
             },
             {
                "id": "aprem",
                "path": "this_month this_week lundi aprem",
-               "inner": null
+               "inner": []
             }
          ]
       },
@@ -866,12 +866,12 @@ test('level filter min', () => {
             {
                "id": "matin",
                "path": "this_month this_week mardi matin",
-               "inner": null
+               "inner": []
             },
             {
                "id": "aprem",
                "path": "this_month this_week mardi aprem",
-               "inner": null
+               "inner": []
             }
          ]
       },
@@ -882,12 +882,12 @@ test('level filter min', () => {
             {
                "id": "matin",
                "path": "this_month this_week mercredi matin",
-               "inner": null
+               "inner": []
             },
             {
                "id": "aprem",
                "path": "this_month this_week mercredi aprem",
-               "inner": null
+               "inner": []
             }
          ]
       },
@@ -898,12 +898,12 @@ test('level filter min', () => {
             {
                "id": "matin",
                "path": "this_month this_week jeudi matin",
-               "inner": null
+               "inner": []
             },
             {
                "id": "aprem",
                "path": "this_month this_week jeudi aprem",
-               "inner": null
+               "inner": []
             }
          ]
       },
@@ -914,12 +914,12 @@ test('level filter min', () => {
             {
                "id": "matin",
                "path": "this_month this_week vendredi matin",
-               "inner": null
+               "inner": []
             },
             {
                "id": "aprem",
                "path": "this_month this_week vendredi aprem",
-               "inner": null
+               "inner": []
             }
          ]
       }
