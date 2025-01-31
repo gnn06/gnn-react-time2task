@@ -1,3 +1,4 @@
+import { S } from "vite/dist/node/types.d-aGj9QkWt";
 import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { SlotPath } from "./slot-path";
@@ -5,8 +6,8 @@ import { SlotPath } from "./slot-path";
 interface SlotViewConf {
   levelMin:         number,
   levelMaxIncluded: number,
-  remove: String[],
-  collapse: String[]
+  remove: string[],
+  collapse: string[]
 }
 
 interface Slot {
@@ -36,9 +37,9 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
       for (let i = 0; i < IDslevel.length; i++) {
          const id = IDslevel[i];
          const _path = new SlotPath(_parentPath.toExpr()).append(id)
-         const remove = conf.remove.indexOf(_path.toExpr()) > -1;
+         const remove = conf.remove.map(el => new SlotPath(el)).some(el => el.equals(_path));
          if (remove) continue;
-         const collapse = conf.collapse.indexOf(_path.toExpr()) > -1;
+         const collapse = conf.collapse.map(el => new SlotPath(el)).some(el => el.equals(_path));
          let inner = !collapse ? slotViewFilter(conf, level + 1, _path.toExpr()) : []
          const node = { id: id, path: _path.toExpr(), inner: inner }
          result.push(node)
