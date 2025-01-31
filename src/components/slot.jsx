@@ -1,6 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { IconButton } from "@mui/material";
 
 import './slot.css';
 
@@ -37,7 +39,7 @@ export default function Slot({slot, tasks}) {
         <div className={slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
-                <ExpandLessIcon/>
+                <IconButton size="small"><ExpandLessIcon/></IconButton>
             </div>
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
