@@ -98,3 +98,42 @@ test('append empty', () => {
     const result = given1.append("this_month")
     expect(result).toEqual(expected)
 })
+
+describe('equals', () => {
+    test('depth 1, equals', () => {
+        const given1 = new SlotPath("this_month")
+        const given2 = new SlotPath("this_month")
+        const result = given1.equals(given2)
+        expect(result).toBeTruthy()
+    });
+    test('depth 1, not equals', () => {
+        const given1 = new SlotPath("this_month")
+        const given2 = new SlotPath("next_month")
+        const result = given1.equals(given2)
+        expect(result).toBeFalsy()
+    });
+    test('level 1 equals, depth differs', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month")
+        const result = given1.equals(given2)
+        expect(result).toBeFalsy()
+    });
+    test('level 1 equals, depth differs bis', () => {
+        const given1 = new SlotPath("this_month")
+        const given2 = new SlotPath("this_month this_week")
+        const result = given1.equals(given2)
+        expect(result).toBeFalsy()
+    });    
+    test('level 1 equals, level 2 differs', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month next_week")
+        const result = given1.equals(given2)
+        expect(result).toBeFalsy()
+    });    
+    test('level 1 equals, level 2 equals', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month this_week")
+        const result = given1.equals(given2)
+        expect(result).toBeTruthy()
+    });    
+});
