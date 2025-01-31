@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import './slot.css';
 
@@ -34,7 +35,11 @@ export default function Slot({slot, tasks}) {
     }
     return <React.Fragment>
         <div className={slotStyle}>
-            <SlotTitle slot={slot}/>
+            <div className="flex flex-row">
+                <SlotTitle  slot={slot}/>
+                <ExpandLessIcon/>
+            </div>
+            
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
             <div className="h-10"/>
