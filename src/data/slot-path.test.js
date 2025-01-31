@@ -77,3 +77,11 @@ test('distance', () => {
     const result = given1.getDistanceTo(given2)
     expect(result).toEqual(expected)
 });
+
+
+test('append', () => {
+    const given1 = new SlotPath("this_month this_week mardi")
+    const expected = new SlotPath("this_month this_week mardi aprem")
+    const result = given1.append("aprem")
+    expect(result).toEqual(expected)
+})

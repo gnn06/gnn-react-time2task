@@ -1,5 +1,6 @@
 import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, SLOTIDS_BY_LEVEL } from "./slot-id";
+import { SlotPath } from "./slot-path";
 
 interface SlotViewConf {
   levelMin:         number,
@@ -20,11 +21,13 @@ interface Slot {
  */
 
 export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") : Slot[]  {
+    const _parentPath = new SlotPath(parentPath)
     const SLOTIDS = Object.values(SLOTIDS_BY_LEVEL);
     if (conf.levelMin && level < conf.levelMin) { 
       level = conf.levelMin - 1;
       for (let j = 0; j < conf.levelMin; j++) {
-         parentPath = parentPath + (parentPath === "" ? "" : " ")  + getSlotIdCurrent(j)
+        _parentPath.append(getSlotIdCurrent(j))
+        parentPath = parentPath + (parentPath === "" ? "" : " ")  + getSlotIdCurrent(j)
       }
     }
     if (level >= SLOTIDS.length) return [];
@@ -34,6 +37,7 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
       for (let i = 0; i < IDslevel.length; i++) {
          const id = IDslevel[i];
          const path = parentPath + (parentPath === "" ? "" : " ") + id;
+         const _path = new SlotPath(_parentPath.toExpr()).append(id)
          const remove = conf.remove.indexOf(path) > -1;
          if (remove) continue;
          const collapse = conf.collapse.indexOf(path) > -1;

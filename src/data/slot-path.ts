@@ -37,6 +37,7 @@ export class SlotPath {
     }
 
     toExpr(): string {
+        if (this.IDs === null) return "";
         return this.IDs.join(" ")
     }
 
@@ -55,6 +56,12 @@ export class SlotPath {
         const otherId = otherPath.getLast()
         const distance = getSlotIdDistance(id, otherId)
         return distance
+    }
+
+    append(newID: string) : SlotPath {
+        if (this.IDs === null) return this
+        this.IDs = this.IDs.concat(IDizer(newID)) 
+        return this
     }
 }
 
