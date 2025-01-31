@@ -83,12 +83,16 @@ export const taskSlice = createSlice({
         },
         setSlotViewFilterConf: (state, action) => {
             state.slotViewFilterConf = action.payload.conf;
+        },
+        confBranch: (state, action) =>  {
+            const { path, mode } = action.payload;
+            console.log("confBranch", path, mode)
         }
     }
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch
 } = taskSlice.actions
 
 export default taskSlice.reducer

@@ -9,7 +9,7 @@ import './slot.css';
 import SlotTitle from "./slot-title";
 import TaskLight from "./task-light";
 
-import { selectSlot } from "../features/taskSlice";
+import { confBranch, selectSlot } from "../features/taskSlice";
 import { getSlotIdLevel } from "../data/slot-id";
 import { findTaskBySlotExpr } from "../data/task";
 
@@ -37,7 +37,7 @@ export default function Slot({slot, tasks}) {
     }
 
     const onCollapse = (path) => {
-        console.log("onCollapse", path)
+        dispatch(confBranch({path, mode: "collapse"}))
     }
 
     return <React.Fragment>
