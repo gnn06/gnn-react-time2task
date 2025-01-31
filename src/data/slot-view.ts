@@ -21,13 +21,12 @@ interface Slot {
  * @returns [ { id: string, path: string 'id1 id2 id3', inner: recursive result }]
  */
 
-export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") : Slot[]  {
-    const _parentPath = new SlotPath(parentPath)
+export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = new SlotPath("")) : Slot[]  {
     const SLOTIDS = Object.values(SLOTIDS_BY_LEVEL);
     if (conf.levelMin && level < conf.levelMin) { 
       level = conf.levelMin - 1;
       for (let j = 0; j < conf.levelMin; j++) {
-        _parentPath.append(getSlotIdCurrent(j))
+        parentPath.append(getSlotIdCurrent(j))
       }
     }
     if (level >= SLOTIDS.length) return [];
@@ -36,11 +35,11 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
     if (!conf.levelMaxIncluded || level <= conf.levelMaxIncluded - 1) {
       for (let i = 0; i < IDslevel.length; i++) {
          const id = IDslevel[i];
-         const _path = new SlotPath(_parentPath.toExpr()).append(id)
+         const _path = new SlotPath(parentPath.toExpr()).append(id)
          const remove = conf.remove.map(el => new SlotPath(el)).some(el => el.equals(_path));
          if (remove) continue;
          const collapse = conf.collapse.map(el => new SlotPath(el)).some(el => el.equals(_path));
-         let inner = !collapse ? slotViewFilter(conf, level + 1, _path.toExpr()) : []
+         let inner = !collapse ? slotViewFilter(conf, level + 1, _path) : []
          const node = { id: id, path: _path.toExpr(), inner: inner }
          result.push(node)
      }
