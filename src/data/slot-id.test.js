@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev, getSlotIdIndex, getSlotIdDistance } from './slot-id.js';
+import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev, getSlotIdIndex, getSlotIdDistance, isSlotIdEquals } from './slot-id.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -185,7 +185,7 @@ describe('getSlotIdDistance', () => {
         const result = getSlotIdDistance(givenPath1, givenPath2)
         expect(result).toEqual(expected)
     });
-    test('nominal', () => {
+    test('nominal opposé', () => {
         const givenPath1 = "jeudi"
         const givenPath2 = "mardi"
         const expected = -2
@@ -193,3 +193,30 @@ describe('getSlotIdDistance', () => {
         expect(result).toEqual(expected)
     });
 })
+
+describe('isSlotIdEquals', () => {
+    test('equal', () => {
+        const given1 = "this_week"
+        const given2 = "this_week"
+        const result = isSlotIdEquals(given1, given2)
+        expect(result).toBeTruthy()
+    });
+    test('not equal', () => {
+        const given1 = "this_week"
+        const given2 = "next_week"
+        const result = isSlotIdEquals(given1, given2)
+        expect(result).toBeFalsy()
+    })
+    test('generic equals', () => {
+        const given1 = "week"
+        const given2 = "next_week"
+        const result = isSlotIdEquals(given1, given2)
+        expect(result).toBeTruthy()
+    })
+    test('generic not equals', () => {
+        const given1 = "week"
+        const given2 = "this_month"
+        const result = isSlotIdEquals(given1, given2)
+        expect(result).toBeFalsy()
+    })
+});

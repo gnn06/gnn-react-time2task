@@ -135,5 +135,23 @@ describe('equals', () => {
         const given2 = new SlotPath("this_month this_week")
         const result = given1.equals(given2)
         expect(result).toBeTruthy()
-    });    
+    });
+    test('generic', () => {
+        const given1 = new SlotPath("this_month this_week day")
+        const given2 = new SlotPath("this_month this_week mardi")
+        const result = given1.equals(given2)
+        expect(result).toBeTruthy()
+    });
+    test('generic order', () => {
+        const given1 = new SlotPath("this_month this_week mardi")
+        const given2 = new SlotPath("this_month this_week day")
+        const result = given1.equals(given2)
+        expect(result).toBeTruthy()
+    });
+    test('generic twice', () => {
+        const given1 = new SlotPath("this_month this_week day")
+        const given2 = new SlotPath("this_month this_week day")
+        const result = given1.equals(given2)
+        expect(result).toBeTruthy()
+    })
 });

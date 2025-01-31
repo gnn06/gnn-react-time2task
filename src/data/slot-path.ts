@@ -1,5 +1,5 @@
 import { IDizer } from "../utils/stringUtil";
-import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious } from "./slot-id";
+import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious, isSlotIdEquals } from "./slot-id";
 
 export class SlotPath {
 
@@ -66,7 +66,7 @@ export class SlotPath {
 
     equals(other: SlotPath) : boolean {
         for (let i = 0; i < this.IDs.length; i++) {
-            if (this.IDs[i] !== other.IDs[i] || this.IDs.length !== other.IDs.length) {
+            if (!isSlotIdEquals(this.IDs[i], other.IDs[i]) || this.IDs.length !== other.IDs.length) {
                 return false;
             }
         }
