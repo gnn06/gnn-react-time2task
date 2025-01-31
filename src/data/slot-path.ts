@@ -6,7 +6,7 @@ export class SlotPath {
     IDs: string[];
 
     constructor(expr: string) {
-        this.IDs = IDizer(expr)
+        this.IDs = IDizer(expr) ?? []
     }
 
     public shift(level: number, direction: number): SlotPath {

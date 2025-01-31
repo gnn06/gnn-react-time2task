@@ -7,6 +7,12 @@ describe('SlotPath', () => {
         const result = new SlotPath(given)
         expect(result).toEqual(expected)
     });
+    test('constructor empty', () => {
+        const given = "this_month this_week + 1 mardi aprem"
+        const expected = { IDs: [] }
+        const result = new SlotPath("")
+        expect(result).toEqual(expected)
+    });
     
     describe('shift', () => {
         test('next', () => {
@@ -83,5 +89,12 @@ test('append', () => {
     const given1 = new SlotPath("this_month this_week mardi")
     const expected = new SlotPath("this_month this_week mardi aprem")
     const result = given1.append("aprem")
+    expect(result).toEqual(expected)
+})
+
+test('append empty', () => {
+    const given1 = new SlotPath("")
+    const expected = new SlotPath("this_month")
+    const result = given1.append("this_month")
     expect(result).toEqual(expected)
 })

@@ -41,7 +41,7 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = "") :
          const remove = conf.remove.indexOf(path) > -1;
          if (remove) continue;
          const collapse = conf.collapse.indexOf(path) > -1;
-         let inner = !collapse ? slotViewFilter(conf, level + 1, path) : []
+         let inner = !collapse ? slotViewFilter(conf, level + 1, _path.toExpr()) : []
          const node = { id: id, path: path, inner: inner }
          result.push(node)
      }
