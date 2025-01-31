@@ -35,11 +35,16 @@ export default function Slot({slot, tasks}) {
     } else {
         slotStyle += "hover:bg-blue-100 ";
     }
+
+    const onCollapse = (path) => {
+        console.log("onCollapse", path)
+    }
+
     return <React.Fragment>
         <div className={slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
-                <IconButton size="small"><ExpandLessIcon/></IconButton>
+                <IconButton size="small" onClick={(e) => onCollapse(slot.path)}><ExpandLessIcon/></IconButton>
             </div>
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
