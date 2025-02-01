@@ -1,6 +1,6 @@
 import { S } from "vite/dist/node/types.d-aGj9QkWt";
 import { appendWithSpace } from "../utils/stringUtil";
-import { getSlotIdCurrent, SLOTIDS_BY_LEVEL } from "./slot-id";
+import { getSlotIdCurrent, getSlotIdLevel, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { SlotPath } from "./slot-path";
 
 interface SlotViewConf {
@@ -16,9 +16,23 @@ interface Slot {
   inner: Slot[]
 }
 
+export function transPathToConf(pathS:string) : string {
+  const path = new SlotPath(pathS)
+  const level = getSlotIdLevel(path.getLast()) 
+  if (level === getSlotIdLevel("day")) {
+    path.replace(level, "day")
+  }
+  if (level === 4) {
+    path.replace(3, "day")
+    path.truncate(3)
+  }
+  return path.toExpr()
+}
+
 export function reduceCollapseOnConf(conf: SlotViewConf, path: string) : SlotViewConf {
   const collapseSet = new Set(conf.collapse);
-  collapseSet.add(path)
+  const pathConf = transPathToConf(path)
+  collapseSet.add(pathConf)
   conf.collapse = Array.from(collapseSet)
   return conf
 }

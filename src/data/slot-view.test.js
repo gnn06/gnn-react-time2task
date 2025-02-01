@@ -1,4 +1,4 @@
-import { reduceCollapseOnConf, slotViewAdd, slotViewFilter, slotViewFilterSelection } from "./slot-view";
+import { reduceCollapseOnConf, slotViewAdd, slotViewFilter, slotViewFilterSelection, transPathToConf } from "./slot-view";
 
 const defaultConf = {
    collapse: [
@@ -1328,7 +1328,7 @@ describe('reduceCollapseOnConf', () => {
    test('empty', () => {
       const givenConf = { collapse:[] }
       const givenPath = "this_month this_week vendredi"
-      const expectedConf = { collapse: ["this_month this_week vendredi"] }
+      const expectedConf = { collapse: ["this_month this_week day"] }
       const result = reduceCollapseOnConf(givenConf, givenPath)
       expect(result).toEqual(expectedConf)
    });
@@ -1340,17 +1340,50 @@ describe('reduceCollapseOnConf', () => {
       expect(result).toEqual(expectedConf)
    });
    test('add longer', () => {
-      const givenConf = { collapse: ["this_month this_week vendredi"] }
-      const givenPath = "this_month this_week vendredi aprem"
-      const expectedConf = { collapse: ["this_month this_week vendredi", "this_month this_week vendredi aprem"] }
+      const givenConf = { collapse: ["this_month this_week"] }
+      const givenPath = "this_month this_week vendredi"
+      const expectedConf = { collapse: ["this_month this_week", "this_month this_week day"] }
       const result = reduceCollapseOnConf(givenConf, givenPath)
       expect(result).toEqual(expectedConf)
    })
    test("don't add doublon", () => {
-      const givenConf = { collapse: ["this_month this_week vendredi"] }
-      const givenPath = "this_month this_week vendredi"
-      const expectedConf = { collapse: ["this_month this_week vendredi"] }
+      const givenConf = { collapse: ["this_month this_week"] }
+      const givenPath = "this_month this_week"
+      const expectedConf = { collapse: ["this_month this_week"] }
       const result = reduceCollapseOnConf(givenConf, givenPath)
       expect(result).toEqual(expectedConf)
    })
+   test('aprem', () => {
+      const givenConf = { collapse:[] }
+      const givenPath = "this_month this_week vendredi aprem"
+      const expectedConf = { collapse: ["this_month this_week day"] }
+      const result = reduceCollapseOnConf(givenConf, givenPath)
+      expect(result).toEqual(expectedConf)
+   });
+   describe('transPathToConf', () => {
+      test('month', () => {
+         const given = "this_month"
+         const expected = "this_month"
+         const result = transPathToConf(given)
+         expect(result).toEqual(expected)
+      });
+      test('week', () => {
+         const given = "this_month this_week"
+         const expected = "this_month this_week"
+         const result = transPathToConf(given)
+         expect(result).toEqual(expected)
+      })
+      test('day', () => {
+         const given = "this_month this_week vendredi"
+         const expected = "this_month this_week day"
+         const result = transPathToConf(given)
+         expect(result).toEqual(expected)
+      })
+      test('aprem', () => {
+         const given = "this_month this_week vendredi aprem"
+         const expected = "this_month this_week day"
+         const result = transPathToConf(given)
+         expect(result).toEqual(expected)
+      })
+   });
 });

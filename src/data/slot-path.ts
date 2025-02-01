@@ -72,5 +72,17 @@ export class SlotPath {
         }
         return true;
     }
+
+    replace(level:number, id:string) : SlotPath {
+        const new_IDs = this.IDs.map(el => getSlotIdLevel(el) === level ? id : el)
+        this.IDs = new_IDs
+        return this
+    }
+
+    truncate(level:number) : SlotPath {
+        const new_IDs = this.IDs.filter(el => getSlotIdLevel(el) <= level ? true : false)
+        this.IDs = new_IDs
+        return this
+    }
 }
 
