@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
 import { retrieveAccessToken, retrieveUser } from '../services/browser-storage';
+import { reduceCollapseOnConf } from '../data/slot-view';
 
 const initialState = {
     tasks : [],
@@ -87,6 +88,8 @@ export const taskSlice = createSlice({
         confBranch: (state, action) =>  {
             const { path, mode } = action.payload;
             console.log("confBranch", path, mode)
+            const newConf = reduceCollapseOnConf(state.slotViewFilterConf, path)
+            state.slotViewFilterConf = newConf;
         }
     }
 })
