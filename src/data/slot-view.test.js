@@ -1,4 +1,4 @@
-import { slotViewAdd, slotViewFilter, slotViewFilterSelection } from "./slot-view";
+import { reduceCollapseOnConf, slotViewAdd, slotViewFilter, slotViewFilterSelection } from "./slot-view";
 
 const defaultConf = {
    collapse: [
@@ -1324,3 +1324,33 @@ describe('create slotView with selection', () => {
 });
 
 
+describe('reduceCollapseOnConf', () => {
+   test('empty', () => {
+      const givenConf = { collapse:[] }
+      const givenPath = "this_month this_week vendredi"
+      const expectedConf = { collapse: ["this_month this_week vendredi"] }
+      const result = reduceCollapseOnConf(givenConf, givenPath)
+      expect(result).toEqual(expectedConf)
+   });
+   test('add shorter', () => {
+      const givenConf = { collapse: ["this_month this_week vendredi"] }
+      const givenPath = "this_month this_week"
+      const expectedConf = { collapse: ["this_month this_week vendredi", "this_month this_week"] }
+      const result = reduceCollapseOnConf(givenConf, givenPath)
+      expect(result).toEqual(expectedConf)
+   });
+   test('add longer', () => {
+      const givenConf = { collapse: ["this_month this_week vendredi"] }
+      const givenPath = "this_month this_week vendredi aprem"
+      const expectedConf = { collapse: ["this_month this_week vendredi", "this_month this_week vendredi aprem"] }
+      const result = reduceCollapseOnConf(givenConf, givenPath)
+      expect(result).toEqual(expectedConf)
+   })
+   test("don't add doublon", () => {
+      const givenConf = { collapse: ["this_month this_week vendredi"] }
+      const givenPath = "this_month this_week vendredi"
+      const expectedConf = { collapse: ["this_month this_week vendredi"] }
+      const result = reduceCollapseOnConf(givenConf, givenPath)
+      expect(result).toEqual(expectedConf)
+   })
+});

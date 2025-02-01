@@ -16,6 +16,13 @@ interface Slot {
   inner: Slot[]
 }
 
+export function reduceCollapseOnConf(conf: SlotViewConf, path: string) : SlotViewConf {
+  const collapseSet = new Set(conf.collapse);
+  collapseSet.add(path)
+  conf.collapse = Array.from(collapseSet)
+  return conf
+}
+
 /**
  * 
  * @returns [ { id: string, path: string 'id1 id2 id3', inner: recursive result }]
