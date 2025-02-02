@@ -32,7 +32,11 @@ export function transPathToConf(pathS:string) : string {
 export function reduceCollapseOnConf(conf: SlotViewConf, path: string) : SlotViewConf {
   const collapseSet = new Set(conf.collapse);
   const pathConf = transPathToConf(path)
-  collapseSet.add(pathConf)
+  if (collapseSet.has(pathConf)) {
+    collapseSet.delete(pathConf)
+  } else {
+    collapseSet.add(pathConf)
+  }  
   conf.collapse = Array.from(collapseSet)
   return conf
 }

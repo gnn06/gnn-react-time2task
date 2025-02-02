@@ -1,17 +1,14 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { IconButton } from "@mui/material";
-
 import './slot.css';
 
 import SlotTitle from "./slot-title";
 import TaskLight from "./task-light";
 
-import { confBranch, selectSlot } from "../features/taskSlice";
-import { getSlotIdLevel } from "../data/slot-id";
+import { selectSlot } from "../features/taskSlice";
 import { findTaskBySlotExpr } from "../data/task";
+import CollapseButton from "./collapse-button";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -36,15 +33,11 @@ export default function Slot({slot, tasks}) {
         slotStyle += "hover:bg-blue-100 ";
     }
 
-    const onCollapse = (path) => {
-        dispatch(confBranch({path, mode: "collapse"}))
-    }
-
     return <React.Fragment>
         <div className={slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
-                <IconButton size="small" onClick={(e) => onCollapse(slot.path)}><ExpandLessIcon/></IconButton>
+                <CollapseButton slot={slot}/>
             </div>
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
