@@ -1346,10 +1346,10 @@ describe('reduceCollapseOnConf', () => {
       const result = reduceCollapseOnConf(givenConf, givenPath)
       expect(result).toEqual(expectedConf)
    })
-   test("don't add doublon", () => {
+   test("remove", () => {
       const givenConf = { collapse: ["this_month this_week"] }
       const givenPath = "this_month this_week"
-      const expectedConf = { collapse: ["this_month this_week"] }
+      const expectedConf = { collapse: [] }
       const result = reduceCollapseOnConf(givenConf, givenPath)
       expect(result).toEqual(expectedConf)
    })
