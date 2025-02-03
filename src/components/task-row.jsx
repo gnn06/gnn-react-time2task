@@ -1,7 +1,5 @@
 import InputEdit from "./edit-input.jsx";
-import SyntaxInput from './syntax-input';
 import StatusInput from './status-input.jsx'
-import LooksOneIcon from '@mui/icons-material/LooksOneOutlined';
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";

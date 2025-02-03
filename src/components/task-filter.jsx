@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHotkeys } from 'react-hotkeys-hook'
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
@@ -18,6 +19,7 @@ export default function TaskFilter() {
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const [isStatusARepo, setIsStatusARepo] = useState(false)
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
+    const filterRef = useRef(null);
 
     const onChange = (e) => {
         const filter = e;
@@ -51,12 +53,17 @@ export default function TaskFilter() {
         setIsStatusARepo(!isStatusARepo)
     }
 
+    const onCtrlK = () => {
+        filterRef.current.focus();
+    }
+    useHotkeys('ctrl+k', onCtrlK, { preventDefault: true, enableOnFormTags: true })
+
     return <div className="m-1"> 
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
             <div className="flex-grow">
-                <SyntaxInput id="task-filter" items={filters} 
-                    placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
+                <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
+                    placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
                     closeIcon={true}
                     onInputChange={onChange} initialInputValue={filterExpr}/>
                 { error && <div className="m-1 text-red-500">{error}</div>}

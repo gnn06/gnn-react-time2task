@@ -12,6 +12,7 @@ xx/xx/xxxx
 - next_week as row
 - add button to open slot selection in slot view
 - filter persists over authentification expiration
+- add CTRL-K to access filter field
 
 09/01/2025
 ==========

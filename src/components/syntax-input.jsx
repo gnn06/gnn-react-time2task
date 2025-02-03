@@ -19,12 +19,12 @@ import EditIcon from '@mui/icons-material/Edit';
  * when only one suggestion, select it
  */
 
-export default function SyntaxInput({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, showEdit}) {
-
+export default function SyntaxInput({id, inputRef, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, showEdit}) {
   const [value, setValue] = useState(initialInputValue || '');  
   const [show, setShow] = useState(false);
   const [selected, setSelected] = useState(-1);
-  const inputRef = useRef(null);
+  const _inputRef = useRef(null);
+  inputRef = inputRef || _inputRef;
 
   useEffect(() => { setValue(initialInputValue || '') }, [initialInputValue])
 
