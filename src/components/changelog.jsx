@@ -11,6 +11,7 @@ xx/xx/xxxx
 - drag and drop
 - next_week as row
 - add button to open slot selection in slot view
+- filter persists over authentification expiration
 
 09/01/2025
 ==========

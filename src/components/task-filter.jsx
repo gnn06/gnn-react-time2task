@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
@@ -17,6 +17,7 @@ export default function TaskFilter() {
     const [isMultiFilter, setIsMultiFilter] = useState(false)
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const [isStatusARepo, setIsStatusARepo] = useState(false)
+    const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
 
     const onChange = (e) => {
         const filter = e;
@@ -54,10 +55,10 @@ export default function TaskFilter() {
         <div className="flex items-baseline space-x-2">
             <label htmlFor="task-filter">Filtre&nbsp;:</label>        
             <div className="flex-grow">
-                <SyntaxInput id="task-filter" items={filters}
+                <SyntaxInput id="task-filter" items={filters} 
                     placeHolderInput={"lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
                     closeIcon={true}
-                    onInputChange={onChange}/>
+                    onInputChange={onChange} initialInputValue={filterExpr}/>
                 { error && <div className="m-1 text-red-500">{error}</div>}
             </div>
             <DialogHelpExpression/>            
