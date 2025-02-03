@@ -10,6 +10,7 @@ xx/xx/xxxx
 - slot view conf can be change with json view
 - drag and drop
 - next_week as row
+- add button to open slot selection in slot view
 
 09/01/2025
 ==========
