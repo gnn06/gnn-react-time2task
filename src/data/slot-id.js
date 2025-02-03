@@ -178,3 +178,11 @@ export function getSlotIdDistance(id1, id2) {
     return index2 - index1
     
 }
+
+export function isSlotIdEquals(id1, id2) {
+    if (isSlotIdGeneric(id1) || isSlotIdGeneric(id2)) {
+        return getSlotIdLevel(id1) === getSlotIdLevel(id2)
+    } else {
+        return id1 === id2
+    }
+}

@@ -7,8 +7,8 @@ import SlotTitle from "./slot-title";
 import TaskLight from "./task-light";
 
 import { selectSlot } from "../features/taskSlice";
-import { getSlotIdLevel } from "../data/slot-id";
 import { findTaskBySlotExpr } from "../data/task";
+import CollapseButton from "./collapse-button";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -32,9 +32,14 @@ export default function Slot({slot, tasks}) {
     } else {
         slotStyle += "hover:bg-blue-100 ";
     }
+
     return <React.Fragment>
         <div className={slotStyle}>
-            <SlotTitle slot={slot}/>
+            <div className="flex flex-row">
+                <SlotTitle  slot={slot}/>
+                <CollapseButton slot={slot}/>
+            </div>
+            
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
             <div className="h-10"/>

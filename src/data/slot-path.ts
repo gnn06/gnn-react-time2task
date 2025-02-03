@@ -1,12 +1,12 @@
 import { IDizer } from "../utils/stringUtil";
-import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious } from "./slot-id";
+import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious, isSlotIdEquals } from "./slot-id";
 
 export class SlotPath {
 
     IDs: string[];
 
     constructor(expr: string) {
-        this.IDs = IDizer(expr)
+        this.IDs = IDizer(expr) ?? []
     }
 
     public shift(level: number, direction: number): SlotPath {
@@ -37,6 +37,7 @@ export class SlotPath {
     }
 
     toExpr(): string {
+        if (this.IDs === null) return "";
         return this.IDs.join(" ")
     }
 
@@ -55,6 +56,33 @@ export class SlotPath {
         const otherId = otherPath.getLast()
         const distance = getSlotIdDistance(id, otherId)
         return distance
+    }
+
+    append(newID: string) : SlotPath {
+        if (this.IDs === null) return this
+        this.IDs = this.IDs.concat(IDizer(newID)) 
+        return this
+    }
+
+    equals(other: SlotPath) : boolean {
+        for (let i = 0; i < this.IDs.length; i++) {
+            if (!isSlotIdEquals(this.IDs[i], other.IDs[i]) || this.IDs.length !== other.IDs.length) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    replace(level:number, id:string) : SlotPath {
+        const new_IDs = this.IDs.map(el => getSlotIdLevel(el) === level ? id : el)
+        this.IDs = new_IDs
+        return this
+    }
+
+    truncate(level:number) : SlotPath {
+        const new_IDs = this.IDs.filter(el => getSlotIdLevel(el) <= level ? true : false)
+        this.IDs = new_IDs
+        return this
     }
 }
 

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/xx/xxxx'
+export const RELEASE = '03/02/2025'
 
 const text = `
-xx/xx/xxxx
+03/02/2025
 ==========
 - create status: filter ; FIX status 'fait-à repositinner' (wihout o)
 - slot view conf can be change with json view
@@ -13,6 +13,7 @@ xx/xx/xxxx
 - add button to open slot selection in slot view
 - filter persists over authentification expiration
 - add CTRL-K to access filter field
+- add collapse/expand in Slot view
 
 09/01/2025
 ==========
