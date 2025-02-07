@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
 import { filterSlotExpr } from '../data/task.js';
-import { useGetTasksQuery } from "../features/apiSlice.js";
+import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
 import TaskList from './tasklist';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SlotList from "./slotlist.jsx";
@@ -13,12 +13,14 @@ export default function TaskContainer() {
     const activity = useSelector(state => state.tasks.currentActivity);
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
+    const [ updateTask ] = useUpdateTaskMutation()
 
     const onDnd = (event) => {
       const source = event.active.id
       const dest   = (event.over && event.over.id) || undefined
       if (dest === undefined) return
-      console.log("dnd source=" + source + ", dest=" + dest)
+      // console.log("dnd source=" + source + ", dest=" + dest)
+      updateTask({id:source, slotExpr: dest})
     }
 
     if (!isLoading && isSuccess) {
