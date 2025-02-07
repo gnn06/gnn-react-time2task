@@ -6,10 +6,13 @@ import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";
 import ActivityInput from "./activity-input.jsx";
 import SyntaxInputWithSelection from "./syntax-input-select.jsx";
-import DndContainer from "./dnd-container.jsx";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities"
 
 
 export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button, onTaskClick}) {
+
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -18,8 +21,16 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
 
         //  console.log('task', task)
 
-    return <DndContainer id={task.id} mode="drag">
-            <tr className={myClassName}>
+    // const dragProps =  { ref: ref,
+    //     style: {transform: CSS.Translate.toString(transform)},
+    //     ...attributes,
+    //    ...listeners}
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+      }
+
+    return <tr className={myClassName} ref={setNodeRef} {...listeners} {...attributes} style={style}>
                 <td><DragIcon/></td>
                 <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
                 <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
@@ -41,6 +52,5 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                     </td>
                 <td>{button}</td>            
             </tr>
-        </DndContainer>
     
 }
