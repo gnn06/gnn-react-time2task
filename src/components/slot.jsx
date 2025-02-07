@@ -13,6 +13,7 @@ import { selectSlot, setFilterSlot } from "../features/taskSlice";
 import { findTaskBySlotExpr } from "../data/task";
 import CollapseButton from "./collapse-button";
 import { filter } from "lodash";
+import DndContainer from "./dnd-container";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -65,10 +66,11 @@ export default function Slot({slot, tasks}) {
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
-            <div className="h-10 flex flex-row invisible group-hover:visible">
-                
-                <Button variant="text" color="primary" startIcon={<AddIcon />} onClick={onAddTask}>Tâche</Button>
-            </div>
+            <DndContainer id={slot.path} mode="drop">
+                <div className="h-10 flex flex-row ">                
+                    Déposer ici !
+                </div>
+            </DndContainer>
         </div>
         </React.Fragment>
 }
