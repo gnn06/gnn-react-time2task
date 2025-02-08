@@ -30,7 +30,7 @@ export default function TaskContainer() {
         const panel2 = <TaskList tasks={tasks}/>
         return (
           <DndContext onDragEnd={onDnd}>
-            <div style={{display:"inline-block"}}>
+            <div className="flex flex-row">
             {/* <PanelGroup direction="horizontal" className=''> */}
             {/* <Panel className='' collapsible={true} minSize={20}> */}
               {panel1}
