@@ -67,8 +67,10 @@ export default function Slot({slot, tasks}) {
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
             <DndContainer id={slot.path} mode="drop">
-                <div className="h-10 flex flex-row ">                
-                    Déposer ici !
+                <div className="h-10 flex flex-row ">              
+                    <div className="invisible group-hover:visible">
+                        Déposer ici !
+                    </div>
                 </div>
             </DndContainer>
         </div>
