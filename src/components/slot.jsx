@@ -14,12 +14,14 @@ import { findTaskBySlotExpr } from "../data/task";
 import CollapseButton from "./collapse-button";
 import { filter } from "lodash";
 import DndContainer from "./dnd-container";
+import { useDroppable } from "@dnd-kit/core";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
 
     const { id, start, end, inner } = slot;
     const tasksInSlot = findTaskBySlotExpr(tasks, slot);
@@ -49,14 +51,18 @@ export default function Slot({slot, tasks}) {
     }
 
     const isTargetVisible = slot.path === filterPath
-    const targetClassName = isTargetVisible ? "" : "invisible group-hover:visible"
+    const targetClassName = isTargetVisible ? "" : ""
 
-    const onAddTask = () => {
-        const taskId = selectedTaskLst[0]
-        console.log("addTask", taskId, slot.path)
+
+    const dropProps = { 
+        ref: setNodeRefDrop, 
+        className: "h-10 flex flex-row "
+                    + (isOver ? "bg-blue-400" : "") + " "
+                    + ((active === null) ? "invisible group-hover:visible" : "visible")
     }
 
-    return <React.Fragment>
+    
+        return <React.Fragment>
         <div className={"group " + slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
@@ -66,13 +72,11 @@ export default function Slot({slot, tasks}) {
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
-            <DndContainer id={slot.path} mode="drop">
-                <div className="h-10 flex flex-row ">              
-                    <div className="invisible group-hover:visible">
+            <div {...dropProps}  >
+                    <div className="" >
                         Déposer ici !
                     </div>
                 </div>
-            </DndContainer>
-        </div>
+            </div>
         </React.Fragment>
 }
