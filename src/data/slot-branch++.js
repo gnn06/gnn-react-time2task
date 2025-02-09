@@ -126,3 +126,7 @@ export function branchShift (branch, levelToShift) {
         return {...branch, value: branch.value.map(el => branchShift(el, levelToShift))}
     }
 }
+
+export function branchAdd(origBranch, branchToAdd) {
+    return null
+}
