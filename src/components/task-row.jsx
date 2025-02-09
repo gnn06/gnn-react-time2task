@@ -7,7 +7,7 @@ import ActivityInput from "./activity-input.jsx";
 import SyntaxInputWithSelection from "./syntax-input-select.jsx";
 
 
-export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button}) {
+export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button, onTaskClick}) {
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -16,7 +16,7 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
 
         //  console.log('task', task)
 
-    return <tr className={myClassName}>
+    return <tr className={myClassName} onClick={onTaskClick}>
             <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
             <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
             <td>                
