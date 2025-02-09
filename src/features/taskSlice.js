@@ -66,6 +66,10 @@ export const taskSlice = createSlice({
         setFilterIsStatusARepo: (state, action) => {
             state.currentFilter = {... state.currentFilter, isStatusARepo: action.payload.filter }
         },
+        setFilterSlot: (state, action) => {
+            const path = action.payload
+            state.currentFilter = {... state.currentFilter, slot: path }
+        },
         login: (state, action) => {
             state.user = action.payload;
         },
@@ -95,7 +99,7 @@ export const taskSlice = createSlice({
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot
 } = taskSlice.actions
 
 export default taskSlice.reducer
