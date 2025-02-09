@@ -97,12 +97,14 @@ export function findTaskBySlotExpr(tasks, slot) {
 const parser = new Parser()
 
 export function taskGroup(tasks, level) {
-    const toto = _.groupBy(tasks, item => {try {
-        return getBranchHash(branchTruncate(branchComplete(parser.parse(item.slotExpr)), level))
-    } catch (error) {
-        console.error(error, ' caused by ', item)
-        return ''
-    }
+    const toto = _.groupBy(tasks, item => {
+        try {
+            const branch = parser.parse(item.slotExpr)
+            return getBranchHash(branchTruncate(branchComplete(branch), level))
+        } catch (error) {
+            console.error(error, ' caused by ', item)
+            return ''
+        }
     })
     return toto;
 }

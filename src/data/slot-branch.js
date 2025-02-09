@@ -94,6 +94,7 @@ export function branchComplete(branch, targetLevel) {
  * this_month this_week lundi with level 2 = this_month this_week
  */
 export function branchTruncate (tree, level) {
+    if (tree === undefined) return undefined
     if (tree.type === 'multi') {
         return { ...tree, value: tree.value.map(item => branchTruncate(item, level)) }
     } else {
@@ -188,6 +189,7 @@ export function branchToExpr(branch) {
  * Used by Group
  */
 export function getBranchHash(tree) {
+    if (tree === undefined) return undefined;
     if (tree.type === 'multi') {
         return getBranchHash(_chooseSlotForSortBranch(tree))
     } else { // type branch
