@@ -1,15 +1,13 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button as ButtonMUI, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, MenuItem, Select, Tooltip } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
-
-import ReactJsonView from '@microlink/react-json-view'
+import TargetIcon from '@mui/icons-material/AdsClick';
 import { JsonEditor } from 'json-edit-react'
 
 import { setFilterSlot, setSlotViewFilterConf, setSlotViewFilterConfLevel } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import SlotView from "./slotview";
 import Button from "./button";
-import { useState } from "react";
 
 export default function SlotList({tasks})  {
     const dispatch = useDispatch();
@@ -42,8 +40,7 @@ export default function SlotList({tasks})  {
     return (
         <div className="m-1 ">
             <Grid container flexDirection="row" justifyContent="end" alignItems="start" gap="0.25em" minHeight={60}>
-                Créneau courant : { filterPath || "aucun créneau"}
-                { filterPath && <IconButton onClick={onClearPathFilter}><CloseIcon/></IconButton>}                
+                { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon color="primary"/></IconButton>}                
                 <Button label="Change conf" clickToto={onConf}/>
                 <Dialog open={confVisible} onClose={handleCloseConf}>
                     <DialogTitle id="alert-dialog-title">

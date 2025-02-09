@@ -11,10 +11,13 @@ import TaskLight from "./task-light";
 import { selectSlot, setFilterSlot } from "../features/taskSlice";
 import { findTaskBySlotExpr } from "../data/task";
 import CollapseButton from "./collapse-button";
+import { filter } from "lodash";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
+    const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+
     const { id, start, end, inner } = slot;
     const tasksInSlot = findTaskBySlotExpr(tasks, slot);
     const onSlotClick = e => {
@@ -35,20 +38,28 @@ export default function Slot({slot, tasks}) {
         slotStyle += "hover:bg-blue-100 ";
     }
     const onSlot = (event) => {
-        dispatch(setFilterSlot(slot.path));
+        if (slot.path === filterPath) {
+            dispatch(setFilterSlot(""));
+        } else {
+            dispatch(setFilterSlot(slot.path));
+        }
     }
+
+    const isTargetVisible = slot.path === filterPath
+    const targetClassName = isTargetVisible ? "" : "invisible group-hover:visible"
 
     return <React.Fragment>
         <div className={"group " + slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
+                <IconButton className={targetClassName} color="primary" onClick={onSlot}><TargetIcon /></IconButton>
                 <CollapseButton slot={slot}/>
             </div>
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
-            <div className="h-10 flex flex-row-reverse invisible group-hover:visible">
-                <IconButton onClick={onSlot}><TargetIcon /></IconButton>
+            <div className="h-10 flex flex-row-reverse ">
+                
             </div>
         </div>
         </React.Fragment>
