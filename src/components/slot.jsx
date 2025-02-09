@@ -51,7 +51,7 @@ export default function Slot({slot, tasks}) {
     }
 
     const isTargetVisible = slot.path === filterPath
-    const targetClassName = isTargetVisible ? "" : ""
+    const targetClassName = (isTargetVisible ? "visible" : ( active !== null ? "invisible" : "invisible group-hover:visible"))
 
 
     const dropProps = { 
