@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
+import AddIcon from '@mui/icons-material/Add';
 
 import './slot.css';
 
@@ -15,6 +16,7 @@ import { filter } from "lodash";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
+    const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
 
@@ -48,6 +50,11 @@ export default function Slot({slot, tasks}) {
     const isTargetVisible = slot.path === filterPath
     const targetClassName = isTargetVisible ? "" : "invisible group-hover:visible"
 
+    const onAddTask = () => {
+        const taskId = selectedTaskLst[0]
+        console.log("addTask", taskId, slot.path)
+    }
+
     return <React.Fragment>
         <div className={"group " + slotStyle}>
             <div className="flex flex-row">
@@ -58,8 +65,9 @@ export default function Slot({slot, tasks}) {
             
             {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
-            <div className="h-10 flex flex-row-reverse ">
+            <div className="h-10 flex flex-row invisible group-hover:visible">
                 
+                <Button variant="text" color="primary" startIcon={<AddIcon />} onClick={onAddTask}>Tâche</Button>
             </div>
         </div>
         </React.Fragment>
