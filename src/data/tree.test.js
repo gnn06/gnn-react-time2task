@@ -1,3 +1,5 @@
+import { Parser } from "./parser";
+import { branchToExpr } from "./slot-branch";
 import { _makeBranch, branchToTree, treeAdd, treetoBranch } from "./tree";
 
 describe('branchToTree', () => {
@@ -280,4 +282,15 @@ describe('treeAdd', () => {
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     })
+});
+
+test('temp', () => {
+  const parser = new Parser()
+  const branch = parser.parse("this_month")
+  const tmpTree = branchToTree(branch)
+  const tree = {value:'', child: [tmpTree]}
+  treeAdd(tree, "this_month this_week")
+  const newBranch = treetoBranch(tree.child[0])
+  const newExpr = branchToExpr(newBranch)
+  expect(newExpr).toEqual("this_month this_week")
 });
