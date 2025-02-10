@@ -1,4 +1,6 @@
+import { current } from "@reduxjs/toolkit";
 import { branchAppendEnd, getBranchTail } from "./slot-branch";
+import { SlotPath } from "./slot-path";
 
 export function branchToTree(branch) {
     if (branch.type === 'branch') {
@@ -44,6 +46,25 @@ export function treetoBranch(tree) {
         return _makeBranch('branch', [tree.value].concat(branchChild), tree)
     } else {
         return _makeBranch('branch', [tree.value], tree)
+    }
+}
+
+export function treeAdd(tree, path) {
+    let currentLevel = tree;
+    const branch = new SlotPath(path).IDs
+
+    for (const node of branch) {
+        // Vérifier si le noeud existe déjà
+        let existingNode = currentLevel.child.find(child => child.value === node);
+
+        if (!existingNode) {
+            // Si le noeud n'existe pas, l'ajouter
+            existingNode = { value: node, child: [] };
+            currentLevel.child.push(existingNode);
+        }
+
+        // Descendre d'un niveau
+        currentLevel = existingNode;
     }
 }
 

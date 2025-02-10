@@ -1,4 +1,4 @@
-import { _makeBranch, branchToTree, treetoBranch } from "./tree";
+import { _makeBranch, branchToTree, treeAdd, treetoBranch } from "./tree";
 
 describe('branchToTree', () => {
   test('should ', () => {
@@ -236,3 +236,48 @@ describe('makeBranch', () => {
       expect(result).toEqual(expected)
     })  
 })
+
+describe('treeAdd', () => {
+    test('empty', () => {
+        const givenTree = { value: '', child: [] }
+        const givenPath = "this_month"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [] }] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    });
+    test('noadd', () => {
+        const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
+        const givenPath = "this_month"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [] }] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    });
+    test('addsibbling', () => {
+        const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
+        const givenPath = "next_month"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [] },{ value: 'next_month', child: [] }] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    });
+    test('addchild', () => {
+        const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
+        const givenPath = "this_month this_week"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] }] },] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    });
+    test('addbranch', () => {
+        const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
+        const givenPath = "next_month this_week"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [] },{ value: 'next_month', child: [{ value: 'this_week', child: [] }] }] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    });
+    test('addbranch2', () => {
+        const givenTree = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] }] }] }
+        const givenPath = "this_month next_week"
+        const expected  = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] },{ value: 'next_week', child: [] }] }] }
+        treeAdd(givenTree, givenPath)
+        expect(givenTree).toEqual(expected)
+    })
+});
