@@ -30,8 +30,8 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
         transform: CSS.Translate.toString(transform),
       }
 
-    return <tr className={myClassName} ref={setNodeRef} {...listeners} {...attributes} style={style}>
-                <td><DragIcon/></td>
+    return <tr className={myClassName} style={style}>
+                <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/></td>
                 <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
                 <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
                 <td>                
