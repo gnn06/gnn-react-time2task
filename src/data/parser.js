@@ -1,6 +1,6 @@
 import { tokenizer } from "../utils/stringUtil";
-import { treetoBranch } from "./selection-tree";
 import { getSlotIdLevel, SLOTIDS_LST, EXPR_KEYWORDS } from "./slot-id";
+import { treetoBranch } from "./tree";
 
 export class Parser {
 
