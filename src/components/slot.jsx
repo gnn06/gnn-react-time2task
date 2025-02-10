@@ -53,12 +53,13 @@ export default function Slot({slot, tasks}) {
     const isTargetVisible = slot.path === filterPath
     const targetClassName = (isTargetVisible ? "visible" : ( active !== null ? "invisible" : "invisible group-hover:visible"))
 
+    const tmpPath = filterPath || "this_month this_week"
 
     const dropProps = { 
         ref: setNodeRefDrop, 
         className: "h-10 flex flex-row "
                     + (isOver ? "bg-blue-400" : "") + " "
-                    + ((active === null) ? "invisible group-hover:visible" : "visible")
+                    + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
 
     
