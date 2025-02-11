@@ -1,10 +1,8 @@
-import { Parser } from "./parser";
-import { branchToExpr } from "./slot-branch";
 import { SlotPath } from "./slot-path";
 import { _makeBranch, branchToTree, treeAdd, treetoBranch } from "./tree";
 
 describe('branchToTree', () => {
-  test('should ', () => {
+  test('should', () => {
     const given = { type: 'branch', value: ['aprem'] }
     const expected = { value: 'aprem', child: [] }
     const result = branchToTree(given)
@@ -16,7 +14,7 @@ describe('branchToTree', () => {
     const result = branchToTree(given)
     expect(result).toEqual(expected)
   });
-  test('multi ', () => {
+  test('multi', () => {
     const given = { type: 'branch', value: ['this_week', 
       { type: 'multi', value: [{ type: 'branch', value: ['mardi'] },
                                { type: 'branch', value: ['mercredi'] }] }] }
@@ -26,7 +24,7 @@ describe('branchToTree', () => {
     const result = branchToTree(given)
     expect(result).toEqual(expected)
   });
-  test('repetition ', () => {
+  test('repetition', () => {
     const given = { type: 'branch', value: ['aprem'], repetition: 12 }
     const expected = { value: 'aprem', child: [], repetition: 12 }
     const result = branchToTree(given)
@@ -54,32 +52,32 @@ describe('branchToTree', () => {
 })
 
 describe('treeToBranch', () => {
-  test('undefined ', () => {
+  test('undefined', () => {
     const result = treetoBranch(undefined)  
     expect(result).toEqual(undefined)
   });
 
-  test('simple ', () => {
+  test('simple', () => {
     const result = treetoBranch('aprem')  
     expect(result).toEqual('aprem')
   });
   
-  test('final case ', () => {
+  test('final case', () => {
     const result = treetoBranch({ value: 'aprem', child: [] })  
     expect(result).toEqual({ type: 'branch', value: ['aprem'] })
   });
   
-  test('two simple ', () => {
+  test('two simple', () => {
     const result = treetoBranch({ value: 'mercredi', child: [ { value: 'aprem', child: [] }] })  
     expect(result).toEqual({ type:'branch', value: ['mercredi', 'aprem'] })
   });
   
-  test('three simple ', () => {
+  test('three simple', () => {
     const result = treetoBranch({ value: 'this_week', child: [{ value: 'mercredi', child: [ { value: 'aprem', child: [] }] }] })  
     expect(result).toEqual({ type:'branch', value: ['this_week', 'mercredi', 'aprem'] })
   });
   
-  test('multi ', () => {
+  test('multi', () => {
     const result = treetoBranch(
       { value: 'this_week', child: [
         { value: 'mercredi', child: [ ] },
@@ -92,7 +90,7 @@ describe('treeToBranch', () => {
         }] })
   });
   
-  test('multi with sub ', () => {
+  test('multi with sub', () => {
     const result = treetoBranch(
       { value: 'this_week', child: [
         { value: 'mercredi', child: [ 
@@ -107,7 +105,7 @@ describe('treeToBranch', () => {
         }] })
   });
   
-  test('multi inside ', () => {
+  test('multi inside', () => {
     const result = treetoBranch(
       { value:'this_month', child: [
         { value: 'this_week', child: [
@@ -124,7 +122,7 @@ describe('treeToBranch', () => {
         }] })
   });
   
-  test('multi inside 2 ', () => {
+  test('multi inside 2', () => {
     const result = treetoBranch(
       { value:'this_month', child: [
         { value: 'this_week', child: [
@@ -153,24 +151,24 @@ describe('treeToBranch', () => {
       ]})
     expect(result).toEqual(
       { type:'branch', value: [ 'this_week' ]})
-    })
-    test('root -1 multi', () => {
-    const result = treetoBranch(
-      { value:-1, child: [
-        { value: 'this_week', child: [] },
-        { value: 'next_week', child: [] }
-      ]})
-    expect(result).toEqual(
-      { type:'multi', value: [
-        { type:'branch',value: [ 'this_week' ]},
-        { type:'branch',value: [ 'next_week' ]}
-      ]})
-    })
+  })
+  test('root -1 multi', () => {
+      const result = treetoBranch(
+        { value:-1, child: [
+          { value: 'this_week', child: [] },
+          { value: 'next_week', child: [] }
+        ]})
+      expect(result).toEqual(
+        { type:'multi', value: [
+          { type:'branch',value: [ 'this_week' ]},
+          { type:'branch',value: [ 'next_week' ]}
+        ]})
+   })
   // describe('with properties', () => {
-    test('final case', () => {
-      const result = treetoBranch({ value: 'aprem', child: [], repetition: 12, disable: true })  
-      expect(result).toEqual({ type:'branch',value: ['aprem'], flags: ['disable'], repetition: 12 })
-    });
+  test('all propreties', () => {
+    const result = treetoBranch({ value: 'aprem', child: [], repetition: 12, disable: true })  
+    expect(result).toEqual({ type:'branch',value: ['aprem'], flags: ['disable'], repetition: 12 })
+  });
 
   //   test('final case debug ', () => {
   //     const given = {

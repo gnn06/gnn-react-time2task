@@ -1,6 +1,4 @@
-import { current } from "@reduxjs/toolkit";
 import { branchAppendEnd, getBranchTail } from "./slot-branch";
-import { SlotPath } from "./slot-path";
 
 export function branchToTree(branch) {
     if (branch === undefined) return undefined

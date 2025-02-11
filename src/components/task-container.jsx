@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import { useState } from "react";
-
-import { filterSlotExpr } from '../data/task.js';
-import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
-import TaskList from './tasklist';
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import SlotList from "./slotlist.jsx";
 import { DndContext } from "@dnd-kit/core";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+
+import TaskList from './tasklist';
+import SlotList from "./slotlist.jsx";
+import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 
 export default function TaskContainer() {
