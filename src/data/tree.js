@@ -3,6 +3,7 @@ import { branchAppendEnd, getBranchTail } from "./slot-branch";
 import { SlotPath } from "./slot-path";
 
 export function branchToTree(branch) {
+    if (branch === undefined) return undefined
     if (branch.type === 'branch') {
         if (branch.value.length === 1) {
             return _makeTree(branch.value[0], [], branch)            
@@ -51,7 +52,7 @@ export function treetoBranch(tree) {
 
 export function treeAdd(tree, path) {
     let currentLevel = tree;
-    const branch = new SlotPath(path).IDs
+    const branch = path.IDs
 
     for (const node of branch) {
         // Vérifier si le noeud existe déjà

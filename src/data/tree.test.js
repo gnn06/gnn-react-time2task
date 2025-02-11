@@ -1,5 +1,6 @@
 import { Parser } from "./parser";
 import { branchToExpr } from "./slot-branch";
+import { SlotPath } from "./slot-path";
 import { _makeBranch, branchToTree, treeAdd, treetoBranch } from "./tree";
 
 describe('branchToTree', () => {
@@ -242,55 +243,45 @@ describe('makeBranch', () => {
 describe('treeAdd', () => {
     test('empty', () => {
         const givenTree = { value: '', child: [] }
-        const givenPath = "this_month"
+        const givenPath = new SlotPath("this_month")
         const expected  = { value: '', child: [{ value: 'this_month', child: [] }] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     });
     test('noadd', () => {
         const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
-        const givenPath = "this_month"
+        const givenPath = new SlotPath("this_month")
         const expected  = { value: '', child: [{ value: 'this_month', child: [] }] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     });
     test('addsibbling', () => {
         const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
-        const givenPath = "next_month"
+        const givenPath = new SlotPath("next_month")
         const expected  = { value: '', child: [{ value: 'this_month', child: [] },{ value: 'next_month', child: [] }] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     });
     test('addchild', () => {
         const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
-        const givenPath = "this_month this_week"
+        const givenPath = new SlotPath("this_month this_week")
         const expected  = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] }] },] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     });
     test('addbranch', () => {
         const givenTree = { value: '', child: [{ value: 'this_month', child: [] }] }
-        const givenPath = "next_month this_week"
+        const givenPath = new SlotPath("next_month this_week")
         const expected  = { value: '', child: [{ value: 'this_month', child: [] },{ value: 'next_month', child: [{ value: 'this_week', child: [] }] }] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     });
     test('addbranch2', () => {
         const givenTree = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] }] }] }
-        const givenPath = "this_month next_week"
+        const givenPath = new SlotPath("this_month next_week")
         const expected  = { value: '', child: [{ value: 'this_month', child: [{ value: 'this_week', child: [] },{ value: 'next_week', child: [] }] }] }
         treeAdd(givenTree, givenPath)
         expect(givenTree).toEqual(expected)
     })
 });
 
-test('temp', () => {
-  const parser = new Parser()
-  const branch = parser.parse("this_month")
-  const tmpTree = branchToTree(branch)
-  const tree = {value:'', child: [tmpTree]}
-  treeAdd(tree, "this_month this_week")
-  const newBranch = treetoBranch(tree.child[0])
-  const newExpr = branchToExpr(newBranch)
-  expect(newExpr).toEqual("this_month this_week")
-});

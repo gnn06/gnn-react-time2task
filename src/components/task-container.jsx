@@ -7,6 +7,7 @@ import TaskList from './tasklist';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SlotList from "./slotlist.jsx";
 import { DndContext } from "@dnd-kit/core";
+import { slotExprAdd } from "../data/slot-expr.js";
 
 export default function TaskContainer() {
     // eslint-disable-next-line
@@ -26,8 +27,10 @@ export default function TaskContainer() {
       const source = event.active.id
       const dest   = (event.over && event.over.id) || undefined
       if (dest === undefined) return
-      // console.log("dnd source=" + source + ", dest=" + dest)
-      updateTask({id:source, slotExpr: dest})
+      const task = tasksRedux.find(el => el.id === source)
+      const newExpr = slotExprAdd(task.slotExpr, dest)
+      // console.log("dnd source=" + source + ", dest=" + dest,"new expr=", newExpr)
+      updateTask({id:source, slotExpr: newExpr})
     }
 
     // temporaly change overflow from hidden to visible to make the task visible on the other panel when drraging

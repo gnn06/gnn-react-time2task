@@ -1,6 +1,8 @@
 import { Parser } from './parser'
-import { branchComplete, isBranchRepeat1, isBranchRepeat2, isBranchSimple, isBranchUnique, isBranchMulti } from './slot-branch'
+import { branchComplete, isBranchRepeat1, isBranchRepeat2, isBranchSimple, isBranchUnique, isBranchMulti, branchToExpr } from './slot-branch'
 import { branchCompare, isBranchEqualDeep, isBranchEqualOrInclude } from './slot-branch++'
+import { SlotPath } from './slot-path'
+import { branchToTree, treeAdd, treetoBranch } from './tree'
 
 /* check if only branch and no multi, used in filter */
 export function isSlotSimple(slotExpr) {
@@ -98,4 +100,17 @@ export function isSlotEqualOrInclude(slotExpr, otherSlotExpr) {
     const tree1 = branchComplete(parser.parse(slotExpr))
     const tree2 = branchComplete(parser.parse(otherSlotExpr))
     return isBranchEqualOrInclude(tree1, tree2)
+}
+
+const parser = new Parser()
+
+export function slotExprAdd(origBranch, branchToAdd) {
+    const branch = parser.parse(origBranch)
+    const tmpTree = branch !== undefined ? branchToTree(branchComplete(branch)) : {value:'',child:[]}
+    const tree =    branch !== undefined ? {value:'', child: [tmpTree]} : tmpTree
+    const pathToAdd = new SlotPath(branchToAdd)
+    treeAdd(tree, pathToAdd)
+    const newBranch = treetoBranch(tree.child[0])
+    const newExpr = branchToExpr(newBranch)
+    return newExpr
 }

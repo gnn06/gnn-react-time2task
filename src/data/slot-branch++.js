@@ -127,6 +127,3 @@ export function branchShift (branch, levelToShift) {
     }
 }
 
-export function branchAdd(origBranch, branchToAdd) {
-    return null
-}
