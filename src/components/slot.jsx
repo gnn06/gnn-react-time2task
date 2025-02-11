@@ -15,6 +15,7 @@ import CollapseButton from "./collapse-button";
 import { filter } from "lodash";
 import DndContainer from "./dnd-container";
 import { useDroppable } from "@dnd-kit/core";
+import { SlotPath } from "../data/slot-path";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -61,9 +62,9 @@ export default function Slot({slot, tasks}) {
                     + (isOver ? "bg-blue-400" : "") + " "
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
-
+    const level = new SlotPath(slot.path).getLevel()
     
-        return <React.Fragment>
+    return <React.Fragment>
         <div className={"group " + slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
@@ -75,7 +76,8 @@ export default function Slot({slot, tasks}) {
             { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
             <div {...dropProps}  >
                     <div className="" >
-                        Déposer ici !
+                        { level <= 2 && "Déposer une tâche ici !" }
+                        { level > 2  && "Déposer ici !" }
                     </div>
                 </div>
             </div>
