@@ -34,9 +34,9 @@ export default function TaskList({tasks}) {
                     <th></th>
                     <th>Titre</th>
                     <th>Activité</th>
-                    <th>Créneau (expression)</th>
-                    <th>Ordre</th>
                     <th>Statut</th>
+                    <th>Ordre</th>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
