@@ -31,6 +31,7 @@ export default function TaskList({tasks}) {
             <table className="w-full">
                 <thead>
                 <tr>
+                    <th></th>
                     <th>Titre</th>
                     <th>Activité</th>
                     <th>Créneau (expression)</th>
