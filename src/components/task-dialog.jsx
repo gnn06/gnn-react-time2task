@@ -58,6 +58,7 @@ export default function TaskDialog({task, onClose}) {
                     <CloseIcon onClick={onClose}/>
                 </div>
                 <div className="m-5">
+                    {task.id}
                     <InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/>
                     <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
                         onInputChange={onSlotExprChange} title={task.title} closeIcon/>
