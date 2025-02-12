@@ -48,7 +48,8 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                 <td><SlotSelectionButton task={task} handleSave={handleSave}/></td>
                 <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
                     {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}
-                    {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}</td>
+                    {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
+                    {task && !task.slotExpr                           && <span className="font-bold">E</span>}</td>
                 <td>{button}</td>            
             </tr>
     
