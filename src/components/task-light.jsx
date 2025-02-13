@@ -29,16 +29,21 @@ export default function TaskLight({task}) {
 
     const isUnique = isTaskUnique(task)
 
-    const handleSave = (slotExpr) => {
+    const onSlotSelectionConfirm = (slotExpr) => {
         updateTask({id:task.id, slotExpr})
+    }
+
+    const onTaskDialogConfirm = (task) => {
+        updateTask({id:task.id, title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order})
+        setVisible(false)
     }
 
     // use style for color styling => avoid using tailwindcss color
     return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
         {task.title}
         { isUnique && <UniqueIcon/> }
-        <SlotSelectionButton task={task} handleSave={handleSave}/>
+        <SlotSelectionButton task={task} handleSave={onSlotSelectionConfirm}/>
         <MoreHorizIcon onClick={() => setVisible(true)}/>
-        { visible && <TaskDialog task={task} onClose={() => setVisible(false)}/>}
+        { visible && <TaskDialog task={task} onCancel={() => setVisible(false)} onConfirm={onTaskDialogConfirm}/>}
     </div>;
 }
