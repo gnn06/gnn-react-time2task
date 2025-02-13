@@ -25,7 +25,7 @@ export default function TaskLight({task}) {
 
     //const colorTail  = STATUS_LST.find(item => item.value === task.status).colorTail;
     
-    const myClassName =   'rounded p-1 my-1  border-gray-500 border-2 ';
+    const myClassName =   'rounded p-1 my-1  border-gray-500 border-2 flex flex-row';
 
     const isUnique = isTaskUnique(task)
 
@@ -40,10 +40,10 @@ export default function TaskLight({task}) {
 
     // use style for color styling => avoid using tailwindcss color
     return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
-        {task.title}
+        <span className="grow">{task.title}</span>
         { isUnique && <UniqueIcon/> }
-        <SlotSelectionButton task={task} handleSave={onSlotSelectionConfirm}/>
-        <MoreHorizIcon onClick={() => setVisible(true)}/>
+        <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm}/>
+        <IconButton style={{background: activityBgColor, color: activityTextColor}}><MoreHorizIcon  onClick={() => setVisible(true)}/></IconButton>
         { visible && <TaskDialog task={task} onCancel={() => setVisible(false)} onConfirm={onTaskDialogConfirm}/>}
     </div>;
 }

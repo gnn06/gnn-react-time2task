@@ -11,6 +11,8 @@ const text = `
 - add drag&drop of task on slot
 - add 'creer tâche' button
 - refact task detail dialog
+- remove slot expression field in task list
+- add target button on task row to filter one task
 
 03/02/2025
 ==========

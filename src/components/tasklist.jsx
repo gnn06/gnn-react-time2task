@@ -1,23 +1,35 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { IconButton } from "@mui/material";
+import TargetIcon from '@mui/icons-material/AdsClick';
+
 import TaskGroup from "../components/task-group";
 import TaskNew from './task-new';
-
-import { useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
+import CreateTask from "./create-task";
 import ShiftAction from './action-shift';
 import TodoAction from './action-todo';
-import CreateTask from "./create-task";
+import { useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { setFilterTaskId } from "../features/taskSlice";
 
 export default function TaskList({tasks}) {
     // eslint-disable-next-line
     const [ addTask ] = useAddTaskMutation()
     const [ updateTask, /*{ isLoading: isUpdating }*/ ] = useUpdateTaskMutation()
     const [group, setGroup] = useState(null);
+    const dispatch = useDispatch();
+    const filterTaskId = useSelector(state => state.tasks.currentFilter.taskId);
     
+    
+    const onFilterTask = () => {
+        dispatch(setFilterTaskId(undefined));
+    }
+
     return (
         <div className="m-1 ">
             <div className="flex flex-row justify-end space-x-1">
                 <CreateTask />
-                <ShiftAction />  
+                { filterTaskId && <IconButton onClick={onFilterTask}><TargetIcon /></IconButton>}
+                <ShiftAction />
                 <TodoAction tasks={tasks}/>
                 <label>
                     Regrouper par :

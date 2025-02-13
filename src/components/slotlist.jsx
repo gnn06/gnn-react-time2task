@@ -40,7 +40,7 @@ export default function SlotList({tasks})  {
     return (
         <div className="m-1 ">
             <Grid container flexDirection="row" justifyContent="end" alignItems="start" gap="0.25em" minHeight={60}>
-                { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon color="primary"/></IconButton>}                
+                { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /></IconButton>}                
                 <Button label="Change conf" clickToto={onConf}/>
                 <Dialog open={confVisible} onClose={handleCloseConf}>
                     <DialogTitle id="alert-dialog-title">

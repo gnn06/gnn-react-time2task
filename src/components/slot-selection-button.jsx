@@ -15,7 +15,7 @@ const conf = {
     levelMaxIncluded: null
 }
 
-export default function SlotSelectionButton({task, handleSave}) {
+export default function SlotSelectionButton({task, style, handleSave}) {
 
     const [ showSlotSelect, setShowSlotSelect ] = useState(false)
 
@@ -30,10 +30,11 @@ export default function SlotSelectionButton({task, handleSave}) {
     const onSlotSelectConfirm = (e) => {
         const slotExpr = e;
         handleSave(slotExpr)
+        setShowSlotSelect(false)
     }
 
     return <React.Fragment>
-        <IconButton onClick={onSlotSelect}><EditIcon /></IconButton>
+        <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>
         { showSlotSelect && <SlotViewSelect selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
     </React.Fragment>
 }
