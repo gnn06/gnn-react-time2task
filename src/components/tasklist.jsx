@@ -5,6 +5,7 @@ import TaskNew from './task-new';
 import { useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
 import ShiftAction from './action-shift';
 import TodoAction from './action-todo';
+import CreateTask from "./create-task";
 
 export default function TaskList({tasks}) {
     // eslint-disable-next-line
@@ -15,6 +16,7 @@ export default function TaskList({tasks}) {
     return (
         <div className="m-1 ">
             <div className="flex flex-row justify-end space-x-1">
+                <CreateTask />
                 <ShiftAction />  
                 <TodoAction tasks={tasks}/>
                 <label>

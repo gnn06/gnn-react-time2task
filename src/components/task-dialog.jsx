@@ -64,12 +64,12 @@ export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
                 </div>
                 <div className="m-5">
                     {task.id}
-                    <InputEdit defaultValue={task.title} saveHandler={onTitleChange} className="w-full"/>
+                    <InputEdit defaultValue={task.title} saveHandler={onTitleChange} placeHolder="Le titre de la tâche" className="w-full"/>
                     <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
-                        onInputChange={onSlotExprChange} title={task.title} closeIcon/>
+                        onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
                     <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
                     <StatusInput task={task} saveHandler={onStatusChange}/>
-                    <InputEdit defaultValue={task.order} saveHandler={onOrderChange} className="w-full"/>
+                    <InputEdit defaultValue={task.order} saveHandler={onOrderChange} placeHolder="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" className="w-full"/>
                     { import.meta.env.DEV && JSON.stringify(task)}
                 </div>
                 <div className='flex flex-row justify-end space-x-1 mt-5'>
