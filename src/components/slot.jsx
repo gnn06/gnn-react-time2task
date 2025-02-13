@@ -58,7 +58,7 @@ export default function Slot({slot, tasks}) {
 
     const dropProps = { 
         ref: setNodeRefDrop, 
-        className: "h-10 flex flex-row "
+        className: " flex flex-row "
                     + (isOver ? "bg-blue-400" : "") + " "
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
@@ -68,7 +68,7 @@ export default function Slot({slot, tasks}) {
         <div className={"group " + slotStyle}>
             <div className="flex flex-row">
                 <SlotTitle  slot={slot}/>
-                <IconButton className={targetClassName} color="primary" onClick={onSlot}><TargetIcon /></IconButton>
+                <IconButton className={targetClassName} onClick={onSlot}><TargetIcon /></IconButton>
                 <CollapseButton slot={slot}/>
             </div>
             
