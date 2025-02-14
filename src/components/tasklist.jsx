@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton, Stack } from "@mui/material";
+import { Button, IconButton, Stack } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
 
 import TaskGroup from "../components/task-group";
@@ -8,6 +8,7 @@ import TaskNew from './task-new';
 import CreateTask from "./create-task";
 import ShiftAction from './action-shift';
 import TodoAction from './action-todo';
+import LinkButton from "./link-button";
 import { useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { setFilterTaskId } from "../features/taskSlice";
 
@@ -28,9 +29,10 @@ export default function TaskList({tasks}) {
         <div className="m-1 ">
             <Stack direction={"row"} spacing={0.5}>
                 <CreateTask />
-                { filterTaskId && <IconButton onClick={onFilterTask}><TargetIcon /></IconButton>}
+                <LinkButton/>
                 <ShiftAction />
                 <TodoAction tasks={tasks} className="grow"/>
+                { filterTaskId && <IconButton onClick={onFilterTask}><TargetIcon /></IconButton>}
                 <label>
                     Regrouper par :
                     <select onChange={(e) => setGroup(e.target.value)} className="m-1">
