@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import {produce} from "immer"
 
-import StatusInput from './status-input.jsx'
-import InputEdit from "./edit-input.jsx";
 import Dialog from '@mui/material/Dialog';
-
 import CloseIcon from '@mui/icons-material/Close';
+import { IconButton, InputLabel, Stack, TextField } from "@mui/material";
+
+import StatusInput from './status-input.jsx'
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import ActivityInput from "./activity-input";
 import SyntaxInputWithSelection from "./syntax-input-select";
-import Button from "./button.jsx";
-import { IconButton } from "@mui/material";
 
 
 export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
@@ -63,14 +61,16 @@ export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
                     
                 </div>
                 <div className="m-5">
-                    {task.id}
-                    <InputEdit defaultValue={task.title} saveHandler={onTitleChange} placeHolder="Le titre de la tâche" className="w-full"/>
-                    <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+                    <Stack spacing={2}>
+                        <InputLabel>#ID : {task.id}</InputLabel>                        
+                        <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange}></TextField>
+                        <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
                         onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
-                    <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
-                    <StatusInput task={task} saveHandler={onStatusChange}/>
-                    <InputEdit defaultValue={task.order} saveHandler={onOrderChange} placeHolder="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" className="w-full"/>
-                    { import.meta.env.DEV && JSON.stringify(task)}
+                        <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
+                        <StatusInput task={task} saveHandler={onStatusChange}/>
+                        <TextField value={task.order} saveHandler={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" />
+                        <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
+                    </Stack>
                 </div>
                 <div className='flex flex-row justify-end space-x-1 mt-5'>
                     <Button label="Annuler" clickToto={() => onCancel()} />
