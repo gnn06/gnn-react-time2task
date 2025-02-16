@@ -101,6 +101,7 @@ export function branchCompare(branch1, branch2) {
 }
 
 export function branchShift (branch, levelToShift) {
+    if (branch === undefined) return undefined
     if (typeof branch === 'string') {
         if (getSlotIdLevel(branch) === getSlotIdLevel(levelToShift)) {
             return getSlotIdPrevious(branch, branch.repetition)
