@@ -65,8 +65,8 @@ export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
     }
       
     return <div>
-        <Confirm titre="Détail de tâche" contenu={<Content task={task} setTask={setTask}/>} handleCancel={onCancel} handleConfirm={handleConfirm}>
-
+        <Confirm titre="Détail de tâche" handleCancel={onCancel} handleConfirm={handleConfirm}>
+            <Content task={task} setTask={setTask}/>
         </Confirm>
         </div>
 }

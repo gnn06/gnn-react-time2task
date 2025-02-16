@@ -49,9 +49,11 @@ export default function TodoAction({tasks}) {
         { todoDialog.show && 
             <Confirm 
                 titre="Confirmez-vous le passage à l'état 'à faire' ?" 
-                contenu={`Les ${todoDialog.tasks.length} tâches visibles vont être passées à 'à faire'.`}
                 handleConfirm={handleTodoConfirm}
-                handleCancel={handleTodoCancel} /> }
+                handleCancel={handleTodoCancel}
+            >
+                {`Les ${todoDialog.tasks.length} tâches visibles vont être passées à 'à faire'.`}
+            </Confirm> }
     </div>
 
 }
