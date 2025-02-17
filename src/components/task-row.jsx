@@ -59,7 +59,7 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                 <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
                 <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
                 <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined ? "Ordre" : "" }/></td>
-                <td><SlotSelectionButton task={task} handleSave={handleSave}/>
+                <td><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
                     {task.id && <IconButton onClick={handleTarget}><TargetIcon  /></IconButton>}</td>
                 <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
                     {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}

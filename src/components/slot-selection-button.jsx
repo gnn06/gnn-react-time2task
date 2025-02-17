@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import EditIcon from '@mui/icons-material/Edit';
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 
 import SlotViewSelect from "./slot-view-select";
 
@@ -15,7 +15,7 @@ const conf = {
     levelMaxIncluded: null
 }
 
-export default function SlotSelectionButton({task, style, handleSave}) {
+export default function SlotSelectionButton({task, style, withText = false, handleSave}) {
 
     const [ showSlotSelect, setShowSlotSelect ] = useState(false)
 
@@ -34,7 +34,9 @@ export default function SlotSelectionButton({task, style, handleSave}) {
     }
 
     return <React.Fragment>
-        <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>
+        { withText ? <Button variant="contained" size="small" startIcon={<EditIcon />} onClick={onSlotSelect}>Choix créneau</Button> 
+        : <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>}
+        
         { showSlotSelect && <SlotViewSelect selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
     </React.Fragment>
 }
