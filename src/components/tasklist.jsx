@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
 
 import TaskGroup from "../components/task-group";
@@ -26,11 +26,11 @@ export default function TaskList({tasks}) {
 
     return (
         <div className="m-1 ">
-            <div className="flex flex-row justify-end space-x-1">
+            <Stack direction={"row"} spacing={0.5}>
                 <CreateTask />
                 { filterTaskId && <IconButton onClick={onFilterTask}><TargetIcon /></IconButton>}
                 <ShiftAction />
-                <TodoAction tasks={tasks}/>
+                <TodoAction tasks={tasks} className="grow"/>
                 <label>
                     Regrouper par :
                     <select onChange={(e) => setGroup(e.target.value)} className="m-1">
@@ -41,7 +41,7 @@ export default function TaskList({tasks}) {
                         <option value="4">Heure</option>
                     </select>
                 </label>
-            </div>
+            </Stack>
             <table className="w-full">
                 <thead>
                 <tr>
