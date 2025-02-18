@@ -4,6 +4,11 @@ import Markdown from 'react-markdown'
 export const RELEASE = '03/02/2025'
 
 const text = `
+18/02/2025
+==========
+- switch view
+- add target button to filter one slot
+
 03/02/2025
 ==========
 - create status: filter ; FIX status 'fait-à repositinner' (wihout o)

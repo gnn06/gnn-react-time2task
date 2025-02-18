@@ -12,18 +12,20 @@ export default function TaskContainer() {
     const activity = useSelector(state => state.tasks.currentActivity);
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
-    
+
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentFilter);
+        const panel1 = <SlotList tasks={tasks}/>
+        const panel2 = <TaskList tasks={tasks}/>
         return (
             <PanelGroup direction="horizontal" className=''>
             <Panel className='' collapsible={true} minSize={20}>
-              <TaskList tasks={tasks}/>
+              {panel1}
             </Panel>
             <PanelResizeHandle className="w-1.5 bg-gray-200 hover:bg-black"/>
             <Panel className='' collapsible={true} minSize={20}>
-              <SlotList tasks={tasks}/>
+              {panel2}
             </Panel>           
           </PanelGroup>
         )

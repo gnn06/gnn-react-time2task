@@ -45,6 +45,9 @@ export function makeFilterCombine(filter) {
     if (filter.isError) {
         filters.push(makeErrorFilterFunc)
     }
+    if (filter.slot) {
+        filters.push(makeFilterExpr(filter.slot).func)
+    }
 
     return { func: composeFuncAnd(filters) }
 }
