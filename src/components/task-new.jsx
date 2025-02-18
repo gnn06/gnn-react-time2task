@@ -3,6 +3,7 @@ import { useStore } from "react-redux";
 
 import TaskRow from './task-row'
 import Button from '../components/button.jsx';
+import CreateTask from './create-task';
 
 export default function TaskNew ({api}) {
 
@@ -25,13 +26,15 @@ export default function TaskNew ({api}) {
     };
 
     const task = { title, slotExpr, order, activity, status }
+
+    const myClassName = 'rounded p-1 my-1 '
+        + (false ? 
+           'hover:bg-gray-300  bg-gray-400  border-gray-500 border-2'
+         : 'hover:bg-green-100 bg-green-200 border-gray-500 border-2');
       
-    return <TaskRow task={task}
-                    onTitleChange={(e) => setTitle(e.target.value)} 
-                    onSlotExprChange={(e) => setExpr(e)}
-                    onOrderChange={(e) => setOrder(e)}
-                    onActivityChange={(e) => setActivity(e === '' || e === null ? null : Number(e))}
-                    onStatusChange={(e) => setStatus(e)}
-                    button={<Button label="Save" clickToto={handleSaveTask} />}/>
+    return <tr className={myClassName} >
+        <td></td>
+        <td colSpan="8" className='p-2'><CreateTask /></td>
+    </tr>
     
 }

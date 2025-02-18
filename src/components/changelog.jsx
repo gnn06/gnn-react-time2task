@@ -9,6 +9,8 @@ const text = `
 - switch view
 - add target button to filter one slot
 - add drag&drop of task on slot
+- add 'creer tâche' button
+- refact task detail dialog
 
 03/02/2025
 ==========

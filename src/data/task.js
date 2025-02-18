@@ -41,6 +41,10 @@ export function taskPredicateStatus(task, status) {
     return task.status === status;
 }
 
+export function taskPredicateId(task, id) {
+    return task.id === id;
+}
+
 export function taskPredicateError(task) {
     try {
         const branch = parser.parse(task.slotExpr)

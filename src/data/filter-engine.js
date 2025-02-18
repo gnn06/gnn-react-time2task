@@ -1,4 +1,4 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError } from './task.js';
+import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError, taskPredicateId } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
 import { composeFuncAnd } from '../utils/predicateUtil.js';
 
@@ -48,6 +48,9 @@ export function makeFilterCombine(filter) {
     if (filter.slot) {
         filters.push(makeFilterExpr(filter.slot).func)
     }
+    if (filter.taskId) {
+        filters.push((task) => task.id === Number.parseInt(filter.taskId))
+    }
 
     return { func: composeFuncAnd(filters) }
 }
@@ -89,6 +92,9 @@ export function makeFilterExpr(filterExpr) {
         return {func: makeEvery1FilterFunc};
     } else if (filterExpr === 'EVERY2+') {
         return {func: makeEvery2FilterFunc};
+    } else if (filterExpr.startsWith('id:')) {
+        const id = filterExpr.replace('id:', '')
+        return {func: (task) => task.id === Number.parseInt(id)};
     } else if (filterExpr === 'ERROR') {
         return {func: makeErrorFilterFunc};
     } else {
@@ -101,4 +107,4 @@ export function makeFilterExpr(filterExpr) {
     }
 }
 
-export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2+', 'status:', 'ERROR', 'AND', 'OR'];
+export const FILTER_KEYWORDS = ['NONE', 'title:', 'NOREPEAT', 'EVERY1', 'EVERY2+', 'status:', 'id:', 'ERROR', 'AND', 'OR'];
