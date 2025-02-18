@@ -8,6 +8,7 @@ const text = `
 ==========
 - switch view
 - add target button to filter one slot
+- add drag&drop of task on slot
 
 03/02/2025
 ==========

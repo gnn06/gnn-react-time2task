@@ -1,13 +1,18 @@
 import InputEdit from "./edit-input.jsx";
 import StatusInput from './status-input.jsx'
+import DragIcon from '@mui/icons-material/DragIndicator';
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";
 import ActivityInput from "./activity-input.jsx";
 import SyntaxInputWithSelection from "./syntax-input-select.jsx";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities"
 
 
 export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onOrderChange, onActivityChange, onStatusChange, button, onTaskClick}) {
+
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -16,25 +21,36 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
 
         //  console.log('task', task)
 
-    return <tr className={myClassName} onClick={onTaskClick}>
-            <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
-            <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
-            <td>                
-                <SyntaxInputWithSelection 
-                    key={task && task.slotExpr} 
-                    items={getSlotIdAndKeywords()}
-                    initialInputValue={task && task.slotExpr}  
-                    onInputChange={onSlotExprChange} 
-                    placeHolderInput={ task.id === undefined ? "Créneau" : "" }
-                    title={task.title}
-                    classNameInput="bg-transparent" />
-            </td>
-            <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined ? "Ordre" : "" }/></td>
-            <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
-            <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
-                {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}
-                {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
+    // const dragProps =  { ref: ref,
+    //     style: {transform: CSS.Translate.toString(transform)},
+    //     ...attributes,
+    //    ...listeners}
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+      }
+
+    return <tr className={myClassName} style={style}>
+                <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/></td>
+                <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
+                <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
+                <td>                
+                    <SyntaxInputWithSelection 
+                        key={task && task.slotExpr} 
+                        items={getSlotIdAndKeywords()}
+                        initialInputValue={task && task.slotExpr}  
+                        onInputChange={onSlotExprChange} 
+                        placeHolderInput={ task.id === undefined ? "Créneau" : "" }
+                        title={task.title}
+                        classNameInput="bg-transparent" />
                 </td>
-            <td>{button}</td>
-        </tr>;
+                <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined ? "Ordre" : "" }/></td>
+                <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
+                <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
+                    {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}
+                    {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
+                    </td>
+                <td>{button}</td>            
+            </tr>
+    
 }

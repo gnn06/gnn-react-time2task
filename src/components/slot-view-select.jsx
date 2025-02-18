@@ -6,10 +6,11 @@ import SlotTreeSelect from './slot-tree-select';
 
 import SlotSelect from './slot-select';
 import { slotViewAdd, slotViewFilterSelection } from "../data/slot-view";
-import { branchToTree, selectionToTree, selectionShift, selectionDelete, treeToSelection, treetoBranch, selectionAdd, selectionMove } from '../data/selection-tree';
+import { selectionToTree, selectionShift, selectionDelete, treeToSelection, selectionAdd, selectionMove } from '../data/selection-tree';
 import { branchComplete, branchToExpr } from '../data/slot-branch';
 import { Parser } from '../data/parser';
 import { IDizer } from '../utils/stringUtil';
+import { branchToTree, treetoBranch } from '../data/tree';
 
 function selectionMapToExpr(selection) {
   let result = selectionToTree(selection)

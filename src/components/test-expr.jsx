@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { Parser } from "../data/parser"
 import { branchComplete, branchToExpr } from "../data/slot-branch"
-import { branchToTree, selectionToTree, treetoBranch, treeToSelection } from "../data/selection-tree"
+import { selectionToTree, treeToSelection } from "../data/selection-tree"
 import { isSlotEqual, isSlotEqualOrInclude } from "../data/slot-expr"
+import { branchToTree, treetoBranch } from "../data/tree"
 
 const parser = new Parser()
 

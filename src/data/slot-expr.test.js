@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { isSlotEqual, slotCompare } from "./slot-expr.js";
+import { isSlotEqual, slotCompare, slotExprAdd } from "./slot-expr.js";
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -95,3 +95,32 @@ describe('slotEqual', () => {
         expect(result).toEqual(true);
     })
 })
+
+
+describe('slotExprAdd', () => {
+    test('nominal', () => {
+        const givenSource = 'this_month'
+        const givenToAdd = 'this_month this_week'
+        const expected = "this_month this_week"
+        const result = slotExprAdd(givenSource, givenToAdd)
+        expect(result).toEqual(expected)
+    });
+
+    test('empty', () => {
+        const givenSource = ''
+        const givenToAdd = 'this_month this_week'
+        const expected = "this_month this_week"
+        const result = slotExprAdd(givenSource, givenToAdd)
+        expect(result).toEqual(expected)
+    });
+
+    test('completion needed', () => {
+        const givenSource = 'mardi'
+        const givenToAdd = 'this_month this_week jeudi'
+        const expected = "this_month this_week mardi jeudi"
+        const result = slotExprAdd(givenSource, givenToAdd)
+        expect(result).toEqual(expected)
+    });
+});
+
+  
