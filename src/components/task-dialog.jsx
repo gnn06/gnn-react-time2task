@@ -3,7 +3,7 @@ import {produce} from "immer"
 
 import Dialog from '@mui/material/Dialog';
 import CloseIcon from '@mui/icons-material/Close';
-import { IconButton, InputLabel, Stack, TextField } from "@mui/material";
+import { Box, IconButton, InputLabel, Stack, TextField } from "@mui/material";
 
 import StatusInput from './status-input.jsx'
 import Button from "./button.jsx";
@@ -13,6 +13,7 @@ import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import ActivityInput from "./activity-input";
 import SyntaxInputWithSelection from "./syntax-input-select";
 import Confirm from "./Confirm.jsx";
+import SlotSelectionButton from "./slot-selection-button.jsx";
 
 function Content({task, setTask}) {
 
@@ -49,11 +50,14 @@ function Content({task, setTask}) {
     return <Stack spacing={2}>
         <InputLabel>#ID : {task.id}</InputLabel>                        
         <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange}></TextField>
-        <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
-        onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
+        <Stack direction={"row"} spacing={1} >
+            <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+            onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
+            <SlotSelectionButton  task={task} handleSave={onSlotExprChange}withText={true} />
+        </Stack>
         <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
-        <TextField value={task.order} saveHandler={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" />
+        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" />
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
     </Stack>
 }

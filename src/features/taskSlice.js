@@ -95,7 +95,6 @@ export const taskSlice = createSlice({
         },
         confBranch: (state, action) =>  {
             const { path, mode } = action.payload;
-            console.log("confBranch", path, mode)
             const newConf = reduceCollapseOnConf(state.slotViewFilterConf, path)
             state.slotViewFilterConf = newConf;
         }

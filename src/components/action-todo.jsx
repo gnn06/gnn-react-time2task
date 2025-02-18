@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 
-export default function TodoAction({tasks}) {
+export default function TodoAction({tasks, className}) {
 
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
@@ -34,8 +34,8 @@ export default function TodoAction({tasks}) {
         setHideErrorDialog(true)
     }
 
-    return <div>
-        <Button label="Todo" clickToto={onTodo}/>
+    return <div className={className}>
+        <Button label="Todo" clickToto={onTodo} />
         { updateError && !hideErrorDialog &&
                     <Dialog open={true}>
                         <div className='p-3'>
@@ -52,7 +52,7 @@ export default function TodoAction({tasks}) {
                 handleConfirm={handleTodoConfirm}
                 handleCancel={handleTodoCancel}
             >
-                {`Les ${todoDialog.tasks.length} tâches visibles vont être passées à 'à faire'.`}
+                {`Les ${tasks.length} tâches visibles vont être passées à 'à faire'.`}
             </Confirm> }
     </div>
 

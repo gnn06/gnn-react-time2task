@@ -6,6 +6,7 @@ export function selectionToTree(dataMap) {
     const tree = [];
 
     dataMap.forEach((val, path) => {
+        if (path === "") return
         const parts = IDizer(path)
         let currentLevel = tree;
         const { repetition, disable } = val || {};

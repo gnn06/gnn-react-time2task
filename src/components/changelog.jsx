@@ -1,18 +1,17 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '03/02/2025'
+export const RELEASE = '18/02/2025'
 
 const text = `
 18/02/2025
 ==========
 - switch view
-- add target button to filter one slot
+- add target button on slot to filter one slot and on task row to filter one task
 - add drag&drop of task on slot
 - add 'creer tâche' button
+- remove slot expression field in task list and add 'choix créneau' button on row
 - refact task detail dialog
-- remove slot expression field in task list
-- add target button on task row to filter one task
 
 03/02/2025
 ==========

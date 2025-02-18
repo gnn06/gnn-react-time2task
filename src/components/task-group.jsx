@@ -2,10 +2,10 @@ import React from 'react';
 import Task from './task';
 import { taskGroup } from '../data/task';
 
-export default function TaskList({tasks, group, api}) {
+export default function TaskGroup({tasks, group, api}) {
     const groupLst = taskGroup(tasks, group)
     return Object.entries(groupLst).map(([key, value]) => <React.Fragment key={key}>
-        { group !== "0" && <tr><td className='pt-2 pb-0.5 text-lg ' colSpan={10}>{key}</td></tr>}
+        { (group !== "0" && group !== "Rien" && group !== null) && <tr><td className='pt-2 pb-0.5 text-lg ' colSpan={10}>{key === "undefined" ? "Sans créneau" : key }</td></tr>}
         { value.map(task => <Task key={task.id} task={task} api={api}/>) }
     </React.Fragment>)    
 }

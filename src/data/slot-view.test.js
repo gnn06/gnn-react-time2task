@@ -941,6 +941,12 @@ describe('add', () => {
       const result = slotViewAdd(given, ["this_month"])
       expect(result).toEqual(expected)
    });
+   test('path null', () => {
+      const given = []
+      const expected = []
+      const result = slotViewAdd(given, null)
+      expect(result).toEqual(expected)
+   });
    describe('at level 1', () => {
       test("have one item", () => {
          const given = [

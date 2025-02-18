@@ -42,8 +42,8 @@ export default function TaskLight({task}) {
     return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
         <span className="grow">{task.title}</span>
         { isUnique && <UniqueIcon/> }
-        <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm}/>
-        <IconButton style={{background: activityBgColor, color: activityTextColor}}><MoreHorizIcon  onClick={() => setVisible(true)}/></IconButton>
+        <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />
+        <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={() => setVisible(true)}><MoreHorizIcon  /></IconButton>
         { visible && <TaskDialog task={task} onCancel={() => setVisible(false)} onConfirm={onTaskDialogConfirm}/>}
     </div>;
 }

@@ -81,7 +81,7 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = new S
 export function slotViewAdd(slotView: Slot[], path:string, currentPath = "") : Slot[] {
  
   if (slotView === null) return []
-  if (path.length === 0) return slotView
+  if (path === null || path.length === 0) return slotView
 
   const id = path[0]
   const hasId = slotView.length > 0 && slotView.find(node => node.id === id);

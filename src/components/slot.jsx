@@ -59,7 +59,7 @@ export default function Slot({slot, tasks}) {
     const dropProps = { 
         ref: setNodeRefDrop, 
         className: " flex flex-row "
-                    + (isOver ? "bg-blue-400" : "") + " "
+                    + (isOver ? "bg-blue-500" : "") + " "
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
     const level = new SlotPath(slot.path).getLevel()

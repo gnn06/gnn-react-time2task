@@ -18,7 +18,9 @@ export default function CollapseButton({slot}) {
 
     if (level >= 4) return
 
-    const Icon = (slot.inner.length > 0 ? <Tooltip title="collapse"><ExpandLessIcon /></Tooltip> : <Tooltip title="expand"><ExpandMoreIcon /></Tooltip>)
+    const title = (slot.inner.length > 0 ? "collapse" : "expand")
+    const Icon = (slot.inner.length > 0 ? <ExpandLessIcon /> : <ExpandMoreIcon />)
 
-    return <IconButton size="small" onClick={(e) => onCollapse(slot.path)}>{Icon}</IconButton>
+    return <Tooltip title={title}><IconButton size="small" onClick={(e) => onCollapse(slot.path)}>{Icon}</IconButton></Tooltip> 
+    
 }

@@ -77,6 +77,12 @@ describe('selectionToTree', () => {
     const result = selectionToTree(given)
     expect(result).toEqual(expected)
   })
+  test('empty', () => {
+    const given = new Map([["",{"selected":true}]])
+    const expected = []
+    const result = selectionToTree(given)
+    expect(result).toEqual(expected)
+  });
 });
 
 describe('treeToSelection', () => {

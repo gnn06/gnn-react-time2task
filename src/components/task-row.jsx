@@ -23,7 +23,7 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
     const dispatch = useDispatch();
     const [ updateTask ] = useUpdateTaskMutation()
     const filterTaskId = useSelector(state => state.tasks.currentFilter.taskId);
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
+    const { attributes, listeners, setNodeRef, transform, isDraggingn, active } = useDraggable({ id: task.id })
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
@@ -53,19 +53,24 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
         }
     }
 
+    const isDraggingCurrent = active?.id === task.id
+
     return <tr className={myClassName} style={style}>
-                <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/></td>
+                <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
+                    {isDraggingCurrent && <div className="fixed mt-4 p-2 w-40 bg-blue-500 rounded z-1000">Déposez cette tâche sur le créneau où elle doit être réalisée.</div>}</td>
                 <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
                 <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
                 <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
                 <td><InputEdit key={task.order}    defaultValue={task && task.order} saveHandler={(event) => onOrderChange(event.target.value === '' ? null : Number(event.target.value))} className="w-10" placeHolder={ task.id === undefined ? "Ordre" : "" }/></td>
-                <td><SlotSelectionButton task={task} handleSave={handleSave}/>
+                <td><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
                     {task.id && <IconButton onClick={handleTarget}><TargetIcon  /></IconButton>}</td>
                 <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
                     {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}
                     {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
                     {task && !task.slotExpr                           && <span className="font-bold">E</span>}</td>
-                <td>{button}</td>            
+                <td>{button}</td>
+                
             </tr>
+            
     
 }
