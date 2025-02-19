@@ -47,17 +47,18 @@ function Content({task, setTask}) {
         setTask(newTask)
     };
 
-    return <Stack spacing={2}>
+    return <Stack spacing={2} className="h-[65vh]" > 
         <InputLabel>#ID : {task.id}</InputLabel>                        
         <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange}></TextField>
         <Stack direction={"row"} spacing={1} >
-            <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+            <SyntaxInputWithSelection key={task.slotExpr} initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
             onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
-            <SlotSelectionButton  task={task} handleSave={onSlotExprChange}withText={true} />
+            <SlotSelectionButton  task={task} handleSave={onSlotExprChange} withText={true} />
         </Stack>
         <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
-        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" />
+        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" 
+        sx={{label:{zIndex:0}}} />
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
     </Stack>
 }

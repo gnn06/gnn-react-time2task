@@ -9,7 +9,7 @@ import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import SlotView from "./slotview";
 import Button from "./button";
 
-export default function SlotList({tasks})  {
+export default function SlotPanel({tasks})  {
     const dispatch = useDispatch();
     const [confVisible, setConfVisible] = useState(false);
     const conf   = useSelector(state => state.tasks.slotViewFilterConf);

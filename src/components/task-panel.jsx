@@ -9,7 +9,7 @@ import TodoAction from './action-todo';
 import TaskList from "./task-list";
 import { setFilterTaskId } from "../features/taskSlice";
 
-export default function TaskView({tasks}) {
+export default function TaskPanel({tasks}) {
     // eslint-disable-next-line
     const [group, setGroup] = useState(null);
     const dispatch = useDispatch();
