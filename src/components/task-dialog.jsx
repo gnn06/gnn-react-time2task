@@ -51,9 +51,9 @@ function Content({task, setTask}) {
         <InputLabel>#ID : {task.id}</InputLabel>                        
         <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange}></TextField>
         <Stack direction={"row"} spacing={1} >
-            <SyntaxInputWithSelection initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+            <SyntaxInputWithSelection key={task.slotExpr} initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
             onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
-            <SlotSelectionButton  task={task} handleSave={onSlotExprChange}withText={true} />
+            <SlotSelectionButton  task={task} handleSave={onSlotExprChange} withText={true} />
         </Stack>
         <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
