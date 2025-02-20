@@ -57,7 +57,8 @@ function Content({task, setTask}) {
         </Stack>
         <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
-        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" />
+        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" 
+        sx={{label:{zIndex:0}}} />
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
     </Stack>
 }
