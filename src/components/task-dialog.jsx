@@ -47,7 +47,7 @@ function Content({task, setTask}) {
         setTask(newTask)
     };
 
-    return <Stack spacing={2}>
+    return <Stack spacing={2} className="h-[65vh]" > 
         <InputLabel>#ID : {task.id}</InputLabel>                        
         <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange}></TextField>
         <Stack direction={"row"} spacing={1} >
