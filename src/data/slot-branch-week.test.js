@@ -56,26 +56,26 @@ describe('getBranchWeight', () => {
 describe('equality', () => {
     describe('isBranchEqualWithRepeat', () => {
         test('different level', () => {
-            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_month' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] })
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true) 
             expect(result).toBeFalsy()
         })
         
         test('this this', () => {
-            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] })
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true)
             expect(result).toBeTruthy()
         });
         
         test('this next', () => {
-            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'next_week' ] })
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'next_week' ] }, true)
             expect(result).toBeFalsy()
         });
 
         test('this following', () => {
-            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'following_week' ] })
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'following_week' ] }, true)
             expect(result).toBeTruthy()
         });
         test('no repeat', () => {
-            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ] }, { branch: 'branch', value: [ 'following_week' ] })
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ] }, { branch: 'branch', value: [ 'following_week' ] }, true)
             expect(result).toBeFalsy()
         })
     })
