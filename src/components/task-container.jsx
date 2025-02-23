@@ -3,8 +3,8 @@ import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
-import TaskView from './task-view';
-import SlotList from "./slotlist.jsx";
+import TaskPanel from './task-panel';
+import SlotPanel from "./slot-panel";
 import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
@@ -40,8 +40,8 @@ export default function TaskContainer() {
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentFilter);
-        const panel1 = <SlotList tasks={tasks}/>
-        const panel2 = <TaskView tasks={tasks}/>
+        const panel1 = <SlotPanel tasks={tasks}/>
+        const panel2 = <TaskPanel tasks={tasks}/>
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart}>            
             <PanelGroup direction="horizontal" className=''>
