@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton, Stack } from "@mui/material";
+import { IconButton, Stack, Typography } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
 
 import CreateTask from "./create-task";
@@ -26,7 +26,7 @@ export default function TaskPanel({tasks}) {
                 <CreateTask />
                 <ShiftAction />
                 <TodoAction tasks={tasks} className="grow"/>
-                { filterTaskId && <IconButton onClick={onFilterTask} size="small"><TargetIcon /></IconButton>}
+                { filterTaskId && <IconButton onClick={onFilterTask} size="small"><TargetIcon /> <Typography > Filtré</Typography></IconButton>}
                 <label>
                     Regrouper par :
                     <select onChange={(e) => setGroup(e.target.value)} className="m-1">
