@@ -153,7 +153,7 @@ export function getSlotIdNextPrev(slotId, direction) {
 }
 
 /**
- * 
+ * this_week = 0, next_week = 1, this_week + 1 = 1
  * @returns int, -1 = no index
  */
 export function getSlotIdIndex(slotId) {

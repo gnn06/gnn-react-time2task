@@ -1,5 +1,5 @@
 import { getSlotIdLevel, getSlotIdPrevious, isSlotIdGeneric } from "./slot-id";
-import { getBranchWeight, isBranchEqualShallow } from './slot-branch';
+import { getBranchWeight, isBranchEqualShallow, isBranchEqualShallowWithRepeat } from './slot-branch';
 import { isBranchEqualDeep, isBranchEqualOrInclude, branchCompare, branchShift } from "./slot-branch++";
 import { filterSlotExpr, findTaskBySlotExpr, taskGroup } from "./task";
 import { Parser } from "./parser";
@@ -42,17 +42,44 @@ test('isRepetition', () => {
     
 });
 
-describe('branch', () => {
-    test('weigth', () => {
+describe('getBranchWeight', () => {
+    test('week', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'week' ] })
         expect(result).toEqual(1)
     });
     test('month', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'month' ] })
         expect(result).toEqual(1)
-    })
+    })    
+});
 
-    describe('isBranchEqual', () => {
+describe('equality', () => {
+    describe('isBranchEqualWithRepeat', () => {
+        test('different level', () => {
+            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_month' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] })
+            expect(result).toBeFalsy()
+        })
+        
+        test('this this', () => {
+            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] })
+            expect(result).toBeTruthy()
+        });
+        
+        test('this next', () => {
+            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'next_week' ] })
+            expect(result).toBeFalsy()
+        });
+
+        test('this following', () => {
+            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'following_week' ] })
+            expect(result).toBeTruthy()
+        });
+        test('no repeat', () => {
+            const result = isBranchEqualShallowWithRepeat({ branch: 'branch', value: [ 'this_week' ] }, { branch: 'branch', value: [ 'following_week' ] })
+            expect(result).toBeFalsy()
+        })
+    })
+    describe('isBranchEqualShallow', () => {
         test('no generic equals', () => {
             const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ] }, { branch: 'branch', value: [ 'this_week' ] })
             expect(result).toBeTruthy()
@@ -77,6 +104,8 @@ describe('branch', () => {
             const result = isBranchEqualShallow({ branch: 'branch', value: [ 'month' ] }, { branch: 'branch', value: [ 'this_month' ] })
             expect(result).toBeTruthy()
         });
+    })
+    describe('isBranchEqualDeep', () => { 
         test('depth = 1, equal', () => {
             const result = isBranchEqualDeep(
                 { branch: 'branch', value: [ 'this_month' ] },
@@ -146,7 +175,7 @@ describe('branch', () => {
             expect(result).toBeFalsy()
         })
     })
-});
+})
 
 describe('branch++', () => {
     describe('isInOther', () => {

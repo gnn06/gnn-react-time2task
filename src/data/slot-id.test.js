@@ -157,6 +157,12 @@ describe('getSlotIdNext', () => {
 
 
 describe('getSlotIdIndex', () => {
+    test('this', () => {
+        const given = "this_week"
+        const expected = 0
+        const result = getSlotIdIndex(given)
+        expect(result).toEqual(expected)
+    });
     test('nominal', () => {
         const given = "next_week"
         const expected = 1
