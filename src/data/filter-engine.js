@@ -1,6 +1,8 @@
 import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError, taskPredicateId } from './task.js';
 import { isSlotSimple } from './slot-expr.js';
 import { composeFuncAnd } from '../utils/predicateUtil.js';
+import { getSlotIdAndKeywords } from './slot-id.js';
+import { tokenizer } from '../utils/stringUtil.js';
 
 const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
 
@@ -98,11 +100,20 @@ export function makeFilterExpr(filterExpr) {
     } else if (filterExpr === 'ERROR') {
         return {func: makeErrorFilterFunc};
     } else {
-        if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
-        if (filterExpr.endsWith(' NONE')) {
-            return {func: (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5))};
+        const iDs = tokenizer(filterExpr)
+        const firstID = iDs[0]
+        const isExpr = getSlotIdAndKeywords().indexOf(firstID) > -1
+        if (isExpr) {
+            if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
+            if (filterExpr.endsWith(' NONE')) {
+                return {func: (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5))};
+            } else {
+                return {func: (task) => makeSlotExprFilterFunc(task, filterExpr)};
+            }
         } else {
-            return {func: (task) => makeSlotExprFilterFunc(task, filterExpr)};
+            // title
+            const title = filterExpr.replace('title:', '')
+            return {func: (task) => makeTitleFilterFunc(task, title)};
         }
     }
 }
