@@ -64,7 +64,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     }
 
     return <React.Fragment>
-        <div className={slotStyle + " group"} onClick={onSlotClick} >
+        <div className={slotStyle + " min-w-[8.5em] min-h-[5.5em] group"}  onClick={onSlotClick} >
             <div className="flex flex-row">
                 <SlotTitle slot={slot} />
                 <div>                    
@@ -76,10 +76,10 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
                 { disable && <FormControlLabel control={<Checkbox checked={disable} onChange={onDisableChange} />} onClick={(e) => e.stopPropagation()} label="Disable"  />}
             </FormGroup>
             <div className="invisible group-hover:visible">
-                <IconButton onClick={(e) => {handleShift(path, -1);e.stopPropagation()}} ><ShiftPreviousIcon /></IconButton>
-                <IconButton onClick={(e) => {handleShift(path, 1);e.stopPropagation()}}  ><ShiftNextIcon     /></IconButton>
+                { isInside && <IconButton onClick={(e) => {handleShift(path, -1);e.stopPropagation()}} ><ShiftPreviousIcon /></IconButton>}
+                { isInside && <IconButton onClick={(e) => {handleShift(path, 1);e.stopPropagation()}}  ><ShiftNextIcon     /></IconButton>}
                 { showRepeat(id) && <IconButton onClick={(e) => {handleRepetition(path);e.stopPropagation()}}  ><RepeatIcon /></IconButton>}
-                <IconButton onClick={(e) => {handleDisable(path);e.stopPropagation()}}   ><DisableIcon       /></IconButton>                    
+                { isInside && <IconButton onClick={(e) => {handleDisable(path);e.stopPropagation()}}   ><DisableIcon       /></IconButton>}                    
             </div>
             <div className="h-3"/>
         </div>
