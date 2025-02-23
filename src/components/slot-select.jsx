@@ -64,7 +64,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     }
 
     return <React.Fragment>
-        <div className={slotStyle + " min-w-[8.5em] min-h-[5.5em] group"}  onClick={onSlotClick} >
+        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em] group"}  onClick={onSlotClick} >
             <div className="flex flex-row">
                 <SlotTitle slot={slot} />
                 <div>                    
