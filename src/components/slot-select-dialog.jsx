@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
+import ShiftNextIcon from '@mui/icons-material/ArrowForward';
+import ShiftPreviousIcon from '@mui/icons-material/ArrowBack';
+import RepeatIcon from '@mui/icons-material/Loop';
+import DisableIcon from '@mui/icons-material/Block';
 
 import SlotTreeSelect from './slot-tree-select';
 
@@ -36,7 +40,7 @@ function makeSlotWithSelection(conf, selection) {
   )
 }
 
-export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCancel, title }) {
+export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCancel, title }) {
 
   // const selection = useMemo(() => exprToSelectionMap(selectionExpr), [selectionExpr])
   const [ selection, setSelection] = useState(exprToSelectionMap(selectionExpr))
@@ -122,7 +126,7 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
   
   return <Dialog open={true} onClose={handleClose} maxWidth="lg">
     <DialogContent>
-      <div>Tâche : {title}</div>
+      <div className='mb-3'>Tâche : {title}</div>
       <DndContext onDragEnd={dnd} sensors={sensors}>
         {slotsFromConf.map((slot, index) => {
           return <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
@@ -137,6 +141,13 @@ export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCance
       {/* {<pre>{JSON.stringify(flatToTree(selection), null, ' ')}</pre>} */}
       {/* {<pre>{JSON.stringify(treetoBranch(flatToTree(selection)), null, ' ')}</pre>} */}
       {/* {selectionMapToExpr(selection)}     */}
+      <div className='mt-3 mb-3'>
+        <p className='underline'>Aide : </p>
+        <p>Sélectionnez les créneaux auxquels la tâche doit être réalisée.</p>
+        <p><RepeatIcon/> pour rendre le créneau récurrent. <DisableIcon/> pour désactiver temporairement le créneau.</p>
+        <p><ShiftPreviousIcon/> et <ShiftNextIcon/> ( ou Drag&Drop) pour déplacer sur le créneau 
+          avec ses sous-créneaux vers le créneau suivant.</p>
+      </div>
       { import.meta.env.DEV && <div className='text-green-500'><span className='font-mono'>Debug input&nbsp;&nbsp;: {selectionExpr}</span></div> }
       { import.meta.env.DEV && <div className='text-green-500'><span className='font-mono'>Debug output&nbsp;: {selectionMapToExpr(selection)}</span></div>}
     </DialogContent>

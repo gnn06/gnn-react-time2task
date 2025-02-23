@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Checkbox, FormControlLabel, FormGroup, IconButton, TextField } from "@mui/material";
 
 import './slot.css';
@@ -7,8 +6,6 @@ import './slot.css';
 import SlotTitle from "./slot-title";
 import ShiftNextIcon from '@mui/icons-material/ArrowForward';
 import ShiftPreviousIcon from '@mui/icons-material/ArrowBack';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import RepeatIcon from '@mui/icons-material/Loop';
 import DisableIcon from '@mui/icons-material/Block';
 
@@ -47,8 +44,11 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     // }
 
     const onSlotClick = (e) => {
-        const newSelection = { selected: !selected, repetition: repetition, disable: disable }
-        handleSelection && handleSelection(path, newSelection)
+        if (isInside) {
+            handleDelete(path)
+        } else {
+            handleAdd(path)
+        }
     }
 
     const onDisableChange = (e) => {
@@ -59,11 +59,12 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     const onRepeatChange = (e) => {
         const repeatvalue = e.target.value !== '' ? Number.parseInt(e.target.value) : 0
         const newSelection = { selected: selected, repetition: repeatvalue, disable: disable }
-        handleSelection && handleSelection(path, newSelection)
+        handleSelection && handleSelection(path, newSelection);
+        
     }
 
     return <React.Fragment>
-        <div className={slotStyle + " group"} >
+        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em] group"}  onClick={onSlotClick} >
             <div className="flex flex-row">
                 <SlotTitle slot={slot} />
                 <div>                    
@@ -71,16 +72,14 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
                 </div>            
             </div>
             <FormGroup>
-                { showRepeat(id) && repetition && <TextField label="Répétition" type="number" variant="standard" value={repetition} onChange={onRepeatChange}/> }
-                { disable && <FormControlLabel control={<Checkbox checked={disable} onChange={onDisableChange} />} label="Disable"  />}
+                { showRepeat(id) && repetition && <TextField label="Répétition" type="number" variant="standard" value={repetition} onClick={(e) => e.stopPropagation()} onChange={onRepeatChange}/> }
+                { disable && <FormControlLabel control={<Checkbox checked={disable} onChange={onDisableChange} />} onClick={(e) => e.stopPropagation()} label="Disable"  />}
             </FormGroup>
             <div className="invisible group-hover:visible">
-                <IconButton onClick={(e) => handleShift(path, -1)}><ShiftPreviousIcon /></IconButton>
-                <IconButton onClick={(e) => handleShift(path, 1)} ><ShiftNextIcon     /></IconButton>
-                <IconButton onClick={(e) => handleAdd(path)}      ><AddIcon           /></IconButton>
-                <IconButton onClick={(e) => handleDelete(path)}   ><DeleteIcon        /></IconButton>
-                { showRepeat(id) && <IconButton onClick={(e) => handleRepetition(path)}><RepeatIcon /></IconButton>}
-                <IconButton onClick={(e) => handleDisable(path)}   ><DisableIcon       /></IconButton>                    
+                { isInside && <IconButton onClick={(e) => {handleShift(path, -1);e.stopPropagation()}} ><ShiftPreviousIcon /></IconButton>}
+                { isInside && <IconButton onClick={(e) => {handleShift(path, 1);e.stopPropagation()}}  ><ShiftNextIcon     /></IconButton>}
+                { showRepeat(id) && <IconButton onClick={(e) => {handleRepetition(path);e.stopPropagation()}}  ><RepeatIcon /></IconButton>}
+                { isInside && <IconButton onClick={(e) => {handleDisable(path);e.stopPropagation()}}   ><DisableIcon       /></IconButton>}                    
             </div>
             <div className="h-3"/>
         </div>

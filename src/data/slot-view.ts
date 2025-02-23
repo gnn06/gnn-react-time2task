@@ -3,6 +3,17 @@ import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, getSlotIdLevel, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { SlotPath } from "./slot-path";
 
+export const DEFAULT_CONF = {
+  collapse: [
+    "this_month next_week",
+    "this_month following_week",
+    "next_month"
+  ],
+  remove: [],
+  levelMin: null,
+  levelMaxIncluded: null
+}
+
 interface SlotViewConf {
   levelMin:         number,
   levelMaxIncluded: number,

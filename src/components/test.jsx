@@ -1,5 +1,11 @@
-import TaskDialog from './task-dialog';
+import { DEFAULT_CONF } from "../data/slot-view"
+import SlotSelectDialog from "./slot-select-dialog"
 
+const slot = { id: 'this_month', inner: [] }
+
+const selection = new Map()
+
+const conf = DEFAULT_CONF
 export default function Test() {
-    return <TaskDialog task={{id:12,title:"123",status:"A faire"}} onConfirm={null} onCancel={null}/>
+    return <SlotSelectDialog conf={conf} />
 }

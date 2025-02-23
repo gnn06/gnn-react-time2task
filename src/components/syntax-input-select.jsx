@@ -1,22 +1,14 @@
 import { useState } from "react";
-import SyntaxInput from "./syntax-input";
-import SlotViewSelect from "./slot-view-select";
+import { useSelector } from "react-redux";
 
-const conf = {
-    collapse: [
-      "this_month next_week",
-      "this_month following_week",
-      "next_month"
-    ],
-    remove: [],
-    levelMin: null,
-    levelMaxIncluded: null
-}
+import SyntaxInput from "./syntax-input";
+import SlotSelectDialog from "./slot-select-dialog";
 
 export default function SyntaxInputWithSelection ({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, title}) {
-    const [ show, setShow ] = useState(false)
 
+    const [ show, setShow ] = useState(false)
     const [ selectionExpr, setSelectionExpr ] = useState(initialInputValue)
+    const conf = useSelector(state => state.tasks.slotViewFilterConf);
 
     const onExprChange = (e) => {
         const expr = e
@@ -42,6 +34,6 @@ export default function SyntaxInputWithSelection ({id, items, placeHolderInput, 
     return <div className="grow">
         <SyntaxInput id={id} items={items} placeHolderInput={placeHolderInput} initialInputValue={selectionExpr} classNameInput={classNameInput} closeIcon={closeIcon} 
             onInputChange={onExprChange} />
-        { show && <SlotViewSelect selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
+        { show && <SlotSelectDialog selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
     </div>
 }
