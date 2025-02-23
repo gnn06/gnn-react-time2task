@@ -1,22 +1,14 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+
 import SyntaxInput from "./syntax-input";
 import SlotViewSelect from "./slot-view-select";
 
-const conf = {
-    collapse: [
-      "this_month next_week",
-      "this_month following_week",
-      "next_month"
-    ],
-    remove: [],
-    levelMin: null,
-    levelMaxIncluded: null
-}
-
 export default function SyntaxInputWithSelection ({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, title}) {
-    const [ show, setShow ] = useState(false)
 
+    const [ show, setShow ] = useState(false)
     const [ selectionExpr, setSelectionExpr ] = useState(initialInputValue)
+    const conf = useSelector(state => state.tasks.slotViewFilterConf);
 
     const onExprChange = (e) => {
         const expr = e

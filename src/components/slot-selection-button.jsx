@@ -1,23 +1,14 @@
 import React, { useState } from "react"
+import { useSelector } from "react-redux";
 import EditIcon from '@mui/icons-material/Edit';
 import { Button, IconButton } from "@mui/material";
 
 import SlotViewSelect from "./slot-view-select";
 
-const conf = {
-    collapse: [
-      "this_month next_week",
-      "this_month following_week",
-      "next_month"
-    ],
-    remove: [],
-    levelMin: null,
-    levelMaxIncluded: null
-}
-
 export default function SlotSelectionButton({task, style, withText = false, handleSave}) {
 
     const [ showSlotSelect, setShowSlotSelect ] = useState(false)
+    const conf = useSelector(state => state.tasks.slotViewFilterConf);
 
     const onSlotSelect = () => {
         setShowSlotSelect(true)

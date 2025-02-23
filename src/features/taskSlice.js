@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
 import { retrieveAccessToken, retrieveUser } from '../services/browser-storage';
-import { reduceCollapseOnConf } from '../data/slot-view';
+import { DEFAULT_CONF, reduceCollapseOnConf } from '../data/slot-view';
 
 const initialState = {
     tasks : [],
@@ -14,16 +14,7 @@ const initialState = {
         isStatusARepo: false,
         isError: false,
     },
-    slotViewFilterConf: {
-        collapse: [
-          "this_month next_week",
-          "this_month following_week",
-          "next_month"
-        ],
-        remove: [],
-        levelMin: null,
-        levelMaxIncluded: null
-    },
+    slotViewFilterConf: DEFAULT_CONF,
     selectedSlotId: [],
     association: {},
     user: retrieveUser(),
