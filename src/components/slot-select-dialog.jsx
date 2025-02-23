@@ -36,7 +36,7 @@ function makeSlotWithSelection(conf, selection) {
   )
 }
 
-export default function SlotViewSelect({ selectionExpr, conf, onConfirm, onCancel, title }) {
+export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCancel, title }) {
 
   // const selection = useMemo(() => exprToSelectionMap(selectionExpr), [selectionExpr])
   const [ selection, setSelection] = useState(exprToSelectionMap(selectionExpr))

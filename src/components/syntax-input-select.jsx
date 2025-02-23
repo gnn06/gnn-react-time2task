@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import SyntaxInput from "./syntax-input";
-import SlotViewSelect from "./slot-view-select";
+import SlotSelectDialog from "./slot-select-dialog";
 
 export default function SyntaxInputWithSelection ({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, title}) {
 
@@ -34,6 +34,6 @@ export default function SyntaxInputWithSelection ({id, items, placeHolderInput, 
     return <div className="grow">
         <SyntaxInput id={id} items={items} placeHolderInput={placeHolderInput} initialInputValue={selectionExpr} classNameInput={classNameInput} closeIcon={closeIcon} 
             onInputChange={onExprChange} />
-        { show && <SlotViewSelect selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
+        { show && <SlotSelectDialog selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
     </div>
 }

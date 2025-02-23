@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import EditIcon from '@mui/icons-material/Edit';
 import { Button, IconButton } from "@mui/material";
 
-import SlotViewSelect from "./slot-view-select";
+import SlotSelectDialog from "./slot-select-dialog";
 
 export default function SlotSelectionButton({task, style, withText = false, handleSave}) {
 
@@ -28,7 +28,7 @@ export default function SlotSelectionButton({task, style, withText = false, hand
         { withText ? <Button variant="contained" size="small" startIcon={<EditIcon />} onClick={onSlotSelect}>Choix créneau</Button> 
         : <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>}
         
-        { showSlotSelect && <SlotViewSelect selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
+        { showSlotSelect && <SlotSelectDialog selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
     </React.Fragment>
 }
 
