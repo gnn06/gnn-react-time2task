@@ -10,22 +10,22 @@ import { getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
  * used by slotEqual
  * used by filtering with NONE, slotView on not terminal node (findTaskBySlotExpr)
  */
-export function isBranchEqualDeep(branch1, branch2) {
+export function isBranchEqualDeep(branch1, branch2, withRepeat = false) {
     if (branch1 === undefined) return false;
     branch1 = branchRemoveDisable(branch1)
     if (branch1 === null) return false;
     if (branch1.type === 'multi') {
-        return branch1.value.some(branch => isBranchEqualDeep(branch, branch2))
+        return branch1.value.some(branch => isBranchEqualDeep(branch, branch2, withRepeat))
     }
     if (branch1.value.length === 1 && branch2.value.length === 1) {
-        return isBranchEqualShallow(branch1, branch2)
+        return isBranchEqualShallow(branch1, branch2, withRepeat)
     } else {
-        if (isBranchEqualShallow(branch1, branch2) === false) {
+        if (isBranchEqualShallow(branch1, branch2, withRepeat) === false) {
             return false
         } else {
             const tail1 = getBranchTail(branch1)
             const tail2 = getBranchTail(branch2)
-            return isBranchEqualDeep(tail1, tail2)
+            return isBranchEqualDeep(tail1, tail2, withRepeat)
         }
     }
 }
@@ -37,7 +37,7 @@ export function isBranchEqualDeep(branch1, branch2) {
  * require params should have same starting depth
  * used by filtering (except with NONE), slotview on terminal node (findTaskBySlotExpr)
  */
-export function isBranchEqualOrInclude(branch1, branch2) {
+export function isBranchEqualOrInclude(branch1, branch2, withRepeat = false) {
     if (branch1 === undefined || branch2 === undefined) return false;
     if (branch2.type !== 'branch') {
         throw new Error('slotIsInOtherBranch param otherSlotExpr should not be multi');
@@ -45,7 +45,7 @@ export function isBranchEqualOrInclude(branch1, branch2) {
     branch1 = branchRemoveDisable(branch1)
     if (branch1 === null) return false;
     if (branch1.type === 'branch' && branch2.type === 'branch') {
-        if (!isBranchEqualShallow(branch1, branch2))
+        if (!isBranchEqualShallow(branch1, branch2, withRepeat))
             return false;
         else {
             const lower = getBranchTail(branch1);
@@ -55,10 +55,10 @@ export function isBranchEqualOrInclude(branch1, branch2) {
                 return true;
             else
                 // need to check at next level
-                return isBranchEqualOrInclude(lower, lowerOther);   
+                return isBranchEqualOrInclude(lower, lowerOther, withRepeat);   
         }
     } else if (branch1.type === 'multi' && branch2.type === 'branch') {
-        return branch1.value.some(slot => isBranchEqualOrInclude(slot, branch2))
+        return branch1.value.some(slot => isBranchEqualOrInclude(slot, branch2, withRepeat))
     }
 }
 

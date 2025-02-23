@@ -62,14 +62,14 @@ export function getBranchWeight(branch) {
  * Used by isBranchEqualDeep, branchSlotIsInOther
  */
 export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
-    if (withRepeat && branch1.repeat !== undefined) {
+    if (withRepeat && branch1.repetition !== undefined) {
         const id1 = getBranchFirstSlot(branch1)
         const id2 = getBranchFirstSlot(branch2)
         if (getSlotIdLevel(id1) !== getSlotIdLevel(id2)) {
             return false
         }
         const distance = getSlotIdDistance(id1, id2)
-        return distance % branch1.repeat === 0
+        return distance % branch1.repetition === 0
     }
     if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
         return true

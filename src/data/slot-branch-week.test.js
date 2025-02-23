@@ -56,22 +56,22 @@ describe('getBranchWeight', () => {
 describe('equality', () => {
     describe('isBranchEqualWithRepeat', () => {
         test('different level', () => {
-            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true) 
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month' ], repetition: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true) 
             expect(result).toBeFalsy()
         })
         
         test('this this', () => {
-            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true)
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repetition: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true)
             expect(result).toBeTruthy()
         });
         
         test('this next', () => {
-            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'next_week' ] }, true)
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repetition: 2 }, { branch: 'branch', value: [ 'next_week' ] }, true)
             expect(result).toBeFalsy()
         });
 
         test('this following', () => {
-            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repeat: 2 }, { branch: 'branch', value: [ 'following_week' ] }, true)
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repetition: 2 }, { branch: 'branch', value: [ 'following_week' ] }, true)
             expect(result).toBeTruthy()
         });
         test('no repeat', () => {
