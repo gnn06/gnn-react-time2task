@@ -37,8 +37,13 @@ describe('makeFilter', () => {
         expect(result).toEqual(data)
     })
     
-    test('filter by title', () => {
+    test('filter by title keyword', () => {
         const result = data.filter(makeFilterExpr('title:TATA').func);
+        expect(result).toEqual([task3])
+    })
+
+    test('filter by title', () => {
+        const result = data.filter(makeFilterExpr('TATA').func);
         expect(result).toEqual([task3])
     })
     
