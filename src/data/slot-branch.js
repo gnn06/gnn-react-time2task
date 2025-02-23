@@ -1,5 +1,5 @@
 import { isBranchEqualOrInclude } from "./slot-branch++";
-import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric } from "./slot-id";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance } from "./slot-id";
 
 export function getBranchFirstSlot(branch) {
     return branch.value[0];
@@ -57,11 +57,27 @@ export function getBranchWeight(branch) {
     return weight[branch.value.at(0)] + (branch.shift === undefined ? 0 : branch.shift)
 }
 
+export function getBranchDistance(branch1, branch2) {
+    let index1 = getBranchWeight(branch1)
+    let index2 = getBranchWeight(branch2)
+    const distance = (index2 - index1)
+    return distance
+}
+
 /**
  * equal on first level
  * Used by isBranchEqualDeep, branchSlotIsInOther
  */
-export function isBranchEqualShallow(branch1, branch2) {
+export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
+    if (withRepeat && branch1.repetition !== undefined) {
+        const id1 = getBranchFirstSlot(branch1)
+        const id2 = getBranchFirstSlot(branch2)
+        if (getSlotIdLevel(id1) !== getSlotIdLevel(id2)) {
+            return false
+        }
+        const distance = getBranchDistance(branch1, branch2)
+        return (distance >= 0 && distance % branch1.repetition === 0)
+    }
     if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
         return true
     } else {

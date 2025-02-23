@@ -92,9 +92,9 @@ export function filterSlotExpr(tasks, filter) {
  */
 export function findTaskBySlotExpr(tasks, slot) {
     if (slot.inner !== undefined && slot.inner && slot.inner.length !== 0) {
-        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path));
+        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path, true));
     } else {
-        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path));
+        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path, true));
     }
 }
 
