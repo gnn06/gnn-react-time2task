@@ -70,12 +70,36 @@ describe('equality', () => {
             expect(result).toBeFalsy()
         });
 
+        test('this next', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'next_week' ], repetition: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true)
+            expect(result).toBeFalsy()
+        })
+
         test('this following', () => {
             const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ], repetition: 2 }, { branch: 'branch', value: [ 'following_week' ] }, true)
             expect(result).toBeTruthy()
         });
+
+
+        test('this following', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'following_week' ], repetition: 2 }, { branch: 'branch', value: [ 'this_week' ] }, true)
+            expect(result).toBeFalsy()
+        });
+
+        test('distance negative', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'next_month' ], repetition: 1 }, { branch: 'branch', value: [ 'this_month' ] }, true)
+            expect(result).toBeFalsy()
+        })
+        test('distance 1', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month' ], repetition: 1 }, { branch: 'branch', value: [ 'next_month' ] }, true)
+            expect(result).toBeTruthy()
+        })
         test('no repeat', () => {
             const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_week' ] }, { branch: 'branch', value: [ 'following_week' ] }, true)
+            expect(result).toBeFalsy()
+        })
+        test('shift', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month' ], repetition: 6, shift: 3 }, { branch: 'branch', value: [ 'this_month' ] }, true)
             expect(result).toBeFalsy()
         })
     })
