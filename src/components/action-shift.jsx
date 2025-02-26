@@ -12,6 +12,8 @@ import { useGetTasksQuery } from "../features/apiSlice.js";
 import { taskShiftFilter } from '../data/task.js';
 import { getSlotIdFirstLevel, getSlotIdLevel } from '../data/slot-id';
 import { getSnapDateToShow, getSnapDateToSave } from '../data/slot-date';
+import SlotAnimate from './slot-animation';
+import { Stack } from '@mui/material';
 
 const options = [{ value: 'week', label: 'week'}, { value: 'month', label: 'month'}]
 
@@ -94,12 +96,17 @@ export default function ShiftAction() {
             titre="Confirmez-vous le décalage des tâches ?" 
             handleConfirm={handleShiftConfirm}
             handleCancel={handleShiftCancel} >
-                <label htmlFor='level' className='flex flex-row items-baseline' >Niveau de créneau à décaler : 
-                    <Select className="ml-2" name="level" options={options} defaultValue={level} onChange={handleChangeLevel}/>
-                </label>
-                Before / last shift : { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } = { isSuccessSnapDates && <input key={level.value} value={snapDate} onChange={handleDate}/> }
-                After shift :  { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } =  { isSuccessSnapDates && getSnapDateToSave(level.value, snapDate) }
-                <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next, next + 3 devient next + 2 et every 2  this devient every 2 following).`}</div>    
+                <Stack direction="row" spacing={1}>
+                    <div>
+                        <label htmlFor='level' className='flex flex-row items-baseline' >Niveau de créneau à décaler : 
+                            <Select className="ml-2" name="level" options={options} defaultValue={level} onChange={handleChangeLevel}/>
+                        </label>
+                        Before / last shift : { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } = { isSuccessSnapDates && <input key={level.value} value={snapDate} onChange={handleDate}/> }
+                        After shift :  { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } =  { isSuccessSnapDates && getSnapDateToSave(level.value, snapDate) }
+                        <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next, next + 3 devient next + 2 et every 2  this devient every 2 following).`}</div>    
+                    </div>
+                    <SlotAnimate/>
+                </Stack>
                 <div className="grid grid-cols-3 gap-4 mt-5 overflow-auto max-h-80">
                     { shiftedTasks.map(t => (<React.Fragment key={t.id}><div>{t.title}</div><div className='font-mono'>{t.oldSlotExpr}</div><div className='font-mono'>{t.slotExpr}</div></React.Fragment>)) }
                 </div>
