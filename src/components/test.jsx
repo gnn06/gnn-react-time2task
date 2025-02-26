@@ -1,11 +1,6 @@
-import { DEFAULT_CONF } from "../data/slot-view"
-import SlotSelectDialog from "./slot-select-dialog"
-
-const slot = { id: 'this_month', inner: [] }
-
-const selection = new Map()
-
-const conf = DEFAULT_CONF
 export default function Test() {
-    return <SlotSelectDialog conf={conf} />
+    return <div>
+        <div className="m-3 p-3 w-20 bg-red-100 animate-wiggle">YTOTOTO </div>
+    </div>
+    
 }
