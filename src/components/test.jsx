@@ -19,23 +19,56 @@ export default function Test() {
         }
     }, [])
       
+    const duration = 1.5;
+    const transX = "-"+distance+"px";
     return <div>
         <div className="flex flex-row">
             <div className="border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200 " ref={ref1}>
-                <SlotTitle  slot={{ id:'this_month', path:"this_month", inner: [] }}/>
+                <motion.div animate={{
+                        scale: [1.0, 1.0,  1.0, 1.0, 1.2,  1.0],
+                        times: [0.0, 0.05, 0.1, 0.9, 0.95, 1.0],
+                        originX: [0.5],
+                        originY: [1.0],
+                        transition: {
+                            duration: duration,
+                            ease: [0.390, 0.575, 0.565, 1.000],
+                            // ease: 'easeIn',
+                            repeat: 10,
+                            repeatType: 'loop',
+                        }
+                    }}>
+                    <SlotTitle  slot={{ id:'this_month', path:"this_month", inner: [] }}/>
+                </motion.div>
             </div>
             <div className="border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200 " ref={ref2}>
-                <SlotTitle  slot={{ id:'next_month', path:"this_month", inner: [] }}/>
+                <motion.div
+                    animate={{
+                        scale: [1.0, 1.2,  1.0, 1.0, 1.0,  1.0],
+                        times: [0.0, 0.05, 0.1, 0.9, 0.95, 1.0],
+                        originX: [0.5],
+                        originY: [1.0],
+                        transition: {
+                            duration: duration,
+                            ease: [0.390, 0.575, 0.565, 1.000],
+                            // ease: 'easeIn',
+                            repeat: 10,
+                            repeatType: 'loop'
+                        }
+                    }}>
+                    <SlotTitle  slot={{ id:'next_month', path:"this_month", inner: [] }}/>
+                </motion.div>
                 <motion.div 
                     animate={{ 
-                        translateX: "-"+distance+"px", 
+                        translateX: [0,   0, transX, transX],
+                        times:      [0.0, 0.2, 0.8, 1],
                         transition: { 
-                            ease: "easeInOut", 
-                            repeat: Infinity, 
-                            duration: 1.3, delay: 0.7, repeatDelay: 0.7,
+                            ease: 'easeInOut',
+                            repeat: 10, 
+                            duration: duration,
                         }}}  >
                     <TaskLight key="123" task={{title:"task",slotExpr:"this_month"}} />
                 </motion.div>
+
             </div>
         </div>       
     </div>    
