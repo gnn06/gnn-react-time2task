@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '18/02/2025'
+export const RELEASE = '02/03/2025'
 
 const text = `
+02/03/2025
+==========
+- Todo action limited to status != 'fait'
+- add animation in shift dialog
+- show repeated slot
+- remove add and remove buttons in selection dialog
+- filter by title without title:
+
 18/02/2025
 ==========
 - switch view

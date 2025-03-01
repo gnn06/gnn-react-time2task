@@ -34,6 +34,8 @@ export default function TodoAction({tasks, className}) {
         setHideErrorDialog(true)
     }
 
+    tasks = tasks.filter(t => t.status !== "A faire")
+
     return <div className={className}>
         <Button label="Todo" clickToto={onTodo} />
         { updateError && !hideErrorDialog &&
@@ -52,7 +54,7 @@ export default function TodoAction({tasks, className}) {
                 handleConfirm={handleTodoConfirm}
                 handleCancel={handleTodoCancel}
             >
-                {`Les ${tasks.length} tâches visibles vont être passées à 'à faire'.`}
+                {`Les ${tasks.length} tâches visibles n'étant pas déjà 'à faire' vont être passées à 'à faire'.`}
             </Confirm> }
     </div>
 
