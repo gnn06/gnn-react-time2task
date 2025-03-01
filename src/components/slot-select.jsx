@@ -72,7 +72,12 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
                 </div>            
             </div>
             <FormGroup>
-                { showRepeat(id) && repetition && <TextField label="Répétition" type="number" variant="standard" value={repetition} onClick={(e) => e.stopPropagation()} onChange={onRepeatChange}/> }
+                { showRepeat(id) && repetition && 
+                    <div className="flex flex-row gap-5 items-center ">
+                        <TextField  label="Répétition" type="number" variant="standard" value={repetition} onClick={(e) => e.stopPropagation()} onChange={onRepeatChange}/>
+                        <RepeatIcon className="cursor-default"  onClick={(e) => e.stopPropagation()} />
+                    </div>
+                }
                 { disable && <FormControlLabel control={<Checkbox checked={disable} onChange={onDisableChange} />} onClick={(e) => e.stopPropagation()} label="Disable"  />}
             </FormGroup>
             <div className="invisible group-hover:visible">

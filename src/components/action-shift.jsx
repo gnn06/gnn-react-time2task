@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useState } from "react";
-import Dialog from '@mui/material/Dialog';
-import Select from 'react-select';
 import { useSelector } from "react-redux";
+import Select from 'react-select';
+import Dialog from '@mui/material/Dialog';
+import { Paper } from '@mui/material';
 
 import Button from "./button";
 import Confirm from './Confirm'
@@ -107,9 +108,11 @@ export default function ShiftAction() {
                     </div>
                     <SlotAnimate/>
                 </Stack>
-                <div className="grid grid-cols-3 gap-4 mt-5 overflow-auto max-h-80">
+                <Paper variant='outlined' className='p-2 mt-5'>
+                    <div className="grid grid-cols-3 gap-4 overflow-auto max-h-80">
                     { shiftedTasks.map(t => (<React.Fragment key={t.id}><div>{t.title}</div><div className='font-mono'>{t.oldSlotExpr}</div><div className='font-mono'>{t.slotExpr}</div></React.Fragment>)) }
-                </div>
+                    </div>
+                </Paper>
         </Confirm> }
         </div>
 }
