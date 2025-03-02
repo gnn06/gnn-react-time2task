@@ -9,4 +9,4 @@ d'abord au niveau des créneaux les plus gros (le mois, la semaine) puis des cr�
 https://gnn06.github.io/gnn-react-time2task/
 
 # Démonstration
-https://github.com/user-attachments/assets/b0b9153e-ca4a-4241-89d5-49a3c5d136da
+https://github.com/user-attachments/assets/1bf23820-8bf0-4e53-8f8b-670390677697
