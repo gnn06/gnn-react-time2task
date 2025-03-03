@@ -81,7 +81,7 @@ export default function ShiftAction() {
     const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
 
     return <div>
-        <Button label="Shift" clickToto={onShift}/>
+        <Button label="Démarrer Semaine ..." clickToto={onShift}/>
         { updateError && !hideErrorDialog &&
                     <Dialog open={true}>
                         <div className='p-3'>
@@ -104,7 +104,8 @@ export default function ShiftAction() {
                         </label>
                         Before / last shift : { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } = { isSuccessSnapDates && <input key={level.value} value={snapDate} onChange={handleDate}/> }
                         After shift :  { isSuccessSnapDates && getSlotIdFirstLevel(getSlotIdLevel(level.value)) } =  { isSuccessSnapDates && getSnapDateToSave(level.value, snapDate) }
-                        <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, following devient next, next + 3 devient next + 2 et every 2  this devient every 2 following).`}</div>    
+                        <div className='mt-3'>{`${shiftedTasks.length} tâches vont être décalées sur le créneau précédent (next devient this, 
+                            following devient next, next + 3 devient next + 2 et every 2  this devient every 2 next).`}</div>    
                     </div>
                     <SlotAnimate/>
                 </Stack>
