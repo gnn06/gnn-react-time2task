@@ -1,24 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
+import { useDispatch } from "react-redux";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
 import { IconButton } from "@mui/material";
 import Color from 'color';
 
 import './task.css'
-import { STATUS_LST } from "./task-status.js";
-import { isTaskUnique } from '../data/task.js'
-
-import TaskDialog from './task-dialog'
-import { useGetActivitiesQuery, useUpdateTaskMutation } from "../features/apiSlice";
-import { getActivityColor } from "./ui-helper";
 import SlotSelectionButton from "./slot-selection-button";
+import { editTask } from "../features/taskSlice";
+import { useGetActivitiesQuery, useUpdateTaskMutation } from "../features/apiSlice";
+
+import { isTaskUnique } from '../data/task.js'
+import { getActivityColor } from "./ui-helper";
 
 export default function TaskLight({task}) {
 
-    const [visible, setVisible] = useState(false)
-
     const { data } = useGetActivitiesQuery()
     const [ updateTask ] = useUpdateTaskMutation()
+    const dispatch = useDispatch()
 
     const activityBgColor = getActivityColor(task.activity, data) || 'rgb(187 247 208)'
     const activityTextColor = Color(activityBgColor).luminosity() > 0.5 ? 'black' : 'white'
@@ -33,9 +32,8 @@ export default function TaskLight({task}) {
         updateTask({id:task.id, slotExpr})
     }
 
-    const onTaskDialogConfirm = (task) => {
-        updateTask({id:task.id, title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order})
-        setVisible(false)
+    const handleEditTask = () => {
+        dispatch(editTask(task))
     }
 
     // use style for color styling => avoid using tailwindcss color
@@ -43,7 +41,6 @@ export default function TaskLight({task}) {
         <span className="grow">{task.title}</span>
         { isUnique && <UniqueIcon/> }
         <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />
-        <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={() => setVisible(true)}><MoreHorizIcon  /></IconButton>
-        { visible && <TaskDialog task={task} onCancel={() => setVisible(false)} onConfirm={onTaskDialogConfirm}/>}
+        <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={handleEditTask}><MoreHorizIcon  /></IconButton>
     </div>;
 }

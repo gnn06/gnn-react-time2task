@@ -19,7 +19,8 @@ const initialState = {
     association: {},
     user: retrieveUser(),
     accessToken: retrieveAccessToken(),
-    activity: null
+    activity: null,
+    editTask: null,
 };
 
 export const taskSlice = createSlice({
@@ -88,12 +89,17 @@ export const taskSlice = createSlice({
             const { path, mode } = action.payload;
             const newConf = reduceCollapseOnConf(state.slotViewFilterConf, path)
             state.slotViewFilterConf = newConf;
+        },
+        editTask: (state, action) => {
+            const task = action.payload;
+            state.editTask = task;
         }
     }
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId,
+    editTask
 } = taskSlice.actions
 
 export default taskSlice.reducer

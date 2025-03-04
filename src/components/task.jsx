@@ -48,14 +48,6 @@ export default function Task({task, api}) {
         updateTask({id:taskId, status: value})
     };
 
-    const onDeleteClick = e => {
-        const isConfirm = window.confirm('Supprimer la tâche ?');
-        if (isConfirm) {
-        deleteTask(task.id)
-        }
-        e.stopPropagation();
-    }
-
     const onTaskClick = () => {
         const taskId = task.id;
         dispatch(selectTask(taskId))
@@ -65,6 +57,5 @@ export default function Task({task, api}) {
                 onTitleChange={onTitleChange} onSlotExprChange={onSlotExprChange} onOrderChange={onOrderChange}
                 onActivityChange={onActivityChange}
                 onStatusChange={onStatusChange} 
-                onTaskClick={onTaskClick}
-                button={<Button label="Delete" clickToto={onDeleteClick} />}/>;
+                onTaskClick={onTaskClick} />;
 }

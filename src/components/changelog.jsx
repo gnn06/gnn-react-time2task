@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '02/03/2025'
+export const RELEASE = 'xx/03/2025'
 
 const text = `
+xx/03/2025
+==========
+- add contextual menu on row
+
 02/03/2025
 ==========
 - Todo action limited to status != 'fait'

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useStore } from "react-redux";
 
-import TaskRow from './task-row'
 import Button from '../components/button.jsx';
 import CreateTask from './create-task';
 

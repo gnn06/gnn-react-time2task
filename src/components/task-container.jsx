@@ -1,11 +1,13 @@
-import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { DndContext } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
+import TaskDialog from "./task-dialog";
 import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { editTask } from "../features/taskSlice";
 import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 
@@ -17,6 +19,8 @@ export default function TaskContainer() {
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const [ updateTask ] = useUpdateTaskMutation()
     const [isDragging, setDragging] = useState(false)
+    const taskToEdit  = useSelector(state => state.tasks.editTask);
+    const dispatch = useDispatch()
 
     const onDndStart = (event) => {
       setDragging(true)
@@ -37,6 +41,17 @@ export default function TaskContainer() {
     // panel use overflow:hidden to make panel collapsable.
     const styleDrag = isDragging ? {overflow:"visible"} : {overflow:"hidden"}
 
+    const onTaskDialogConfirm = (task) => {
+      console.log('onTaskDialogConfirm', task)
+      updateTask({id:task.id, title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order})
+      dispatch(editTask(null))
+    }
+
+    const onTaskDialogCancel = () => {
+      console.log('onTaskDialogCancel')
+      dispatch(editTask(null))
+    }
+
     if (!isLoading && isSuccess) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentFilter);
@@ -44,6 +59,7 @@ export default function TaskContainer() {
         const panel2 = <TaskPanel tasks={tasks}/>
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart}>            
+            { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm}/>}
             <PanelGroup direction="horizontal" className=''>
               <Panel className='' collapsible={true} minSize={20} >
                 {panel1}
