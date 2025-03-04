@@ -7,6 +7,7 @@ const text = `
 xx/03/2025
 ==========
 - add contextual menu on row
+- add sign up (hidden)
 
 02/03/2025
 ==========

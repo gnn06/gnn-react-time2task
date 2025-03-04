@@ -1,15 +1,16 @@
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
-import { login, accessToken } from "../features/taskSlice";
-
-import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
 import { supabase } from '../services/supabase'
+import { login, accessToken } from "../features/taskSlice";
+import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
 
-import Button from "./button";
-
-export default function Login() {
+export default function Login({isSignIn}) {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'TOKEN_REFRESHED') {
             // handle token refreshed event
@@ -23,30 +24,39 @@ export default function Login() {
     async function loginHandle(e) {
         e.preventDefault()
         const formData = new FormData(e.target);
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: formData.get('email'),
-            password: formData.get('password'),
-        })
-        /* 
-        OK => data.user.id = a1162... , data.user.email = gilles.orsini@gmail.com,  error = null
-              data.session.access_token "qsdqsdqsd"
-        KO => error.message = 'Invalid login credentials'
+        const { data, error } = 
+            isSignIn ? await supabase.auth.signInWithPassword({
+                        email: formData.get('email'),
+                        password: formData.get('password'),
+                    })
+                : await supabase.auth.signUp({
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                })
+        /* SignIn
+            OK => data.user.id = a1162... , data.user.email = gilles.orsini@gmail.com,  error = null
+                  data.session.access_token "qsdqsdqsd"
+            KO => error.message = 'Invalid login credentials'
+           SignUp
+            OK => data.session = ... , data.user= ...  
+            KO => error.message
         */
-       if (!error) {
-        storeUser(data.user.id, data.user.email)
-        storeAccessToken(data.session.access_token)
-        const user = { id: data.user.id, email: data.user.email }
-        dispatch(login(user));
-        dispatch(accessToken(data.session.access_token));
-       } else {
-        alert(error.message)
-        console.error(error.message)
-        removeUser()
-        removeAccessToken();
-        const user = { id: '', email: '', accessToken: ''}
-        dispatch(login(user));
-        dispatch(accessToken(data.session.access_token));
-       }
+        if (!error) {
+            storeUser(data.user.id, data.user.email)
+            storeAccessToken(data.session.access_token)
+            const user = { id: data.user.id, email: data.user.email }
+            dispatch(login(user));
+            dispatch(accessToken(data.session.access_token));
+            navigate('/')
+        } else {
+            alert(error.message)
+            console.error(error.message)
+            removeUser()
+            removeAccessToken();
+            const user = { id: '', email: '', accessToken: ''}
+            dispatch(login(user));
+            dispatch(accessToken(data.session.access_token));
+        }
     }
 
     return (
@@ -60,9 +70,9 @@ export default function Login() {
                 
                 <div className="mb-3">
                     <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
-                    <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" type="password" placeholder="******************"/>
+                    <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
                 </div>
-                <Button type="submit" label="Login"></Button>
+                <Button type="submit" variant="contained" >{isSignIn ? "Login" : "Sign up"}</Button>
             </form>
         </div>
     </div>)

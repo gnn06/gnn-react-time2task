@@ -11,6 +11,7 @@ import { createHashRouter, RouterProvider, } from "react-router-dom";
 import Settings from './components/settings';
 import Test from './components/test';
 import TestExpr from './components/test-expr';
+import Login from './components/login';
 
 const router = createHashRouter([
   {
@@ -21,6 +22,10 @@ const router = createHashRouter([
   {
     path: "help/",
     element: <HelpMethodo />,
+  },
+  {
+    path: "signup/",
+    element: <Login isSignIn={false} />,
   },
   {
     path: "changelog/",

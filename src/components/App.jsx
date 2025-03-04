@@ -21,7 +21,7 @@ function App() {
             <TaskContainer/>
           </div>
         ) : (
-          <Login />
+          <Login isSignIn={true}/>
         ) }
       </div>
   );
