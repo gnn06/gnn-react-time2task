@@ -90,11 +90,11 @@ export function filterSlotExpr(tasks, filter) {
  * @returns [tasks filtered]
  * public, used by slot.jsx 
  */
-export function findTaskBySlotExpr(tasks, slot) {
+export function findTaskBySlotExpr(tasks, slot, includeRepeat = true) {
     if (slot.inner !== undefined && slot.inner && slot.inner.length !== 0) {
-        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path, true));
+        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path, includeRepeat));
     } else {
-        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path, true));
+        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path, includeRepeat));
     }
 }
 

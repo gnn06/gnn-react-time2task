@@ -8,6 +8,7 @@ xx/03/2025
 ==========
 - add contextual menu on row
 - add sign up (hidden)
+- UI lets show or hide repeat task in slot panel
 
 02/03/2025
 ==========

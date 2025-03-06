@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button as ButtonMUI, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, MenuItem, Select, Tooltip } from "@mui/material";
+import { Button as ButtonMUI, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton, MenuItem, Select, Stack, Tooltip } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import TargetIcon from '@mui/icons-material/AdsClick';
 import { JsonEditor } from 'json-edit-react'
 
 import SlotView from "./slotview";
 import Button from "./button";
-import { setFilterSlot, setSlotViewFilterConf, setSlotViewFilterConfLevel } from "../features/taskSlice";
+import { setFilterSlot, setSlotViewFilterConf, setSlotViewFilterConfLevel, showRepeatAction } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 
 export default function SlotPanel({tasks})  {
@@ -15,6 +15,7 @@ export default function SlotPanel({tasks})  {
     const [confVisible, setConfVisible] = useState(false);
     const conf   = useSelector(state => state.tasks.slotViewFilterConf);
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const showRepeat = useSelector(state => state.tasks.showRepeat);
     
     const onChangeLevelMax = (event) => {
         const level = event.target.value
@@ -38,10 +39,15 @@ export default function SlotPanel({tasks})  {
         dispatch(setFilterSlot(""));
     }
 
+    const handleShowRepeat = () => {
+        dispatch(showRepeatAction(!showRepeat))
+    }
+
     return (
         <div className="m-1 ">
-            <Grid container flexDirection="row" justifyContent="end" alignItems="start" gap="0.25em" minHeight={60}>
+            <Grid container flexDirection="row" justifyContent="flex-end" alignItems={"flex-start"} gap="0.25em" >
                 { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
+                <FormControlLabel control={<Checkbox checked={showRepeat} onClick={handleShowRepeat}/>} label="voir les répétitions" />
                 <Button label="Change conf" clickToto={onConf}/>
                 <Dialog open={confVisible} onClose={handleCloseConf}>
                     <DialogTitle id="alert-dialog-title">

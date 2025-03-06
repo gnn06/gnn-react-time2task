@@ -15,6 +15,7 @@ const initialState = {
         isError: false,
     },
     slotViewFilterConf: DEFAULT_CONF,
+    showRepeat: true,
     selectedSlotId: [],
     association: {},
     user: retrieveUser(),
@@ -93,13 +94,16 @@ export const taskSlice = createSlice({
         editTask: (state, action) => {
             const task = action.payload;
             state.editTask = task;
+        },
+        showRepeatAction: (state, action) => {
+            state.showRepeat = action.payload;
         }
     }
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId,
-    editTask
+    editTask, showRepeatAction
 } = taskSlice.actions
 
 export default taskSlice.reducer

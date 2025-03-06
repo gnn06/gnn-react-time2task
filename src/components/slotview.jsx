@@ -18,7 +18,7 @@ export default function SlotView({ tasks, conf }) {
 
   const slots = slotViewFilter(conf)
 
-  return <div>
+  return <div className="mt-5">
     {slots.map((slot, index) => {
       return <SlotTree key={slot.id} slot={slot} tasks={tasks} selection={selection} handleSelection={handleSelection} />
     })}
