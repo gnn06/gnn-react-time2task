@@ -1,12 +1,8 @@
-import { taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError, taskPredicateId } from './task.js';
-import { isSlotSimple } from './slot-expr.js';
+import { taskPredicateNoRepeat, taskPredicateEvery2, taskPredicateEvery1, taskPredicateMulti, taskPredicateDisable, taskPredicateStatus, taskPredicateError } from './task.js';
+import { isSlotEqual, isSlotEqualOrInclude, isSlotSimple } from './slot-expr.js';
 import { composeFuncAnd } from '../utils/predicateUtil.js';
 import { getSlotIdAndKeywords } from './slot-id.js';
 import { tokenizer } from '../utils/stringUtil.js';
-
-const makeSlotExprFilterFunc = (task, filter) => taskPredicateEqualAndInclude(task, filter);
-
-const makeExactFilterFunc = (task, filter) => taskPredicateEqual(task, filter);
 
 /* module private */
 export const makeTitleFilterFunc = (task, title) => task.title.toLowerCase().indexOf(title.toLowerCase()) >= 0;
@@ -48,7 +44,11 @@ export function makeFilterCombine(filter) {
         filters.push(makeErrorFilterFunc)
     }
     if (filter.slot) {
-        filters.push(makeFilterExpr(filter.slot).func)
+        if (filter.slotStrict) {
+            filters.push((task) => isSlotEqual(task.slotExpr, filter.slot))
+        } else {
+            filters.push((task) => isSlotEqualOrInclude(task.slotExpr, filter.slot))
+        }
     }
     if (filter.taskId) {
         filters.push((task) => task.id === Number.parseInt(filter.taskId))
@@ -106,9 +106,9 @@ export function makeFilterExpr(filterExpr) {
         if (isExpr) {
             if (!isSlotSimple(filterExpr)) return {error:'filter error', func:() => true};
             if (filterExpr.endsWith(' NONE')) {
-                return {func: (task) => makeExactFilterFunc(task, filterExpr.slice(0, -5))};
+                return {func: (task) => isSlotEqual(task.slotExpr, filterExpr.slice(0, -5))};
             } else {
-                return {func: (task) => makeSlotExprFilterFunc(task, filterExpr)};
+                return {func: (task) => isSlotEqualOrInclude(task.slotExpr, filterExpr)};
             }
         } else {
             // title

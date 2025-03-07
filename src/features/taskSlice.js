@@ -13,6 +13,7 @@ const initialState = {
         isDisable: false,
         isStatusARepo: false,
         isError: false,
+        slotStrict: false
     },
     slotViewFilterConf: DEFAULT_CONF,
     showRepeat: true,
@@ -48,20 +49,24 @@ export const taskSlice = createSlice({
             state.selectedSlotId = [];
         },
         setTaskFilter: (state, action) => {
-            state.currentFilter = {... state.currentFilter, expression: action.payload.filter }
+            state.currentFilter = {...state.currentFilter, expression: action.payload.filter }
         },
         setFilterIsMulti: (state, action) => {
-            state.currentFilter = {... state.currentFilter, isMulti: action.payload.filter }
+            state.currentFilter = {...state.currentFilter, isMulti: action.payload.filter }
         },
         setFilterIsDisable: (state, action) => {
-            state.currentFilter = {... state.currentFilter, isDisable: action.payload.filter }
+            state.currentFilter = {...state.currentFilter, isDisable: action.payload.filter }
         },
         setFilterIsStatusARepo: (state, action) => {
-            state.currentFilter = {... state.currentFilter, isStatusARepo: action.payload.filter }
+            state.currentFilter = {...state.currentFilter, isStatusARepo: action.payload.filter }
         },
         setFilterSlot: (state, action) => {
             const path = action.payload
-            state.currentFilter = {... state.currentFilter, slot: path }
+            state.currentFilter = {...state.currentFilter, slot: path }
+        },
+        setFilterSlotStrict: (state, action) => {
+            const include = action.payload
+            state.currentFilter = {...state.currentFilter, slotStrict: include }
         },
         setFilterTaskId: (state, action) => {
             const taskId = action.payload
@@ -87,7 +92,7 @@ export const taskSlice = createSlice({
             state.slotViewFilterConf = action.payload.conf;
         },
         confBranch: (state, action) =>  {
-            const { path, mode } = action.payload;
+            const { path } = action.payload;
             const newConf = reduceCollapseOnConf(state.slotViewFilterConf, path)
             state.slotViewFilterConf = newConf;
         },
@@ -103,7 +108,7 @@ export const taskSlice = createSlice({
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId,
-    editTask, showRepeatAction
+    editTask, showRepeatAction, setFilterSlotStrict
 } = taskSlice.actions
 
 export default taskSlice.reducer
