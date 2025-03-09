@@ -14,15 +14,20 @@ export default function TaskPanel({tasks}) {
     const [group, setGroup] = useState(null);
     const dispatch = useDispatch();
     const filterTaskId = useSelector(state => state.tasks.currentFilter.taskId);
+    const isDragging  = useSelector(state => state.tasks.isDragging);
     
     
     const onFilterTask = () => {
         dispatch(setFilterTaskId(undefined));
     }
 
+    // temporaly change overflow from hidden to visible to make the task visible on the other panel when drraging
+    // panel use overflow:hidden to make panel collapsable.
+    const draggingStyle = isDragging ? 'overflow-visible' : " overflow-y-scroll "
+
     return (
-        <div className="m-1 ">
-            <Stack direction={"row"} spacing={0.5}>
+        <div className="m-0 p-1 pb-1 flex flex-col h-full">
+            <Stack direction={"row"} spacing={0.5} >
                 <CreateTask />
                 <ShiftAction />
                 <TodoAction tasks={tasks} className="grow"/>
@@ -38,7 +43,7 @@ export default function TaskPanel({tasks}) {
                     </select>
                 </label>
             </Stack>
-            <TaskList tasks={tasks} group={group}/>
+            <div className={draggingStyle}><TaskList  tasks={tasks} group={group}/></div>            
         </div>
     )
 }

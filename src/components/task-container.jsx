@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DndContext } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -7,7 +6,7 @@ import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
 import TaskDialog from "./task-dialog";
 import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
-import { editTask } from "../features/taskSlice";
+import { dragging, editTask } from "../features/taskSlice";
 import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 
@@ -18,16 +17,15 @@ export default function TaskContainer() {
     const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const [ updateTask ] = useUpdateTaskMutation()
-    const [isDragging, setDragging] = useState(false)
     const taskToEdit  = useSelector(state => state.tasks.editTask);
     const dispatch = useDispatch()
 
     const onDndStart = (event) => {
-      setDragging(true)
+      dispatch(dragging(true))
     }
 
     const onDnd = (event) => {
-      setDragging(false)
+      dispatch(dragging(false))
       const source = event.active.id
       const dest   = (event.over && event.over.id) || undefined
       if (dest === undefined) return
@@ -36,10 +34,6 @@ export default function TaskContainer() {
       // console.log("dnd source=" + source + ", dest=" + dest,"new expr=", newExpr)
       updateTask({id:source, slotExpr: newExpr})
     }
-
-    // temporaly change overflow from hidden to visible to make the task visible on the other panel when drraging
-    // panel use overflow:hidden to make panel collapsable.
-    const styleDrag = isDragging ? {overflow:"visible"} : {overflow:"hidden"}
 
     const onTaskDialogConfirm = (task) => {
       console.log('onTaskDialogConfirm', task)
@@ -60,12 +54,12 @@ export default function TaskContainer() {
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart}>            
             { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm}/>}
-            <PanelGroup direction="horizontal" className=''>
-              <Panel className='' collapsible={true} minSize={20} >
+            <PanelGroup direction="horizontal" className="" >
+              <Panel className='' collapsible={true} minSize={20} style={{}} >
                 {panel1}
               </Panel>
               <PanelResizeHandle className="w-1.5 bg-gray-200 hover:bg-black"/>
-              <Panel className='' collapsible={true} minSize={20} style={styleDrag}>
+              <Panel className='' collapsible={true} minSize={20} style={{overflow:"visible"}}>
                 {panel2}
               </Panel>           
             </PanelGroup>            

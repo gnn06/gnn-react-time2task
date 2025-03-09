@@ -10,6 +10,7 @@ xx/03/2025
 - add sign up (hidden)
 - UI lets show or hide repeat task in slot panel
 - UI lets choice between strict or not slot filtering
+- make slot and task panel scrollable keeping toolbar fixe
 
 02/03/2025
 ==========

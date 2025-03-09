@@ -15,7 +15,7 @@ function App() {
   return (
       <div>
         { userId ? (
-          <div className='p-0'>
+          <div className='h-screen flex flex-col'>
             <AppMenu className=''/>
             <TaskFilter />
             <TaskContainer/>

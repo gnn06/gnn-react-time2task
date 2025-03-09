@@ -23,6 +23,7 @@ const initialState = {
     accessToken: retrieveAccessToken(),
     activity: null,
     editTask: null,
+    isDragging: false,
 };
 
 export const taskSlice = createSlice({
@@ -102,13 +103,16 @@ export const taskSlice = createSlice({
         },
         showRepeatAction: (state, action) => {
             state.showRepeat = action.payload;
+        },
+        dragging: (state, action) => {
+            state.isDragging = action.payload;
         }
     }
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId,
-    editTask, showRepeatAction, setFilterSlotStrict
+    editTask, showRepeatAction, setFilterSlotStrict, dragging
 } = taskSlice.actions
 
 export default taskSlice.reducer

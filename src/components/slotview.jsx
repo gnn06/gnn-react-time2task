@@ -3,7 +3,7 @@ import { useState } from 'react';
 import SlotTree from './slot-tree';
 import { slotViewFilter } from "../data/slot-view";
 
-export default function SlotView({ tasks, conf }) {
+export default function SlotView({ className, tasks, conf }) {
 
   const [selection, setSelection] = useState(new Map());
 
@@ -18,7 +18,7 @@ export default function SlotView({ tasks, conf }) {
 
   const slots = slotViewFilter(conf)
 
-  return <div className="mt-5">
+  return <div className={"mt-2 " + className} style={{}}>
     {slots.map((slot, index) => {
       return <SlotTree key={slot.id} slot={slot} tasks={tasks} selection={selection} handleSelection={handleSelection} />
     })}

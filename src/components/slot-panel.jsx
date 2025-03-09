@@ -49,8 +49,8 @@ export default function SlotPanel({tasks})  {
     }
 
     return (
-        <div className="m-1 ">
-            <Grid container flexDirection="row" justifyContent="flex-end" alignItems={"flex-start"} gap="0.25em" >
+        <div className="m-0 pl-1 pb-1 flex flex-col h-full">
+            <Grid className="p-1" container flexDirection="row" justifyContent="flex-end" alignItems={"flex-start"} gap="0.25em" >
                 { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
                 <FormControlLabel control={<Checkbox checked={slotStrict} onClick={handleSlotStrict}/>} label="créneau strict" disabled={!filterPath}/>
                 <FormControlLabel control={<Checkbox checked={showRepeat} onClick={handleShowRepeat}/>} label="voir les répétitions" />
@@ -75,7 +75,7 @@ export default function SlotPanel({tasks})  {
                     </Select>
                 </Tooltip>
             </Grid>
-            <SlotView tasks={tasks} conf={conf} />
+            <SlotView className=" overflow-y-scroll " tasks={tasks} conf={conf} />
         </div>
         )
     }

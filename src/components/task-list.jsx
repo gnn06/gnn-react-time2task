@@ -5,7 +5,7 @@ import TaskNew from './task-new';
 import { useAddTaskMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { Box } from "@mui/material";
 
-export default function TaskList({tasks, group}) {
+export default function TaskList({tasks, group, className = ''}) {
 
     const [ addTask ] = useAddTaskMutation()
     const [ updateTask, /*{ isLoading: isUpdating }*/ ] = useUpdateTaskMutation()
@@ -16,7 +16,7 @@ export default function TaskList({tasks, group}) {
     }
 
     return <React.Fragment>
-        <table className="w-full">
+        <table className={"w-full" + className}>
             <thead>
             <tr>
                 <th></th>
