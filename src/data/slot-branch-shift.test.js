@@ -243,6 +243,31 @@ test('multi', () => {
     expect(result).toEqual(expected)
 });
 
+test('multi this next', () => {
+    const given = {
+        "type": "multi",
+        "value": [ { "type": "branch",
+                     "value": [ "this_week", "mercredi" ]
+                   },
+                   { "type": "branch",
+                     "value": [ "next_week", "mardi" ]
+                   }
+        ]
+    };
+    const result = branchShift(given, 'week');
+    const expected = 
+        { type: "branch", value: [
+            { "type": "multi", "value": [ 
+                { "type": "branch",
+                "value": [ "this_week", "mercredi" ] },
+                { "type": "branch",
+                "value": [ "this_week", "mardi" ]
+                }
+            ]}
+        ]};    
+    expect(result).toEqual(expected)
+})
+
 describe('getWeight', () => {
     test('nominal', () => {
         const result = getBranchWeight({ type: 'branch', value: ['this_week'] })
