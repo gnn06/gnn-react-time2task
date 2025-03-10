@@ -1,5 +1,5 @@
 import { _branchAlias, _getBranchPreviousOrShift, getBranchWeight } from "./slot-branch";
-import { branchCompare, branchShift } from "./slot-branch++";
+import { branchCompare, branchMerge, branchShift } from "./slot-branch++";
 
 /**
  * Au début ou non      START 
@@ -266,6 +266,15 @@ test('multi this next', () => {
             ]}
         ]};    
     expect(result).toEqual(expected)
+})
+
+describe('branchMerge', () => {
+    test('nominal', () => {
+        const given    = { type: "multi",  value: [ "this_week", "this_week" ] };
+        const expected = { type: "branch", value: [ "this_week" ] };
+        const result = branchMerge(given)
+        expect(result).toEqual(expected)
+    })
 })
 
 describe('getWeight', () => {

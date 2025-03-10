@@ -128,3 +128,6 @@ export function branchShift (branch, levelToShift) {
     }
 }
 
+export function branchMerge (branch) {
+    return null;
+}
