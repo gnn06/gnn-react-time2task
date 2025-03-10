@@ -270,8 +270,8 @@ test('multi this next', () => {
 
 describe('branchMerge', () => {
     test('nominal', () => {
-        const given    = { type: "multi",  value: [ "this_week", "this_week" ] };
-        const expected = { type: "branch", value: [ "this_week" ] };
+        const given    = { type: "multi",  value: [ "this_week", "this_week", "next_week" ] };
+        const expected = { type: "multi",  value: [ "this_week", "next_week" ] };
         const result = branchMerge(given)
         expect(result).toEqual(expected)
     })

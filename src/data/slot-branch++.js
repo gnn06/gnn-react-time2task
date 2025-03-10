@@ -129,5 +129,21 @@ export function branchShift (branch, levelToShift) {
 }
 
 export function branchMerge (branch) {
-    return null;
+    const newValue = [];
+    do {
+        const el = branch.value.shift();
+        const previous = newValue.find(item => {
+            if (typeof item === 'string') {
+                return item === el
+            } else {
+                return null
+            }
+        })
+        if (!previous) {
+            newValue.push(el)
+        } else {
+            // nothing
+        }
+    } while (branch.value.length > 0)
+    return {...branch, value: newValue}
 }
