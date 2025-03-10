@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/03/2025'
+export const RELEASE = '10/03/2025'
 
 const text = `
-xx/03/2025
+10/03/2025
 ==========
 - add contextual menu on row
 - add sign up (hidden)

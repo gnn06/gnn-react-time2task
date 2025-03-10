@@ -43,7 +43,7 @@ export default function TaskPanel({tasks}) {
                     </select>
                 </label>
             </Stack>
-            <div className={draggingStyle}><TaskList  tasks={tasks} group={group}/></div>            
+            <div className={draggingStyle + " h-full"}><TaskList  tasks={tasks} group={group}/></div>            
         </div>
     )
 }
