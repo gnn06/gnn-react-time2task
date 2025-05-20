@@ -12,13 +12,43 @@ describe('path', () => {
     describe('getSlotLevel', () => {
         test('month', () => {
             expect(getSlotIdLevel('month')).toEqual(1)
-        })
+        });
+        test('this_month', () => {
+            expect(getSlotIdLevel('this_month')).toEqual(1)
+        });
         test('week', () => {
             expect(getSlotIdLevel('week')).toEqual(2)
         });
+        test('this_week', () => {
+            expect(getSlotIdLevel('this_week')).toEqual(2)
+        });
         test('day', () => {
             expect(getSlotIdLevel('day')).toEqual(3)
-        })
+        });
+        test('lundi', () => {
+            expect(getSlotIdLevel('lundi')).toEqual(3)
+        });
+        test('mardi', () => {
+            expect(getSlotIdLevel('mardi')).toEqual(3)
+        });
+        test('mercredi', () => {
+            expect(getSlotIdLevel('mercredi')).toEqual(3)
+        });
+        test('jeudi', () => {
+            expect(getSlotIdLevel('jeudi')).toEqual(3)
+        });
+        test('vendredi', () => {
+            expect(getSlotIdLevel('vendredi')).toEqual(3)
+        });
+        test('matin', () => {
+            expect(getSlotIdLevel('matin')).toEqual(4)
+        });        
+        test('aprem', () => {
+            expect(getSlotIdLevel('aprem')).toEqual(4)
+        });
+        test('notdef', () => {
+            expect(getSlotIdLevel('notdef')).toEqual(-1)
+        });
     });
     
     test('getSlotPrevious', () => {

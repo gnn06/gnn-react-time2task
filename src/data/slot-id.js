@@ -1,3 +1,5 @@
+import _, { includes } from "lodash";
+
 export const weight = {
     month     : 1,
     this_month: 1,
@@ -41,16 +43,12 @@ export function getSlotIdAndKeywords() {
  * public used by parser.js
  */
 export function getSlotIdLevel(slotId) {
-    if (slotId === 'month' || slotId === 'this_month' || slotId === 'next_month')
-        return 1;
-    if (slotId === 'week' || slotId === 'next_week' || slotId === 'following_week' || slotId === 'this_week')
-        return 2;
-    else if (slotId === 'day' || slotId === 'lundi' || slotId === 'mardi' || slotId === 'mercredi' || slotId === 'jeudi' || slotId === 'vendredi')
-        return 3;
-    else if (slotId === 'matin' || slotId === 'aprem')
-        return 4;
-    else
-        return -1
+    const levelIfGeneric = GENERIC_SLOTIDS.indexOf(slotId);
+    if  (levelIfGeneric > -1) {
+        return levelIfGeneric + 1;
+    }
+    const result = _.findKey(SLOTIDS_BY_LEVEL, arr => includes(arr, slotId));
+    return result !== undefined ? Number(result) : -1;
 }
 
 /*
