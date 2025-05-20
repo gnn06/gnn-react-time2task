@@ -9,11 +9,13 @@ export const weight = {
     next_week : 3,
     following_week: 4,
     day       : 1,
-    lundi     : 1,
-    mardi     : 2,
-    mercredi  : 3,
-    jeudi     : 4,
-    vendredi  : 5,
+    today     : 2,
+    tomorrow  : 3,
+    lundi     : 4,
+    mardi     : 5,
+    mercredi  : 6,
+    jeudi     : 7,
+    vendredi  : 8,
     matin     : 1,
     aprem     : 2
 }
@@ -22,12 +24,12 @@ export const EXPR_KEYWORDS = [
     'disable', 'chaque', 'every'
 ];
 
-export const SLOTIDS_LST = ['month', 'this_month', 'next_month', 'week', 'this_week', 'next_week', 'following_week', 'day', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
+export const SLOTIDS_LST = ['month', 'this_month', 'next_month', 'week', 'this_week', 'next_week', 'following_week', 'day', 'today', 'tomorrow', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
 
 export const SLOTIDS_BY_LEVEL = {
     '1': ['this_month', 'next_month'],
     '2': ['this_week', 'next_week', 'following_week'],
-    '3': ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],
+    '3': ['today','tomorrow','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],
     '4': ['matin', 'aprem']
 }
 
