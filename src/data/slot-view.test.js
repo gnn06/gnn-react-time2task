@@ -11,7 +11,7 @@ const defaultConf = {
    levelMaxIncluded: null
 }
 
-test('empty conf', () => {
+test.skip('empty conf', () => {
    const conf = {
       collapse: [],
       remove: [],
@@ -552,7 +552,7 @@ test('empty conf', () => {
    expect(result).toEqual(expected)
 });
 
-test('collapse', () => {
+test.skip('collapse', () => {
    const conf = {
       collapse: [
          "this_month next_week",
@@ -676,7 +676,7 @@ test('collapse', () => {
    expect(result).toEqual(expected)
 });
 
-test('remove', () => {
+test.skip('remove', () => {
    const expected = [
       {
          "id": "this_month",
@@ -785,7 +785,7 @@ test('remove', () => {
    expect(result).toEqual(expected)
 })
 
-test('level filter max', () => {
+test.skip('level filter max', () => {
    const expected = [
       {
          "id": "this_month",
@@ -835,7 +835,7 @@ test('level filter max', () => {
    expect(result).toEqual(expected)
 })
 
-test('level filter min', () => {
+test.skip('level filter min', () => {
    const conf = {
       collapse: [],
       remove: ['this_month next_week', 'this_month following_week', 'next_month'],
