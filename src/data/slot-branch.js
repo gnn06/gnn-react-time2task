@@ -1,5 +1,5 @@
 import { isBranchEqualOrInclude } from "./slot-branch++";
-import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance } from "./slot-id";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance, getSlotIdNextPrev } from "./slot-id";
 
 export function getBranchFirstSlot(branch) {
     return branch.value[0];
@@ -54,7 +54,25 @@ export function getBranchCurrentPath(level) {
  * give a weigth managing shift, weigth use only weigth on first slot. weight(this_week + 1) = get(this_week) + 1
  */
 export function getBranchWeight(branch) {
-    return weight[branch.value.at(0)] + (branch.shift === undefined ? 0 : branch.shift)
+    // try {
+        let id = branch.value.at(0);
+        if (id === 'today') {
+            id = /* getSlotIdCurrent(3) */'mercredi';
+        }
+        if (id === 'tomorrow') {
+            id = /* getSlotIdCurrent(3) */'mercredi';
+            console.debug('id=',id)
+            if (id !== '') {
+                id = getSlotIdNextPrev(id, 1);
+            } else {
+                return -1;
+            }
+        }
+        return weight[id] + (branch.shift === undefined ? 0 : branch.shift)
+    // } catch (error) {
+    //     console.error('getBranchWeight error', error, branch);
+    //     return -1;
+    // }
 }
 
 export function getBranchDistance(branch1, branch2) {

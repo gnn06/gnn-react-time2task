@@ -9,8 +9,6 @@ export const weight = {
     next_week : 3,
     following_week: 4,
     day       : 1,
-    today     : 2,
-    tomorrow  : 3,
     lundi     : 4,
     mardi     : 5,
     mercredi  : 6,
@@ -67,8 +65,12 @@ export function getSlotIdCurrent(level) {
     else if (level === 3) {
         const currentTime = new Date();
         const day = currentTime.getDay(); // 0 = dimanche
-        const jour = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-        return jour[day];
+        if (day === 0 || day === 6) {
+            return '';
+        } else {
+            const jour = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+            return jour[day];
+        }
     }
     else if (level === 4)
         return 'matin';

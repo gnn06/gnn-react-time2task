@@ -73,6 +73,29 @@ test('isRepetition', () => {
 });
 
 describe('getBranchWeight', () => {
+    test('mercredi', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'mercredi' ] })
+        expect(result).toEqual(6)
+    });
+    test('jeudi', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'jeudi' ] })
+        expect(result).toEqual(7)
+    });
+    test('today', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'today' ] })
+        expect(result).toEqual(6)
+    });
+    test('tomorrow', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'tomorrow' ] })
+        expect(result).toEqual(7)
+    });
+    test('tomorrow when dimanche', () => {
+        vi.setSystemTime(new Date('2023-12-24')) // dimanche
+        const result = getBranchWeight({ branch: 'branch', value: [ 'tomorrow' ] })
+        expect(result).toEqual(-1)
+        vi.setSystemTime(new Date('2023-12-20')) // mercredi
+    });
+
     test('week', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'week' ] })
         expect(result).toEqual(1)
@@ -80,7 +103,7 @@ describe('getBranchWeight', () => {
     test('month', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'month' ] })
         expect(result).toEqual(1)
-    })    
+    });
 });
 
 describe('equality', () => {
