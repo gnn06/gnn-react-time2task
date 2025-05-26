@@ -95,6 +95,14 @@ describe('getBranchWeight', () => {
         expect(result).toEqual(-1)
         vi.setSystemTime(new Date('2023-12-20')) // mercredi
     });
+    test('today no transform', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'today' ] }, false)
+        expect(result).toEqual(2)
+    });
+    test('tomorrow no transform', () => {
+        const result = getBranchWeight({ branch: 'branch', value: [ 'tomorrow' ] }, false)
+        expect(result).toEqual(3)
+    })
 
     test('week', () => {
         const result = getBranchWeight({ branch: 'branch', value: [ 'week' ] })
@@ -182,6 +190,20 @@ describe('equality', () => {
             expect(result).toBeTruthy()
         });
     })
+    describe('today', () => {
+        test('today today', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'this_month', 'this_week', 'today' ] }, { branch: 'branch', value: [ 'this_month', 'this_week', 'today' ] })
+            expect(result).toBeTruthy()
+        });
+        test('mercredi today', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'mercredi' ] }, { branch: 'branch', value: [ 'today' ] }, false, true)
+            expect(result).toBeTruthy()
+        });
+        test('mercredi today noTransform', () => {
+            const result = isBranchEqualShallow({ branch: 'branch', value: [ 'mercredi' ] }, { branch: 'branch', value: [ 'today' ] }, false, false)
+            expect(result).toBeFalsy()
+        });
+    });
     describe('isBranchEqualDeep', () => { 
         test('depth = 1, equal', () => {
             const result = isBranchEqualDeep(

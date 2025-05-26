@@ -9,6 +9,8 @@ export const weight = {
     next_week : 3,
     following_week: 4,
     day       : 1,
+    today     : 2,
+    tomorrow  : 3,
     lundi     : 4,
     mardi     : 5,
     mercredi  : 6,

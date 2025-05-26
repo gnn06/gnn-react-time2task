@@ -80,11 +80,11 @@ export function slotCompare(slotExpr1, slotExpr2) {
  * @returns boolean
  * public used by filtering with NONE, slotView on not terminal node (findTaskBySlotExpr)
  */
-export function isSlotEqual(slotExpr, otherSlotExpr, withRepeat = false) {
+export function isSlotEqual(slotExpr, otherSlotExpr, withRepeat = false, transform = true) {
     const parser = new Parser()
     const tree1 = branchComplete(parser.parse(slotExpr))
     const tree2 = branchComplete(parser.parse(otherSlotExpr))
-    return isBranchEqualDeep(tree1, tree2, withRepeat)
+    return isBranchEqualDeep(tree1, tree2, withRepeat, transform)
 }
 
 /**
@@ -95,11 +95,11 @@ export function isSlotEqual(slotExpr, otherSlotExpr, withRepeat = false) {
  * @param mono complete slot. if Given multi, test on first slot
  * public used by filtering (except with NONE), slotview on terminal node (findTaskBySlotExpr)
  */
-export function isSlotEqualOrInclude(slotExpr, otherSlotExpr, withRepeat = false) {
+export function isSlotEqualOrInclude(slotExpr, otherSlotExpr, withRepeat = false, transform = true) {
     const parser = new Parser()
     const tree1 = branchComplete(parser.parse(slotExpr))
     const tree2 = branchComplete(parser.parse(otherSlotExpr))
-    return isBranchEqualOrInclude(tree1, tree2, withRepeat)
+    return isBranchEqualOrInclude(tree1, tree2, withRepeat, transform)
 }
 
 const parser = new Parser()

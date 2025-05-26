@@ -53,14 +53,14 @@ export function getBranchCurrentPath(level) {
 /*
  * give a weigth managing shift, weigth use only weigth on first slot. weight(this_week + 1) = get(this_week) + 1
  */
-export function getBranchWeight(branch) {
+export function getBranchWeight(branch, transform=true) {
     // try {
         let id = branch.value.at(0);
-        if (id === 'today') {
-            id = /* getSlotIdCurrent(3) */'mercredi';
+        if (transform && id === 'today') {
+            id = getSlotIdCurrent(3)/* 'mercredi' */;
         }
-        if (id === 'tomorrow') {
-            id = /* getSlotIdCurrent(3) */'mercredi';
+        if (transform && id === 'tomorrow') {
+            id = getSlotIdCurrent(3)/* 'mercredi' */;
             console.debug('id=',id)
             if (id !== '') {
                 id = getSlotIdNextPrev(id, 1);
@@ -75,9 +75,9 @@ export function getBranchWeight(branch) {
     // }
 }
 
-export function getBranchDistance(branch1, branch2) {
-    let index1 = getBranchWeight(branch1)
-    let index2 = getBranchWeight(branch2)
+export function getBranchDistance(branch1, branch2, transform = true) {
+    let index1 = getBranchWeight(branch1, transform)
+    let index2 = getBranchWeight(branch2, transform)
     const distance = (index2 - index1)
     return distance
 }
@@ -86,7 +86,7 @@ export function getBranchDistance(branch1, branch2) {
  * equal on first level
  * Used by isBranchEqualDeep, branchSlotIsInOther
  */
-export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
+export function isBranchEqualShallow(branch1, branch2, withRepeat = false, transform = true) {
     if (withRepeat && branch1.repetition !== undefined) {
         const id1 = getBranchFirstSlot(branch1)
         const id2 = getBranchFirstSlot(branch2)
@@ -99,7 +99,7 @@ export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
     if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
         return true
     } else {
-        return getBranchWeight(branch1) === getBranchWeight(branch2)
+        return getBranchWeight(branch1, transform) === getBranchWeight(branch2, transform)
     }
 }
 
