@@ -44,21 +44,48 @@ describe('getDate', () => {
         const result = getDate(givenSlot, givenSnapDate)
         expect(result).toEqual(expectedDate)
     })
-
+    test('following_week', () => {
+        const givenSlot     = { id: "following_week" }
+        const givenSnapDate = [{ slotid: "this_week", date: "2025-01-06" }]
+        const expectedDate  = "2025-01-20"
+        const result = getDate(givenSlot, givenSnapDate)
+        expect(result).toEqual(expectedDate)
+    });
+    test('following_week + 1', () => {
+        const givenSlot     = { id: "following_week + 1" }
+        const givenSnapDate = [{ slotid: "this_week", date: "2025-01-06" }]
+        const expectedDate  = "2025-01-27"
+        const result = getDate(givenSlot, givenSnapDate)
+        expect(result).toEqual(expectedDate)
+    });
     test('snapDate exist, no shift, month', () => {
         const givenSlot     = {id:'this_month'}
         const givenSnapDate = [{slotid: 'this_month',date: "2024-01-01"}]
         const expectedDate  = "2024-01"
         const result = getDate(givenSlot, givenSnapDate)
         expect(result).toEqual(expectedDate)
-    })
+    });
+    test('this_month + 1', () => {
+        const givenSlot     = {id:'this_month + 1'}
+        const givenSnapDate = [{slotid: 'this_month',date: "2024-01-01"}]
+        const expectedDate  = "2024-02"
+        const result = getDate(givenSlot, givenSnapDate)
+        expect(result).toEqual(expectedDate)
+    });
+    test('next_month + 1', () => {
+        const givenSlot     = {id:'next_month + 1'}
+        const givenSnapDate = [{slotid: 'this_month',date: "2024-01-01"}]
+        const expectedDate  = "2024-03"
+        const result = getDate(givenSlot, givenSnapDate)
+        expect(result).toEqual(expectedDate)
+    });
     test('snapDate exist, shift, month', () => {
         const givenSlot     = {id:'next_month'}
         const givenSnapDate = [{slotid: 'this_month',date: "2024-01-01"}]
         const expectedDate  = "2024-02"
         const result = getDate(givenSlot, givenSnapDate)
         expect(result).toEqual(expectedDate)
-    })
+    })    
     
     
     // TODO vérifier les autres level month, day    

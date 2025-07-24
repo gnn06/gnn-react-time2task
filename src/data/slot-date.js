@@ -58,49 +58,45 @@ export function shiftDate(date, level) {
 
 /* use in <SlotTitle/> */
 export function getDate(slotID, snapDates) {
+    const IdRegExp = slotID.id.match(/(\S+) ?\+? ?(\d*)/)
+    const id = IdRegExp[1]
+    const shift = IdRegExp[2] !== '' ? parseInt(IdRegExp[2]) : 0
+    const level = getSlotIdLevel(id)
+
     // prerequis : snapDate contains all level
-    let snapDate = snapDates.find(el => el.slotid === slotID.id)
-    
+    let snapDate = null;
 
     // compute date from snapDate or default
-    if (slotID.id === 'this_month') {
-        if (snapDate === undefined) {
-            snapDate = getDefaultDates().find(el => el.slotid === "this_month")
-        }
-        return moment(snapDate.date).format("YYYY-MM")
-    }
-    if (slotID.id === 'next_month') {
+    if (level === 1) { // month
         snapDate = snapDates.find(el => el.slotid === "this_month")
         if (snapDate === undefined) {
             snapDate = getDefaultDates().find(el => el.slotid === "this_month")
         }
-        const pivotDate = moment(snapDate.date)
-        pivotDate.add(1,'months')
-        return pivotDate.format("YYYY-MM")
     }
-    if (slotID.id === 'this_week') {
-        if (snapDate === undefined) {
-            snapDate = getDefaultDates().find(el => el.slotid === "this_week")
-        }
-        return snapDate.date
-    }
-    if (slotID.id === 'next_week') {
+    if (level === 2) { // week
         snapDate = snapDates.find(el => el.slotid === "this_week")
         if (snapDate === undefined) {
             snapDate = getDefaultDates().find(el => el.slotid === "this_week")
         }
-        const pivotDate = new Date(snapDate.date)
-        pivotDate.setDate(pivotDate.getDate() + 7)
-        return getISODate(pivotDate)
     }
-    if (slotID.id === 'following_week') {
-        snapDate = snapDates.find(el => el.slotid === "this_week")
-        if (snapDate === undefined) {
-            snapDate = getDefaultDates().find(el => el.slotid === "this_week")
+
+    if (level === 1) { // month
+        let resultDate = moment(snapDate.date);
+        if (id === 'next_month') {
+            resultDate.add(1, 'months')
         }
-        const pivotDate = new Date(snapDate.date)
-        pivotDate.setDate(pivotDate.getDate() + 14)
-        return getISODate(pivotDate)
+        resultDate.add(shift, 'months')
+        return resultDate.format("YYYY-MM")
+    }
+    if (level === 2) { // week
+        let resultDate = moment(snapDate.date);
+        if (id === 'next_week') {
+            resultDate.add(7, 'days')
+        }
+        if (id === 'following_week') {
+            resultDate.add(14 + 7 * shift, 'days')
+        }
+        return resultDate.format("YYYY-MM-DD");
     }
     // TODO manage slot as "ID + n"
     return ""
