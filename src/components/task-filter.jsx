@@ -21,7 +21,7 @@ export default function TaskFilter() {
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const filterRef = useRef(null);
 
-    const onChange = (e) => {
+    const onInputChange = (e) => {
         const filter = e;
         const {func, error} = makeFilterExpr(filter)
         if (error) {
@@ -65,7 +65,7 @@ export default function TaskFilter() {
                 <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
                     placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
                     closeIcon={true}
-                    onInputChange={onChange} initialInputValue={filterExpr}/>
+                    onInputChange={onInputChange} initialInputValue={filterExpr}/>
                 { error && <div className="m-1 text-red-500">{error}</div>}
             </div>
             <DialogHelpExpression/>            

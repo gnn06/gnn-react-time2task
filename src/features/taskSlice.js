@@ -13,6 +13,8 @@ const initialState = {
         isDisable: false,
         isStatusARepo: false,
         isError: false,
+        slot: null,
+        taskId: null,
         slotStrict: false
     },
     slotViewFilterConf: DEFAULT_CONF,
