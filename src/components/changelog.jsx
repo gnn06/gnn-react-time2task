@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '10/03/2025'
+export const RELEASE = '16/09/2025'
 
 const text = `
+16/09/2025
+==========
+- compute date of nextr_week + 2
+- text filtre override slot filter
+
 10/03/2025
 ==========
 - add contextual menu on row
