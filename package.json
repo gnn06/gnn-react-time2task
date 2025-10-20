@@ -55,7 +55,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "rclone-pull": "rclone sync --progress --exclude=node_modules/ --exclude=dist/ onedriveperso:Documents/dev/time2task ./",
-    "rclone-push": "rclone sync --progress --exclude=node_modules/ --exclude=dist/ ./ onedriveperso:Documents/dev/time2task"
+    "rclone-push": "touch SYNC_FILE && rclone sync --progress --exclude=node_modules/ --exclude=dist/ ./ onedriveperso:Documents/dev/time2task"
   },
   "eslintConfig": {
     "extends": [
