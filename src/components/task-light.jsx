@@ -12,6 +12,7 @@ import { useGetActivitiesQuery, useUpdateTaskMutation } from "../features/apiSli
 
 import { isTaskUnique } from '../data/task.js'
 import { getActivityColor } from "./ui-helper";
+import { STATUS_LST } from "./task-status";
 
 export default function TaskLight({task}) {
 
@@ -36,11 +37,16 @@ export default function TaskLight({task}) {
         dispatch(editTask(task))
     }
 
+    const statusColor  = STATUS_LST.find(item => item.value === task.status)?.color || "";
+
     // use style for color styling => avoid using tailwindcss color
     return <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
         <span className="grow">{task.title}</span>
-        { isUnique && <UniqueIcon/> }
+        <div>
+            { isUnique && <UniqueIcon/> }
+            <span className="p-1" style={{background: statusColor}}>{task.status}</span>
+        </div>
         <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />
-        <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={handleEditTask}><MoreHorizIcon  /></IconButton>
+        <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={handleEditTask}><MoreHorizIcon  /></IconButton>        
     </div>;
 }
