@@ -73,6 +73,20 @@ export class SlotPath {
         return true;
     }
 
+    
+    /**
+     * is this is inside other one ?
+     */
+    equalsOrInclude(other: SlotPath) : boolean {
+        if (this.IDs.length < other.IDs.length) return false;
+        for (let i = 0; i < other.IDs.length; i++) {
+            if (!isSlotIdEquals(this.IDs[i], other.IDs[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     replace(level:number, id:string) : SlotPath {
         const new_IDs = this.IDs.map(el => getSlotIdLevel(el) === level ? id : el)
         this.IDs = new_IDs

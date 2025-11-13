@@ -88,7 +88,7 @@ export function isSlotEqual(slotExpr, otherSlotExpr, withRepeat = false) {
 }
 
 /**
- * is a slot is inside an other
+ * is first slot is inside second one
  * 'week lundi' is in 'week'
  * differs from slotEqual (slotIsInOther('this_week lundi', 'this_week') = true)
  * module private

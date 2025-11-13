@@ -22,11 +22,25 @@ export default function Slot({slot, tasks}) {
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
     const showRepeat = useSelector(state => state.tasks.showRepeat);
 
     const { id, start, end, inner } = slot;
-    const tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
+    
+    let tasksInSlot = [];
+    if (!filterPath) {
+        tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
+    } else if (slotStrict) {
+        if (new SlotPath(slot.path).equalsOrInclude(new SlotPath(filterPath))) {
+            tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
+        } else {
+            // nothing
+        }
+    } else {
+        tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
+    }
+    
     const onSlotClick = e => {
         const slotId = slot.id;
         dispatch(
@@ -63,7 +77,7 @@ export default function Slot({slot, tasks}) {
                     + (isOver ? "bg-blue-500" : "") + " "
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
-    const level = new SlotPath(slot.path).getLevel()
+    const level = new SlotPath(slot.path).getLevel();
     
     return <React.Fragment>
         <div className={"group " + slotStyle}>

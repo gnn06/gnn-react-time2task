@@ -1,4 +1,8 @@
-import { reduceCollapseOnConf, slotViewAdd, slotViewFilter, slotViewFilterSelection, transPathToConf } from "./slot-view";
+import { vi } from "vitest";
+import { reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
+
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 const defaultConf = {
    collapse: [
@@ -1393,3 +1397,318 @@ describe('reduceCollapseOnConf', () => {
       })
    });
 });
+
+describe('slotFind', () => {
+   test('this_week', () => {
+      const givenSlot = {
+         id: "root", path: "", inner: [
+            {
+               id: "Ce mois-ci", path: "this_month", inner: [
+                  {
+                     id: "Cette semaine", path: "this_month this_week", inner: [
+                        {
+                           id: "mercredi", path: `this_month this_week mercredi`, inner: [
+                              { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
+                              { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+                           ]
+                        },
+                        { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
+                        { id: "mardi", path: `this_month this_week mardi`, inner: [] }]
+                  },
+                  { id: "Semaine prochaine", path: "this_month next_week", inner: [] }
+               ]
+            },
+            { id: "Mois prochain", path: "next_month", inner: [] }
+         ]
+      };
+      const result = slotFind(givenSlot, "this_month this_week");
+      const expected = {
+         id: "Cette semaine", path: "this_month this_week", inner: [
+            {
+               id: "mercredi", path: `this_month this_week mercredi`, inner: [
+                  { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
+                  { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+               ]
+            },
+            { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
+            { id: "mardi", path: `this_month this_week mardi`, inner: [] }]
+      };
+      expect(result).toEqual(expected);
+   });
+   test('this_month this_week mercredi aprem', () => {
+      const givenSlot = {
+         id: "root", path: "", inner: [
+            {
+               id: "Ce mois-ci", path: "this_month", inner: [
+                  {
+                     id: "Cette semaine", path: "this_month this_week", inner: [
+                        {
+                           id: "mercredi", path: `this_month this_week mercredi`, inner: [
+                              { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
+                              { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+                           ]
+                        },
+                        { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
+                        { id: "mardi", path: `this_month this_week mardi`, inner: [] }]
+                  },
+                  { id: "Semaine prochaine", path: "this_month next_week", inner: [] }
+               ]
+            },
+            { id: "Mois prochain", path: "next_month", inner: [] }
+         ]
+      };
+      const result = slotFind(givenSlot, "this_month this_week mercredi aprem");
+      const expected = { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] };
+      expect(result).toEqual(expected);
+   });
+});
+
+describe('slotViewList', () => {
+   test('without filter', () => {
+      const result = slotViewList();
+      const expected = [
+         [
+            {
+               "id": "Ce matin",
+               "inner": [],
+               "path": "this_month this_week mercredi matin",
+            },
+            {
+               "id": "Cet arpès-midi",
+               "inner": [],
+               "path": "this_month this_week mercredi aprem",
+            },
+         ],
+         [
+            {
+               "id": "mardi",
+               "inner": [],
+               "path": "this_month this_week mardi",
+            },
+            {
+               "id": "mercredi",
+               "inner": [
+                  {
+                     "id": "Ce matin",
+                     "inner": [],
+                     "path": "this_month this_week mercredi matin",
+                  },
+                  {
+                     "id": "Cet arpès-midi",
+                     "inner": [],
+                     "path": "this_month this_week mercredi aprem",
+                  },
+               ],
+               "path": "this_month this_week mercredi",
+            },
+            {
+               "id": "jeudi",
+               "inner": [],
+               "path": "this_month this_week jeudi",
+            },
+         ],
+         [
+            {
+               "id": "Cette semaine",
+               "inner": [
+                  {
+                     "id": "mardi",
+                     "inner": [],
+                     "path": "this_month this_week mardi",
+                  },
+                  {
+                     "id": "mercredi",
+                     "inner": [
+                        {
+                           "id": "Ce matin",
+                           "inner": [],
+                           "path": "this_month this_week mercredi matin",
+                        },
+                        {
+                           "id": "Cet arpès-midi",
+                           "inner": [],
+                           "path": "this_month this_week mercredi aprem",
+                        },
+                     ],
+                     "path": "this_month this_week mercredi",
+                  },
+                  {
+                     "id": "jeudi",
+                     "inner": [],
+                     "path": "this_month this_week jeudi",
+                  },
+               ],
+               "path": "this_month this_week",
+            },
+            {
+               "id": "Semaine prochaine",
+               "inner": [],
+               "path": "this_month next_week",
+            },
+         ],
+         [
+            {
+               "id": "Ce mois-ci",
+               "inner": [
+                  {
+                     "id": "Cette semaine",
+                     "inner": [
+                        {
+                           "id": "mardi",
+                           "inner": [],
+                           "path": "this_month this_week mardi",
+                        },
+                        {
+                           "id": "mercredi",
+                           "inner": [
+                              {
+                                 "id": "Ce matin",
+                                 "inner": [],
+                                 "path": "this_month this_week mercredi matin",
+                              },
+                              {
+                                 "id": "Cet arpès-midi",
+                                 "inner": [],
+                                 "path": "this_month this_week mercredi aprem",
+                              },
+                           ],
+                           "path": "this_month this_week mercredi",
+                        },
+                        {
+                           "id": "jeudi",
+                           "inner": [],
+                           "path": "this_month this_week jeudi",
+                        },
+                     ],
+                     "path": "this_month this_week",
+                  },
+                  {
+                     "id": "Semaine prochaine",
+                     "inner": [],
+                     "path": "this_month next_week",
+                  },
+               ],
+               "path": "this_month",
+            },
+            {
+               "id": "Mois prochain",
+               "inner": [],
+               "path": "next_month",
+            },
+         ],
+      ];
+      expect(result).toEqual(expected);
+   });
+   test('with filter this_week', () => {
+      const givenPath = "this_month this_week";
+      const result = slotViewList(givenPath);
+      const expected = [
+         [
+            {
+               "id": "Ce matin",
+               "inner": [],
+               "path": "this_month this_week mercredi matin",
+            },
+            {
+               "id": "Cet arpès-midi",
+               "inner": [],
+               "path": "this_month this_week mercredi aprem",
+            },
+         ],
+         // day
+         [
+            {
+               "id": "mardi",
+               "inner": [],
+               "path": "this_month this_week mardi",
+            },
+            {
+               "id": "mercredi",
+               "inner": [
+                  {
+                     "id": "Ce matin",
+                     "inner": [],
+                     "path": "this_month this_week mercredi matin",
+                  },
+                  {
+                     "id": "Cet arpès-midi",
+                     "inner": [],
+                     "path": "this_month this_week mercredi aprem",
+                  },
+               ],
+               "path": "this_month this_week mercredi",
+            },
+            {
+               "id": "jeudi",
+               "inner": [],
+               "path": "this_month this_week jeudi",
+            },
+         ],
+         // week
+         [
+            {
+               "id": "Cette semaine",
+               "inner": [
+                  {
+                     "id": "mardi",
+                     "inner": [],
+                     "path": "this_month this_week mardi",
+                  },
+                  {
+                     "id": "mercredi",
+                     "inner": [
+                        {
+                           "id": "Ce matin",
+                           "inner": [],
+                           "path": "this_month this_week mercredi matin",
+                        },
+                        {
+                           "id": "Cet arpès-midi",
+                           "inner": [],
+                           "path": "this_month this_week mercredi aprem",
+                        },
+                     ],
+                     "path": "this_month this_week mercredi",
+                  },
+                  {
+                     "id": "jeudi",
+                     "inner": [],
+                     "path": "this_month this_week jeudi",
+                  },
+               ],
+               "path": "this_month this_week",
+            },
+         ],
+      ];
+      expect(result).toEqual(expected);
+   });
+   test('with filter this_week mercredi', () => {
+      const givenPath = "this_month this_week mercredi aprem";
+      const result = slotViewList(givenPath);
+      const expected = [
+         [
+            {
+               "id": "Cet arpès-midi",
+               "inner": [],
+               "path": "this_month this_week mercredi aprem",
+            },
+         ],
+      ];
+      expect(result).toEqual(expected);
+   });
+   test('with filter next_week', () => {
+      const givenPath = "this_month next_week";
+      const result = slotViewList(givenPath);
+      const expected = [
+         [
+            {
+               "id": "Semaine prochaine",
+               "inner": [],
+               "path": "this_month next_week",
+            },
+         ],
+      ];
+      expect(result).toEqual(expected);
+   })
+});
+;

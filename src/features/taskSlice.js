@@ -15,7 +15,6 @@ const initialState = {
         isError: false,
         slot: null,
         taskId: null,
-        slotStrict: false
     },
     slotViewFilterConf: DEFAULT_CONF,
     showRepeat: true,
@@ -67,10 +66,6 @@ export const taskSlice = createSlice({
             const path = action.payload
             state.currentFilter = {...state.currentFilter, slot: path }
         },
-        setFilterSlotStrict: (state, action) => {
-            const include = action.payload
-            state.currentFilter = {...state.currentFilter, slotStrict: include }
-        },
         setFilterTaskId: (state, action) => {
             const taskId = action.payload
             state.currentFilter = {...state.currentFilter, taskId: taskId }
@@ -94,6 +89,10 @@ export const taskSlice = createSlice({
         setSlotViewFilterConfView: (state, action) => {
             state.slotViewFilterConf = { ...state.slotViewFilterConf, view: action.payload.view };
         },
+        setSlotViewStrict: (state, action) => {
+            const strict = action.payload
+            state.slotViewFilterConf = {...state.slotViewFilterConf, slotStrict: strict }
+        },
         setSlotViewFilterConf: (state, action) => {
             state.slotViewFilterConf = action.payload.conf;
         },
@@ -116,9 +115,9 @@ export const taskSlice = createSlice({
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, 
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, setSlotViewStrict,
     confBranch, setFilterSlot, setFilterTaskId,
-    editTask, showRepeatAction, setFilterSlotStrict, dragging
+    editTask, showRepeatAction, dragging
 } = taskSlice.actions
 
 export default taskSlice.reducer

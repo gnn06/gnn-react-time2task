@@ -3,7 +3,16 @@ import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, getSlotIdLevel, getSlotIdNextPrev, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { SlotPath } from "./slot-path";
 
-export const DEFAULT_CONF = {
+interface SlotViewConf {
+  levelMin:         number | null,
+    levelMaxIncluded: number | null,
+    remove: string[],
+    collapse: string[],
+    view: "tree" | "list",
+    slotStrict: boolean
+}
+
+export const DEFAULT_CONF:SlotViewConf = {
     collapse: [
         "this_month next_week",
         "this_month following_week",
@@ -12,14 +21,8 @@ export const DEFAULT_CONF = {
     remove: [],
     levelMin: null,
     levelMaxIncluded: null,
-    view: "tree"
-}
-
-interface SlotViewConf {
-  levelMin:         number,
-    levelMaxIncluded: number,
-    remove: string[],
-    collapse: string[]
+    view: "tree",
+    slotStrict: true
 }
 
 interface Slot {
@@ -53,8 +56,47 @@ export function reduceCollapseOnConf(conf: SlotViewConf, path: string) : SlotVie
     return conf
 }
 
-export function slotViewList(): [[Slot, Slot], [Slot, Slot, Slot], [Slot, Slot], [Slot, Slot]] {
+export function slotTreeToSlotList(root: Slot): Slot[][] {
+    const levels: Slot[][] = [];
     
+    // Fonction récursive pour parcourir l'arbre par niveau
+    function traverseLevel(nodes: Slot[], depth: number) {
+        if (nodes.length === 0) {
+            return;
+        }
+        
+        // Initialiser le niveau si nécessaire
+        if (!levels[depth]) {
+            levels[depth] = [];
+        }
+        
+        // Ajouter tous les nœuds du niveau actuel
+        levels[depth].push(...nodes);
+        
+        // Collecter tous les enfants pour le niveau suivant
+        const children: Slot[] = [];
+        for (const node of nodes) {
+            if (node.inner && node.inner.length > 0) {
+                children.push(...node.inner);
+            }
+        }
+        
+        // Traiter le niveau suivant
+        if (children.length > 0) {
+            traverseLevel(children, depth + 1);
+        }
+    }
+    
+    // Démarrer la traversée avec les enfants du root
+    if (root.inner && root.inner.length > 0) {
+        traverseLevel(root.inner, 0);
+    }
+    
+    // Inverser l'ordre des niveaux (du plus profond au plus superficiel)
+    return levels.reverse();
+}
+
+function defaultSlotViewList(): Slot {
     let today = getSlotIdCurrent(3);
     if (today === "samedi" || today === "dimanche") {
         today = "lundi";
@@ -72,20 +114,45 @@ export function slotViewList(): [[Slot, Slot], [Slot, Slot, Slot], [Slot, Slot],
         { id: "Ce matin", path: `this_month this_week ${today} matin`, inner: [] },
         { id: "Cet arpès-midi", path: `this_month this_week ${today} aprem`, inner: [] },
     ]
+    
     const todaySlot:Slot = { id: `${today}`, path: `this_month this_week ${today}`, inner: hours };
     const tomorrowSlot:Slot = { id: `${tomorrow}`, path: `this_month this_week ${tomorrow}`, inner: [] };
     const yesterdaySlot:Slot = { id: `${yesterday}`, path: `this_month this_week ${yesterday}`, inner: [] };
+    
     const thisWeek:Slot = { id: "Cette semaine", path: "this_month this_week", inner: [yesterdaySlot, todaySlot, tomorrowSlot] };
     const nextWeek:Slot = { id: "Semaine prochaine", path: "this_month next_week", inner: [] };
+    
     const thisMonth:Slot = { id: "Ce mois-ci", path: "this_month", inner: [thisWeek, nextWeek] };
     const nextMonth:Slot = { id: "Mois prochain", path: "next_month", inner: [] };
-    const slot: [[Slot, Slot], [Slot, Slot, Slot], [Slot, Slot], [Slot, Slot]] = [
-        hours,
-        [ yesterdaySlot, todaySlot, tomorrowSlot ],
-        [ thisWeek, nextWeek ],
-        [ thisMonth, nextMonth ]
-    ];
-    return slot;
+    
+    const root:Slot = { id: "root", path: "", inner: [thisMonth, nextMonth] };
+    return root;
+}
+
+/**
+ * return the slot node matching expr path or node itself if not found
+ * @param node 
+ * @param expr 
+ * @returns 
+ */
+export function slotFind(node: Slot, expr: string): Slot | null {
+    if (node.path === expr) return node;
+    if (!node.inner || node.inner.length === 0) return null;
+    for (const child of node.inner) {
+        const res = slotFind(child, expr);
+        if (res) return res;
+    }
+    return null;
+}
+
+export function slotViewList(path:string): Slot[][] {
+    let tree = defaultSlotViewList();
+    if (path) {
+        const temp = slotFind(tree, path) || tree;
+        tree = { id:'root', path:'', inner:[temp]};
+    }
+    const result = slotTreeToSlotList(tree);
+    return result;
 }
 
 /**

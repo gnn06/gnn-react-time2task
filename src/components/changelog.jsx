@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '16/09/2025'
+export const RELEASE = '13/11/2025'
 
 const text = `
+13/11/2025
+==========
+- add slot list view
+- add status color in slot
+
+
 16/09/2025
 ==========
 - compute date of nextr_week + 2

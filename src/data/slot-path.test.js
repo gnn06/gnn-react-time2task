@@ -155,3 +155,30 @@ describe('equals', () => {
         expect(result).toBeTruthy()
     })
 });
+
+describe('equalsOrInclude', () => {
+    test('shorter', () => {
+        const given1 = new SlotPath("this_month this_week mercredi")
+        const given2 = new SlotPath("this_month this_week")
+        const result = given1.equalsOrInclude(given2)
+        expect(result).toBeTruthy()
+    });
+    test('longer', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month this_week mercredi")
+        const result = given1.equalsOrInclude(given2)
+        expect(result).toBeFalsy()
+    });
+    test('equals', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month this_week")
+        const result = given1.equalsOrInclude(given2)
+        expect(result).toBeTruthy()
+    });
+    test('differs', () => {
+        const given1 = new SlotPath("this_month this_week")
+        const given2 = new SlotPath("this_month next_week")
+        const result = given1.equalsOrInclude(given2)
+        expect(result).toBeFalsy()
+    });
+});
