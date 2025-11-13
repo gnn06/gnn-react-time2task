@@ -7,8 +7,11 @@ import { JsonEditor } from 'json-edit-react'
 
 import SlotView from "./slotview";
 import Button from "./button";
-import { setFilterSlot, setFilterSlotStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, showRepeatAction } from "../features/taskSlice";
+import { setFilterSlot, setFilterSlotStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, setSlotViewFilterConfView, showRepeatAction } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
+import SlotViewTree from "./slotviewtree";
+import SlotViewList from "./slotviewlist";
+import { useUpsertUserConfMutation } from "../features/apiSlice";
 
 export default function SlotPanel({tasks})  {
     const dispatch = useDispatch();
@@ -17,18 +20,32 @@ export default function SlotPanel({tasks})  {
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
     const slotStrict = useSelector(state => state.tasks.currentFilter.slotStrict);
     const showRepeat = useSelector(state => state.tasks.showRepeat);
+    const user   = useSelector(state => state.tasks.user);
+    const [upsert, { isLoading, error }] = useUpsertUserConfMutation()
     
     const onChangeLevelMax = (event) => {
         const level = event.target.value
         dispatch(setSlotViewFilterConfLevel({level}));
     }
 
+    const onViewChange = async (event) => {
+        const view = event.target.value
+        dispatch(setSlotViewFilterConfView({view}));
+        // persister côté backend si utilisateur connecté
+        if (user && user.id) {
+            try {
+                await upsert({ userId: user.id, conf: 'view', value: view }).unwrap();
+            } catch (e) {
+                console.warn('Impossible de sauvegarder la conf utilisateur :', e);
+            }
+        }
+    }
+
     const onConf = () => {
         setConfVisible(true)
     }
-
+    
     const onConfChange = (obj) => {
-        // console.log(obj)
         dispatch(setSlotViewFilterConf({conf: obj}));
     }
 
@@ -74,7 +91,12 @@ export default function SlotPanel({tasks})  {
                         <MenuItem value={4}>Hour</MenuItem>
                     </Select>
                 </Tooltip>
+                <Select size="small" value={conf.view} onChange={onViewChange}>
+                    <MenuItem value="tree">Tree</MenuItem>
+                    <MenuItem value="list">List</MenuItem>
+                </Select>
             </Grid>
+
             <SlotView className=" overflow-y-scroll " tasks={tasks} conf={conf} />
         </div>
         )

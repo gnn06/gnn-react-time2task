@@ -91,6 +91,9 @@ export const taskSlice = createSlice({
         setSlotViewFilterConfLevel: (state, action) => {
             state.slotViewFilterConf = { ...state.slotViewFilterConf, levelMaxIncluded: action.payload.level };
         },
+        setSlotViewFilterConfView: (state, action) => {
+            state.slotViewFilterConf = { ...state.slotViewFilterConf, view: action.payload.view };
+        },
         setSlotViewFilterConf: (state, action) => {
             state.slotViewFilterConf = action.payload.conf;
         },
@@ -113,7 +116,8 @@ export const taskSlice = createSlice({
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf, confBranch, setFilterSlot, setFilterTaskId,
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, 
+    confBranch, setFilterSlot, setFilterTaskId,
     editTask, showRepeatAction, setFilterSlotStrict, dragging
 } = taskSlice.actions
 

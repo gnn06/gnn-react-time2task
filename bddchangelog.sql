@@ -41,3 +41,17 @@ create table
   ) tablespace pg_default;
 
 // add policy all to authenticated
+
+create table public.user_confs (
+  user_id uuid not null references auth.users on delete cascade,
+  conf text not null default 'default',
+  value jsonb not null,
+  primary key (user_id, conf)
+);
+
+alter table public.user_confs enable row level security;
+
+create policy "user_can_crud_own_conf" on public.user_confs
+  using ( auth.uid() = user_id )
+  with check ( auth.uid() = user_id );
+

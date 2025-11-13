@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import SlotTree from './slot-tree';
-import { slotViewFilter } from "../data/slot-view";
+import SlotViewTree from './slotviewtree';
+import SlotViewList from './slotviewlist';
 
 export default function SlotView({ className, tasks, conf }) {
 
@@ -16,11 +16,11 @@ export default function SlotView({ className, tasks, conf }) {
     }
   }
 
-  const slots = slotViewFilter(conf)
+  return (
+    <div className={"mt-2 overflow-y-scroll "} style={{}}>
+      {conf.view === "tree" && <SlotViewTree tasks={tasks} conf={conf} />}
+      {conf.view === "list" && <SlotViewList tasks={tasks} />}
+    </div>
+  )
 
-  return <div className={"mt-2 " + className} style={{}}>
-    {slots.map((slot, index) => {
-      return <SlotTree key={slot.id} slot={slot} tasks={tasks} selection={selection} handleSelection={handleSelection} />
-    })}
-  </div>
 }

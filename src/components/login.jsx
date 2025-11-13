@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
 import { supabase } from '../services/supabase'
-import { login, accessToken } from "../features/taskSlice";
+import { login, accessToken, setSlotViewFilterConf, setSlotViewFilterConfView } from "../features/taskSlice";
 import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
+// import { useLazyGetUserConfQuery } from "../features/apiSlice";
 
 export default function Login({isSignIn}) {
+
+    // const [triggerGetUserConf] = useLazyGetUserConfQuery();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -47,6 +50,19 @@ export default function Login({isSignIn}) {
             const user = { id: data.user.id, email: data.user.email }
             dispatch(login(user));
             dispatch(accessToken(data.session.access_token));
+
+            // Inutile comme la récupération est faite dans App.jsx
+            // récupérer la conf utilisateur stocké et hydrater le store
+            // try {
+            //   const res = await triggerGetUserConf({ userId: data.user.id });
+            //   console.debug("Conf utilisateur chargé :", res);
+            //   if (res && res.data) {
+            //     dispatch(setSlotViewFilterConfView({ view: res.data }));
+            //   }
+            // } catch (e) {
+            //   console.warn("Impossible de charger le filtre utilisateur :", e);
+            // }
+
             navigate('/')
         } else {
             alert(error.message)

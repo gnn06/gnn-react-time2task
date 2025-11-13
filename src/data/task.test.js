@@ -1,7 +1,7 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
-        taskGroup, taskShiftFilter,
-        taskPredicateEvery1,
-        taskPredicateError} from "./task";
+    taskGroup, taskShiftFilter,
+    taskPredicateEvery1,
+    taskPredicateError} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -21,42 +21,42 @@ describe('taskCompare', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi', order: 1}
         const task2 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(-1)    
+        expect(result).toBe(-1)
     })
 
     it('compare task by slot and order bigger', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi', order: 3}
         const task2 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(1)    
+        expect(result).toBe(1)
     })
 
     it('compare task by slot and order equal', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const task2 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(0) 
+        expect(result).toBe(0)
     })
-    
+
     it('compare task by slot and order with param1 undefined', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi'}
         const task2 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(1) 
+        expect(result).toBe(1)
     })
 
     it('compare task by slot and order with param2 undefined', () => {
         const task1 = { slotExpr: 'this_month this_week jeudi', order: 2}
         const task2 = { slotExpr: 'this_month this_week jeudi'}
         const result = taskCompare(task1, task2)
-        expect(result).toBe(-1) 
+        expect(result).toBe(-1)
     })
 
     it('compare task with null', () => {
         const task1 = { slotExpr: 'this_month', order: null }
         const task2 = { slotExpr: 'this_month', order: 2    }
         const result = taskCompare(task1, task2)
-        expect(result).toBe(1) 
+        expect(result).toBe(1)
     })
 
     it('compare task with task1 incomplete slot', () => {
@@ -80,7 +80,7 @@ describe('taskCompare', () => {
             const result = taskCompare(task1, task2)
             expect(result).toBe(1)
         })
-    
+
         it('compare task with param2 multislot', () => {
             const task1 = { slotExpr: 'this_month next_week vendredi' }
             const task2 = { slotExpr: 'this_month this_week mardi jeudi' }
@@ -120,7 +120,7 @@ describe('taskCompare', () => {
                        { id:5, slotExpr: 'chaque lundi aprem chaque vendredi aprem',       order: 20 }, // 2
                        { id:6, slotExpr: 'disable chaque mercredi aprem vendredi aprem',   order: 55 }, // 7
                        { id:7, slotExpr: 'chaque vendredi aprem',                          order: 30 }] // 3
-        
+
         expect(taskCompare(tasks[0], tasks[1])).toEqual(-1)
         expect(taskCompare(tasks[1], tasks[2])).toEqual(1)
         expect(taskCompare(tasks[2], tasks[3])).toEqual(-1)
@@ -340,7 +340,7 @@ describe('findTaskBySlotExpr', () => {
         }];
         expect(result).toEqual(expected);
     })
-    
+
     it('test findTaskBySlotExpr empty slotExpr', () => {
         const tasks = [ {
             id: 'task1'
@@ -444,7 +444,55 @@ describe('findTaskBySlotExpr', () => {
         }];
         const result = findTaskBySlotExpr(tasks, slot);
         expect(result).toEqual(expected);
-    })
+    });
+    it('not existing sub-slot', () => {
+        const tasks = [{
+            id: 'task1',
+            slotExpr: 'this_week mercredi aprem'
+        }];
+        const slot =
+        {
+            id: 'slot1', path: 'this_month this_week',
+            inner: [{ id: 'slot1', path: 'this_month this_week mercredi', inner: [] }]
+        };
+        const expected = [];
+        const result = findTaskBySlotExpr(tasks, slot);
+        expect(result).toEqual(expected);
+    });
+    it('existing sub-slot', () => {
+        const tasks = [{
+            id: 'task1',
+            slotExpr: 'this_week vendredi'
+        }];
+        const slot =
+        {
+            id: 'slot1', path: 'this_month this_week',
+            inner: [{ id: 'slot1', path: 'this_month this_week mercredi', inner: [] }]
+        };
+        const expected = [{
+            id: 'task1',
+            slotExpr: 'this_week vendredi'
+        }];
+        const result = findTaskBySlotExpr(tasks, slot);
+        expect(result).toEqual(expected);
+    });
+    it('exact', () => {
+        const tasks = [{
+            id: 'task1',
+            slotExpr: 'this_week'
+        }];
+        const slot =
+        {
+            id: 'slot1', path: 'this_month this_week',
+            inner: [{ id: 'slot1', path: 'this_month this_week mercredi', inner: [] }]
+        };
+        const expected = [{
+            id: 'task1',
+            slotExpr: 'this_week'
+        }];
+        const result = findTaskBySlotExpr(tasks, slot);
+        expect(result).toEqual(expected);
+    });
 })
 
 describe('groupTask', () => {
@@ -457,7 +505,7 @@ describe('groupTask', () => {
         expect(result).toEqual({'this_month this_week': [task1, task2] ,
                                 'this_month next_week': [task3] })
     })
-    
+
     test('taskGroup level2', () => {
         const task1 = { slotExpr: 'this_week mardi matin'  }
         const task2 = { slotExpr: 'this_week mardi aprem'  }
@@ -467,7 +515,7 @@ describe('groupTask', () => {
         expect(result).toEqual({'this_month this_week mardi':    [task1, task2],
                                 'this_month this_week mercredi': [task3] })
     })
-    
+
     test('taskGroup level 3', () => {
         const task1 = { slotExpr: 'this_week mardi matin' }
         const task2 = { slotExpr: 'this_week mardi aprem' }
@@ -475,9 +523,9 @@ describe('groupTask', () => {
         const tasks = [ task1, task2, task3 ]
         const result = taskGroup(tasks,4)
         expect(result).toEqual({'this_month this_week mardi matin': [task1],
-                                'this_month this_week mardi aprem': [task2],
+            'this_month this_week mardi aprem': [task2],
                                 'this_month this_week mercredi aprem': [task3]})
-    })    
+    })
 
     test('taskGroup with shift', () => {
         const task1 = { slotExpr: 'this_week' }
@@ -498,11 +546,11 @@ describe('grouping', () => {
         const result2 = branchTruncate(result1, 4)
         const result3 = branchComplete(result2)
         const result4 = getBranchHash(result3)
-        
+
         expect(result4).toEqual('this_month this_week lundi aprem')
     });
-    
-    
+
+
     test('branch', () => {
         const parser = new Parser()
         const given1 = 'chaque lundi aprem';
@@ -510,7 +558,7 @@ describe('grouping', () => {
         const result2 = branchComplete(result1)
         const result3 = branchTruncate(result2, 2)
         const result4 = getBranchHash(result3)
-        
+
         expect(result4).toEqual('this_month this_week')
     });
 
@@ -520,7 +568,7 @@ describe('grouping', () => {
         const result1 = parser.parse(given1)
         const result2 = branchComplete(result1)
         const result3 = branchTruncate(result2, 2)
-        const result4 = getBranchHash(result3)        
+        const result4 = getBranchHash(result3)
         expect(result4).toEqual('this_month next_week')
     });
 
@@ -530,7 +578,7 @@ describe('grouping', () => {
         const result1 = parser.parse(given1)
         const result2 = branchComplete(result1)
         const result3 = branchTruncate(result2, 2)
-        const result4 = getBranchHash(result3)        
+        const result4 = getBranchHash(result3)
         expect(result4).toEqual('this_month + 1')
     })
 });

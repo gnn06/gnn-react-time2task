@@ -85,17 +85,23 @@ export function filterSlotExpr(tasks, filter) {
 
 /**
  * filter the task list included in a slot. used by slot view.
+ * filter task on slot or on not existng slot
+ * this_week, this_week => true
+ * this_week vendredi, this_week mercredi => true
+ * this_week mercredi aprem, this_week => false
  * @param {*} tasks 
  * @param {*} slot with a path
  * @returns [tasks filtered]
  * public, used by slot.jsx 
  */
 export function findTaskBySlotExpr(tasks, slot, includeRepeat = true) {
-    if (slot.inner !== undefined && slot.inner && slot.inner.length !== 0) {
-        return tasks.filter(task => isSlotEqual(task.slotExpr, slot.path, includeRepeat));
-    } else {
-        return tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path, includeRepeat));
+    // function (this_week vendredi, (this_week, this_week mercredi)) => true
+    
+    let result = tasks.filter(task => isSlotEqualOrInclude(task.slotExpr, slot.path, includeRepeat));
+    if (slot.inner !== undefined) {
+        _.remove(result, task => slot.inner.some(innerSlot => isSlotEqualOrInclude(task.slotExpr, innerSlot.path, includeRepeat)));
     }
+    return result;
 }
 
 const parser = new Parser()

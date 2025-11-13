@@ -52,8 +52,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery:   baseQueryWithReauth,
-    tagTypes: ['Activities'],
-
+    tagTypes: ['Activities','UserConfs'],
+ 
     endpoints: builder => ({
         getActivities: builder.query({
             query: (param) => {
@@ -153,11 +153,32 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: (result, error, id) => [{ type: 'SnapDates', id: 'LIST' },]
         }),
+        // récupère le filtre d'un utilisateur (retourne l'objet JSON ou null)
+        getUserConf: builder.query({
+            query: ({ userId, conf = 'default' }) => `/user_confs?conf=eq.${conf}`,
+            transformResponse: (response) => {
+                // PostgREST renvoie un tableau ; on prend le premier élément s'il existe
+                if (!response || response.length === 0) return null;
+                return response[0].value;
+            },
+            providesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'default') }]
+        }),
+        // upsert du filtre (création ou mise à jour)
+        upsertUserConf: builder.mutation({
+            query: ({ userId, conf = 'default', value }) => ({
+                url: '/user_confs',
+                method: 'POST',
+                body: { user_id: userId, conf, value },
+                headers: { Prefer: 'resolution=merge-duplicates,return=representation' } // upsert semantics in PostgREST
+            }),
+            invalidatesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'default') }]
+        }),
     })
 })
 
 export const { 
     useGetTasksQuery, useUpdateTaskMutation, useAddTaskMutation, useDeleteTaskMutation, 
     useGetActivitiesQuery, useUpdateActivityMutation, useAddActivityMutation, useDeleteActivityMutation,
-    useGetSnapDatesQuery, useUpdateSnapDateMutation
+    useGetSnapDatesQuery, useUpdateSnapDateMutation,
+    useLazyGetUserConfQuery, useUpsertUserConfMutation
 } = apiSlice
