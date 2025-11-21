@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev, getSlotIdIndex, getSlotIdDistance, isSlotIdEquals } from './slot-id.js';
+import { getSlotIdPrevious, getSlotIdFirstLevel, getSlotIdNextPrev as getSlotIdNextPrev, getSlotIdIndex, getSlotIdDistance, isSlotIdEquals, getSlotIdCurrent } from './slot-id.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -153,6 +153,10 @@ describe('getSlotIdNext', () => {
         const result = getSlotIdNextPrev(given, -2)
         expect(result).toEqual(expected)
     });
+    test('dimanche -1', () => {
+        const result = getSlotIdNextPrev("lundi", -1)
+        expect(result).toEqual("lundi")
+    });
 });
 
 
@@ -225,4 +229,10 @@ describe('isSlotIdEquals', () => {
         const result = isSlotIdEquals(given1, given2)
         expect(result).toBeFalsy()
     })
+});
+
+
+test('getSlotIdCurrent', () => {
+    const result = getSlotIdCurrent(4);
+    expect(result).toEqual('matin');
 });

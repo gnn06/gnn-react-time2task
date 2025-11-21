@@ -22,6 +22,7 @@ export default function Slot({slot, tasks}) {
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
     const showRepeat = useSelector(state => state.tasks.showRepeat);
@@ -29,7 +30,7 @@ export default function Slot({slot, tasks}) {
     const { id, start, end, inner } = slot;
     
     let tasksInSlot = [];
-    if (!filterPath) {
+    if (!filterPath || filterExpr) {
         tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
     } else if (slotStrict) {
         if (new SlotPath(slot.path).equalsOrInclude(new SlotPath(filterPath))) {
@@ -47,7 +48,7 @@ export default function Slot({slot, tasks}) {
             selectSlot(slotId)
         );
     }
-    let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 ";
+    let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mr-1 ";
     if (selected) {
         slotStyle += "bg-gray-400 ";
     } else {

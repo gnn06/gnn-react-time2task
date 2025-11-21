@@ -1,5 +1,5 @@
 import { IDizer } from "../utils/stringUtil";
-import { getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious, isSlotIdEquals } from "./slot-id";
+import { getSlotIdCurrent, getSlotIdDistance, getSlotIdLevel, getSlotIdNextPrev, getSlotIdPrevious, isSlotIdEquals } from "./slot-id";
 
 export class SlotPath {
 
@@ -100,3 +100,11 @@ export class SlotPath {
     }
 }
 
+export function getCurrentPathExpr(level: number) : string {
+    const tmpResult = [];
+    for (let i = 1; i <= level; i++) {
+        const current = getSlotIdCurrent(i);
+        tmpResult.push(current);
+    }
+    return tmpResult.join(" ");
+}

@@ -70,8 +70,14 @@ export function getSlotIdCurrent(level) {
         const jour = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
         return jour[day];
     }
-    else if (level === 4)
-        return 'matin';
+    else if (level === 4) {
+        const currentTime = new Date();
+        const day = currentTime.getHours();
+        if (day < 12)
+            return 'matin';
+        else
+            return 'aprem';
+    }
     else
         return '';
 }

@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '13/11/2025'
+export const RELEASE = '21/11/2025'
 
 const text = `
-13/11/2025
+21/11/2025
 ==========
-- add slot list view
+- add slot list view, 3 columns with arrows
 - add status color in slot
-
+- text filter ovverride slot filter
 
 16/09/2025
 ==========

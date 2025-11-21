@@ -1,4 +1,7 @@
-import { SlotPath } from "./slot-path";
+import { getCurrentPathExpr, SlotPath } from "./slot-path";
+
+vi.useFakeTimers()
+vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('SlotPath', () => {
     test('constructor', () => {
@@ -181,4 +184,9 @@ describe('equalsOrInclude', () => {
         const result = given1.equalsOrInclude(given2)
         expect(result).toBeFalsy()
     });
+});
+
+test('getCurrentPathExpr', () => {
+    const result = getCurrentPathExpr(3);
+    expect(result).toEqual("this_month this_week mercredi");
 });

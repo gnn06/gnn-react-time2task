@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import { reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
+import { getSlotsForRow } from "./slot-view";
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -1711,4 +1712,98 @@ describe('slotViewList', () => {
       expect(result).toEqual(expected);
    })
 });
-;
+
+describe('getSlotsForRow', () => {
+   test('mardi mercredi jeudi ', () => {
+      const given = [
+         {
+            "id": "mardi",
+            "path": "this_month this_week mardi",
+            "inner": [],
+         },{
+            "id": "mercredi",
+            "path": "this_month this_week mercredi",
+            "inner": [],
+         },
+         {
+            "id": "jeudi",
+            "path": "this_month this_week jeudi",
+            "inner": [],
+         }
+      ];
+      const expected = [
+         {
+            "id": "mardi",
+            "path": "this_month this_week mardi",
+            "inner": [],
+         },{
+            "id": "mercredi",
+            "path": "this_month this_week mercredi",
+            "inner": [],
+         },
+         {
+            "id": "jeudi",
+            "path": "this_month this_week jeudi",
+            "inner": [],
+         }
+      ];
+      const result = getSlotsForRow(given);
+      expect(result).toEqual(expected);
+   });
+    test('mercredi jeudi ', () => {
+        const given = [
+            {
+                "id": "mercredi",
+                "path": "this_month this_week mercredi",
+                "inner": [],
+            },
+            {
+                "id": "jeudi",
+                "path": "this_month this_week jeudi",
+                "inner": [],
+            }
+        ];
+        const expected = [
+            null,
+            {
+                "id": "mercredi",
+                "path": "this_month this_week mercredi",
+                "inner": [],
+            },
+            {
+                "id": "jeudi",
+                "path": "this_month this_week jeudi",
+                "inner": [],
+            }
+        ];
+        const result = getSlotsForRow(given);
+        expect(result).toEqual(expected);
+   });
+    test('mardi mercredi ', () => {
+        const given = [
+            {
+                "id": "mardi",
+                "path": "this_month this_week mardi",
+                "inner": [],
+            }, {
+                "id": "mercredi",
+                "path": "this_month this_week mercredi",
+                "inner": [],
+            }
+        ];
+        const expected = [
+            {
+                "id": "mardi",
+                "path": "this_month this_week mardi",
+                "inner": [],
+            }, {
+                "id": "mercredi",
+                "path": "this_month this_week mercredi",
+                "inner": [],
+            },
+            null
+        ];
+        const result = getSlotsForRow(given);
+        expect(result).toEqual(expected);
+    });
+});

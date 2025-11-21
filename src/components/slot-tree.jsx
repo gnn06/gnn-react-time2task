@@ -9,7 +9,7 @@ export default function SlotTree({slot, tasks}) {
         return 'error'
     }
 
-    const innerClass = 'ml-3' 
+    const innerClass = 'ml-3 mt-1' 
         + (getSlotIdLevel(slot.id) === getSlotIdLevel('this_week') ? ' flex flex-row' : '');
 
     return (
