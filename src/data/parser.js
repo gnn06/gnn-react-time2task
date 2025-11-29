@@ -23,7 +23,7 @@ export class Parser {
      */
     parse(inputP) {
         try {
-            if (inputP === undefined) return undefined;
+            if (inputP === undefined || inputP === null) return undefined;
 
             this.input = tokenizer(inputP).concat('end');
             this.stackBranch = [];

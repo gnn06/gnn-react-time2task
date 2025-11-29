@@ -1,7 +1,8 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
     taskGroup, taskShiftFilter,
     taskPredicateEvery1,
-    taskPredicateError} from "./task";
+    taskPredicateError,
+    getNewOrder} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -596,5 +597,28 @@ describe('taskShiftFilter', () => {
         const expected = [  ] ;
         const result = taskShiftFilter(given, 'this_week')
         expect(result).toEqual(expected)
+    })
+});
+
+describe('getNewOrder', () => {
+    test('3 becomes 2', () => {
+        const tasks = [ { id: 'id1', order: 2.0 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
+        const result = getNewOrder(tasks, 'id3', 'id2');
+        expect(result).toEqual(3.5);
+    });
+    test('1 becomes 2', () => {
+        const tasks = [ { id: 'id1', order: 2.0 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
+        const result = getNewOrder(tasks, 'id1', 'id2');
+        expect(result).toEqual(6.0);
+    });
+    test('3 becomes 1', () => {
+        const tasks = [ { id: 'id1', order: 0.5 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
+        const result = getNewOrder(tasks, 'id3', 'id1');
+        expect(result).toEqual(0.25);
+    });
+    test('1 becomes 3', () => {
+        const tasks = [ { id: 'id1', order: 0.5 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
+        const result = getNewOrder(tasks, 'id1', 'id3');
+        expect(result).toEqual(8);
     })
 });

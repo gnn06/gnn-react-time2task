@@ -23,7 +23,6 @@ export default function TaskList({tasks, group, className = ''}) {
                 <th>Titre</th>
                 <th>Activité</th>
                 <th>Statut</th>
-                <th>Ordre</th>
                 <th></th>
                 <th></th>
                 <th></th>

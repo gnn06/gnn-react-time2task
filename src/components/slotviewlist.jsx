@@ -20,7 +20,7 @@ export default function SlotViewList({tasks}) {
     function SlotArcher ({slot, tasks}) {
         return <div id={slot.id} className="h-fit">
             <Slot slot={slot} tasks={tasks} />
-            {slot.inner.map(innerSlot => <Xarrow start={slot.id} end={innerSlot.id} path="grid" startAnchor="top" endAnchor="bottom" 
+            {slot.inner.map((innerSlot,index) => <Xarrow key={index} start={slot.id} end={innerSlot.id} path="grid" startAnchor="top" endAnchor="bottom" 
                                             gridBreak="20" strokeWidth={3}
                                             divContainerStyle={{ position: 'relative' }}/>)}
         </div>;
@@ -40,8 +40,8 @@ export default function SlotViewList({tasks}) {
     }
 
     return <div className="inline-grid grid-cols-3 gap-y-10 gap-x-4">
-                {slots.map(item =>  
-            <Row slots={item}></Row>
+                {slots.map((item, index) =>  
+            <Row key={index} slots={item}></Row>
         )}            
     </div>
 }

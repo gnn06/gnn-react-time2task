@@ -28,15 +28,9 @@ export default function Task({task, api}) {
     const onTitleChange = (e) => {
         const taskId = task.id;
         const title = e.target.value;
-        updateTask({id:taskId, title: title})
+        api({id:taskId, title: title})
     };
     
-    const onOrderChange = e => {
-        const taskId = task.id;
-        const order = e;
-        api({id:taskId, order})
-    };
-
     const onActivityChange = activity => {
         const taskId = task.id;
         if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
@@ -54,7 +48,7 @@ export default function Task({task, api}) {
     }
 
     return <TaskRow task={task} selected={selected}
-                onTitleChange={onTitleChange} onSlotExprChange={onSlotExprChange} onOrderChange={onOrderChange}
+                onTitleChange={onTitleChange} onSlotExprChange={onSlotExprChange} 
                 onActivityChange={onActivityChange}
                 onStatusChange={onStatusChange} 
                 onTaskClick={onTaskClick} />;

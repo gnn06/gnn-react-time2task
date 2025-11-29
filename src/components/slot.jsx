@@ -1,20 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
-import AddIcon from '@mui/icons-material/Add';
+import {useDroppable} from '@dnd-kit/core';
 
 import './slot.css';
-
 import SlotTitle from "./slot-title";
-import TaskLight from "./task-light";
-
-import { selectSlot, setFilterSlot } from "../features/taskSlice";
-import { findTaskBySlotExpr } from "../data/task";
 import CollapseButton from "./collapse-button";
-import { filter } from "lodash";
-import DndContainer from "./dnd-container";
-import { useDroppable } from "@dnd-kit/core";
+import { selectSlot, setFilterSlot } from "../features/taskSlice";
+
+import { SortedTaskList } from "./sorted-task-list";
+import { findTaskBySlotExpr } from "../data/task";
 import { SlotPath } from "../data/slot-path";
 
 export default function Slot({slot, tasks}) {
@@ -26,7 +22,7 @@ export default function Slot({slot, tasks}) {
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
     const showRepeat = useSelector(state => state.tasks.showRepeat);
-
+    
     const { id, start, end, inner } = slot;
     
     let tasksInSlot = [];
@@ -41,6 +37,16 @@ export default function Slot({slot, tasks}) {
     } else {
         tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
     }
+
+    // need to reorder tasks byb order because task order is affected by multi slots
+    tasksInSlot = tasksInSlot.sort((a, b) => {
+        if (a.order < b.order) {
+            return -1;
+        } else if (a.order > b.order) {
+            return 1;
+        } else {
+            return 0;
+        }});
     
     const onSlotClick = e => {
         const slotId = slot.id;
@@ -79,23 +85,23 @@ export default function Slot({slot, tasks}) {
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
     const level = new SlotPath(slot.path).getLevel();
-    
-    return <React.Fragment>
-        <div className={"group " + slotStyle}>
-            <div className="flex flex-row">
-                <SlotTitle  slot={slot}/>
-                <IconButton className={targetClassName} onClick={onSlot}><TargetIcon /></IconButton>
-                <CollapseButton slot={slot}/>
-            </div>
-            
-            {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
-            { tasksInSlot.length > 0 && tasksInSlot.map(task => <TaskLight key={task.id} task={task} />)}
-            <div {...dropProps}  >
+
+    return <React.Fragment>        
+            <div className={"group " + slotStyle}>
+                <div className="flex flex-row">
+                    <SlotTitle  slot={slot}/>
+                    <IconButton className={targetClassName} onClick={onSlot}><TargetIcon /></IconButton>
+                    <CollapseButton slot={slot}/>
+                </div>
+                
+                {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
+                <SortedTaskList tasks={tasksInSlot}/>
+                <div {...dropProps}  >
                     <div className="" >
                         { level <= 2 && "Déposer une tâche ici !" }
                         { level > 2  && "Déposer ici !" }
                     </div>
                 </div>
             </div>
-        </React.Fragment>
+    </React.Fragment>
 }

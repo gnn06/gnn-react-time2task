@@ -1,20 +1,24 @@
 import React, { useState } from "react";
-import { useStore } from "react-redux";
+import { useSelector, useStore } from "react-redux";
 import { Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
 import TaskDialog from "./task-dialog";
-import { useAddTaskMutation } from "../features/apiSlice";
+import { useAddTaskMutation, useGetTasksQuery } from "../features/apiSlice";
 
 export default function CreateTask() {
     
     const [visible, setVisible] = useState(false)
     const [ addTask ] = useAddTaskMutation()
     const store = useStore();
+    const userId   = useSelector(state => state.tasks.user.id);
+    const activity = useSelector(state => state.tasks.currentActivity);
+    const { data:tasks } = useGetTasksQuery({userId, activity});
 
     const onTaskDialogConfirm = (task) => {
         const user = store.getState().tasks.user;
-        addTask({title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order, user: user.id})
+        const order = task.order ? task.order : (tasks.length + 1);
+        addTask({title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:order, user: user.id})
         setVisible(false)
     }
 

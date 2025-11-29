@@ -30,12 +30,6 @@ function Content({task, setTask}) {
         setTask(newTask)
     };
 
-    const onOrderChange = event => {
-        const order = event.target.value === '' ? null : Number(event.target.value);
-        const newTask = produce(task, draft => { draft.order = order; })
-        setTask(newTask)
-    };
-
     const onActivityChange = activity => {
         if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
         const newTask = produce(task, draft => { draft.activity = activity; })
@@ -57,8 +51,6 @@ function Content({task, setTask}) {
         </Stack>
         <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
-        <TextField value={(task.order === undefined || task.order === null) ? "" : task.order} onChange={onOrderChange} label="L'ordre de la tâche parmi les autres tâches du créneau (nombre)" 
-        sx={{label:{zIndex:0}}} />
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
     </Stack>
 }

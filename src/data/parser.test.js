@@ -383,6 +383,12 @@ describe('parse wrong expression', () => {
     expect(result).toEqual(undefined)
   });
 
+  test('parse null', () => {
+    const parser = new Parser();
+    const result = parser.parse(null);
+    expect(result).toEqual(undefined);
+  });
+
   test('parse many spaces middle', () => {
     const parser = new Parser();
     const result = parser.parse('lundi     aprem');

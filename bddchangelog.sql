@@ -55,3 +55,22 @@ create policy "user_can_crud_own_conf" on public.user_confs
   using ( auth.uid() = user_id )
   with check ( auth.uid() = user_id );
 
+
+-- 23/11/2025
+-- le type de order passe de entier à flottant
+ALTER TABLE tasks
+    ALTER COLUMN "ordre" TYPE float4
+    USING "ordre"::float4;
+
+-- 24/11/2025
+-- set default order value
+WITH ordered AS (
+  SELECT id,
+         ROW_NUMBER() OVER (ORDER BY created_at) AS new_order
+  FROM tasks
+  WHERE "ordre" IS NULL and "Etat" != 'Archivé'  and "user" = '9880d938-26b4-452b-8820-76dd73197bbe'
+) 
+UPDATE tasks AS t
+SET "ordre" = ordered.new_order
+FROM ordered
+WHERE t.id = ordered.id;

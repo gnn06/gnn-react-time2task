@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '21/11/2025'
+export const RELEASE = '28/11/2025'
 
 const text = `
+28/11/2025
+==========
+- sort task with mouse in slot view 
+
 21/11/2025
 ==========
 - add slot list view, 3 columns with arrows

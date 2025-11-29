@@ -151,3 +151,33 @@ export function isTaskMulti(task) {
 export function isTaskRepeat(task) {
     return isSlotRepeat1(task.slotExpr)    
 }
+
+export function getNewOrder(tasks, activeId, overId) {
+    const overIndex = tasks.findIndex(el => el.id === overId);
+    const activeIndex = tasks.findIndex(el => el.id === activeId);
+    const isMovingDown = overIndex < activeIndex;
+
+    const overElement = tasks[overIndex];
+    let adjacentElement;
+    if (isMovingDown) {
+        adjacentElement = tasks[overIndex - 1];
+    } else {
+        adjacentElement = tasks[overIndex + 1];
+    }
+    // adjacent undefined if drop on first position or last position
+
+    const overOrder = overElement.order;
+    const adjacentOrder = adjacentElement?.order;
+
+    let newOrder;
+    if (!adjacentOrder) {
+        if (isMovingDown) {
+            newOrder = overOrder / 2.0;
+        } else {
+            newOrder = overOrder + 1.0;
+        }
+    } else {
+        newOrder = (adjacentOrder + overOrder) / 2.0;
+    }
+    return newOrder;
+}
