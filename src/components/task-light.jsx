@@ -24,8 +24,6 @@ export default function TaskLight({task}) {
     const activityTextColor = Color(activityBgColor).luminosity() > 0.5 ? 'black' : 'white'
 
     //const colorTail  = STATUS_LST.find(item => item.value === task.status).colorTail;
-    
-    const myClassName =   'rounded p-1 my-1  border-gray-500 border-2 flex flex-row';
 
     const isUnique = isTaskUnique(task)
 
@@ -41,15 +39,14 @@ export default function TaskLight({task}) {
 
     // use style for color styling => avoid using tailwindcss color
     return <>
-        <div className={myClassName} style={{background: activityBgColor, color: activityTextColor}}>
-            <span className="grow">{task.title}</span>
-            <div>
-                { isUnique && <UniqueIcon/> }
-                <span className="p-1" style={{background: statusColor}}>{task.status}</span>
-            </div>
-            <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />
-            <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={handleEditTask}><MoreHorizIcon  /></IconButton>
+        <div className="rounded p-1 my-1  border-gray-500 border-2 " style={{background: activityBgColor, color: activityTextColor}}>
+            <div>{task.title}</div>
+            <div className="flex flex-row items-center" >
+                <div className="grow"><span className="border-gray-400 border-2 p-1 "  style={{background: statusColor}}>{task.status}</span></div>                
+                { isUnique && <UniqueIcon /> }
+                <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />
+                <IconButton style={{background: activityBgColor, color: activityTextColor}} onClick={handleEditTask}><MoreHorizIcon  /></IconButton>
+            </div>            
         </div>
-        <div></div>
     </>;
 }

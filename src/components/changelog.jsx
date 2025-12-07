@@ -6,6 +6,7 @@ export const RELEASE = '07/12/2025';
 const text = `
 07/12/2025
 ==========
+- algn status in slot view
 - can create activity directly from select.
 - group table rows by activity
 
