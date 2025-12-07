@@ -1,8 +1,9 @@
 import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPredicateNoRepeat, filterSlotExpr, findTaskBySlotExpr, taskPredicateEvery2,
-    taskGroup, taskShiftFilter,
+    taskGroupLevel, taskShiftFilter,
     taskPredicateEvery1,
     taskPredicateError,
-    getNewOrder} from "./task";
+    getNewOrder,
+    taskGroupActivity} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -502,7 +503,7 @@ describe('groupTask', () => {
         const task2 = { id: 'task2', slotExpr: 'this_week mardi aprem' }
         const task3 = { id: 'task3', slotExpr: 'next_week mardi aprem' }
         const tasks = [ task1, task2, task3 ]
-        const result = taskGroup(tasks, 2)
+        const result = taskGroupLevel(tasks, 2)
         expect(result).toEqual({'this_month this_week': [task1, task2] ,
                                 'this_month next_week': [task3] })
     })
@@ -512,7 +513,7 @@ describe('groupTask', () => {
         const task2 = { slotExpr: 'this_week mardi aprem'  }
         const task3 = { slotExpr: 'this_week mercredi aprem'  }
         const tasks = [ task1, task2, task3 ]
-        const result = taskGroup(tasks, 3)
+        const result = taskGroupLevel(tasks, 3)
         expect(result).toEqual({'this_month this_week mardi':    [task1, task2],
                                 'this_month this_week mercredi': [task3] })
     })
@@ -522,7 +523,7 @@ describe('groupTask', () => {
         const task2 = { slotExpr: 'this_week mardi aprem' }
         const task3 = { slotExpr: 'this_week mercredi aprem'  }
         const tasks = [ task1, task2, task3 ]
-        const result = taskGroup(tasks,4)
+        const result = taskGroupLevel(tasks,4)
         expect(result).toEqual({'this_month this_week mardi matin': [task1],
             'this_month this_week mardi aprem': [task2],
                                 'this_month this_week mercredi aprem': [task3]})
@@ -533,10 +534,21 @@ describe('groupTask', () => {
         const task2 = { slotExpr: 'next_week' }
         const task3 = { slotExpr: 'this_week + 1'  }
         const tasks = [ task1, task2, task3 ]
-        const result = taskGroup(tasks, 2)
+        const result = taskGroupLevel(tasks, 2)
         expect(result).toEqual({'this_month next_week':     [task2, task3],
                                 'this_month this_week':     [task1]})
-    })
+    });
+    test('taskGroup by activity', () => {
+        const task1 = { slotExpr: 'this_week', activity: 1 }
+        const task2 = { slotExpr: 'next_week', activity: 1 }
+        const task3 = { slotExpr: 'this_week', activity: 2  };
+        const task4 = { slotExpr: 'this_week'  };
+        const tasks = [ task1, task2, task3, task4 ];
+        const result = taskGroupActivity(tasks)
+        expect(result).toEqual({'1':     [task1, task2],
+                                '2':     [task3],
+                                undefined: [task4]}  );
+    });
 });
 
 describe('grouping', () => {

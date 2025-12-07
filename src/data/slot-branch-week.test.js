@@ -1,7 +1,7 @@
 import { getSlotIdLevel, getSlotIdPrevious, isSlotIdGeneric } from "./slot-id";
 import { getBranchWeight, isBranchEqualShallow, isBranchEqualShallowWithRepeat } from './slot-branch';
 import { isBranchEqualDeep, isBranchEqualOrInclude, branchCompare, branchShift } from "./slot-branch++";
-import { filterSlotExpr, findTaskBySlotExpr, taskGroup } from "./task";
+import { filterSlotExpr, findTaskBySlotExpr, taskGroupLevel } from "./task";
 import { Parser } from "./parser";
 import { vi } from "vitest";
     
@@ -320,7 +320,7 @@ describe('grouping', () => {
         const task2 = { id: 'task2', slotExpr: 'this_week' }
         const task3 = { id: 'task3', slotExpr: 'next_week' }
         const tasks = [ task1, task2, task3 ]
-        const result = taskGroup(tasks, 2)
+        const result = taskGroupLevel(tasks, 2)
         expect(result).toEqual({'this_month this_week': [task1, task2] ,
                                 'this_month next_week': [task3] })
     })

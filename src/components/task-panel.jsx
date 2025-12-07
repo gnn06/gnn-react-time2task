@@ -11,7 +11,7 @@ import { setFilterTaskId } from "../features/taskSlice";
 
 export default function TaskPanel({tasks}) {
     // eslint-disable-next-line
-    const [group, setGroup] = useState(null);
+    const [group, setGroup] = useState("0");
     const dispatch = useDispatch();
     const filterTaskId = useSelector(state => state.tasks.currentFilter.taskId);
     const isDragging  = useSelector(state => state.tasks.isDragging);
@@ -40,6 +40,7 @@ export default function TaskPanel({tasks}) {
                         <option value="2">Semaine</option>
                         <option value="3">Jour</option>
                         <option value="4">Heure</option>
+                        <option value="activity">Activité</option>
                     </select>
                 </label>
             </Stack>

@@ -106,8 +106,14 @@ export function findTaskBySlotExpr(tasks, slot, includeRepeat = true) {
 
 const parser = new Parser()
 
-export function taskGroup(tasks, level) {
-    const toto = _.groupBy(tasks, item => {
+/**
+ * 
+ * @param {*} tasks 
+ * @param {*} level 
+ * @returns object { 'this_month this_week': [task1, task2] , ... }
+ */
+export function taskGroupLevel(tasks, level) {
+    const result = _.groupBy(tasks, item => {
         try {
             const branch = parser.parse(item.slotExpr)
             return getBranchHash(branchTruncate(branchComplete(branch), level))
@@ -116,7 +122,12 @@ export function taskGroup(tasks, level) {
             return ''
         }
     })
-    return toto;
+    return result;
+}
+
+export function taskGroupActivity(tasks) {
+    const result = _.groupBy(tasks, 'activity');
+    return result;
 }
 
 /**
