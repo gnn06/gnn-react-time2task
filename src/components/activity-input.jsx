@@ -1,8 +1,11 @@
-import Select from 'react-select';
+import { useEffect, useState } from 'react';
+import Select from 'react-select/creatable';
 import { useGetActivitiesQuery } from '../features/apiSlice';
 import Color from 'color';
 import { getActivityColor } from './ui-helper';
 import _ from 'lodash';
+
+import { useAddActivityMutation } from "../features/apiSlice.js";
 
 const colorStyle = (isFilter) => ({
     control: (styles, state) => ({
@@ -36,13 +39,25 @@ const colorStyle = (isFilter) => ({
     })
 })
 
-export default function ActivityInput({task, saveHandler, className, isFilter}) {
-    const { data, isLoading, isSuccess } = useGetActivitiesQuery()
-    const onChange = (value, action) => {
-        saveHandler(value && value.id)
-    };
+export default function ActivityInput({activity, saveHandler, className, isFilter}) {
     
-    if (data === undefined) return <div></div>
+    const { data, isLoading, isSuccess } = useGetActivitiesQuery();
+    const [ addActivity ]                = useAddActivityMutation();
+
+    const onChange = (value, action) => {
+        saveHandler(value && value.id);
+    };
+
+    const handleCreate = async (inputValue) => {
+        const ApIargument = { label: inputValue };
+        // requires the API to return the new ID. For this, use the 'Prefer' header.
+        const result = await addActivity(ApIargument).unwrap();
+        const newId = result[0].id;
+        console.log('Created activity with id ', newId);
+        saveHandler(newId);
+    };
+
+    if (data === undefined) return <div></div>;
 
     let list = _.orderBy(data, ['label'])
     if (isFilter) {
@@ -55,14 +70,16 @@ export default function ActivityInput({task, saveHandler, className, isFilter}) 
             }))
     }
                 
-    const defaultValue = task && list && list.find(item => item.id === task.activity);
-    
+    const currentOption = (activity !== null) && list && list.find(item => item.id === activity);
+    console.log(currentOption)
     return <Select options={list} 
-                defaultValue={defaultValue} 
+                value={currentOption}
                 styles={colorStyle(isFilter)} 
                 onChange={onChange}
+                onCreateOption={handleCreate}
+                isValidNewOption={() => !isFilter}
                 isClearable={true}
-                placeholder={task && task.id ? "" : "Activité ..."}
+                placeholder="Activité ..."
                 components={{
                     IndicatorSeparator: () => null,
                     DropdownIndicator: () => null,         

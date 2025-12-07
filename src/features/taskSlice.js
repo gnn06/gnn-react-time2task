@@ -22,7 +22,7 @@ const initialState = {
     association: {},
     user: retrieveUser(),
     accessToken: retrieveAccessToken(),
-    activity: null,
+    currentActivity: null,
     editTask: null,
     isDragging: false,
 };

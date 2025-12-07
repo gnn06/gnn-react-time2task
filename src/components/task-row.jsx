@@ -87,7 +87,7 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
                 <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
                     {isDraggingCurrent && <div className="fixed mt-4 p-2 w-40 bg-blue-500 rounded z-1000">Déposez cette tâche sur le créneau où elle doit être réalisée.</div>}</td>
                 <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={(event) => onTitleChange(event)} className="w-full" placeHolder="Titre"/></td>
-                <td><ActivityInput task={task} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
+                <td><ActivityInput activity={task.activity} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
                 <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
                 <td><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
                     {task.id && <IconButton onClick={handleTarget}><TargetIcon  /></IconButton>}</td>

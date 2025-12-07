@@ -76,11 +76,15 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: (result, error, id) => [{ type: 'Activities', id: 'LIST' }, { type: 'Activity', id }, { type: 'Tasks', id: 'LIST' }]
         }),
+        // addActivity({ label: "toto" })
         addActivity: builder.mutation({
             query: (patch) => ({
                 url: '/Activities',
                 method: 'POST',
-                body: { label: patch.label }
+                body: { label: patch.label },
+                headers: {
+                    "Prefer": "return=representation"
+                }                
             }),
             invalidatesTags: () => [{ type: 'Activities', id: 'LIST' }]
         }),

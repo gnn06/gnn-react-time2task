@@ -19,6 +19,8 @@ export default function TaskFilter() {
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const [isStatusARepo, setIsStatusARepo] = useState(false)
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
+    const activity = useSelector(state => state.tasks.currentActivity);
+
     const filterRef = useRef(null);
 
     const onInputChange = (e) => {
@@ -71,7 +73,7 @@ export default function TaskFilter() {
             <DialogHelpExpression/>            
             <label>Activité&nbsp;:&nbsp;</label>
             <ActivityInput 
-                task={null} saveHandler={(value) => onActivityChange(value)}
+                activity={activity} saveHandler={(value) => onActivityChange(value)}
                  className="w-1/6" isFilter={true} />
             <FormControlLabel control={<Checkbox value={isMultiFilter} onChange={onIsMultiFilter}/>} label="is multi"  />
             <FormControlLabel control={<Checkbox value={isDisableFilter} onChange={onIsDisableFilter}/>} label="is disable"  />

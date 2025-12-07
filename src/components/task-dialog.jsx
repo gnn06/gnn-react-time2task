@@ -49,7 +49,7 @@ function Content({task, setTask}) {
             onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
             <SlotSelectionButton  task={task} handleSave={onSlotExprChange} withText={true} />
         </Stack>
-        <ActivityInput task={task} saveHandler={onActivityChange} isFilter={false} />
+        <ActivityInput activity={task.activity} saveHandler={onActivityChange} isFilter={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>
     </Stack>
