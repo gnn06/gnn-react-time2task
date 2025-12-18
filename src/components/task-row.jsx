@@ -9,40 +9,38 @@ import DragIcon from '@mui/icons-material/DragIndicator';
 import TargetIcon from '@mui/icons-material/AdsClick';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import './task.css'
+
 import InputEdit from "./edit-input.jsx";
 import StatusInput from './status-input.jsx'
 import ActivityInput from "./activity-input.jsx";
 import SyntaxInputWithSelection from "./syntax-input-select.jsx";
 import SlotSelectionButton from "./slot-selection-button.jsx";
+import FavoriteToggle from "./favorite-toggle";
 
-import { editTask, setFilterTaskId } from "../features/taskSlice";
+import { editTask, setFilterTaskId, selectTask as selectTaskAction } from "../features/taskSlice";
 import { useDeleteTaskMutation, useUpdateTaskMutation } from "../features/apiSlice";
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";
 
 
-export default function TaskRow({task, selected, onTitleChange, onSlotExprChange, onActivityChange, onStatusChange, onTaskClick}) {
+export default function TaskRow({ task }) {
 
     const dispatch = useDispatch();
     const [ updateTask ] = useUpdateTaskMutation()
+    const [ deleteTask ] = useDeleteTaskMutation();
     const filterTaskId = useSelector(state => state.tasks.currentFilter.taskId);
+    const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
+
     const { attributes, listeners, setNodeRef, transform, isDraggingn, active } = useDraggable({ id: task.id })
     const anchorEl = useRef();
     const [showMenu, setShowMenu] = useState(false)
-    const [ deleteTask ] = useDeleteTaskMutation();
 
     const myClassName = 'rounded p-1 my-1 '
         + (selected ? 
            'hover:bg-gray-300  bg-gray-400  border-gray-500 border-2'
          : 'hover:bg-green-100 bg-green-200 border-gray-500 border-2');
-
-        //  console.log('task', task)
-
-    // const dragProps =  { ref: ref,
-    //     style: {transform: CSS.Translate.toString(transform)},
-    //     ...attributes,
-    //    ...listeners}
 
     const style = {
         transform: CSS.Translate.toString(transform),
@@ -83,10 +81,33 @@ export default function TaskRow({task, selected, onTitleChange, onSlotExprChange
         setShowMenu(false)
     }
 
+    // handlers internalisés (plus besoin de props externes)
+    const onTitleChange = (event) => {
+        const title = event.target.value;
+        updateTask({ id: task.id, title });
+    }
+
+    const onActivityChange = (activity) => {
+        if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
+        updateTask({ id: task.id, activity });
+    }
+
+    const onStatusChange = (status) => {
+        updateTask({ id: task.id, status });
+    }
+
+    const onToggleFavorite = async () => {
+        // need to send nextAction and url to avoid clearing them
+        updateTask({ id: task.id, favorite: !task.favorite, nextAction: task.nextAction, url: task.url });
+    }
+
     return <tr className={myClassName} style={style}>
                 <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
                     {isDraggingCurrent && <div className="fixed mt-4 p-2 w-40 bg-blue-500 rounded z-1000">Déposez cette tâche sur le créneau où elle doit être réalisée.</div>}</td>
-                <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={(event) => onTitleChange(event)} className="w-full" placeHolder="Titre"/></td>
+                <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
+                <td style={{width: "1%" /* width: 1% to prevent the column from widening unnecessarily */}} >
+                    <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} />
+                </td>
                 <td><ActivityInput activity={task.activity} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
                 <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
                 <td><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>

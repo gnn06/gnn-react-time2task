@@ -1,4 +1,4 @@
-import TaskLight  from '../components/task-light';
+import TaskInSlot  from '../components/task-in-slot';
 import { Provider } from 'react-redux';
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { apiSlice } from '../features/apiSlice';
@@ -49,7 +49,7 @@ const Mockstore = ({ taskboxState, children }) => (
 );
 
 export default {
-  component: TaskLight,
+  component: TaskInSlot,
   excludeStories: /.*MockedState$/,
 };
 

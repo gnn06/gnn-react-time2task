@@ -1,9 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react' // (or /dom, /vue, ...)
 import userEvent from '@testing-library/user-event'
+
 import { Provider } from 'react-redux';
+import { configureTestStorePreloaded } from '../features/test-store'
 
 import TaskFilter from './task-filter'
-import { configureTestStorePreloaded } from '../features/test-store'
 
 const store = configureTestStorePreloaded({ user:{ id: 12 }})
 

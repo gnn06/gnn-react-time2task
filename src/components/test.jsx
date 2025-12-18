@@ -1,5 +1,7 @@
-import TaskLight from './task-light';
-
+import { IconButton, Typography } from '@mui/material';
+import TaskInSlot from './task-in-slot';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 
 export default function Test() {    
     const tasks = [
@@ -8,9 +10,9 @@ export default function Test() {
         { id: "task3", title: "Task 3", slotExpr: "this_month next_month", activity: null, order: 5, status:'fait' }
     ];
     
-    return <div className='w-[338px]'>
-        <TaskLight key="1" task={tasks[0]} />
-        <TaskLight key="2" task={tasks[1]} />
-        <TaskLight key="3" task={tasks[2]} />
+    return <div className='w-[338px] flex flex-row'>
+        <div className='bg-red-500'>qsdqsd</div>
+        <AcUnitIcon />
+        <IconButton ><AccessAlarmIcon  /></IconButton>
     </div>
 }

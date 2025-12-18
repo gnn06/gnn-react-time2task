@@ -2,7 +2,7 @@ import {DndContext,closestCenter,useSensors, MouseSensor, TouchSensor, useSensor
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import TaskLight from "./task-light";
+import TaskInSlot from "./task-in-slot";
 import { getNewOrder } from "../data/task";
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 
@@ -47,7 +47,7 @@ export function SortedTaskList({ tasks }) {
 
         return (
             <div ref={setNodeRef} style={style} {...attributes} {...listeners} >
-                <TaskLight key={props.item.id} task={props.item} />
+                <TaskInSlot key={props.item.id} task={props.item} />
             </div>
         );
     }

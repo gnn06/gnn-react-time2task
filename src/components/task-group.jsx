@@ -1,13 +1,15 @@
 import React from 'react';
-import Task from './task';
-import { taskGroupActivity, taskGroupLevel } from '../data/task';
-import { useGetActivitiesQuery } from '../features/apiSlice';
 
-export default function TaskGroup({tasks, group, api}) {
-    const { data:activities, isLoading, isSuccess } = useGetActivitiesQuery();
+import TaskRow from './task-row';
+import { useGetActivitiesQuery } from "../features/apiSlice";
+
+import { taskGroupActivity, taskGroupLevel } from '../data/task';
+
+export default function TaskGroup({ tasks, group }) {
+  const { data: activities } = useGetActivitiesQuery();
 
     if (group === "0") {
-        return <>{tasks.map(task => <Task key={task.id} task={task} api={api}/>)}</>
+        return <>{tasks.map(task => <TaskRow key={task.id} task={task} />)}</>
     }
 
     function gettaskGroup() {
@@ -36,6 +38,6 @@ export default function TaskGroup({tasks, group, api}) {
 
     return Object.entries(groupLst).map(([key, value]) => <React.Fragment key={key}>
         <tr><td className='pt-2 pb-0.5 text-lg ' colSpan={10}>{getGroupLabel(key) }</td></tr>
-        { value.map(task => <Task key={task.id} task={task} api={api}/>) }
+        { value.map(task => <TaskRow key={task.id} task={task} />) }
     </React.Fragment>)    
 }

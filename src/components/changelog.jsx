@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '07/12/2025';
+export const RELEASE = '18/12/2025';
 
 const text = `
+18/12/2025
+==========
+- add nextAction, url and favorite to task
+
 07/12/2025
 ==========
 - algn status in slot view

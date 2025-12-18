@@ -1,8 +1,9 @@
+import {vi} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react' // (or /dom, /vue, ...)
 import userEvent from '@testing-library/user-event'
 
+
 import SyntaxInput from './syntax-input'
-import {vi} from 'vitest'
 
 test('use kayboard arrow', async () => {
     const items = ['first','second'];

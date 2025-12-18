@@ -74,3 +74,8 @@ UPDATE tasks AS t
 SET "ordre" = ordered.new_order
 FROM ordered
 WHERE t.id = ordered.id;
+
+-- 11/12/2025
+-- add extra_props column to store some properties as jsonb
+alter table public.tasks
+  add column extra_props jsonb default '{}'::jsonb;

@@ -118,7 +118,6 @@ export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCan
     const source = event.active.id
     const dest   = (event.over && event.over.id) || undefined
     if (dest === undefined) return
-    //console.log("dnd source=" + source + ", dest=" + dest)
     const newSelection = selectionMove(selection, source, dest)
     setSelection(newSelection)
     setSlots(makeSlotWithSelection(conf, newSelection))

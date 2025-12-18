@@ -1,12 +1,13 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react' // (or /dom, /vue, ...)
-import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event'
 
+import { Provider } from 'react-redux';
 import { configureTestStorePreloaded } from '../features/test-store'
-import { vi } from 'vitest';
 
 import {http, HttpResponse} from 'msw'
 import {setupServer} from 'msw/node'
+
 import ActivityInput from './activity-input';
 
 const handlers = [
@@ -27,12 +28,10 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 const store = configureTestStorePreloaded({ user:{ id: 12 }})
-const task = { id: 24, title: 'goiwashere', slotExpr: '', order: 123 }
+const mockApi = vi.fn();
 
 test ('load activities and select', async () => {
-   
-    const mockApi = vi.fn();
-
+    const task = { id: 24, title: 'goiwashere', slotExpr: '', order: 123 }
     render(<Provider store={store}><ActivityInput task={task} saveHandler={mockApi}/></Provider>)
 
     // getBy = plantage si non trouvé, findBy = attendre

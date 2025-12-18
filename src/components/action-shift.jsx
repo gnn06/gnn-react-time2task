@@ -59,11 +59,9 @@ export default function ShiftAction() {
         setHideErrorDialog(false)
         for (const item of shiftedTasks) {
             updateTask({id: item.id, slotExpr: item.slotExpr})
-            // console.log(item.id, item.title, 'old=', item.oldSlotExpr, 'new=', item.slotExpr)
         }
         const snapDateToSave = getSnapDateToSave(level.value, snapDate)
         const snapSlotID = getSlotIdFirstLevel(getSlotIdLevel(level.value));
-        //console.log("updateSnapDate", snapSlotID, snapDateToSave)
         updateSnapDate({id: snapSlotID, slotid: snapSlotID, date: snapDateToSave})
     }
 

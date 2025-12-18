@@ -1,17 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux'
+import { createHashRouter, RouterProvider, } from "react-router-dom";
+import './assets/index.css'
+import store from './features/store'
 import App from './components/App';
 import ErrorPage from './components/error-page'
 import HelpMethodo from './components/help-methodo-page.jsx';
 import Changelog from './components/changelog';
-import './assets/index.css'
-import store from './features/store'
-import { Provider } from 'react-redux'
-import { createHashRouter, RouterProvider, } from "react-router-dom";
-import Settings from './components/settings';
-import Test from './components/test';
-import TestExpr from './components/test-expr';
 import Login from './components/login';
+import Settings from './components/settings';
+import TestComponentRouter from './components/test-component-router';
+import Test from './components/test';
 
 const router = createHashRouter([
   {
@@ -36,12 +36,12 @@ const router = createHashRouter([
     element: <Settings />,
   },
   {
-    path: "test/",
-    element: <Test />,
+    path: "test/:componentName",
+    element: <TestComponentRouter />
   },
   {
-    path: "test-expr/",
-    element: <TestExpr />,
+    path: "test/",
+    element: <Test />
   }
 ]);
 

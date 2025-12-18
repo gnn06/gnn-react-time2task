@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHotkeys } from 'react-hotkeys-hook'
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
@@ -9,7 +10,6 @@ import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import ActivityInput from "./activity-input";
-import { Checkbox, FormControlLabel } from "@mui/material";
 
 export default function TaskFilter() {
     

@@ -31,18 +31,16 @@ export default function TaskContainer() {
       if (dest === undefined) return
       const task = tasksRedux.find(el => el.id === source)
       const newExpr = slotExprAdd(task.slotExpr, dest)
-      // console.log("dnd source=" + source + ", dest=" + dest,"new expr=", newExpr)
       updateTask({id:source, slotExpr: newExpr})
     }
 
     const onTaskDialogConfirm = (task) => {
-      console.log('onTaskDialogConfirm', task)
-      updateTask({id:task.id, title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order})
+      updateTask({id:task.id, title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:task.order, 
+        favorite: task.favorite, nextAction: task.nextAction, url: task.url })
       dispatch(editTask(null))
     }
 
     const onTaskDialogCancel = () => {
-      console.log('onTaskDialogCancel')
       dispatch(editTask(null))
     }
 

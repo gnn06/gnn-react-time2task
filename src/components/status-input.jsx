@@ -1,15 +1,9 @@
-import { useUpdateTaskMutation } from "../features/apiSlice.js";
 import Select from 'react-select';
 import { STATUS_LST } from "./task-status.js";
 
 export const statusReferentiel = STATUS_LST.map((item) => { return { ...item, label: item.value }});
 
 export default function SyntaxInput({task, saveHandler}) {
-    const [
-        updateTask,
-        { isLoading: isUpdating }, // This is the destructured mutation result
-      ] = useUpdateTaskMutation()
-    
     
     const onChange = (value, action) => {
         saveHandler(value.value)

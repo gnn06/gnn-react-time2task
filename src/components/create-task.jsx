@@ -18,7 +18,9 @@ export default function CreateTask() {
     const onTaskDialogConfirm = (task) => {
         const user = store.getState().tasks.user;
         const order = task.order ? task.order : (tasks.length + 1);
-        addTask({title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:order, user: user.id})
+        addTask({title:task.title, slotExpr:task.slotExpr, activity: task.activity, status:task.status, order:order, user: user.id,
+            favorite: task.favorite, url: task.url, nextAction: task.nextAction
+        })
         setVisible(false)
     }
 

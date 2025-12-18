@@ -2,7 +2,7 @@ import { Provider } from 'react-redux';
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import '../assets/index.css'
 
-import Component  from '../components/task-new';
+import Component  from '../components/task-row-new';
 
 const task = {
   id: 12,

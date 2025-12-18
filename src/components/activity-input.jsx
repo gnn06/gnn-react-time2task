@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select/creatable';
-import { useGetActivitiesQuery } from '../features/apiSlice';
 import Color from 'color';
-import { getActivityColor } from './ui-helper';
 import _ from 'lodash';
 
-import { useAddActivityMutation } from "../features/apiSlice.js";
+import { getActivityColor } from './ui-helper';
+import { useGetActivitiesQuery, useAddActivityMutation } from '../features/apiSlice';
 
 const colorStyle = (isFilter) => ({
     control: (styles, state) => ({
@@ -71,7 +70,6 @@ export default function ActivityInput({activity, saveHandler, className, isFilte
     }
                 
     const currentOption = (activity !== null) && list && list.find(item => item.id === activity);
-    console.log(currentOption)
     return <Select options={list} 
                 value={currentOption}
                 styles={colorStyle(isFilter)} 

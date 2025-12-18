@@ -36,7 +36,6 @@ export default function SyntaxInput({id, inputRef, items, placeHolderInput, init
     // const begin = value.substring(0, startP);
     // const end   = value.substring(endP);
     // const valuetoInsert = insertSeparator(begin, end, valueToInsert);
-    // console.log('setValue')
     setValue(result);
     
   }
@@ -67,7 +66,6 @@ export default function SyntaxInput({id, inputRef, items, placeHolderInput, init
     const newLst = getFilterLst()
     if (newLst.length === 1) { setSelected(0) } else { setSelected(-1) }
     setShow(true)
-    // console.log('setValue')
     setValue(e.target.value)
   }
 
@@ -78,7 +76,6 @@ export default function SyntaxInput({id, inputRef, items, placeHolderInput, init
   }
 
   const onInputFocus = () => {
-    // console.log('input focus')
     // setShow(true)
   }
 
@@ -88,13 +85,11 @@ export default function SyntaxInput({id, inputRef, items, placeHolderInput, init
   }
   
   const onInputBlur = (event) => {
-    // console.log('blur')
     setShow(false)
     onInputChange && onInputChange(value)
   }
 
   const onKeyDown = (e) => {
-    //console.log(e.code)
     if (e.code === 'Escape') { // ESC
         setShow(false)
         setSelected(-1)

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react"
 
 import SlotTitle from "./slot-title";
-import TaskLight from "./task-light";
+import TaskInSlot from "./task-in-slot";
 
 export default function SlotAnimate() {
     const ref1 = useRef(null);
@@ -69,7 +69,7 @@ export default function SlotAnimate() {
                             repeatDelay: 0.3,
                             duration: duration,
                         }}}  >
-                    <TaskLight key="123" task={{title:"task",slotExpr:"this_month next_week"}} />
+                    <TaskInSlot key="123" task={{title:"task",slotExpr:"this_month next_week"}} />
                 </motion.div>
 
             </div>

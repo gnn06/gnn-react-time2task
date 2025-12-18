@@ -20,7 +20,6 @@ export default function TestDnd() {
     </div>
 
     function dnd(event) {
-        console.log(event)
         const debug = {
             drag: (event.active ? event.active.id : "undefined"),
             drop: (event.over ? event.over.id : "undefined")

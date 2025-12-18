@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
 import { taskCompare } from '../data/task'
 import { mapProperties } from '../utils/objectUtil'
+import { extractExtrasFromRow, buildExtraPropsFromPatch } from '../utils/extraProps';
 import { supabase } from '../services/supabase'
 import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
 import { login, accessToken, logout } from "../features/taskSlice";
@@ -92,7 +94,6 @@ export const apiSlice = createApi({
         getTasks: builder.query({
             query: (param) => {
                 const { userId, activity } = param
-                //console.log("params=",userId, activity)
                 if (activity === 0) {
                     return `/tasks?Etat=neq.archivé&user=eq.${userId}&Activity=is.null`
                 } else if (activity ) {
@@ -101,36 +102,57 @@ export const apiSlice = createApi({
                     return `/tasks?Etat=neq.archivé&user=eq.${userId}`
                 }                
             },
-            transformResponse: (response, meta, arg) => 
-                response.map(
-                    item => ({
+            transformResponse: (response, meta, arg) =>
+                response.map(item => {
+                    const extras = extractExtrasFromRow(item);
+                    return {
                         id: item.id,
                         title: item.Sujet,
                         slotExpr: item.slotExpr,
                         status: item.Etat,
                         order: item.ordre,
+                        nextAction: extras.nextAction, // changed
+                        url: extras.url,
+                        favorite: extras.favorite,
                         activity: item.Activity
-                    }))
-                    // Don't need to check MultiSlot as compare sort on  first slot
-                    .sort(taskCompare),
+                    }
+                }).sort(taskCompare),
+                // Don't need to check MultiSlot as compare sort on  first slot
             providesTags: (result) => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         updateTask: builder.mutation({
-            query: ({ id, ...patch }) => ({
-                url: `/tasks?id=eq.${id}`,
-                method: 'PATCH',
-                body: mapProperties(patch, mapping),
-            }),
+            // on peut appeler updateTask avec uniquement les propriétés qui ont changées ; ça peut etre toutes
+            query: ({ id, ...patch }) => {
+                const body = mapProperties(patch, mapping);
+                const extra = buildExtraPropsFromPatch(patch);
+                if (extra) body.extra_props = extra; // changed: will write nextAction into extra_props
+                return {
+                    url: `/tasks?id=eq.${id}`,
+                    method: 'PATCH',
+                    body
+                };
+            },
             invalidatesTags: [{ type: 'Tasks', id: 'LIST' }]
         }),
 
         addTask: builder.mutation({
-            query: (patch) => ({
-                url: '/tasks',
-                method: 'POST',
-                body: { Sujet: patch.title, slotExpr: patch.slotExpr, ordre: patch.order, Activity: patch.activity, Etat: patch.status, user: patch.user }
-            }),
+            query: (patch) => {
+                const extra = buildExtraPropsFromPatch(patch);
+                return {
+                    url: '/tasks',
+                    method: 'POST',
+                    body: {
+                        Sujet: patch.title,
+                        slotExpr: patch.slotExpr,
+                        ordre: patch.order,
+                        Activity: patch.activity,
+                        Etat: patch.status,
+                        user: patch.user,
+                        ...(extra ? { extra_props: extra } : {})
+                    }
+                }
+            },
             invalidatesTags: () => [{ type: 'Tasks', id: 'LIST' }]
         }),
 
