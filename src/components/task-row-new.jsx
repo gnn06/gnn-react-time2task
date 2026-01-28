@@ -9,7 +9,7 @@ export default function TaskNew () {
       
     return <tr className={myClassName} >
         <td></td>
-        <td colSpan="8" className='p-2'><CreateTask /></td>
+        <td colSpan="9" className='p-2'><CreateTask /></td>
     </tr>
     
 }

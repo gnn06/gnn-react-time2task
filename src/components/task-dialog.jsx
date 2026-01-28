@@ -80,9 +80,9 @@ function Content({task, setTask}) {
             <TextField label="Titre de la tâche" value={task.title} onChange={onTitleChange} fullWidth/>
             <FavoriteToggle favorite={task.favorite} onToggle={onFavoriteToggle} size={40} />
         </Stack>
-        <TextField label="Première action à réaliser" value={task.nextAction} onChange={onNextActionChange} fullWidth/>
+        <TextField label="Première action à réaliser" value={task.nextAction || ''} onChange={onNextActionChange} fullWidth/>
         <Stack direction="row" spacing={1}>
-            <TextField label="Lien" value={task.url} onChange={onUrlChange} fullWidth />
+            <TextField label="Lien" value={task.url || ''} onChange={onUrlChange} fullWidth />
             <IconButtonLink href={task.url} fontSize="large" />
         </Stack>
         <Stack direction={"row"} spacing={1} >

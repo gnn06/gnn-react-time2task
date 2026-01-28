@@ -5,7 +5,6 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
  * IconButtonLink
  * Props:
  *  - href: string (url)
- *  - ariaLabel: string
  *  - target, rel, sx, size, ...props forwarded to IconButton
  */
 export default function IconButtonLink({ href, fontSize="medium", color = "black", sx, ...props }) {

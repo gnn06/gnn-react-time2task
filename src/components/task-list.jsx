@@ -18,6 +18,8 @@ export default function TaskList({tasks, group, className = ''}) {
                 <th></th>
                 <th>Titre</th>
                 <th></th>
+                <th>Prochaine action</th>
+                <th></th>
                 <th>Activité</th>
                 <th>Statut</th>
                 <th></th>

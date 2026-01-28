@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '18/12/2025';
+export const RELEASE = '28/01/2026';
 
 const text = `
+28/01/2026
+==========
+- add nextAction, url and favorite to table view
+
 18/12/2025
 ==========
 - add nextAction, url and favorite to task

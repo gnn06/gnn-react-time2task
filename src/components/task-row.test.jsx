@@ -47,7 +47,18 @@ test('order null', async () => {
   // await userEvent.type(input, '{Control}{a}')
   // await userEvent.type(input, '{Delete}')
   await userEvent.type(input, '24{Tab}')
-
   expect(patchSpy).toHaveBeenCalledWith({Sujet: "goi24"});
+
+});
+
+test('change nextAction with previous url', async () => {
+  const task = { title: 'goi', slotExpr: '', order: 123, url: 'http://example.com' }
+  render(<Provider store={store}><table><tbody><TaskRow task={task} /></tbody></table></Provider>)
+
+  const input = screen.getByPlaceholderText('Prochaine action');
+
+  await userEvent.type(input, 'action{Tab}');
+
+  expect(patchSpy).toHaveBeenCalledWith({extra_props:{nextAction: "action", url: "http://example.com" }});
 
 })

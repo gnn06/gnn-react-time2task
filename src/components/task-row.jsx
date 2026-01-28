@@ -17,6 +17,7 @@ import ActivityInput from "./activity-input.jsx";
 import SyntaxInputWithSelection from "./syntax-input-select.jsx";
 import SlotSelectionButton from "./slot-selection-button.jsx";
 import FavoriteToggle from "./favorite-toggle";
+import IconButtonLink from "./icon-button-link.jsx";
 
 import { editTask, setFilterTaskId, selectTask as selectTaskAction } from "../features/taskSlice";
 import { useDeleteTaskMutation, useUpdateTaskMutation } from "../features/apiSlice";
@@ -87,6 +88,11 @@ export default function TaskRow({ task }) {
         updateTask({ id: task.id, title });
     }
 
+    const onNextActionChange = (event) => {
+        const nextAction = event.target ? event.target.value : event;
+        updateTask({ id: task.id, nextAction, url: task.url, favorite: task.favorite });
+    }
+
     const onActivityChange = (activity) => {
         if (activity === '' || activity === null) { activity = null } else { activity = Number(activity) }
         updateTask({ id: task.id, activity });
@@ -105,6 +111,10 @@ export default function TaskRow({ task }) {
                 <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
                     {isDraggingCurrent && <div className="fixed mt-4 p-2 w-40 bg-blue-500 rounded z-1000">Déposez cette tâche sur le créneau où elle doit être réalisée.</div>}</td>
                 <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
+                <td style={{ width: "1%", textAlign: 'center' }}>
+                    { task.url && <IconButtonLink href={task?.url} fontSize="small"  /> }
+                </td>
+                <td><InputEdit key={task ? task.nextAction ?? 'null-next' : 'null'} defaultValue={task && task.nextAction} saveHandler={onNextActionChange} className="w-full" placeHolder="Prochaine action"/></td>
                 <td style={{width: "1%" /* width: 1% to prevent the column from widening unnecessarily */}} >
                     <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} />
                 </td>
