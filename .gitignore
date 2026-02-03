@@ -23,3 +23,5 @@ SYNC_FILE
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+time2task.SYNC_FILE
