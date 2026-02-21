@@ -12,6 +12,7 @@ const initialState = {
         isMulti: false,
         isDisable: false,
         isStatusARepo: false,
+        genericFilters: {},
         isError: false,
         slot: null,
         taskId: null,
@@ -61,6 +62,10 @@ export const taskSlice = createSlice({
         },
         setFilterIsStatusARepo: (state, action) => {
             state.currentFilter = {...state.currentFilter, isStatusARepo: action.payload.filter }
+        },
+        setFilterGeneric: (state, action) => {
+            const filters = action.payload;
+            state.currentFilter = {...state.currentFilter, genericFilters: filters }
         },
         setFilterSlot: (state, action) => {
             const path = action.payload
@@ -116,7 +121,7 @@ export const taskSlice = createSlice({
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, setSlotViewStrict,
-    confBranch, setFilterSlot, setFilterTaskId,
+    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric,
     editTask, showRepeatAction, dragging
 } = taskSlice.actions
 

@@ -3,6 +3,7 @@ import { isSlotEqual, isSlotEqualOrInclude, isSlotSimple } from './slot-expr.js'
 import { composeFuncAnd } from '../utils/predicateUtil.js';
 import { getSlotIdAndKeywords } from './slot-id.js';
 import { tokenizer } from '../utils/stringUtil.js';
+import { makeGenericFilter } from './generic-filter.ts';
 
 /* module private */
 export const makeTitleFilterFunc = (task, title) => task.title.toLowerCase().indexOf(title.toLowerCase()) >= 0;
@@ -23,6 +24,7 @@ export const makeStatusFilterFunc = (task, status) => taskPredicateStatus(task, 
 export const makeErrorFilterFunc = (task) => taskPredicateError(task)
 
 /**
+ * Used from taskContainer.jsx to filter tasks by all current filters
  * return { func: (task) => boolean, error: string}
  */
 export function makeFilterCombine(filter) {
@@ -42,6 +44,9 @@ export function makeFilterCombine(filter) {
     }
     if (filter.isError) {
         filters.push(makeErrorFilterFunc)
+    }
+    if (filter.genericFilters) {
+        filters.push(makeGenericFilter(filter.genericFilters))
     }
     if (!expression) {
         // when expression is used, don't use slot or task filter

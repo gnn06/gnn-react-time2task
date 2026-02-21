@@ -1,14 +1,14 @@
 import { makeFilterExpr, makeTitleFilterFunc, makeNoRepeatFilterFunc, makeIsMultiFilterFunc, makeFilterMulti, makeFilterCombine } from './filter-engine';
 
-const task1 = {title:'toto',  slotExpr: 'lundi jeudi'};
-const task2 = {title:'titi',  slotExpr: 'this_week mardi'};
-const task3 = {title:'TATA',  slotExpr: 'mercredi'};
-const task4 = {title:'tutu',  slotExpr: 'mercredi aprem'};
-const task5 = {title:'task5', slotExpr: 'chaque vendredi'};
-const task6 = {title:'task6', slotExpr: 'every 2 this_week mardi'};
-const task7 = {title:'task7', slotExpr: 'every 2 this_week vendredi'};
-const task8 = {title:'task8', slotExpr: 'week vendredi'};
-const task9 = {title:'task9', slotExpr: 'every 2 next_week lundi this_week vendredi'};
+const task1 = {title:'toto',  slotExpr: 'lundi jeudi', status: 'done'};
+const task2 = {title:'titi',  slotExpr: 'this_week mardi', status: 'todo'};
+const task3 = {title:'TATA',  slotExpr: 'mercredi', status: 'todo'};
+const task4 = {title:'tutu',  slotExpr: 'mercredi aprem', status: 'todo'};
+const task5 = {title:'task5', slotExpr: 'chaque vendredi', status: 'todo'};
+const task6 = {title:'task6', slotExpr: 'every 2 this_week mardi', status: 'todo'};
+const task7 = {title:'task7', slotExpr: 'every 2 this_week vendredi', status: 'todo'};
+const task8 = {title:'task8', slotExpr: 'week vendredi', status: 'todo'};
+const task9 = {title:'task9', slotExpr: 'every 2 next_week lundi this_week vendredi', status: 'done'};
 const data = [task1, task2, task3, task4, task5, task6, task7, task8, task9];
 
 describe('makeFilter', () => {
@@ -148,6 +148,14 @@ describe('makeFilter', () => {
         test('no expr and no isMulti', () => {
             const result = data.filter(makeFilterCombine({expression: null, isMulti: false}).func);
             expect(result).toEqual(data)
+        })
+        test('generic filters', () => {
+            const result = data.filter(makeFilterCombine({genericFilters: {status: ['done']}}).func);
+            expect(result).toEqual([task1, task9])
+        })
+        test('generic filters and other', () => {
+            const result = data.filter(makeFilterCombine({expression: 'vendredi', genericFilters: {status: ['done']}}).func);
+            expect(result).toEqual([task9])
         })
     });
 });
