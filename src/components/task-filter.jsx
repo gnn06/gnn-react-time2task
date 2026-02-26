@@ -4,7 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Checkbox, FormControlLabel } from "@mui/material";
 import _ from 'lodash';
 
-import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterGeneric } from "../features/taskSlice";
+import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterGeneric, setFilterSlot } from "../features/taskSlice";
 import { SLOTIDS_LST } from "../data/slot-id";
 import { STATUS_LST } from "./task-status";
 import { useGetActivitiesQuery } from "../features/apiSlice";
@@ -14,6 +14,7 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import ActivityInput from "./activity-input";
 import FilterPanel from './filter-panel';
+import SlotPickerButton from './slot-picker-button';
 import { taskPredicateDisable, taskPredicateMulti } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
@@ -85,6 +86,7 @@ export default function TaskFilter() {
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const genericFilters = useSelector(state => state.tasks.currentFilter.genericFilters) || {};
+    const filterSlot = useSelector(state => state.tasks.currentFilter.slot);    
     const activity = useSelector(state => state.tasks.currentActivity);
 
     const filterRef = useRef(null);
@@ -124,6 +126,10 @@ export default function TaskFilter() {
         dispatch(setFilterGeneric(genericFilters));
     }
 
+    const onSlotChange = (slotExpr) => {
+        dispatch(setFilterSlot(slotExpr));
+    }
+
     const onCtrlK = () => {
         filterRef.current.focus();
     }
@@ -141,6 +147,7 @@ export default function TaskFilter() {
             </div>
             <DialogHelpExpression/>            
             {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
+            <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
             <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
         </div>
     </div>;

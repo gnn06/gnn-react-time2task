@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '21/02/2026';
+export const RELEASE = '26/02/2026';
 
 const text = `
-21/02/2026
+26/02/2026
 ==========
 - add filter menu
 

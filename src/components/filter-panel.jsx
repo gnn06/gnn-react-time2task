@@ -133,7 +133,7 @@ function FilterPanel({
         <Button
           variant="contained"
           startIcon={<FilterList />}
-          endIcon={<KeyboardArrowDown />}
+          endIcon={ hasActiveFilters ? <Clear onClick={(e) => { e.stopPropagation(); resetFilters(); }}/> : <KeyboardArrowDown /> }
           onClick={(e) => setMainMenuAnchor(e.currentTarget)}
           sx={{ minWidth: 150 }}
         >
@@ -240,21 +240,6 @@ function FilterPanel({
               })}
             </NestedMenuItem>
           )}
-          
-          {/* Séparateur */}
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }} />
-          
-          {/* Bouton Réinitialiser dans le menu */}
-          <MenuItem
-            onClick={resetFilters}
-            disabled={!hasActiveFilters}
-            sx={{ 
-              justifyContent: 'center'
-            }}
-          >
-            <Clear sx={{ mr: 1 }} />
-            Réinitialiser
-          </MenuItem>
         </Menu>
       </Stack>
   );

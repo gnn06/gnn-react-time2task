@@ -231,9 +231,8 @@ describe('FilterPanel', () => {
     const filterButton = screen.getByText('Filtres')
     await user.click(filterButton)
 
-    // Cliquer sur le bouton Réinitialiser
-    const resetButton = screen.getByText('Réinitialiser')
-    await user.click(resetButton)
+    const clearIcon = document.querySelector('svg[data-testid="ClearIcon"]')
+    await user.click(clearIcon)
 
     // Vérifier que tous les filtres ont été réinitialisés
     expect(mockSetFilters).toHaveBeenCalledWith({})
