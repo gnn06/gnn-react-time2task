@@ -103,8 +103,8 @@ function defaultSlotViewList(): Slot {
     }
     
     const hours:[Slot, Slot] = [
-        { id: "Ce matin", path: `this_month this_week ${today} matin`, inner: [] },
-        { id: "Cet arpès-midi", path: `this_month this_week ${today} aprem`, inner: [] },
+        { id: "matin", path: `this_month this_week ${today} matin`, inner: [] },
+        { id: "aprem", path: `this_month this_week ${today} aprem`, inner: [] },
     ]
     
     const todaySlot:Slot = { id: `${today}`, path: `this_month this_week ${today}`, inner: hours };
@@ -125,16 +125,16 @@ function defaultSlotViewList(): Slot {
 
     const tomorrowSlot:Slot = { id: tomorrow, path: `this_month ${tomorrowWeek} ${tomorrow}`, inner: [] };
 
-    const thisWeek:Slot = { id: "Cette semaine", path: "this_month this_week", inner: [yesterdaySlot, todaySlot] };
-    const nextWeek:Slot = { id: "Semaine prochaine", path: "this_month next_week", inner: [] };
+    const thisWeek:Slot = { id: "this_week", path: "this_month this_week", inner: [yesterdaySlot, todaySlot] };
+    const nextWeek:Slot = { id: "next_week", path: "this_month next_week", inner: [] };
     if (tomorrowWeek === "this_week") {
         thisWeek.inner.push(tomorrowSlot);
     } else {
         nextWeek.inner.push(tomorrowSlot);
     }
     
-    const thisMonth:Slot = { id: "Ce mois-ci", path: "this_month", inner: [thisWeek, nextWeek] };
-    const nextMonth:Slot = { id: "Mois prochain", path: "next_month", inner: [] };
+    const thisMonth:Slot = { id: "this_month", path: "this_month", inner: [thisWeek, nextWeek] };
+    const nextMonth:Slot = { id: "next_month", path: "next_month", inner: [] };
     
     const root:Slot = { id: "root", path: "", inner: [thisMonth, nextMonth] };
     return root;

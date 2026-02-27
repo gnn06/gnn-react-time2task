@@ -1,47 +1,36 @@
-import { Stack } from "@mui/material";
-import Xarrow from "react-xarrows";
-
-import { getSlotsForRow, slotViewList } from "../data/slot-view";
 import Slot from "./slot";
 
-function getRelations(slots){
-        return slots.map(slot => ({
-            targetId: slot.id,
-            targetAnchor: 'bottom',
-            sourceAnchor: 'top',
-        }));
-    }
+import { getSlotsForRow, slotViewList } from "../data/slot-view";
+import { GENERIC_SLOTIDS, getSlotIdLevel } from "../data/slot-id";
+
 export default function SlotViewList({tasks}) {
     const row_spacing = 1;
     const line_spacing = 2.0;
 
     const slots = slotViewList(null);
 
-    function SlotArcher ({slot, tasks}) {
-        return <div id={slot.id} className="h-fit">
-            <Slot slot={slot} tasks={tasks} />
-            {slot.inner.map((innerSlot,index) => <Xarrow key={index} start={slot.id} end={innerSlot.id} path="grid" startAnchor="top" endAnchor="bottom" 
-                                            gridBreak="20" strokeWidth={3}
-                                            divContainerStyle={{ position: 'relative' }}/>)}
-        </div>;
-    }
-        
     function Row ({slots}) {
         const tmp = getSlotsForRow(slots);
+        const level = GENERIC_SLOTIDS[getSlotIdLevel(slots[0].id)-1];
         return (
             <>
+                <div style={{writingMode: "sideways-lr"}} className="bg-gray-100 text-center">{level}</div>
                 {tmp.map((slot, idx) =>
                     slot
-                        ? <SlotArcher key={slot.id} slot={slot} tasks={tasks} />
+                        ? <div className="p-3"><Slot  slot={slot} tasks={tasks} /></div>
                         : <div key={`empty-${idx}`} />
                 )}
             </>
         );
     }
 
-    return <div className="inline-grid grid-cols-3 gap-y-10 gap-x-4">
-                {slots.map((item, index) =>  
-            <Row key={index} slots={item}></Row>
-        )}            
+    return <div className="inline-grid grid-cols-[auto_repeat(3,1fr)] border-dashed divide-dashed  border-gray-400 divide-gray-400 divide-x divide-y border-e-2 border-b-2 p-0">
+            <div></div>
+            <div className="bg-gray-100 text-center">Past</div>
+            <div className="bg-gray-100 text-center">Present</div>
+            <div className="bg-gray-100 text-center">Future</div>
+            {slots.map((item, index) =>  
+                <Row key={index} slots={item}></Row>
+            )}            
     </div>
 }

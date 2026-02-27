@@ -29,7 +29,7 @@ export const SLOTIDS_BY_LEVEL = {
     '4': ['matin', 'aprem']
 }
 
-const GENERIC_SLOTIDS = [ 'month', 'week', 'day' ]
+export const GENERIC_SLOTIDS = [ 'month', 'week', 'day', 'hour' ]
 
 export function getSlotIdAndKeywords() {
     return SLOTIDS_LST.concat(EXPR_KEYWORDS)
