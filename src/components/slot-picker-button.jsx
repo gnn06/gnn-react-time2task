@@ -29,7 +29,7 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
         <>
             <Button
                 ref={anchorRef}
-                variant="contained"
+                variant="outlined"
                 startIcon={<FilterList />}
                 endIcon={ selectedSlotExpr ? <Clear onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
                 onClick={handleClick}

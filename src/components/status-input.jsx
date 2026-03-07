@@ -3,7 +3,7 @@ import { STATUS_LST } from "./task-status.js";
 
 export const statusReferentiel = STATUS_LST.map((item) => { return { ...item, label: item.value }});
 
-export default function SyntaxInput({task, saveHandler}) {
+export default function SyntaxInput({task, saveHandler, isInline = false}) {
     
     const onChange = (value, action) => {
         saveHandler(value.value)
@@ -17,16 +17,19 @@ export default function SyntaxInput({task, saveHandler}) {
         control: (styles, state) => ({
             ...styles,
             backgroundColor: 'transparent',
+             minHeight: isInline ? 'unset' : styles.minHeight,
+             border: isInline ? 'none' : styles.border
         }),
         valueContainer: (styles, {data}) => ({ ...styles,
             padding: 0,
             paddingLeft: 3,
-            paddingRight: 0
+            paddingRight: 0,
+            margin: 0
         }),
         dropdownIndicator: (styles) => ({
             ...styles,
             color: 'black',
-            backgroundColor: 'rgb(156, 163, 175)',
+            backgroundColor: '#e0e0e0',
             borderRadius: 3,
             padding: 2,
             margin: 2
@@ -38,10 +41,7 @@ export default function SyntaxInput({task, saveHandler}) {
             ...baseStyle,
             backgroundColor: data.color,
             borderRadius: 4,
-            paddingTop: 2,
-            paddingLeft: 2,
-            paddingBottom: 2,
-            paddingRight: 2
+            padding: 2,
         })
     }
 

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { Divider, Stack } from "@mui/material";
 import _ from 'lodash';
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterGeneric, setFilterSlot } from "../features/taskSlice";
@@ -12,7 +12,6 @@ import { useGetActivitiesQuery } from "../features/apiSlice";
 import SyntaxInput from './syntax-input';
 import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
-import ActivityInput from "./activity-input";
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
 import { taskPredicateDisable, taskPredicateMulti } from "../data/task";
@@ -135,20 +134,19 @@ export default function TaskFilter() {
     }
     useHotkeys('ctrl+k', onCtrlK, { preventDefault: true, enableOnFormTags: true })
 
-    return <div className="m-1"> 
-        <div className="flex items-baseline space-x-2">
-            <label htmlFor="task-filter">Filtre&nbsp;:</label>        
-            <div className="flex-grow">
-                <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
-                    placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
-                    closeIcon={true}
-                    onInputChange={onInputChange} initialInputValue={filterExpr}/>
-                { error && <div className="m-1 text-red-500">{error}</div>}
-            </div>
-            <DialogHelpExpression/>            
-            {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
-            <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
-            <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
-        </div>
-    </div>;
+    return <Stack direction="row" spacing={1} alignItems="center">
+      <label htmlFor="task-filter">Filtre&nbsp;:</label>        
+      <div >
+          <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
+              placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
+              closeIcon={true}
+              onInputChange={onInputChange} initialInputValue={filterExpr}/>
+          { error && <div className="m-1 text-red-500">{error}</div>}
+      </div>
+      <DialogHelpExpression/>            
+      {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
+      <Divider orientation='vertical' flexItem />
+      <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
+      <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
+    </Stack>;
 };

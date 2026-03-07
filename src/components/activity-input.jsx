@@ -6,21 +6,28 @@ import _ from 'lodash';
 import { getActivityColor } from './ui-helper';
 import { useGetActivitiesQuery, useAddActivityMutation } from '../features/apiSlice';
 
-const colorStyle = (isFilter) => ({
+const colorStyle = (isInline) => ({
     control: (styles, state) => ({
         ...styles,
         backgroundColor: 'transparent',
+        minHeight: isInline ? 'unset' : styles.minHeight,
+        border: isInline ? 'none' : ''
     }),
     valueContainer: (styles, {data}) => ({ ...styles,
         padding: 0,
         paddingLeft: 3,
-        paddingRight: 0
+        paddingRight: 0,
+        margin: 0
     }),
     dropdownIndicator: (styles) => ({
         ...styles,
         borderRadius: 3,
         padding: 2,
         margin: 2
+    }),
+    clearIndicator: (base) => ({
+      ...base,
+      padding: '0',
     }),
     option: (styles, {data}) => {return { ...styles,
         backgroundColor: data.color || '#999999',
@@ -29,16 +36,13 @@ const colorStyle = (isFilter) => ({
     singleValue: (baseStyle, {data}) => ({
         ...baseStyle,
         backgroundColor: data.color,
-        color: !isFilter ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' : baseStyle.color,
+        color: !isInline ? Color(data.color).luminosity() > 0.5 ? 'black' : 'white' : baseStyle.color,
         borderRadius: 4,
-        paddingTop: 2,
-        paddingLeft: 2,
-        paddingBottom: 2,
-        paddingRight: 2
+        padding: 2
     })
 })
 
-export default function ActivityInput({activity, saveHandler, className, isFilter}) {
+export default function ActivityInput({activity, saveHandler, className, isInline}) {
     
     const { data, isLoading, isSuccess } = useGetActivitiesQuery();
     const [ addActivity ]                = useAddActivityMutation();
@@ -59,23 +63,18 @@ export default function ActivityInput({activity, saveHandler, className, isFilte
     if (data === undefined) return <div></div>;
 
     let list = _.orderBy(data, ['label'])
-    if (isFilter) {
-            list = list.concat({ id: 0, label: 'Aucune activité' })    
-    }
-    if (!isFilter) {
-        list = list.map((item, index) => (
-            {...item, 
-                color: getActivityColor(item.id, data),
-            }))
-    }
+    list = list.map((item, index) => (
+        {...item, 
+            color: getActivityColor(item.id, data),
+        }))
                 
     const currentOption = (activity !== null) && list && list.find(item => item.id === activity);
     return <Select options={list} 
                 value={currentOption}
-                styles={colorStyle(isFilter)} 
+                styles={colorStyle(isInline)} 
                 onChange={onChange}
                 onCreateOption={handleCreate}
-                isValidNewOption={() => !isFilter}
+                isValidNewOption={() => !isInline}
                 isClearable={true}
                 placeholder="Activité ..."
                 components={{

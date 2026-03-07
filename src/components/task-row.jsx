@@ -38,10 +38,7 @@ export default function TaskRow({ task }) {
     const anchorEl = useRef();
     const [showMenu, setShowMenu] = useState(false)
 
-    const myClassName = 'rounded p-1 my-1 '
-        + (selected ? 
-           'hover:bg-gray-300  bg-gray-400  border-gray-500 border-2'
-         : 'hover:bg-green-100 bg-green-200 border-gray-500 border-2');
+    const myClassName = 'rounded p-1 my-1 hover:bg-gray-100  border-gray-500 border-2';
 
     const style = {
         transform: CSS.Translate.toString(transform),
@@ -107,27 +104,27 @@ export default function TaskRow({ task }) {
         updateTask({ id: task.id, favorite: !task.favorite, nextAction: task.nextAction, url: task.url });
     }
 
-    return <tr className={myClassName} style={style}>
-                <td><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
+    return <tr className={myClassName } style={style}>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}} ><DragIcon  ref={setNodeRef} {...listeners} {...attributes}/>
                     {isDraggingCurrent && <div className="fixed mt-4 p-2 w-40 bg-blue-500 rounded z-1000">Déposez cette tâche sur le créneau où elle doit être réalisée.</div>}</td>
-                <td><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
-                <td style={{ width: "1%", textAlign: 'center' }}>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><InputEdit key={task ? task.title : 'null'} defaultValue={task && task.title} saveHandler={onTitleChange} className="w-full" placeHolder="Titre"/></td>
+                <td style={{ width: "1%", textAlign: 'center',border:'1px dashed rgb(156 163 175 / 1)' }}>
                     { task.url && <IconButtonLink href={task?.url} fontSize="small"  /> }
                 </td>
-                <td><InputEdit key={task ? task.nextAction ?? 'null-next' : 'null'} defaultValue={task && task.nextAction} saveHandler={onNextActionChange} className="w-full" placeHolder="Prochaine action"/></td>
-                <td style={{width: "1%" /* width: 1% to prevent the column from widening unnecessarily */}} >
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><InputEdit key={task ? task.nextAction ?? 'null-next' : 'null'} defaultValue={task && task.nextAction} saveHandler={onNextActionChange} className="w-full" placeHolder="Prochaine action"/></td>
+                <td style={{width: "1%" /* width: 1% to prevent the column from widening unnecessarily */, border:'1px dashed rgb(156 163 175 / 1)'   }} >
                     <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} />
                 </td>
-                <td><ActivityInput activity={task.activity} saveHandler={(value) => onActivityChange(value)} isFilter={false}/></td>
-                <td><StatusInput key={task.status} task={task} saveHandler={onStatusChange}/></td>
-                <td><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
-                    {task.id && <IconButton onClick={handleTarget}><TargetIcon  /></IconButton>}</td>
-                <td>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><ActivityInput activity={task.activity} saveHandler={(value) => onActivityChange(value)} isInline={true}/></td>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><StatusInput key={task.status} task={task} saveHandler={onStatusChange} isInline={true}/></td>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
+                    {task.id && <IconButton onClick={handleTarget} sx={{padding:0, marginLeft:1}}><TargetIcon  /></IconButton>}</td>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}
                     {task && !isTaskMulti(task) && isTaskUnique(task) && <span className="font-bold">1</span>}
                     {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
                     {task && !task.slotExpr                           && <span className="font-bold">E</span>}</td>
-                <td ref={anchorEl} >
-                    <IconButton onClick={handleMenu}><MenuIcon/></IconButton>
+                <td ref={anchorEl} style={{border:'1px dashed rgb(156 163 175 / 1)'}}>
+                    <IconButton onClick={handleMenu} sx={{padding:0}}><MenuIcon/></IconButton>
                     <Menu open={showMenu} anchorEl={anchorEl.current} onClose={handleCloseMenu}>
                         <MenuItem onClick={handleEdit}>Edit</MenuItem>
                         <MenuItem onClick={handleDelete}>Delete</MenuItem>

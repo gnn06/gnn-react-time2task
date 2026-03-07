@@ -11,23 +11,25 @@ export default function TaskList({tasks, group, className = ''}) {
         alignItems="center">Créer des tâches puis choisissez les crénaux auxquels vous souhaitez les réaliser.</Box>
     }
 
+    const headStyle = {border:'1px dashed rgb(156 163 175 / 1)', backgroundColor:'rgb(243 244 246 / 1)', fontWeight:400};
+
     return <React.Fragment>
-        <table className={"w-full" + className}>
+        <table className={"w-full bg-white border-collapse" + className} style={{border:'1px dashed rgb(156 163 175 / 1)'}}>
             <thead>
             <tr>
-                <th></th>
-                <th>Titre</th>
-                <th></th>
-                <th>Prochaine action</th>
-                <th></th>
-                <th>Activité</th>
-                <th>Statut</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th style={headStyle}></th>
+                <th style={headStyle}>Titre</th>
+                <th style={headStyle}></th>
+                <th style={headStyle}>Prochaine action</th>
+                <th style={headStyle}></th>
+                <th style={headStyle}>Activité</th>
+                <th style={headStyle}>Statut</th>
+                <th style={headStyle}></th>
+                <th style={headStyle}></th>
+                <th style={headStyle}></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-600">
                 <TaskGroup tasks={tasks} group={group} />
                 <TaskNew />
             </tbody>

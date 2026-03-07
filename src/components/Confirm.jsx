@@ -1,6 +1,5 @@
+import { Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-
-import Button from "./button";
 
 export default function Confirm({titre, children, handleConfirm, handleCancel}) {
     return <Dialog open={true}  maxWidth="lg" fullWidth={true} onClose={handleCancel} >
@@ -8,8 +7,8 @@ export default function Confirm({titre, children, handleConfirm, handleCancel}) 
             <div className='text-xl mb-3'>{titre}</div>
             {children}            
             <div className='flex flex-row justify-end space-x-1 mt-5'>
-                <Button label="Annuler" clickToto={handleCancel} />
-                <Button label="Confirmer" clickToto={handleConfirm} />
+                <Button onClick={handleCancel} >Annuler</Button>
+                <Button onClick={handleConfirm} >Confirmer</Button>
             </div>
         </div>
     </Dialog>

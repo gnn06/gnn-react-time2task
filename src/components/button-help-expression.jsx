@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "./button";
 import Dialog from '@mui/material/Dialog';
 import CloseIcon from '@mui/icons-material/Close';
+import { Button } from "@mui/material";
 
 export default function DialogHelpExpression() {
     const handleOpen = () => {
@@ -13,7 +13,7 @@ export default function DialogHelpExpression() {
 
     const [open, setOpen] = useState(false)
     
-    return (<div><Button label="Aide" className="text-sm" clickToto={handleOpen}/>
+    return (<div><Button variant="outlined" size="small" onClick={handleOpen}>Aide</Button>
         <Dialog onClose={handleClose} open={open}  maxWidth="lg">
         <div className="p-3">
             <div className="flex flex-row">

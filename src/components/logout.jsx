@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import Button from "./button";
 import { supabase } from '../services/supabase'
 import { removeAccessToken, removeUser } from "../services/browser-storage";
 import { logout } from "../features/taskSlice";
+import { Button } from "@mui/material";
 
 export default function Logout() {
 
@@ -16,5 +16,6 @@ export default function Logout() {
         dispatch(logout())
     }
 
-    return <span>{email} <Button clickToto={logoutHandler} label="Se déconnecter" /></span>
+    return <><span>{email}</span> <Button variant="outlined" size="small" onClick={logoutHandler}>Se déconnecter</Button>
+    </>
 }

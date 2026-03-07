@@ -5,7 +5,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 export default function FavoriteToggle({ favorite = false, onToggle, size = 40, color = "black", ...props }) {
     return (
-        <IconButton aria-label={"favorite"} onClick={onToggle} {...props} >
+        <IconButton aria-label={"favorite"} onClick={onToggle} {...props} sx={{padding:0}} >
             {favorite ? <StarIcon style={{ color: color }} sx={{ fontSize: size }} /> : <StarBorderIcon style={{ color: color }} sx={{ fontSize: size }} />}
         </IconButton>
     );

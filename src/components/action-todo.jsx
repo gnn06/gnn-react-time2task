@@ -1,11 +1,10 @@
-import React from 'react';
 import { useState } from "react";
 
-import Button from "./button.jsx";
 import Confirm from './Confirm.jsx'
 import Dialog from '@mui/material/Dialog';
 
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
+import { Button } from "@mui/material";
 
 export default function TodoAction({tasks, className}) {
 
@@ -37,7 +36,7 @@ export default function TodoAction({tasks, className}) {
     tasks = tasks.filter(t => t.status !== "A faire")
 
     return <div className={className}>
-        <Button label="Todo" clickToto={onTodo} />
+        <Button variant='outlined' onClick={onTodo} >Todo</Button>
         { updateError && !hideErrorDialog &&
                     <Dialog open={true}>
                         <div className='p-3'>

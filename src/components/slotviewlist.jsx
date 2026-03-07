@@ -17,14 +17,16 @@ export default function SlotViewList({tasks}) {
                 <div style={{writingMode: "sideways-lr"}} className="bg-gray-100 text-center">{level}</div>
                 {tmp.map((slot, idx) =>
                     slot
-                        ? <div className="p-3"><Slot  slot={slot} tasks={tasks} /></div>
+                        ? <div className="p-3 "><Slot  slot={slot} tasks={tasks} /></div>
                         : <div key={`empty-${idx}`} />
                 )}
             </>
         );
     }
 
-    return <div className="inline-grid grid-cols-[auto_repeat(3,1fr)] border-dashed divide-dashed  border-gray-400 divide-gray-400 divide-x divide-y border-e-2 border-b-2 p-0">
+    // return <div>goi</div>
+
+    return <div className="inline-grid grid-cols-[auto_repeat(3,1fr)] border-none divide-dashed  border-gray-400 divide-gray-400 divide-x divide-y border-e-2 border-b-2 p-0 bg-white">
             <div></div>
             <div className="bg-gray-100 text-center">Past</div>
             <div className="bg-gray-100 text-center">Present</div>

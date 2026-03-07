@@ -3,9 +3,8 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import Select from 'react-select';
 import Dialog from '@mui/material/Dialog';
-import { Paper } from '@mui/material';
+import { Button, Paper } from '@mui/material';
 
-import Button from "./button";
 import Confirm from './Confirm'
 
 import { useGetSnapDatesQuery, useUpdateSnapDateMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
@@ -79,14 +78,14 @@ export default function ShiftAction() {
     const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
 
     return <div>
-        <Button label="Démarrer Semaine ..." clickToto={onShift}/>
+        <Button variant='outlined' onClick={onShift}>Démarrer Semaine ...</Button>
         { updateError && !hideErrorDialog &&
                     <Dialog open={true}>
                         <div className='p-3'>
                             <div className='text-xl mb-3'>Une erreur est survenue</div>
                             {updateError.data.message}
                             <div className='flex flex-row justify-end space-x-1 mt-5'>
-                                <Button label="OK" clickToto={handleErrorDialogConfirm} />
+                                <Button onClick={handleErrorDialogConfirm} >OK</Button>
                             </div>
                         </div>
                     </Dialog> }

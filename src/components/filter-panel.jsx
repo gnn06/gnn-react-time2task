@@ -131,7 +131,7 @@ function FilterPanel({
 
         {/* Bouton principal Filtres */}
         <Button
-          variant="contained"
+          variant="outlined"
           startIcon={<FilterList />}
           endIcon={ hasActiveFilters ? <Clear onClick={(e) => { e.stopPropagation(); resetFilters(); }}/> : <KeyboardArrowDown /> }
           onClick={(e) => setMainMenuAnchor(e.currentTarget)}

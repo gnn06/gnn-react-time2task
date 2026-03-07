@@ -1,3 +1,12 @@
+// To avoid "An unhandled error occurred processing a request for the endpoint "getActivities"."
+import nodeFetch, { Request, Response } from "node-fetch";
+//@ts-ignore
+global.fetch = nodeFetch;
+//@ts-ignore
+global.Request = Request;
+//@ts-ignore
+global.Response = Response;
+
 import { render, screen, fireEvent } from '@testing-library/react' // (or /dom, /vue, ...)
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'

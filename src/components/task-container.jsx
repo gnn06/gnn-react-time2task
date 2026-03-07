@@ -9,6 +9,7 @@ import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js
 import { dragging, editTask } from "../features/taskSlice";
 import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
+import { Box } from "@mui/material";
 
 export default function TaskContainer() {
     // eslint-disable-next-line
@@ -50,17 +51,17 @@ export default function TaskContainer() {
         const panel1 = <SlotPanel tasks={tasks}/>
         const panel2 = <TaskPanel tasks={tasks}/>
         return (
-          <DndContext onDragEnd={onDnd} onDragStart={onDndStart}>            
+          <DndContext onDragEnd={onDnd} onDragStart={onDndStart} >            
             { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm}/>}
-            <PanelGroup direction="horizontal" className="" >
-              <Panel className='' collapsible={true} minSize={20} style={{}} >
-                {panel1}
-              </Panel>
-              <PanelResizeHandle className="w-1.5 bg-gray-200 hover:bg-black"/>
-              <Panel className='' collapsible={true} minSize={20} style={{overflow:"visible"}}>
-                {panel2}
-              </Panel>           
-            </PanelGroup>            
+            <PanelGroup direction="horizontal" className="">
+                <Panel className='' collapsible={true} minSize={20} style={{}} >
+                  {panel1}
+                </Panel>
+                <PanelResizeHandle style={{backgroundColor: "gray", width: "4px"}}  className="w-1.5 ml-1 mr-1 bg-gray-200 hover:bg-black"/>
+                <Panel className='' collapsible={true} minSize={20} style={{overflow:"visible"}}>
+                  {panel2}
+                </Panel>           
+            </PanelGroup>
           </DndContext>
         )
     }

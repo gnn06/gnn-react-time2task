@@ -13,6 +13,9 @@ import Settings from './components/settings';
 import TestComponentRouter from './components/test-component-router';
 import Test from './components/test';
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
 const router = createHashRouter([
   {
     path: "/",
@@ -45,12 +48,25 @@ const router = createHashRouter([
   }
 ]);
 
+const theme = createTheme({
+  typography: {
+    fontSize: 11,    
+  },
+  palette: {
+    background: {
+      default: '#e0e0e0', // couleur du body
+    },
+  }
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router}/> 
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Provider store={store}>
+        <RouterProvider router={router}/> 
+      </Provider>
+    </ThemeProvider>
   </React.StrictMode>
 );

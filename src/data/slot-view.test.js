@@ -1404,31 +1404,31 @@ describe('slotFind', () => {
       const givenSlot = {
          id: "root", path: "", inner: [
             {
-               id: "Ce mois-ci", path: "this_month", inner: [
+               id: "this_month", path: "this_month", inner: [
                   {
-                     id: "Cette semaine", path: "this_month this_week", inner: [
+                     id: "this_week", path: "this_month this_week", inner: [
                         {
                            id: "mercredi", path: `this_month this_week mercredi`, inner: [
-                              { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
-                              { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+                              { id: "matin", path: `this_month this_week mercredi matin`, inner: [] },
+                              { id: "aprem", path: `this_month this_week mercredi aprem`, inner: [] }
                            ]
                         },
                         { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
                         { id: "mardi", path: `this_month this_week mardi`, inner: [] }]
                   },
-                  { id: "Semaine prochaine", path: "this_month next_week", inner: [] }
+                  { id: "next_week", path: "this_month next_week", inner: [] }
                ]
             },
-            { id: "Mois prochain", path: "next_month", inner: [] }
+            { id: "next_month", path: "next_month", inner: [] }
          ]
       };
       const result = slotFind(givenSlot, "this_month this_week");
       const expected = {
-         id: "Cette semaine", path: "this_month this_week", inner: [
+         id: "this_week", path: "this_month this_week", inner: [
             {
                id: "mercredi", path: `this_month this_week mercredi`, inner: [
-                  { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
-                  { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+                  { id: "matin", path: `this_month this_week mercredi matin`, inner: [] },
+                  { id: "aprem", path: `this_month this_week mercredi aprem`, inner: [] }
                ]
             },
             { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
@@ -1440,26 +1440,26 @@ describe('slotFind', () => {
       const givenSlot = {
          id: "root", path: "", inner: [
             {
-               id: "Ce mois-ci", path: "this_month", inner: [
+               id: "this_month", path: "this_month", inner: [
                   {
-                     id: "Cette semaine", path: "this_month this_week", inner: [
+                     id: "this_week", path: "this_month this_week", inner: [
                         {
                            id: "mercredi", path: `this_month this_week mercredi`, inner: [
-                              { id: "Ce matin", path: `this_month this_week mercredi matin`, inner: [] },
-                              { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] }
+                              { id: "matin", path: `this_month this_week mercredi matin`, inner: [] },
+                              { id: "aprem", path: `this_month this_week mercredi aprem`, inner: [] }
                            ]
                         },
                         { id: "jeudi", path: `this_month this_week jeudi`, inner: [] },
                         { id: "mardi", path: `this_month this_week mardi`, inner: [] }]
                   },
-                  { id: "Semaine prochaine", path: "this_month next_week", inner: [] }
+                  { id: "next_week", path: "this_month next_week", inner: [] }
                ]
             },
-            { id: "Mois prochain", path: "next_month", inner: [] }
+            { id: "next_month", path: "next_month", inner: [] }
          ]
       };
       const result = slotFind(givenSlot, "this_month this_week mercredi aprem");
-      const expected = { id: "Cet arpès-midi", path: `this_month this_week mercredi aprem`, inner: [] };
+      const expected = { id: "aprem", path: `this_month this_week mercredi aprem`, inner: [] };
       expect(result).toEqual(expected);
    });
 });
@@ -1470,12 +1470,12 @@ describe('slotViewList', () => {
       const expected = [
          [
             {
-               "id": "Ce matin",
+               "id": "matin",
                "inner": [],
                "path": "this_month this_week mercredi matin",
             },
             {
-               "id": "Cet arpès-midi",
+               "id": "aprem",
                "inner": [],
                "path": "this_month this_week mercredi aprem",
             },
@@ -1490,12 +1490,12 @@ describe('slotViewList', () => {
                "id": "mercredi",
                "inner": [
                   {
-                     "id": "Ce matin",
+                     "id": "matin",
                      "inner": [],
                      "path": "this_month this_week mercredi matin",
                   },
                   {
-                     "id": "Cet arpès-midi",
+                     "id": "aprem",
                      "inner": [],
                      "path": "this_month this_week mercredi aprem",
                   },
@@ -1510,7 +1510,7 @@ describe('slotViewList', () => {
          ],
          [
             {
-               "id": "Cette semaine",
+               "id": "this_week",
                "inner": [
                   {
                      "id": "mardi",
@@ -1521,12 +1521,12 @@ describe('slotViewList', () => {
                      "id": "mercredi",
                      "inner": [
                         {
-                           "id": "Ce matin",
+                           "id": "matin",
                            "inner": [],
                            "path": "this_month this_week mercredi matin",
                         },
                         {
-                           "id": "Cet arpès-midi",
+                           "id": "aprem",
                            "inner": [],
                            "path": "this_month this_week mercredi aprem",
                         },
@@ -1542,17 +1542,17 @@ describe('slotViewList', () => {
                "path": "this_month this_week",
             },
             {
-               "id": "Semaine prochaine",
+               "id": "next_week",
                "inner": [],
                "path": "this_month next_week",
             },
          ],
          [
             {
-               "id": "Ce mois-ci",
+               "id": "this_month",
                "inner": [
                   {
-                     "id": "Cette semaine",
+                     "id": "this_week",
                      "inner": [
                         {
                            "id": "mardi",
@@ -1563,12 +1563,12 @@ describe('slotViewList', () => {
                            "id": "mercredi",
                            "inner": [
                               {
-                                 "id": "Ce matin",
+                                 "id": "matin",
                                  "inner": [],
                                  "path": "this_month this_week mercredi matin",
                               },
                               {
-                                 "id": "Cet arpès-midi",
+                                 "id": "aprem",
                                  "inner": [],
                                  "path": "this_month this_week mercredi aprem",
                               },
@@ -1584,7 +1584,7 @@ describe('slotViewList', () => {
                      "path": "this_month this_week",
                   },
                   {
-                     "id": "Semaine prochaine",
+                     "id": "next_week",
                      "inner": [],
                      "path": "this_month next_week",
                   },
@@ -1592,7 +1592,7 @@ describe('slotViewList', () => {
                "path": "this_month",
             },
             {
-               "id": "Mois prochain",
+               "id": "next_month",
                "inner": [],
                "path": "next_month",
             },
@@ -1606,12 +1606,12 @@ describe('slotViewList', () => {
       const expected = [
          [
             {
-               "id": "Ce matin",
+               "id": "matin",
                "inner": [],
                "path": "this_month this_week mercredi matin",
             },
             {
-               "id": "Cet arpès-midi",
+               "id": "aprem",
                "inner": [],
                "path": "this_month this_week mercredi aprem",
             },
@@ -1627,12 +1627,12 @@ describe('slotViewList', () => {
                "id": "mercredi",
                "inner": [
                   {
-                     "id": "Ce matin",
+                     "id": "matin",
                      "inner": [],
                      "path": "this_month this_week mercredi matin",
                   },
                   {
-                     "id": "Cet arpès-midi",
+                     "id": "aprem",
                      "inner": [],
                      "path": "this_month this_week mercredi aprem",
                   },
@@ -1648,7 +1648,7 @@ describe('slotViewList', () => {
          // week
          [
             {
-               "id": "Cette semaine",
+               "id": "this_week",
                "inner": [
                   {
                      "id": "mardi",
@@ -1659,12 +1659,12 @@ describe('slotViewList', () => {
                      "id": "mercredi",
                      "inner": [
                         {
-                           "id": "Ce matin",
+                           "id": "matin",
                            "inner": [],
                            "path": "this_month this_week mercredi matin",
                         },
                         {
-                           "id": "Cet arpès-midi",
+                           "id": "aprem",
                            "inner": [],
                            "path": "this_month this_week mercredi aprem",
                         },
@@ -1689,7 +1689,7 @@ describe('slotViewList', () => {
       const expected = [
          [
             {
-               "id": "Cet arpès-midi",
+               "id": "aprem",
                "inner": [],
                "path": "this_month this_week mercredi aprem",
             },
@@ -1703,7 +1703,7 @@ describe('slotViewList', () => {
       const expected = [
          [
             {
-               "id": "Semaine prochaine",
+               "id": "next_week",
                "inner": [],
                "path": "this_month next_week",
             },

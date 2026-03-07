@@ -17,7 +17,7 @@ export default function SlotView({ className, tasks, conf }) {
   }
 
   return (
-    <div className={"mt-2 overflow-y-scroll "} style={{}}>
+    <div className={"overflow-y-scroll "} >
       {conf.view === "tree" && <SlotViewTree tasks={tasks} conf={conf} />}
       {conf.view === "list" && <SlotViewList tasks={tasks} />}
     </div>

@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '27/02/2026';
+export const RELEASE = '08/03/2026';
 
 const text = `
-27/02/2026
+08/03/2026
 ==========
 - change 'list' slot view to grid
+- change 'task' list UI (white background, dashed border)
+- review app and filter toolbars, global UI improvement
+
 
 26/02/2026
 ==========

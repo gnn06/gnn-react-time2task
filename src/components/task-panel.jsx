@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { FormControl, IconButton, MenuItem, Paper, Select, Stack, Tooltip, Typography } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
 
 import CreateTask from "./create-task";
@@ -26,25 +26,33 @@ export default function TaskPanel({tasks}) {
     const draggingStyle = isDragging ? 'overflow-visible' : " overflow-y-scroll "
 
     return (
-        <div className="m-0 p-1 pb-1 flex flex-col h-full">
-            <Stack direction={"row"} spacing={0.5} >
-                <CreateTask />
-                <ShiftAction />
-                <TodoAction tasks={tasks} className="grow"/>
-                { filterTaskId && <IconButton onClick={onFilterTask} size="small"><TargetIcon /> <Typography > Filtré</Typography></IconButton>}
-                <label>
-                    Regrouper par :
-                    <select onChange={(e) => setGroup(e.target.value)} className="m-1">
-                        <option value="0">Rien</option>
-                        <option value="1">Mois</option>
-                        <option value="2">Semaine</option>
-                        <option value="3">Jour</option>
-                        <option value="4">Heure</option>
-                        <option value="activity">Activité</option>
-                    </select>
-                </label>
-            </Stack>
-            <div className={draggingStyle + " h-full"}><TaskList  tasks={tasks} group={group}/></div>            
+        <div className="m-0 p-0 pb-0 flex flex-col h-full">
+            <Paper sx={{padding:0.5, backgroundColor:'white', width: 'fit-content', ml:'auto' , height:'44.85px', marginBottom:0.75}}>
+                <Stack direction={"row"} spacing={1} >
+                    <CreateTask />
+                    <ShiftAction />
+                    <TodoAction tasks={tasks} className="grow"/>
+                    { filterTaskId && <IconButton onClick={onFilterTask} size="small"><TargetIcon /> <Typography > Filtré</Typography></IconButton>}
+                    <Tooltip title="Regrouper par" placement="top">
+                        <FormControl size="small" >
+                            <Select
+                                value={group}
+                                onChange={(e) => setGroup(e.target.value)}
+                            >
+                                <MenuItem value="0">Rien</MenuItem>
+                                <MenuItem value="1">Mois</MenuItem>
+                                <MenuItem value="2">Semaine</MenuItem>
+                                <MenuItem value="3">Jour</MenuItem>
+                                <MenuItem value="4">Heure</MenuItem>
+                                <MenuItem value="activity">Activité</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Tooltip>
+                </Stack>
+            </Paper>
+            <div className={draggingStyle + " h-full"}>
+                <TaskList  tasks={tasks} group={group}/>
+            </div>            
         </div>
     )
 }

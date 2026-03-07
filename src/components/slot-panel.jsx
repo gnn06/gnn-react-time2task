@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button as ButtonMUI, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton, MenuItem, Select, Tooltip } from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton, MenuItem, Paper, Select, Stack, Tooltip } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import TargetIcon from '@mui/icons-material/AdsClick';
 import { JsonEditor } from 'json-edit-react'
 
 import SlotView from "./slotview";
-import Button from "./button";
 import { setFilterSlot, setSlotViewStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, setSlotViewFilterConfView, showRepeatAction } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import SlotViewTree from "./slotviewtree";
@@ -65,13 +64,13 @@ export default function SlotPanel({tasks})  {
         dispatch(setSlotViewStrict(!slotStrict))
     }
 
-    return (
-        <div className="m-0 pl-1 pb-1 flex flex-col h-full">
-            <Grid className="p-1" container flexDirection="row" justifyContent="flex-end" alignItems={"flex-start"} gap="0.25em" >
+    return (<Stack sx={{padding:0, height: '100%'}}>
+        <Paper sx={{padding:0.5, backgroundColor:'white', width: 'fit-content', ml:'auto', marginBottom: 0.75}}>
+            <Stack direction="row" spacing={1}  >
                 { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
                 <FormControlLabel control={<Checkbox checked={slotStrict} onClick={handleSlotStrict}/>} label="Slot strict" disabled={!filterPath}/>
                 <FormControlLabel control={<Checkbox checked={showRepeat} onClick={handleShowRepeat}/>} label="voir les répétitions" />
-                <Button label="Change conf" clickToto={onConf}/>
+                <Button variant="outlined" size="small" onClick={onConf}>Change conf</Button>
                 <Dialog open={confVisible} onClose={handleCloseConf}>
                     <DialogTitle id="alert-dialog-title">
                         Changement de l'affichage des créneaux
@@ -80,7 +79,7 @@ export default function SlotPanel({tasks})  {
                         <JsonEditor data={conf} setData={onConfChange} />
                     </DialogContent>
                     <DialogActions>
-                        <ButtonMUI label="OK" onClick={handleCloseConf} >OK</ButtonMUI>
+                        <Button label="OK" onClick={handleCloseConf} >OK</Button>
                     </DialogActions>
                 </Dialog>
                 <Tooltip title="Choisir le niveau le plus profond inclus dans la vue."  placement="top">
@@ -95,9 +94,8 @@ export default function SlotPanel({tasks})  {
                     <MenuItem value="tree">Tree</MenuItem>
                     <MenuItem value="list">List</MenuItem>
                 </Select>
-            </Grid>
-
-            <SlotView className=" overflow-y-scroll " tasks={tasks} conf={conf} />
-        </div>
-        )
+            </Stack>
+        </Paper>    
+        <SlotView className=" overflow-y-scroll " tasks={tasks} conf={conf} />
+    </Stack>)
     }
