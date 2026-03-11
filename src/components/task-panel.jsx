@@ -3,9 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { FormControl, IconButton, MenuItem, Paper, Select, Stack, Tooltip, Typography } from "@mui/material";
 import TargetIcon from '@mui/icons-material/AdsClick';
 
-import CreateTask from "./create-task";
-import ShiftAction from './action-shift';
-import TodoAction from './action-todo';
 import TaskList from "./task-list";
 import { setFilterTaskId } from "../features/taskSlice";
 
@@ -29,9 +26,6 @@ export default function TaskPanel({tasks}) {
         <div className="m-0 p-0 pb-0 flex flex-col h-full">
             <Paper sx={{padding:0.5, backgroundColor:'white', width: 'fit-content', ml:'auto' , height:'44.85px', marginBottom:0.75}}>
                 <Stack direction={"row"} spacing={1} >
-                    <CreateTask />
-                    <ShiftAction />
-                    <TodoAction tasks={tasks} className="grow"/>
                     { filterTaskId && <IconButton onClick={onFilterTask} size="small"><TargetIcon /> <Typography > Filtré</Typography></IconButton>}
                     <Tooltip title="Regrouper par" placement="top">
                         <FormControl size="small" >

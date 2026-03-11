@@ -4,16 +4,16 @@ import { useSelector } from "react-redux";
 import Select from 'react-select';
 import Dialog from '@mui/material/Dialog';
 import { Button, Paper } from '@mui/material';
+import { Stack } from '@mui/material';
 
-import Confirm from './Confirm'
 
 import { useGetSnapDatesQuery, useUpdateSnapDateMutation, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { useGetTasksQuery } from "../features/apiSlice.js";
 import { taskShiftFilter } from '../data/task.js';
 import { getSlotIdFirstLevel, getSlotIdLevel } from '../data/slot-id';
 import { getSnapDateToShow, getSnapDateToSave } from '../data/slot-date';
+import Confirm from './Confirm'
 import SlotAnimate from './slot-animation';
-import { Stack } from '@mui/material';
 
 const options = [{ value: 'week', label: 'week'}, { value: 'month', label: 'month'}]
 
@@ -77,8 +77,9 @@ export default function ShiftAction() {
 
     const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
 
-    return <div>
-        <Button variant='outlined' onClick={onShift}>Démarrer Semaine ...</Button>
+    return <>
+        <Button variant="outlined" 
+            onClick={onShift}>Démarrer Semaine ...</Button>
         { updateError && !hideErrorDialog &&
                     <Dialog open={true}>
                         <div className='p-3'>
@@ -112,5 +113,5 @@ export default function ShiftAction() {
                     </div>
                 </Paper>
         </Confirm> }
-        </div>
+        </>
 }

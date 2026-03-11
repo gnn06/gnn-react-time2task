@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Button, Popper, Paper, ClickAwayListener, Chip } from "@mui/material";
 import { FilterList, Clear, KeyboardArrowDown } from "@mui/icons-material";
 
@@ -40,7 +40,7 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
                         label={selectedSlotExpr.split(' ').slice(-2).join(' ')} 
                         size="small" 
                         color="secondary"
-                        sx={{ ml: 1 }}
+                        sx={{ ml: 1, height: '20px' }}
                     />
                 )}
             </Button>

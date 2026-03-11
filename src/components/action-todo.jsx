@@ -1,53 +1,34 @@
-import { useState } from "react";
-
+import { Dialog, Button } from '@mui/material';
+ 
 import Confirm from './Confirm.jsx'
-import Dialog from '@mui/material/Dialog';
+import { useTodoAction } from '../hooks/useTodoAction.js';
 
-import { useUpdateTaskMutation } from "../features/apiSlice.js";
-import { Button } from "@mui/material";
+export default function TodoAction() {
+    const {
+        tasks,
+        show,
+        updateError,
+        hideErrorDialog,
+        onTodo,
+        handleTodoCancel,
+        handleTodoConfirm,
+        handleErrorDialogConfirm
+    } = useTodoAction();
 
-export default function TodoAction({tasks, className}) {
 
-    const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
-
-    const [todoDialog, setTodoDialog] = useState({show: false, task:[]});
-    const [hideErrorDialog, setHideErrorDialog] = useState(false);
-
-    async function onTodo() {
-        setTodoDialog({show: true, tasks})
-    }
-
-    function handleTodoCancel() {
-        setTodoDialog({show: false, tasks: []})
-    }
-
-    function handleTodoConfirm() {
-        setTodoDialog({show: false, tasks: []})
-        setHideErrorDialog(false)
-        for(const t of tasks) {
-            updateTask({id: t.id, status: 'A faire'})
-        }
-    }
-
-    function handleErrorDialogConfirm() {
-        setHideErrorDialog(true)
-    }
-
-    tasks = tasks.filter(t => t.status !== "A faire")
-
-    return <div className={className}>
+    return <div className="grow">
         <Button variant='outlined' onClick={onTodo} >Todo</Button>
         { updateError && !hideErrorDialog &&
-                    <Dialog open={true}>
+                    <Dialog open={true} data-testid="error-dialog">
                         <div className='p-3'>
                             <div className='text-xl mb-3'>Une erreur est survenue</div>
                             {updateError.data.message}
                             <div className='flex flex-row justify-end space-x-1 mt-5'>
-                                <Button label="OK" clickToto={handleErrorDialogConfirm} />
+                                <Button  onClick={handleErrorDialogConfirm} >OK</Button>
                             </div>
                         </div>
                     </Dialog> }
-        { todoDialog.show && 
+        { show && 
             <Confirm 
                 titre="Confirmez-vous le passage à l'état 'à faire' ?" 
                 handleConfirm={handleTodoConfirm}

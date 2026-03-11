@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Divider, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import _ from 'lodash';
 
 import { setTaskFilter, setActivity, setFilterIsMulti, setFilterIsDisable, setFilterGeneric, setFilterSlot } from "../features/taskSlice";
@@ -145,7 +145,6 @@ export default function TaskFilter() {
       </div>
       <DialogHelpExpression/>            
       {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
-      <Divider orientation='vertical' flexItem />
       <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
       <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
     </Stack>;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector, useStore } from "react-redux";
 import { Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
@@ -24,9 +24,9 @@ export default function CreateTask() {
         setVisible(false)
     }
 
-    return <React.Fragment>
-        <Button variant="contained" size="small" startIcon={<AddIcon/>} 
+    return <>
+        <Button variant="contained"  startIcon={<AddIcon/>} 
             onClick={() => setVisible(true)}>Créer Tâche ...</Button>
         { visible && <TaskDialog task={{status:"A faire"}} onCancel={() => {setVisible(false)}} onConfirm={onTaskDialogConfirm}/>}
-    </React.Fragment>
+    </>
 }

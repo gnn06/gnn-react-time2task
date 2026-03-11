@@ -4,21 +4,15 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { Box, Stack } from '@mui/material';
+import Paper from '@mui/material/Paper';
 
 import Login from './login';
 import AppMenu from './appmenu';
-import TaskFilter from "./task-filter.jsx";
 import TaskContainer from './task-container';
 import { useLazyGetUserConfQuery } from '../features/apiSlice';
 import { setSlotViewFilterConfView } from '../features/taskSlice';
-import { Box, Stack } from '@mui/material';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Group from '@mui/material/Stack';
-import Separator from '@mui/material/Divider';
-
+import Mainbar from './main-bar';
 
 function App() {
   const dispatch = useDispatch();
@@ -53,7 +47,7 @@ function App() {
       <AppMenu />
       <Box sx={{ marginY: 1 }}>
         <Paper elevation={1} sx={{ padding: 0.75, backgroundColor: 'white' }}>
-          <TaskFilter />
+          <Mainbar />
         </Paper>
       </Box>
       <TaskContainer/>

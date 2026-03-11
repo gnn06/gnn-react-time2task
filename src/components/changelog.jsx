@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '08/03/2026';
+export const RELEASE = '11/03/2026';
 
 const text = `
+11/03/2026
+==========
+- move command with filter
+
 08/03/2026
 ==========
 - change 'list' slot view to grid
