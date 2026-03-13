@@ -61,7 +61,9 @@ export function SortedTaskList({ tasks }) {
             items={tasks}
             strategy={verticalListSortingStrategy}
         >
-            {tasks.map(task => <SortableItem key={task.id} id={task.id} item={task} />)}
+            <div className="columns-2 [&>*]:break-inside-avoid"> 
+                {tasks.map(task => <SortableItem key={task.id} id={task.id} item={task} />)}
+            </div>
         </SortableContext>
     </DndContext>;
 }

@@ -48,7 +48,7 @@ export default function TaskInSlot({task}) {
     return <>
         <div className="rounded p-1 my-1  border-gray-500 border-2 " style={{background: activityBgColor, color: activityTextColor}}>
             {/* Set the height to prevent changes if the icon is present. */}
-            <div className="flex flex-row items-center" style={{ height: '40px' }} >
+            <div className="flex flex-row items-center"  >
                 <div className="grow">
                     {task.title}
                     { task.url && <IconButtonLink href={task.url} fontSize="small" color={activityTextColor} /> }
