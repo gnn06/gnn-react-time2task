@@ -17,7 +17,7 @@ export default function SlotViewList({tasks}) {
                 <div style={{writingMode: "sideways-lr"}} className="bg-gray-100 text-center">{level}</div>
                 {tmp.map((slot, idx) =>
                     slot
-                        ? <div className="p-3 "><Slot  slot={slot} tasks={tasks} /></div>
+                        ? <div key={slot.id} className="p-3 "><Slot  slot={slot} tasks={tasks} /></div>
                         : <div key={`empty-${idx}`} />
                 )}
             </>

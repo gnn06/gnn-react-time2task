@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
-import { retrieveAccessToken, retrieveUser } from '../services/browser-storage';
+import { localRetrieveAccessToken, localRetrieveUser } from '../services/browser-storage';
 import { DEFAULT_CONF, reduceCollapseOnConf } from '../data/slot-view';
 
 const initialState = {
@@ -18,11 +18,13 @@ const initialState = {
         taskId: null,
     },
     slotViewFilterConf: DEFAULT_CONF,
-    showRepeat: true,
     selectedSlotId: [],
     association: {},
-    user: retrieveUser(),
-    accessToken: retrieveAccessToken(),
+    user: {
+        id :    '',
+        email : ''
+    },
+    accessToken: '',
     currentActivity: null,
     editTask: null,
     isDragging: false,
@@ -111,11 +113,11 @@ export const taskSlice = createSlice({
             state.editTask = task;
         },
         showRepeatAction: (state, action) => {
-            state.showRepeat = action.payload;
+            state.slotViewFilterConf = { ...state.slotViewFilterConf, showRepeat: action.payload };
         },
         dragging: (state, action) => {
             state.isDragging = action.payload;
-        }
+        },
     }
 })
 

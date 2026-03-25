@@ -10,33 +10,28 @@ import Paper from '@mui/material/Paper';
 import Login from './login';
 import AppMenu from './appmenu';
 import TaskContainer from './task-container';
-import { useLazyGetUserConfQuery } from '../features/apiSlice';
-import { setSlotViewFilterConfView } from '../features/taskSlice';
+import { loadUserConfThunk } from '../features/userConfThunk';
+import { loadLocalStorageThunk } from '../features/localstorageThunk';
 import Mainbar from './main-bar';
 
 function App() {
   const dispatch = useDispatch();
   
   const userId = useSelector(state => state.tasks.user.id);
-  const [triggerGetUserConf, { data: userConfResp }] = useLazyGetUserConfQuery();
 
-  /* Récupération de la conf utilisateur dans App.jsx plutôt que Login.jsx
-   * pour gérer le cas où l'utilisateur a déjà une session active 
+  /* Chargement des données utilisateur depuis le localStorage au démarrage */
+  useEffect(() => {
+    dispatch(loadLocalStorageThunk());
+  }, [dispatch]);
+
+  /* Récupération de la conf utilisateur au démarrage
+   * pour gérer le cas du F5 où l'utilisateur a déjà une session active 
    */
   useEffect(() => {
     if (userId) {
-      triggerGetUserConf({ userId, conf: 'view' });
+      dispatch(loadUserConfThunk(userId));
     }
-  }, [userId, triggerGetUserConf]);
-
-  useEffect(() => {
-    if (!userConfResp) return;
-    // supporte plusieurs formes de réponse : { data: ... } | [ { value|filter: ... } ] | objet direct
-    const confObj = userConfResp.data ?? (Array.isArray(userConfResp) && userConfResp.length
-      ? (userConfResp[0].value ?? userConfResp[0].filter ?? userConfResp[0])
-      : userConfResp);
-    if (confObj) dispatch(setSlotViewFilterConfView({ view: confObj }));
-  }, [userConfResp, dispatch]);
+  }, [userId, dispatch]);
 
   { if (!userId) {
     return <Login isSignIn={true}/>;

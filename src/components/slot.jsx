@@ -20,8 +20,8 @@ export default function Slot({slot, tasks}) {
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
+    const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
-    const showRepeat = useSelector(state => state.tasks.showRepeat);
     
     const { id, start, end, inner } = slot;
     

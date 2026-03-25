@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/03/2026';
+export const RELEASE = '25/03/2026';
 
 const text = `
-xx/03/2026
+25/03/2026
 ==========
 - tasks in 2 columns
+- persist all configuration of slot view (show repeat, level, slot strit)
 
 11/03/2026
 ==========

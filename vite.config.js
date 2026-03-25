@@ -21,6 +21,11 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*'],
       exclude: [],
-    }
+    },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.pw.test.{ts,tsx}'
+    ],
   }
 })

@@ -4,8 +4,8 @@ import { taskCompare } from '../data/task'
 import { mapProperties } from '../utils/objectUtil'
 import { extractExtrasFromRow, buildExtraPropsFromPatch } from '../utils/extraProps';
 import { supabase } from '../services/supabase'
-import { storeUser, storeAccessToken, removeUser, removeAccessToken } from "../services/browser-storage";
-import { login, accessToken, logout } from "../features/taskSlice";
+import { localStoreAccessToken } from "../services/browser-storage";
+import { accessToken, logout } from "../features/taskSlice";
 
 const mapping = [
     { old: 'slotExpr', new: 'slotExpr' },
@@ -38,7 +38,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         if (!error) {
             console.log('oauth, token refreshed succced')
             // store refresh token
-            storeAccessToken(data.session.access_token)
+            localStoreAccessToken(data.session.access_token)
             api.dispatch(accessToken(data.session.access_token))
             // retry the initial query
             result = await baseQuery(args, api, extraOptions)
@@ -181,23 +181,23 @@ export const apiSlice = createApi({
         }),
         // récupère le filtre d'un utilisateur (retourne l'objet JSON ou null)
         getUserConf: builder.query({
-            query: ({ userId, conf = 'default' }) => `/user_confs?conf=eq.${conf}`,
+            query: ({ userId, conf = 'slotviewconf' }) => `/user_confs?conf=eq.${conf}`,
             transformResponse: (response) => {
                 // PostgREST renvoie un tableau ; on prend le premier élément s'il existe
                 if (!response || response.length === 0) return null;
                 return response[0].value;
             },
-            providesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'default') }]
+            providesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'slotviewconf') }]
         }),
         // upsert du filtre (création ou mise à jour)
         upsertUserConf: builder.mutation({
-            query: ({ userId, conf = 'default', value }) => ({
+            query: ({ userId, conf = 'slotviewconf', value }) => ({
                 url: '/user_confs',
                 method: 'POST',
                 body: { user_id: userId, conf, value },
                 headers: { Prefer: 'resolution=merge-duplicates,return=representation' } // upsert semantics in PostgREST
             }),
-            invalidatesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'default') }]
+            invalidatesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'slotviewconf') }]
         }),
     })
 })

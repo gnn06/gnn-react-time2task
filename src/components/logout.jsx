@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from '../services/supabase'
-import { removeAccessToken, removeUser } from "../services/browser-storage";
+import { localRemoveAccessToken, localRemoveUser } from "../services/browser-storage";
 import { logout } from "../features/taskSlice";
 import { Button } from "@mui/material";
 
@@ -11,8 +11,8 @@ export default function Logout() {
 
     async function logoutHandler() {
         await supabase.auth.signOut()
-        removeUser()
-        removeAccessToken()
+        localRemoveUser()
+        localRemoveAccessToken()
         dispatch(logout())
     }
 
