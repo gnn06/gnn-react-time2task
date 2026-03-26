@@ -50,6 +50,8 @@ describe('useTodoAction', () => {
     { id: '1', status: 'En cours', slotExpr: 'this_week lundi' },
     { id: '2', status: 'A faire', slotExpr: 'this_week mardi' },
     { id: '3', status: 'En cours', slotExpr: 'this_week mercredi' },
+    { id: '4', status: 'terminé', slotExpr: 'this_week jeudi' },
+    { id: '4', status: 'fait-à repositionner', slotExpr: 'this_week vendredi' },
   ];
 
   beforeEach(() => {
@@ -97,11 +99,12 @@ describe('useTodoAction', () => {
     expect(result.current.tasks.map(t => t.id)).toEqual(['1', '3']);
   });
 
-  test('should exclude tasks with "A faire" status', () => {
+  test('should exclude tasks with "A faire", "terminé", "fait-à repostionner" status', () => {
     const { result } = renderHook(() => useTodoAction(), { wrapper });
 
     expect(result.current.tasks).toHaveLength(2);
     expect(result.current.tasks.every(t => t.status !== 'A faire')).toBe(true);
+    expect(result.current.tasks.every(t => t.status !== 'terminé')).toBe(true);
   });
 
   test('should handle onTodo correctly', async () => {

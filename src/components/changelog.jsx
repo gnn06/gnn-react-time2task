@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '25/03/2026';
+export const RELEASE = 'xx/xx/2026';
 
 const text = `
+xx/xx/2026
+==========
+- Todo action excludes 'terminé' and 'fait-à repositionner' tasks
+
 25/03/2026
 ==========
 - tasks in 2 columns

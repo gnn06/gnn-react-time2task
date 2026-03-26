@@ -15,7 +15,7 @@ export function useTodoAction() {
 
     const tasks = useMemo(() => {
         const filtered = filterSlotExpr(tasksData || [], currentFilter);
-        return filtered.filter(t => t.status !== "A faire");
+        return filtered.filter(t => t.status !== "A faire" && t.status !== "terminé" && t.status !== "fait-à repositionner");
     }, [tasksData, currentFilter]);
 
     const onTodo = () => {
