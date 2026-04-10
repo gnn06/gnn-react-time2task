@@ -1,0 +1,2 @@
+# Force LF for shell scripts (cross-platform: Windows dev, Ubuntu deploy)
+*.sh text eol=lf
