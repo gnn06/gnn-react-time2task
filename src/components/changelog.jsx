@@ -7,6 +7,8 @@ const text = `
 xx/xx/2026
 ==========
 - Todo action excludes 'terminé' and 'fait-à repositionner' tasks
+- UI improvement in login page
+- Dashed table in slot view tree
 
 25/03/2026
 ==========

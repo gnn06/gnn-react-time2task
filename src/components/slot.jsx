@@ -16,13 +16,15 @@ import { SlotPath } from "../data/slot-path";
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
-    const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === id);
+    const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === (slot?.id));
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
-    const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot.path })
-    
+    const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot?.path ?? "" })
+
+    if (!slot) return null;
+
     const { id, start, end, inner } = slot;
     
     let tasksInSlot = [];
