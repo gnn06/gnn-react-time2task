@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 
 import { supabase } from '../services/supabase'
 import { login, accessToken } from "../features/taskSlice";
@@ -39,18 +39,20 @@ export default function Login({isSignIn}) {
     return (
     <div className="h-screen flex items-center justify-center" >
         <div className="w-full max-w-xs">
-            <form className="bg-white" method="post" onSubmit={loginHandle}>
-                <div className="mb-1">
-                    <label className="block text-sm font-bold mb-1" htmlFor="email">Login</label>
-                    <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="email" name="email" aria-label="email" type="text" placeholder="user@domain.com" />
-                </div>
-                
-                <div className="mb-3">
-                    <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
-                    <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" aria-label="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
-                </div>
-                <Button type="submit" variant="contained" >{isSignIn ? "Login" : "Sign up"}</Button>
-            </form>
+            <Paper elevation={1} sx={{ padding: 2 }}>
+                <form className="bg-white" method="post" onSubmit={loginHandle}>
+                    <div className="mb-1">
+                        <label className="block text-sm font-bold mb-1" htmlFor="email">Login</label>
+                        <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="email" name="email" aria-label="email" type="text" placeholder="user@domain.com" />
+                    </div>
+                    
+                    <div className="mb-3">
+                        <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
+                        <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" aria-label="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
+                    </div>
+                    <Button type="submit" variant="contained" >{isSignIn ? "Login" : "Sign up"}</Button>
+                </form>
+            </Paper>
         </div>
     </div>)
     }
