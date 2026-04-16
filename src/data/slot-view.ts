@@ -1,4 +1,3 @@
-import { S } from "vite/dist/node/types.d-aGj9QkWt";
 import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, getSlotIdLevel, getSlotIdNextPrev, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { getCurrentPathExpr, SlotPath } from "./slot-path";
