@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/xx/2026';
+export const RELEASE = '16/04/2026';
 
 const text = `
-xx/xx/2026
+16/04/2026
 ==========
 - Todo action excludes 'terminé' and 'fait-à repositionner' tasks
 - UI improvement in login page
 - Dashed table in slot view tree
+- UI add dashed border in task list
 
 25/03/2026
 ==========
