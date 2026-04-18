@@ -124,7 +124,7 @@ export default function TaskRow({ task }) {
                     {task && !isTaskMulti(task) && isTaskRepeat(task) && <span className="font-bold">R</span>}
                     {task && !task.slotExpr                           && <span className="font-bold">E</span>}</td>
                 <td ref={anchorEl} style={{border:'1px dashed rgb(156 163 175 / 1)'}}>
-                    <IconButton onClick={handleMenu} sx={{padding:0}}><MenuIcon/></IconButton>
+                    <IconButton onClick={handleMenu} aria-label="menu-tâche" sx={{padding:0}}><MenuIcon/></IconButton>
                     <Menu open={showMenu} anchorEl={anchorEl.current} onClose={handleCloseMenu}>
                         <MenuItem onClick={handleEdit}>Edit</MenuItem>
                         <MenuItem onClick={handleDelete}>Delete</MenuItem>

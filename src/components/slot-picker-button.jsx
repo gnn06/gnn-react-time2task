@@ -29,6 +29,7 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
         <>
             <Button
                 ref={anchorRef}
+                aria-label="filtre-créneau"
                 variant="outlined"
                 startIcon={<FilterList />}
                 endIcon={ selectedSlotExpr ? <Clear onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
@@ -52,7 +53,7 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
                 style={{ zIndex: 1300 }}
             >
                 <ClickAwayListener onClickAway={handleClose}>
-                    <Paper elevation={8} style={{ padding: '6px', overflow: 'auto' }}>
+                    <Paper elevation={8} style={{ padding: '6px', overflow: 'auto' }} data-testid="slot-picker-popper">
                         <SlotPicker 
                             selectedSlotExpr={selectedSlotExpr} 
                             onSlotChange={handleSlotChange}

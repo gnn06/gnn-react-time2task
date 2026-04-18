@@ -89,7 +89,7 @@ export default function Slot({slot, tasks}) {
     const level = new SlotPath(slot.path).getLevel();
 
     return <React.Fragment>        
-            <div className={"group " + slotStyle}>
+            <div className={"group " + slotStyle} data-slot-path={slot.path}>
                 <div className="flex flex-row">
                     <SlotTitle  slot={slot}/>
                     <IconButton className={targetClassName} onClick={onSlot}><TargetIcon /></IconButton>

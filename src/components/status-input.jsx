@@ -53,6 +53,7 @@ export default function SyntaxInput({task, saveHandler, isInline = false}) {
     const defaultValue = statusReferentiel.find(item => item.value === task.status);
     return <Select options={statusReferentiel} defaultValue={defaultValue}
                     styles={colorStyle} onChange={onChange}
+                    aria-label="statut"
                     components={{
                         IndicatorSeparator: () => null
                     }} isDisabled={task === undefined}/>

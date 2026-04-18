@@ -33,3 +33,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+/teste2e/.auth/user.json

@@ -69,17 +69,18 @@ export default function ActivityInput({activity, saveHandler, className, isInlin
         }))
                 
     const currentOption = (activity !== null) && list && list.find(item => item.id === activity);
-    return <Select options={list} 
+    return <Select options={list}
                 value={currentOption}
-                styles={colorStyle(isInline)} 
+                styles={colorStyle(isInline)}
                 onChange={onChange}
                 onCreateOption={handleCreate}
                 isValidNewOption={() => !isInline}
                 isClearable={true}
                 placeholder="Activité ..."
+                aria-label="activité"
                 components={{
                     IndicatorSeparator: () => null,
-                    DropdownIndicator: () => null,         
+                    DropdownIndicator: () => null,
                   }}
                   className={className}
             />

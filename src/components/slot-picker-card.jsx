@@ -40,7 +40,7 @@ export default function SlotPickerCard({slot, selectedSlotExpr, onSlotChange}) {
     };
 
     return (
-        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em]"} onClick={onSlotClick}>
+        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em]"} data-slot-path={path} onClick={onSlotClick}>
             <div className="flex flex-row">
                 <SlotTitle slot={slot} />
                 <div>                    

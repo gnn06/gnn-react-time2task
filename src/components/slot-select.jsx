@@ -64,7 +64,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     }
 
     return <React.Fragment>
-        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em] group"}  onClick={onSlotClick} >
+        <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em] group"} data-slot-path={path} onClick={onSlotClick} >
             <div className="flex flex-row">
                 <SlotTitle slot={slot} />
                 <div>                    
@@ -75,7 +75,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
                 { showRepeat(id) && repetition && 
                     <div className="flex flex-row gap-5 items-center ">
                         <TextField  label="Répétition" type="number" variant="standard" value={repetition} onClick={(e) => e.stopPropagation()} onChange={onRepeatChange}/>
-                        <RepeatIcon className="cursor-default"  onClick={(e) => e.stopPropagation()} />
+                        <RepeatIcon className="cursor-default"  onClick={(e) => e.stopPropagation()} aria-label="repeat" />
                     </div>
                 }
                 { disable && <FormControlLabel control={<Checkbox checked={disable} onChange={onDisableChange} />} onClick={(e) => e.stopPropagation()} label="Disable"  />}
