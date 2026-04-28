@@ -5,7 +5,6 @@ import {
   Chip,
   Checkbox,
   FormControlLabel,
-  Stack,
   Menu,
   MenuItem
 } from '@mui/material';
@@ -132,14 +131,8 @@ function FilterPanel({
   const hasActiveFilters = getActiveFilterCount() > 0;
 
   return (
-    <Stack
-      direction="row"
-      spacing={2}
-      useFlexGap
-      sx={{
-        alignItems: "center",
-        flexWrap: "wrap"
-      }}>
+    <
+    >
       {/* Bouton principal Filtres */}
       <Button
         variant="outlined"
@@ -255,7 +248,7 @@ function FilterPanel({
           </NestedMenuItem>
         )}
       </Menu>
-    </Stack>
+    </>
   );
 }
 

@@ -135,10 +135,8 @@ export default function TaskFilter() {
     useHotkeys('ctrl+k', onCtrlK, { preventDefault: true, enableOnFormTags: true })
 
     return (
-        <Stack direction="row" spacing={1} sx={{
-            alignItems: "center"
-        }}>
-          <label htmlFor="task-filter">Filtre&nbsp;:</label>        
+        <Stack direction="row" spacing={1} >
+          <label htmlFor="task-filter" className="content-center">Filtre&nbsp;:</label>        
           <div >
               <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
                   placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')}

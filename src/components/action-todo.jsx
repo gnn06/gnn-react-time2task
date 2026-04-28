@@ -16,7 +16,7 @@ export default function TodoAction() {
     } = useTodoAction();
 
 
-    return <div className="grow">
+    return <>
         <Button variant='outlined' onClick={onTodo} >Todo</Button>
         { updateError && !hideErrorDialog &&
                     <Dialog open={true} data-testid="error-dialog">
@@ -36,6 +36,6 @@ export default function TodoAction() {
             >
                 {`Les ${tasks.length} tâches visibles n'étant pas déjà 'à faire' vont être passées à 'à faire'.`}
             </Confirm> }
-    </div>
+    </>
 
 }

@@ -13,7 +13,8 @@ export default function DialogHelpExpression() {
 
     const [open, setOpen] = useState(false)
     
-    return (<div><Button variant="outlined" size="small" onClick={handleOpen}>Aide</Button>
+    return (<>
+        <Button variant="outlined" onClick={handleOpen}>Aide</Button>
         <Dialog onClose={handleClose} open={open}  maxWidth="lg">
         <div className="p-3">
             <div className="flex flex-row">
@@ -58,5 +59,5 @@ export default function DialogHelpExpression() {
             <p>Utiliser Reprendre aujourdhui, Reprendre demain, pour une tache que vous n'avez pas pu finir aujourd'hui et que vous devez repositionner sur un autre créneau pour la finir</p>
             <p>Archivé pour une tache que vous ne voulez plus voir.</p>
     </div>
-    </Dialog></div>)
+    </Dialog></>)
 }
