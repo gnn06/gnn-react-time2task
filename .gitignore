@@ -35,3 +35,5 @@ node_modules/
 /playwright/.auth/
 
 /teste2e/.auth/user.json
+test-output.log
+test-e2e-output.log

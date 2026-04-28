@@ -9,8 +9,11 @@ import {
   Menu,
   MenuItem
 } from '@mui/material';
-import { FilterList, Clear, KeyboardArrowDown, KeyboardArrowRight } from '@mui/icons-material';
-import { NestedMenuItem } from 'mui-nested-menu';
+import FilterList from '@mui/icons-material/FilterList';
+import Clear from '@mui/icons-material/Clear';
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import NestedMenuItem from './NestedMenuItem';
 
 /**
  * 
@@ -30,12 +33,14 @@ function FilterPanel({
   setFilters
 }) {
   const [mainMenuAnchor, setMainMenuAnchor] = useState(null);
-  
+  const [openSubmenuKey, setOpenSubmenuKey] = useState(null);
+
   const isMainMenuOpen = Boolean(mainMenuAnchor);
 
   // Fermer le menu principal
   const closeMainMenu = () => {
     setMainMenuAnchor(null);
+    setOpenSubmenuKey(null);
   };
 
   // Gérer le changement de filtre
@@ -127,121 +132,130 @@ function FilterPanel({
   const hasActiveFilters = getActiveFilterCount() > 0;
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
+    <Stack
+      direction="row"
+      spacing={2}
+      useFlexGap
+      sx={{
+        alignItems: "center",
+        flexWrap: "wrap"
+      }}>
+      {/* Bouton principal Filtres */}
+      <Button
+        variant="outlined"
+        startIcon={<FilterList />}
+        endIcon={ hasActiveFilters ? <Clear data-testid="ClearIcon" onClick={(e) => { e.stopPropagation(); resetFilters(); }}/> : <KeyboardArrowDown /> }
+        onClick={(e) => setMainMenuAnchor(e.currentTarget)}
+        sx={{ minWidth: 150 }}
+      >
+        Filtres
+        {hasActiveFilters && (
+          <Chip 
+            label={getActiveFilterCount()} 
+            size="small" 
+            color="secondary"
+            sx={{ ml: 1 }}
+          />
+        )}
+      </Button>
+      {/* Menu principal */}
+      <Menu
+        anchorEl={mainMenuAnchor}
+        open={isMainMenuOpen}
+        onClose={closeMainMenu}
+        PaperProps={{
+          sx: { minWidth: 300 }
+        }}
+      >
+        {filterConfig.map(filter => {
+          const filterValue = filters[filter.key];
+          const isSlotExprType = filter.type === 'slotexpr';
+          const selectedValues = !isSlotExprType ? (filterValue || []) : [];
 
-        {/* Bouton principal Filtres */}
-        <Button
-          variant="outlined"
-          startIcon={<FilterList />}
-          endIcon={ hasActiveFilters ? <Clear onClick={(e) => { e.stopPropagation(); resetFilters(); }}/> : <KeyboardArrowDown /> }
-          onClick={(e) => setMainMenuAnchor(e.currentTarget)}
-          sx={{ minWidth: 150 }}
-        >
-          Filtres
-          {hasActiveFilters && (
-            <Chip 
-              label={getActiveFilterCount()} 
-              size="small" 
-              color="secondary"
-              sx={{ ml: 1 }}
-            />
-          )}
-        </Button>
+          // Skip les filtres slotexpr, ils seront gérés dans le menu "prédicat"
+          if (isSlotExprType) {
+            return null;
+          }
 
-        {/* Menu principal */}
-        <Menu
-          anchorEl={mainMenuAnchor}
-          open={isMainMenuOpen}
-          onClose={closeMainMenu}
-          PaperProps={{
-            sx: { minWidth: 300 }
-          }}
-        >
-          {filterConfig.map(filter => {
-            const filterValue = filters[filter.key];
-            const isSlotExprType = filter.type === 'slotexpr';
-            const selectedValues = !isSlotExprType ? (filterValue || []) : [];
-
-            // Skip les filtres slotexpr, ils seront gérés dans le menu "prédicat"
-            if (isSlotExprType) {
-              return null;
-            }
-
-            return (
-              <NestedMenuItem
-                key={filter.key}
-                label={<>{filter.label} {selectedValues.length > 0 ? (
-                      <Chip 
-                        label={selectedValues.length} 
-                        size="small" 
-                        color="primary"
-                        sx={{ ml: 1 }}
-                      />
-                    ) : null}</>}
-                rightIcon={<KeyboardArrowRight />}
-                parentMenuOpen={isMainMenuOpen}
-                sx={{ py:1.5, px:1 }}
-              >
-                {/* Pour les filtres property (comportement existant) */}
-                {filter.options.map(value => (
-                  <CheckboxMenuItem
-                    key={String(value)}
-                    checked={selectedValues.includes(value)}
-                    onChange={() => handleFilterChange(filter.key, value, filter.type)}
-                    label={getValueLabel(filter.key, value)}
-                  />
-                ))}
-                
-                {/* Options 'none' et 'all' pour les filtres property (uniquement si >= 3 valeurs) */}
-                {filter.options.length >= 3 && (
-                  <>
-                    {/* Séparateur */}
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider', mx: 1 }} />
-                    <CheckboxMenuItem
-                      checked={selectedValues.length === 0}
-                      onChange={() => handleFilterChange(filter.key, 'none', filter.type)}
-                      label="Aucun"
-                      sx={{ fontWeight: 'bold' }}
-                    />
-                    <CheckboxMenuItem
-                      checked={selectedValues.length === filter.options.length}
-                      onChange={() => handleFilterChange(filter.key, 'all', filter.type)}
-                      label="Tout"
-                      sx={{ fontWeight: 'bold' }}
-                    />
-                  </>
-                )}
-              </NestedMenuItem>
-            );
-          })}
-          
-          {/* Menu "prédicat" pour tous les filtres slotexpr */}
-          {filterConfig.some(filter => filter.type === 'slotexpr') && (
+          return (
             <NestedMenuItem
-              label={<>créneau {getActiveSlotExprFilters().length > 0 ? <Chip 
-                  label={getActiveSlotExprFilters().length} 
-                  size="small" 
-                  color="primary"
-                /> : null}</>}
+              key={filter.key}
+              label={<>{filter.label} {selectedValues.length > 0 ? (
+                    <Chip
+                      label={selectedValues.length}
+                      size="small"
+                      color="primary"
+                      sx={{ ml: 1 }}
+                    />
+                  ) : null}</>}
               rightIcon={<KeyboardArrowRight />}
               parentMenuOpen={isMainMenuOpen}
+              open={openSubmenuKey === filter.key}
+              onOpenChange={(isOpen) => setOpenSubmenuKey(isOpen ? filter.key : null)}
               sx={{ py:1.5, px:1 }}
             >
-              {filterConfig.filter(filter => filter.type === 'slotexpr').map(filter => {
-                const isSlotExprActive = typeof filters[filter.key] === 'function';
-                return (
+              {/* Pour les filtres property (comportement existant) */}
+              {filter.options.map(value => (
+                <CheckboxMenuItem
+                  key={String(value)}
+                  checked={selectedValues.includes(value)}
+                  onChange={() => handleFilterChange(filter.key, value, filter.type)}
+                  label={getValueLabel(filter.key, value)}
+                />
+              ))}
+              
+              {/* Options 'none' et 'all' pour les filtres property (uniquement si >= 3 valeurs) */}
+              {filter.options.length >= 3 && (
+                <>
+                  {/* Séparateur */}
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider', mx: 1 }} />
                   <CheckboxMenuItem
-                    key={filter.key}
-                    checked={isSlotExprActive}
-                    onChange={() => handleFilterChange(filter.key, filter.predicate, filter.type)}
-                    label={filter.valueLabels?.[true] || filter.label}
+                    checked={selectedValues.length === 0}
+                    onChange={() => handleFilterChange(filter.key, 'none', filter.type)}
+                    label="Aucun"
+                    sx={{ fontWeight: 'bold' }}
                   />
-                );
-              })}
+                  <CheckboxMenuItem
+                    checked={selectedValues.length === filter.options.length}
+                    onChange={() => handleFilterChange(filter.key, 'all', filter.type)}
+                    label="Tout"
+                    sx={{ fontWeight: 'bold' }}
+                  />
+                </>
+              )}
             </NestedMenuItem>
-          )}
-        </Menu>
-      </Stack>
+          );
+        })}
+        
+        {/* Menu "prédicat" pour tous les filtres slotexpr */}
+        {filterConfig.some(filter => filter.type === 'slotexpr') && (
+          <NestedMenuItem
+            label={<>créneau {getActiveSlotExprFilters().length > 0 ? <Chip
+                label={getActiveSlotExprFilters().length}
+                size="small"
+                color="primary"
+              /> : null}</>}
+            rightIcon={<KeyboardArrowRight />}
+            parentMenuOpen={isMainMenuOpen}
+            open={openSubmenuKey === '__slotexpr__'}
+            onOpenChange={(isOpen) => setOpenSubmenuKey(isOpen ? '__slotexpr__' : null)}
+            sx={{ py:1.5, px:1 }}
+          >
+            {filterConfig.filter(filter => filter.type === 'slotexpr').map(filter => {
+              const isSlotExprActive = typeof filters[filter.key] === 'function';
+              return (
+                <CheckboxMenuItem
+                  key={filter.key}
+                  checked={isSlotExprActive}
+                  onChange={() => handleFilterChange(filter.key, filter.predicate, filter.type)}
+                  label={filter.valueLabels?.[true] || filter.label}
+                />
+              );
+            })}
+          </NestedMenuItem>
+        )}
+      </Menu>
+    </Stack>
   );
 }
 

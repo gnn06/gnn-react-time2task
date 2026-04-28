@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { DndContext } from "@dnd-kit/core"
-import Droppable from "./droppable"
-import Draggable from "./draggable"
+import Droppable from "../droppable"
+import Draggable from "../draggable"
 
 export default function TestDnd() {
 

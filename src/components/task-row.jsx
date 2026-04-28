@@ -35,10 +35,10 @@ export default function TaskRow({ task }) {
     const selected = useSelector(state => state.tasks.selectedTaskId).some(taskId => taskId === task.id);
 
     const { attributes, listeners, setNodeRef, transform, isDraggingn, active } = useDraggable({ id: task.id })
-    const anchorEl = useRef();
+    const anchorEl = useRef(null);
     const [showMenu, setShowMenu] = useState(false)
 
-    const myClassName = 'rounded p-1 my-1 hover:bg-gray-100  border-gray-500 border-2';
+    const myClassName = 'rounded p-1 my-1 hover:bg-gray-100';
 
     const style = {
         transform: CSS.Translate.toString(transform),

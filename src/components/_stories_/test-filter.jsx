@@ -5,7 +5,7 @@ import {
   Typography,
   Stack,
 } from '@mui/material';
-import { FilterList } from '@mui/icons-material';
+import FilterList from '@mui/icons-material/FilterList';
 import FilterPanel from '../filter-panel';
 
 // Données exemple
@@ -60,14 +60,12 @@ function TestFilter() {
           Système de Filtrage
         </Typography>
       </Box>
-
       {/* Panel de filtres */}
       <FilterPanel
         filterConfig={filterConfig}
         filters={filters}
         setFilters={onFilterChange}
       />
-
       {/* Résultats filtrés */}
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
@@ -76,10 +74,14 @@ function TestFilter() {
         <Stack spacing={2}>
           {filteredData.map(item => (
             <Paper key={item.id} variant="outlined" sx={{ p: 2 }}>
-              <Typography variant="subtitle1" fontWeight="bold">
+              <Typography variant="subtitle1" sx={{
+                fontWeight: "bold"
+              }}>
                 {item.nom}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 Catégorie: {item.categorie} | Prix: {item.prix}€ | 
                 {item.disponible ? ' ✓ Disponible' : ' ✗ Non disponible'}
               </Typography>
@@ -87,7 +89,9 @@ function TestFilter() {
           ))}
           {filteredData.length === 0 && (
             <Paper variant="outlined" sx={{ p: 4, textAlign: 'center' }}>
-              <Typography color="text.secondary">
+              <Typography sx={{
+                color: "text.secondary"
+              }}>
                 Aucun résultat ne correspond aux filtres sélectionnés
               </Typography>
             </Paper>

@@ -23,7 +23,7 @@ export default function SlotAnimate() {
     const transX = "-"+distance+"px";
     return <div>
         <div className="flex flex-row">
-            <div className="border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200 " ref={ref1}>
+            <div className="rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200" ref={ref1}>
                 <motion.div animate={{
                         scale: [1.0, 1.0,  1.0, 1.0, 1.2,  1.0],
                         times: [0.0, 0.1, 0.2, 0.8, 0.9, 1.0],
@@ -41,7 +41,7 @@ export default function SlotAnimate() {
                     <SlotTitle  slot={{ id:'cette semaine', path:"this_month this_week", inner: [] }}/>
                 </motion.div>
             </div>
-            <div className="border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200 " ref={ref2}>
+            <div className="rounded p-1 m-0 mt-1 mr-1 w-40 bg-blue-200" ref={ref2}>
                 <motion.div
                     animate={{
                         scale: [1.0, 1.2,  1.0, 1.0, 1.0,  1.0],

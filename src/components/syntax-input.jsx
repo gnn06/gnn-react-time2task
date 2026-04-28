@@ -19,7 +19,12 @@ import EditIcon from '@mui/icons-material/Edit';
  * when only one suggestion, select it
  */
 
-export default function SyntaxInput({id, inputRef, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, showEdit}) {
+const borderVariants = {
+  field:   'border-black/25       hover:border-black/60    focus-within:border-mui-primary',
+  primary: 'border-mui-primary/50 hover:border-mui-primary focus-within:border-mui-primary',
+}
+
+export default function SyntaxInput({id, inputRef, items, placeHolderInput, initialInputValue, classNameInput, variant = 'field', onInputChange, closeIcon, showEdit}) {
   const [value, setValue] = useState(initialInputValue || '');  
   const [show, setShow] = useState(false);
   const [selected, setSelected] = useState(-1);
@@ -130,8 +135,8 @@ export default function SyntaxInput({id, inputRef, items, placeHolderInput, init
   const classNameIconn = "bg-gray-400 text-black ml-0.5 text-xs "
 
   return <div className="flex-1 ">
-    <div className="flex flex-row items-center border rounded focus-within:border-red-500 p-0.5">
-      <input id={id} ref={inputRef} className={'focus:outline-none  p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus=
+    <div className={`flex flex-row items-center border rounded p-1.5 ${borderVariants[variant]}`}>
+      <input id={id} ref={inputRef} className={'focus:outline-none border-none p-1 w-full ' + classNameInput} placeholder={placeHolderInput} value={value} onChange={onChange} onFocus=
         {onInputFocus} onBlur={onInputBlur} onKeyDown={onKeyDown} onClick={onInputClick} onDoubleClick={showEdit} />
       { closeIcon && <CloseIcon className={classNameIconn} onClick={onInputClear}/>} 
       <KeyboardArrowDownIcon className={classNameIconn} />

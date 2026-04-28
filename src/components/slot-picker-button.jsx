@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { Button, Popper, Paper, ClickAwayListener, Chip } from "@mui/material";
-import { FilterList, Clear, KeyboardArrowDown } from "@mui/icons-material";
+import FilterList from "@mui/icons-material/FilterList";
+import Clear from "@mui/icons-material/Clear";
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 
 import SlotPicker from "./slot-picker";
 
@@ -32,7 +34,7 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
                 aria-label="filtre-créneau"
                 variant="outlined"
                 startIcon={<FilterList />}
-                endIcon={ selectedSlotExpr ? <Clear onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
+                endIcon={ selectedSlotExpr ? <Clear data-testid="ClearIcon" onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
                 onClick={handleClick}
             >
                 {!selectedSlotExpr && "Créneau"}

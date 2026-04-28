@@ -31,7 +31,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'http://localhost:5173/gnn-react-time2task',
+    baseURL: 'http://localhost:4173/gnn-react-time2task',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -87,10 +87,13 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /* FIX un problème de performance dans les tests playwright suite à l'upgrade react 19 
+   * Build de prod + vite preview — beaucoup plus rapide que le dev server en React 19.
+   * Après une modification du code source, tuer le serveur preview et relancer les tests
+   * pour déclencher un rebuild (ou lancer manuellement `npm run build`). */
   webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:5173/gnn-react-time2task',
+    command: 'npm run build:e2e && npm run serve',
+    url: 'http://localhost:4173/gnn-react-time2task',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

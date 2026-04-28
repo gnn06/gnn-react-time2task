@@ -46,7 +46,7 @@ export default function TaskInSlot({task}) {
 
     // use style for color styling => avoid using tailwindcss color
     return <>
-        <div className="rounded p-1 my-1  border-gray-500 border-2 " style={{background: activityBgColor, color: activityTextColor}}>
+        <div className="rounded p-1 my-1   " style={{background: activityBgColor, color: activityTextColor}}>
             {/* Set the height to prevent changes if the icon is present. */}
             <div className="flex flex-row items-center"  >
                 <div className="grow">
@@ -59,7 +59,7 @@ export default function TaskInSlot({task}) {
             <div className="italic">{task.nextAction} </div>
             <div className="flex flex-row items-center"  >
                 <div className="grow">
-                    <span className="border-gray-400 border-2 p-1 "  style={{background: statusColor}}>{task.status}</span>
+                    <span className="p-1 "  style={{background: statusColor}}>{task.status}</span>
                 </div>                
                 
                 <SlotSelectionButton style={{background: activityBgColor, color: activityTextColor}} task={task} handleSave={onSlotSelectionConfirm} />

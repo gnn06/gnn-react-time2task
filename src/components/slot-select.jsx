@@ -23,7 +23,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     const disable  = selection.get(path) && selection.get(path).disable || false
     const isInside = isInsideSelected(path, selection)
 
-    let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 ";
+    let slotStyle = "rounded p-1 m-0 mt-1 mr-1 ";
     if (selected) {
         slotStyle += "bg-blue-400 ";
     } else if (isInside) {

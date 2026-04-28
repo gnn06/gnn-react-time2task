@@ -7,8 +7,15 @@ import { Box } from "@mui/material";
 export default function TaskList({tasks, group, className = ''}) {
 
     if (tasks.length === 0) {
-        return <Box   display="flex" minHeight="80vh" justifyContent="center"
-        alignItems="center">Créer des tâches puis choisissez les crénaux auxquels vous souhaitez les réaliser.</Box>
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    minHeight: "80vh",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>Créer des tâches puis choisissez les crénaux auxquels vous souhaitez les réaliser.</Box>
+        );
     }
 
     const headStyle = {border:'1px dashed rgb(156 163 175 / 1)', backgroundColor:'rgb(243 244 246 / 1)', fontWeight:400};
@@ -29,7 +36,7 @@ export default function TaskList({tasks, group, className = ''}) {
                 <th style={headStyle}></th>
             </tr>
             </thead>
-            <tbody className="divide-y divide-gray-600">
+            <tbody>
                 <TaskGroup tasks={tasks} group={group} />
                 <TaskNew />
             </tbody>

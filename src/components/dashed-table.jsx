@@ -2,7 +2,7 @@ import React from "react";
 
 export function DashedColumnHeader({ children, className = "", style }) {
     return (
-        <div className={`bg-gray-100 text-center ${className}`} style={style}>
+        <div className={`bg-gray-100 text-center ${className}`} style={{ borderTopWidth: 1, ...style }}>
             {children}
         </div>
     );
@@ -10,7 +10,7 @@ export function DashedColumnHeader({ children, className = "", style }) {
 
 export function DashedRowHeader({ children, className = "" }) {
     return (
-        <div style={{ writingMode: "sideways-lr" }} className={`bg-gray-100 text-center ${className}`}>
+        <div style={{ writingMode: "sideways-lr", borderLeftWidth: 1,borderRightWidth: 1 }} className={`bg-gray-100 text-center ${className}`}>
             {children}
         </div>
     );

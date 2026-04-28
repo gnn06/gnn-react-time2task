@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 import ShiftNextIcon from '@mui/icons-material/ArrowForward';
@@ -42,9 +42,11 @@ function makeSlotWithSelection(conf, selection) {
 
 export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCancel, title }) {
 
-  // const selection = useMemo(() => exprToSelectionMap(selectionExpr), [selectionExpr])
   const [ selection, setSelection] = useState(exprToSelectionMap(selectionExpr))
-  const [ slotsFromConf, setSlots ] = useState(makeSlotWithSelection(conf, selection))
+  // slotsFromConf dérivé de selection via useMemo (pas d'état séparé) : évite la désynchronisation
+  // et les stale closures — les handlers utilisent setSelection(prev => ...) pour la même raison :
+  // deux clics rapides sur des créneaux différents causaient la perte du premier créneau sélectionné.
+  const slotsFromConf = useMemo(() => makeSlotWithSelection(conf, selection), [conf, selection])
 
   const handleConfirm = () => {
     const expression = selectionMapToExpr(selection)
@@ -54,46 +56,41 @@ export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCan
   const handleClose = () => {
     onCancel()
   }
-  
+
   const handleSelection = (path, val) => {
-    if (val.selected) {
-      selection.set(path, val)
-    } else {
-      selection.delete(path)
-    }
-    setSelection(new Map(selection))
+    setSelection(prev => {
+      const next = new Map(prev)
+      if (val.selected) { next.set(path, val) } else { next.delete(path) }
+      return next
+    })
   }
 
   const handleShift = (pathExpr, direction) => {
-    const newSeletion = selectionShift(selection, pathExpr, direction)
-    setSelection(newSeletion)
-    setSlots(makeSlotWithSelection(conf, newSeletion))
+    setSelection(prev => selectionShift(prev, pathExpr, direction))
   }
 
   const handleDelete = (pathExpr) => {
-    const newSeletion = selectionDelete(selection, pathExpr)
-    setSelection(newSeletion)
-    setSlots(makeSlotWithSelection(conf, newSeletion))
+    setSelection(prev => selectionDelete(prev, pathExpr))
   }
 
   const handleAdd = (pathExpr) => {
-    const newSeletion = selectionAdd(selection, pathExpr)
-    setSelection(newSeletion)
-    setSlots(makeSlotWithSelection(conf, newSeletion))
+    setSelection(prev => selectionAdd(prev, pathExpr))
   }
 
-  const handleRepetition = (path, val /* defined or undefined */) => {
-    const oldSelection = selection.get(path)    
-    const newSelection = {...(oldSelection || {selected: true}), repetition: 1} 
-    selection.set(path, newSelection)
-    setSelection(new Map(selection))
+  const handleRepetition = (path) => {
+    setSelection(prev => {
+      const next = new Map(prev)
+      next.set(path, {...(prev.get(path) || {selected: true}), repetition: 1})
+      return next
+    })
   }
 
-  const handleDisable = (path, val) => {
-    const oldSelection = selection.get(path)    
-    const newSelection = {...(oldSelection || {selected: true}), disable: true} 
-    selection.set(path, newSelection)
-    setSelection(new Map(selection))
+  const handleDisable = (path) => {
+    setSelection(prev => {
+      const next = new Map(prev)
+      next.set(path, {...(prev.get(path) || {selected: true}), disable: true})
+      return next
+    })
   }
 
   // sensors is necessary to prevent drag even to block click event
@@ -118,9 +115,7 @@ export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCan
     const source = event.active.id
     const dest   = (event.over && event.over.id) || undefined
     if (dest === undefined) return
-    const newSelection = selectionMove(selection, source, dest)
-    setSelection(newSelection)
-    setSlots(makeSlotWithSelection(conf, newSelection))
+    setSelection(prev => selectionMove(prev, source, dest))
   }
   
   return <Dialog open={true} onClose={handleClose} maxWidth="lg">

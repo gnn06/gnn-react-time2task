@@ -31,7 +31,7 @@ export default function SyntaxInputWithSelection ({id, items, placeHolderInput, 
     }
 
     return <div className="grow">
-        <SyntaxInput id={id} items={items} placeHolderInput={placeHolderInput} initialInputValue={selectionExpr} classNameInput={classNameInput} closeIcon={closeIcon} 
+        <SyntaxInput id={id} items={items} placeHolderInput={placeHolderInput} initialInputValue={selectionExpr} classNameInput={classNameInput} closeIcon={closeIcon}
             onInputChange={onExprChange} />
         { show && <SlotSelectDialog selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
     </div>

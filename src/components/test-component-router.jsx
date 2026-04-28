@@ -1,9 +1,10 @@
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 import TestTaskDialog from './_stories_/test-task-dialog'
 import TestTaskInSLot from './_stories_/test-task-in-slot'
 import TestFilter from './_stories_/test-filter'
 import TestSlotPicker from './_stories_/test-slot-picker'
 import TestSlotPickerButton from './_stories_/test-slot-picker-button'
+import TestDndTwoCompo from './_stories_/test-dnd-twocompo'
 
 // Mapping des composants de test
 const testComponents = {
@@ -11,7 +12,8 @@ const testComponents = {
   taskinslot: TestTaskInSLot,
   filter: TestFilter,
   slotselect: TestSlotPicker,
-  slotpickerbutton: TestSlotPickerButton
+  slotpickerbutton: TestSlotPickerButton,
+  dndtwo: TestDndTwoCompo
   // Ajoutez autant de composants que vous voulez
 }
 

@@ -1,21 +1,34 @@
 {
   "permissions": {
     "allow": [
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npm list:*)",
+      "Bash(npm info:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm show *)",
       "Bash(npx playwright:*)",
       "Bash(npx vitest:*)",
+      "Bash(tee test-output.log)",
+      "Bash(tee test-e2e-output.log)",
+      "Bash(node -e \"const rr = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/react-router'\\); console.log\\(Object.keys\\(rr\\).filter\\(k => k.toLowerCase\\(\\).includes\\('hash'\\) || k.toLowerCase\\(\\).includes\\('router'\\)\\)\\)\")",
+      "Bash(node -e \"const pkg = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/@vitejs/plugin-react-swc/package.json'\\); console.log\\('version:', pkg.version\\); console.log\\('peerDeps:', JSON.stringify\\(pkg.peerDependencies\\)\\)\")",
+      "Bash(node -e \"const data = JSON.parse\\(require\\('child_process'\\).execSync\\('npm view @vitejs/plugin-react --json', {maxBuffer: 2*1024*1024}\\).toString\\(\\)\\); const latest = data['dist-tags'].latest; console.log\\('latest:', latest, 'date:', data.time[latest].slice\\(0,10\\)\\)\")",
+      "Bash(node -e \"const pkg = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/material-react-table/package.json'\\); console.log\\('peerDeps:', JSON.stringify\\(pkg.peerDependencies, null, 2\\)\\)\")",
       "Bash(export PATH=\"/c/Users/gorsini/AppData/local/nodejs:$PATH\")",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(fuser -k 4173/tcp)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(kill %1)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:vite.dev)",
+      "WebFetch(domain:mui.com)",
       "WebFetch(domain:registry.npmjs.org)",
-      "Bash(node -e ' *)",
-      "Bash(npm run *)"
-    ]
-  }
-}
-{
-  "permissions": {
-    "allow": [
-      "Bash(npx playwright:*)",
-      "Bash(npx vitest:*)",
-      "Bash(export PATH=\"/c/Users/gorsini/AppData/local/nodejs:$PATH\")"
+      "WebFetch(domain:www.material-react-table.com)"
     ]
   }
 }

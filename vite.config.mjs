@@ -1,17 +1,12 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import tailwindcss from "tailwindcss";
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/gnn-react-time2task',
-  plugins: [react()],
-  css: {
-    postcss: {
-      plugins: [tailwindcss()]
-    }
-  },
+  plugins: [react(), tailwindcss()],
   test: {
     globals: true,
     environment: 'jsdom',

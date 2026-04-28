@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
 export const RELEASE = '16/04/2026';

@@ -17,7 +17,7 @@ export default function SlotPickerCard({slot, selectedSlotExpr, onSlotChange}) {
     const selectedPath = selectedSlotExpr ? new SlotPath(selectedSlotExpr) : null;
     const isInside = selectedPath ? selectedPath.equalsOrInclude(currentRecursivePath) : false;
 
-    let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mt-1 mr-1 ";
+    let slotStyle = "rounded p-1 m-0 mt-1 mr-1 ";
     if (isSelected) {
         slotStyle += "bg-blue-400 ";
     } else if (isInside) {

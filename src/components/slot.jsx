@@ -56,7 +56,7 @@ export default function Slot({slot, tasks}) {
             selectSlot(slotId)
         );
     }
-    let slotStyle = "border-2 border-gray-500 rounded p-1 m-0 mr-1 ";
+    let slotStyle = "rounded p-1 m-0 mr-1 ";
     if (selected) {
         slotStyle += "bg-gray-400 ";
     } else {

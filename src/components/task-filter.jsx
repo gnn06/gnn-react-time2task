@@ -134,18 +134,23 @@ export default function TaskFilter() {
     }
     useHotkeys('ctrl+k', onCtrlK, { preventDefault: true, enableOnFormTags: true })
 
-    return <Stack direction="row" spacing={1} alignItems="center">
-      <label htmlFor="task-filter">Filtre&nbsp;:</label>        
-      <div >
-          <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
-              placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')} 
-              closeIcon={true}
-              onInputChange={onInputChange} initialInputValue={filterExpr}/>
-          { error && <div className="m-1 text-red-500">{error}</div>}
-      </div>
-      <DialogHelpExpression/>            
-      {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
-      <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
-      <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
-    </Stack>;
+    return (
+        <Stack direction="row" spacing={1} sx={{
+            alignItems: "center"
+        }}>
+          <label htmlFor="task-filter">Filtre&nbsp;:</label>        
+          <div >
+              <SyntaxInput id="task-filter" inputRef={filterRef} items={filters}
+                  placeHolderInput={"CTRL-K | lundi, next_week mardi, " + FILTER_KEYWORDS.join(', ')}
+                  closeIcon={true}
+                  variant="primary"
+                  onInputChange={onInputChange} initialInputValue={filterExpr}/>
+              { error && <div className="m-1 text-red-500">{error}</div>}
+          </div>
+          <DialogHelpExpression/>            
+          {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
+          <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
+          <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
+        </Stack>
+    );
 };

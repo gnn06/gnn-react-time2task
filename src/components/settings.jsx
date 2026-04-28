@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Box, IconButton, Button } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { Link } from "react-router-dom";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Link } from "react-router";
 import { MaterialReactTable, useMaterialReactTable  } from 'material-react-table';
 
 import { useGetActivitiesQuery, useUpdateActivityMutation, useDeleteActivityMutation, useAddActivityMutation } from "../features/apiSlice.js";

@@ -397,6 +397,29 @@ describe('FilterPanel', () => {
     })
   })
 
+  test('should close first submenu when opening a second one', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <FilterPanel
+        filterConfig={mockFilterConfig}
+        filters={{}}
+        setFilters={mockSetFilters}
+      />
+    )
+
+    await user.click(screen.getByText('Filtres'))
+
+    // Ouvrir Activité
+    await user.click(screen.getByText('Activité'))
+    expect(screen.getByText('activité 1')).toBeInTheDocument()
+
+    // Ouvrir Statut — doit fermer Activité
+    await user.click(screen.getByText('Statut'))
+    expect(screen.getByText('À faire')).toBeInTheDocument()
+    expect(screen.queryByText('activité 1')).not.toBeInTheDocument()
+  })
+
   describe('none and all options', () => {
     test('should show "Aucune" and "Toutes" options for filters with 3+ values', async () => {
       const user = userEvent.setup()

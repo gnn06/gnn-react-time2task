@@ -1,5 +1,5 @@
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
-import DndContainer from "./dnd-container"
+import DndContainer from "../dnd-container"
 import { Button } from "@mui/material"
 import { useState } from "react";
 

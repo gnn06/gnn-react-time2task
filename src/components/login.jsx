@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Paper } from "@mui/material";
 
@@ -10,15 +11,18 @@ export default function Login({isSignIn}) {
 
     const dispatch = useDispatch();
 
-    supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'TOKEN_REFRESHED') {
-            // handle token refreshed event
-            console.info('token refresh', session)
-            // session contains access_token, expires_at, refresh_token, user.{id, email}
-            localStoreAccessToken(session.access_token)
-            dispatch(accessToken(session.access_token))
-        }
-      })
+    // useEffect obligatoire : appelé hors effect → fuite mémoire (nouvelle subscription à chaque render,
+    // jamais détruite). React 19 Strict Mode aggrave le problème (double montage en dev).
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'TOKEN_REFRESHED') {
+                console.info('token refresh', session)
+                localStoreAccessToken(session.access_token)
+                dispatch(accessToken(session.access_token))
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [dispatch]);
 
     async function loginHandle(e) {
         e.preventDefault()
@@ -43,12 +47,12 @@ export default function Login({isSignIn}) {
                 <form className="bg-white" method="post" onSubmit={loginHandle}>
                     <div className="mb-1">
                         <label className="block text-sm font-bold mb-1" htmlFor="email">Login</label>
-                        <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="email" name="email" aria-label="email" type="text" placeholder="user@domain.com" />
+                        <input className="shadow appearance-none border rounded border-gray-500 focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="email" name="email" aria-label="email" type="text" placeholder="user@domain.com" />
                     </div>
                     
                     <div className="mb-3">
                         <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
-                        <input className="shadow appearance-none border rounded focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" aria-label="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
+                        <input className="shadow appearance-none border rounded border-gray-500 focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" aria-label="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
                     </div>
                     <Button type="submit" variant="contained" >{isSignIn ? "Login" : "Sign up"}</Button>
                 </form>

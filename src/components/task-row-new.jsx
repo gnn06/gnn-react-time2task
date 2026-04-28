@@ -2,7 +2,7 @@ import CreateTask from './create-task';
 
 export default function TaskNew () {
 
-    const myClassName = 'rounded p-1 my-1 border-gray-500 border-2';
+    const myClassName = 'rounded p-1 my-1';
       
     return <tr className={myClassName} >
         <td></td>

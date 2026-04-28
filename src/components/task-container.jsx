@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { DndContext } from "@dnd-kit/core";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { Panel, Group, Separator } from "react-resizable-panels";
 
 import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
@@ -53,15 +53,15 @@ export default function TaskContainer() {
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart} >            
             { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm}/>}
-            <PanelGroup direction="horizontal" className="">
-                <Panel className='' collapsible={true} minSize={20} style={{}} >
+            <Group orientation="horizontal" className="">
+                <Panel className='' collapsible={true} minSize="20%" style={{}} >
                   {panel1}
                 </Panel>
-                <PanelResizeHandle style={{backgroundColor: "gray", width: "4px"}}  className="w-1.5 ml-1 mr-1 bg-gray-200 hover:bg-black"/>
-                <Panel className='' collapsible={true} minSize={20} style={{overflow:"visible"}}>
+                <Separator style={{backgroundColor: "gray", width: "4px"}}  className="w-1.5 ml-1 mr-1 bg-gray-200 hover:bg-black"/>
+                <Panel className='' collapsible={true} minSize="20%" style={{overflow:"visible"}}>
                   {panel2}
-                </Panel>           
-            </PanelGroup>
+                </Panel>
+            </Group>
           </DndContext>
         )
     }
