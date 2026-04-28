@@ -1,9 +1,13 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '16/04/2026';
+export const RELEASE = '29/04/2026';
 
 const text = `
+29/04/2026
+==========
+- upgrade
+
 16/04/2026
 ==========
 - Todo action excludes 'terminé' and 'fait-à repositionner' tasks

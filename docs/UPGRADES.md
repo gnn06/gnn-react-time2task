@@ -66,6 +66,7 @@ Analyse basée sur la couverture de tests au 2026-04-12 (36 E2E Playwright + 789
   - Utilisé uniquement dans `settings.jsx` (tableau CRUD des activités) — aucun test automatisé
   - Validé manuellement : affichage, édition, création (modal), suppression — ✅ OK (avr. 2026)
   - ⚠️ `@mui/x-date-pickers` est une peer dep requise de material-react-table — doit rester dans package.json même si non importé directement (Rolldown est strict sur les peer deps)
+  - [x] `@mui/x-date-pickers` upgradé 8.28.3 → 9.0.4 (avr. 2026) — material-react-table v3 supporte `>=7.15`, v9 déclare `@mui/material@^9` → résout le blocage `--legacy-peer-deps`
 
 - [x] **Storybook** 8.6.18 — **désinstallé** (avr. 2026)
   - `npm run storybook` était cassé depuis Vite 8 (`@storybook/react-vite@8.6.18` ne supporte que Vite `^4||^5||^6`)
@@ -106,10 +107,7 @@ npm run test
 npm run test:e2e
 ```
 
-> **⚠️ Blocage peer deps (avr. 2026)** : `npm install` (sans `--legacy-peer-deps`) échoue avec `ERESOLVE`.
-> `@mui/x-date-pickers@8.28.4` déclare `@mui/material@"^5||^6||^7"` comme peer dep, alors que le projet est sur `@mui/material@9.0.0`.
-> Ce n'est pas un problème de compatibilité réel — les packages fonctionnent ensemble — mais MUI X n'a pas encore mis à jour sa déclaration de peer deps pour inclure v9.
-> Utiliser `--legacy-peer-deps` jusqu'à ce que MUI X publie une version avec la peer dep corrigée.
+> ✅ **Blocage peer deps résolu (avr. 2026)** : `@mui/x-date-pickers` upgradé 8 → 9 déclare `@mui/material@^9` — `npm install` passe maintenant sans `--legacy-peer-deps`.
 
 ## Déjà à jour — aucune action requise
 
