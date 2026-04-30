@@ -5,16 +5,16 @@ import { getSlotsForRow, slotViewList } from "../data/slot-view";
 import { GENERIC_SLOTIDS, getSlotIdLevel } from "../data/slot-id";
 import React from "react";
 
-function buildRows() {
-    const slots = slotViewList(null);
+function buildRows(conf) {
+    const slots = slotViewList(null, conf);
     return slots.map(item => ({
         level: GENERIC_SLOTIDS[getSlotIdLevel(item[0].id) - 1],
         slots: getSlotsForRow(item),
     }));
 }
 
-export default function SlotViewList({ tasks }) {
-    const rows = buildRows();
+export default function SlotViewList({ tasks, conf }) {
+    const rows = buildRows(conf);
 
     return (
         <DashedTable columns={3}>

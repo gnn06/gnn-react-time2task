@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import { reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
+import { getSlotIdLevel } from "./slot-id";
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -840,6 +841,15 @@ test('level filter max', () => {
    expect(result).toEqual(expected)
 })
 
+test('levelMaxIncluded: 2 - les slots semaine ont inner vide (bubble up vers le niveau visible le plus profond)', () => {
+   const conf = { collapse: [], remove: [], levelMin: null, levelMaxIncluded: 2 }
+   const result = slotViewFilter(conf)
+   const thisMonth = result.find(s => s.id === 'this_month')
+   thisMonth.inner.forEach(weekSlot => {
+      expect(weekSlot.inner).toEqual([])
+   })
+})
+
 test('level filter min', () => {
    const conf = {
       collapse: [],
@@ -1262,75 +1272,33 @@ describe('add', () => {
 });
 
 describe('create slotView with selection', () => {
-   test('nominal', () => {
-      const givenConf = {
-         collapse: [ "next_month", ],
-         remove: [],
-         levelMin: null,
-         levelMaxIncluded: 2
-      }
+   test('nominal - collapse et chemin sélectionné', () => {
+      const givenConf = { collapse: [ "next_month" ], remove: [], levelMin: null, levelMaxIncluded: 2 }
       const givenPaths = [["this_month", "next_week", "mardi"]]
-      const expected = [
-         {
-            id: "this_month",
-            inner: [
-               {
-                  id: "this_week",
-                  inner: [],
-                  path: "this_month this_week",
-               },
-               {
-                  id: "next_week",
-                  inner: [{
-                     id: "mardi",
-                     inner: [],
-                     path: "this_month next_week mardi",
-                  }],
-                  path: "this_month next_week",
-               },
-               {
-                  id: "following_week",
-                  inner: [],
-                  path: "this_month following_week",
-               },
-            ],
-            path: "this_month",
-         },
-         {
-            id: "next_month",
-            inner: [],
-            path: "next_month",
-         },
-      ]
       const result = slotViewFilterSelection(givenConf, givenPaths)
-      expect(result).toEqual(expected)
+      // next_month est collapsé
+      const nextMonth = result.find(s => s.id === 'next_month')
+      expect(nextMonth.inner).toEqual([])
+      // le chemin sélectionné est présent
+      const thisMonth = result.find(s => s.id === 'this_month')
+      const nextWeek = thisMonth.inner.find(s => s.id === 'next_week')
+      expect(nextWeek.inner.some(s => s.id === 'mardi')).toBe(true)
    });
 
-   test('selection level 1', () => {
-      const givenConf = { collapse: [ "next_month", ], remove: [], levelMin: null, levelMaxIncluded: 2 }
+   test('selection level 1 - collapse respecté', () => {
+      const givenConf = { collapse: [ "next_month" ], remove: [], levelMin: null, levelMaxIncluded: 2 }
       const givenPaths = [["this_month"]]
-      const expected = [
-         {
-            id: "this_month",
-            inner: [
-               {
-                  id: "this_week", inner: [], path: "this_month this_week",
-               },
-               {
-                  id: "next_week", inner: [], path: "this_month next_week",
-               },
-               {
-                  id: "following_week", inner: [], path: "this_month following_week",
-               },
-            ],
-            path: "this_month",
-         },
-         {
-            id: "next_month", inner: [], path: "next_month",
-         },
-      ]
       const result = slotViewFilterSelection(givenConf, givenPaths)
-      expect(result).toEqual(expected)
+      expect(result.find(s => s.id === 'this_month')).toBeDefined()
+      expect(result.find(s => s.id === 'next_month').inner).toEqual([])
+   })
+
+   test('levelMaxIncluded est ignoré — tous les niveaux sont navigables', () => {
+      const givenConf = { collapse: [], remove: [], levelMin: null, levelMaxIncluded: 2 }
+      const result = slotViewFilterSelection(givenConf, [])
+      const thisMonth = result.find(s => s.id === 'this_month')
+      const thisWeek = thisMonth.inner.find(s => s.id === 'this_week')
+      expect(thisWeek.inner.length).toBeGreaterThan(0)
    })
 });
 
@@ -1710,6 +1678,35 @@ describe('slotViewList', () => {
          ],
       ];
       expect(result).toEqual(expected);
+   })
+
+   test('levelMaxIncluded: 2 exclut les niveaux jour et heure', () => {
+      const conf = { levelMaxIncluded: 2 }
+      const result = slotViewList(null, conf)
+      const allIds = result.flatMap(row => row.map(slot => slot.id))
+      expect(allIds).not.toContain('lundi')
+      expect(allIds).not.toContain('matin')
+   })
+
+   test('levelMaxIncluded: 1 - les slots mois ont inner vide pour absorber les tâches sous-jacentes', () => {
+      const conf = { levelMaxIncluded: 1 }
+      const result = slotViewList(null, conf)
+      expect(result.length).toBe(1)
+      result[0].forEach(slot => {
+         if (slot) expect(slot.inner).toEqual([])
+      })
+   })
+
+   test('levelMaxIncluded: 2 - les slots semaine ont inner vide, les slots mois gardent leurs enfants semaine', () => {
+      const conf = { levelMaxIncluded: 2 }
+      const result = slotViewList(null, conf)
+      const weekRow = result.find(row => row[0] && getSlotIdLevel(row[0].id) === 2)
+      weekRow.forEach(slot => {
+         if (slot) expect(slot.inner).toEqual([])
+      })
+      const monthRow = result.find(row => row[0] && getSlotIdLevel(row[0].id) === 1)
+      const thisMonth = monthRow.find(slot => slot?.id === 'this_month')
+      expect(thisMonth.inner.length).toBeGreaterThan(0)
    })
 });
 

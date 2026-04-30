@@ -172,13 +172,26 @@ export function getSlotsForRow(slots:Slot[]) : [Slot | null, Slot | null, Slot |
     return result;
 }
 
-export function slotViewList(path:string): Slot[][] {
+function stripInnerAtMaxLevel(slots: Slot[], maxLevel: number): Slot[] {
+    return slots.map(slot => {
+        if (getSlotIdLevel(slot.id) >= maxLevel) return { ...slot, inner: [] }
+        return { ...slot, inner: stripInnerAtMaxLevel(slot.inner, maxLevel) }
+    })
+}
+
+export function slotViewList(path:string, conf?: Pick<SlotViewConf, 'levelMaxIncluded'>): Slot[][] {
     let tree = defaultSlotViewList();
     if (path) {
         const temp = slotFind(tree, path) || tree;
         tree = { id:'root', path:'', inner:[temp]};
     }
     const result = slotTreeToSlotList(tree);
+    if (conf?.levelMaxIncluded) {
+        const maxLevel = conf.levelMaxIncluded
+        return result
+            .filter(row => getSlotIdLevel(row[0].id) <= maxLevel)
+            .map(row => stripInnerAtMaxLevel(row, maxLevel))
+    }
     return result;
 }
 
@@ -243,7 +256,7 @@ export function slotViewAdd(slotView: Slot[], path:string, currentPath = "") : S
 }
 
 export function slotViewFilterSelection(conf: SlotViewConf, paths: string[]) {
-  let  slotView = slotViewFilter(conf)
+  let slotView = slotViewFilter({ ...conf, levelMaxIncluded: null })
   paths.forEach(path => {slotView = slotViewAdd(slotView, path)})
-    return slotView
+  return slotView
 }
