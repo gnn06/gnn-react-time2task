@@ -79,7 +79,7 @@ function createFilterConfig(activities = []) {
 export default function TaskFilter() {
     
     const dispatch = useDispatch();
-    const { data: activities, isLoading: isActivitiesLoading, isSuccess: isActivitiesSuccess } = useGetActivitiesQuery();
+    const { data: activities, isSuccess: isActivitiesSuccess } = useGetActivitiesQuery();
     const [error, setError] = useState('')
     const [isMultiFilter, setIsMultiFilter] = useState(false)
     const [isDisableFilter, setIsDisableFilter] = useState(false)
@@ -146,7 +146,6 @@ export default function TaskFilter() {
               { error && <div className="m-1 text-red-500">{error}</div>}
           </div>
           <DialogHelpExpression/>            
-          {isActivitiesLoading && <span className="text-gray-500 text-sm ml-2">Chargement...</span>}
           <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
           <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
         </Stack>

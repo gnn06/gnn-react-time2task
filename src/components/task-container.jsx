@@ -15,7 +15,7 @@ export default function TaskContainer() {
     // eslint-disable-next-line
     const userId   = useSelector(state => state.tasks.user.id);
     const activity = useSelector(state => state.tasks.currentActivity);
-    const { data:tasksRedux, isLoading, isSuccess } = useGetTasksQuery({userId, activity})
+    const { data:tasksRedux } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const [ updateTask ] = useUpdateTaskMutation()
     const taskToEdit  = useSelector(state => state.tasks.editTask);
@@ -45,7 +45,7 @@ export default function TaskContainer() {
       dispatch(editTask(null))
     }
 
-    if (!isLoading && isSuccess) {
+    if (tasksRedux) {
         const tasksFetched = tasksRedux.slice();
         const tasks = filterSlotExpr(tasksFetched, currentFilter);
         const panel1 = <SlotPanel tasks={tasks}/>
