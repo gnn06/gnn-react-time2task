@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, setInlineStatus } from './helpers/tasks';
+import { waitForApiIdle } from './helpers/api';
 
 
 const taskRows = (page: any) =>
@@ -33,7 +34,7 @@ test.describe('Action Todo', () => {
         await page.getByRole('button', { name: 'Todo' }).click();
         await expect(page.getByTestId('confirm-dialog')).toBeVisible();
         await page.getByRole('button', { name: 'Confirmer' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const idx = await getTaskRowIndex(page, title);

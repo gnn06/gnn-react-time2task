@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { waitForApiIdle } from './api';
 
 export const TEST_PREFIX = 'E2E-TEST';
 export const TEST_ACTIVITY = 'E2E-activité'; // créée par globalSetup
@@ -24,13 +25,8 @@ export async function getTaskRowIndex(page: Page, title: string): Promise<number
 export async function creerTache(page: Page, title: string): Promise<void> {
     await page.getByRole('button', { name: /Créer Tâche/i }).first().click();
     await page.getByLabel('Titre de la tâche').fill(title);
-
-    const postDone = page.waitForResponse(
-        resp => resp.url().includes('/tasks') && resp.request().method() === 'POST',
-        { timeout: 15000 }
-    );
     await page.getByRole('button', { name: 'Confirmer' }).click();
-    await postDone;
+    await waitForApiIdle(page);
 
     await expect(async () => {
         const found = await page.evaluate((t) =>
@@ -38,7 +34,7 @@ export async function creerTache(page: Page, title: string): Promise<void> {
                 .some(el => (el as HTMLInputElement).value === t)
         , title);
         expect(found).toBe(true);
-    }).toPass({ timeout: 15000, intervals: [300, 500, 1000, 2000] });
+    }).toPass({ timeout: 3000 });
 }
 
 /**
@@ -50,12 +46,13 @@ export async function setInlineStatus(page: Page, title: string, status: string)
     expect(idx).toBeGreaterThanOrEqual(0);
     await taskRows.nth(idx).getByRole('combobox', { name: 'statut' }).click();
     await page.getByRole('option', { name: status }).click();
-    await page.waitForLoadState('networkidle');
+    await waitForApiIdle(page);
+
     await expect(async () => {
         const i = await getTaskRowIndex(page, title);
         expect(i).toBeGreaterThanOrEqual(0);
         await expect(taskRows.nth(i)).toContainText(status);
-    }).toPass({ timeout: 10000 });
+    }).toPass({ timeout: 3000 });
 }
 
 /**

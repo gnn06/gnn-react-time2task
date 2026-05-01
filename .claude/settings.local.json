@@ -28,7 +28,8 @@
       "WebFetch(domain:vite.dev)",
       "WebFetch(domain:mui.com)",
       "WebFetch(domain:registry.npmjs.org)",
-      "WebFetch(domain:www.material-react-table.com)"
+      "WebFetch(domain:www.material-react-table.com)",
+      "Bash(npx vite *)"
     ]
   }
 }

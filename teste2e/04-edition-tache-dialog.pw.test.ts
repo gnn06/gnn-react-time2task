@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, openEditDialog, TEST_ACTIVITY } from './helpers/tasks';
+import { waitForApiIdle } from './helpers/api';
 
 
 const taskRows = (page: any) =>
@@ -31,7 +32,7 @@ test.describe('Édition de tâche via la dialog', () => {
 
         await page.getByTestId('confirm-dialog').getByLabel('Titre de la tâche').fill(newTitle);
         await page.getByRole('button', { name: 'Confirmer' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const found = await page.evaluate((t) =>
@@ -51,7 +52,7 @@ test.describe('Édition de tâche via la dialog', () => {
         await dialog.getByRole('combobox', { name: 'statut' }).click();
         await page.getByRole('option', { name: 'en cours' }).click();
         await page.getByRole('button', { name: 'Confirmer' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const idx = await getTaskRowIndex(page, title);
@@ -76,7 +77,7 @@ test.describe('Édition de tâche via la dialog', () => {
         await option.click();
 
         await page.getByRole('button', { name: 'Confirmer' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const idx = await getTaskRowIndex(page, title);

@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { arrayPut } from '../utils/arrayUtil';
-import { localRetrieveAccessToken, localRetrieveUser } from '../services/browser-storage';
 import { DEFAULT_CONF, reduceCollapseOnConf } from '../data/slot-view';
 
 const initialState = {
