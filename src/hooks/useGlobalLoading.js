@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useGetTasksQuery, useGetActivitiesQuery } from '../features/apiSlice';
+import { useAppInitialized } from './useAppInitialized';
 
 const selectAnyPending = (state) => {
     const queries = Object.values(state.api.queries);
@@ -9,14 +9,7 @@ const selectAnyPending = (state) => {
 };
 
 export function useGlobalLoading() {
-    const userId = useSelector(state => state.tasks.user.id);
-    const activity = useSelector(state => state.tasks.currentActivity);
-
-    const { isLoading: isTasksLoading } = useGetTasksQuery({ userId, activity }, { skip: !userId });
-    const { isLoading: isActivitiesLoading } = useGetActivitiesQuery();
-
+    const appInitialized = useAppInitialized();
     const anyPending = useSelector(selectAnyPending);
-
-    const appInitialized = !isTasksLoading && !isActivitiesLoading;
     return appInitialized && anyPending;
 }

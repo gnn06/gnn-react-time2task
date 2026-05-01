@@ -9,15 +9,18 @@ import Paper from '@mui/material/Paper';
 
 import Login from './login';
 import AppMenu from './appmenu';
+import AppLoader from './app-loader';
 import TaskContainer from './task-container';
 import { loadUserConfThunk } from '../features/userConfThunk';
 import { loadLocalStorageThunk } from '../features/localstorageThunk';
 import Mainbar from './main-bar';
+import { useAppInitialized } from '../hooks/useAppInitialized';
 
 function App() {
   const dispatch = useDispatch();
-  
+
   const userId = useSelector(state => state.tasks.user.id);
+  const appInitialized = useAppInitialized();
 
   /* Chargement des données utilisateur depuis le localStorage au démarrage */
   useEffect(() => {
@@ -46,6 +49,7 @@ function App() {
         </Paper>
       </Box>
       <TaskContainer/>
+      {!appInitialized && <AppLoader />}
     </Stack>
   );
 }
