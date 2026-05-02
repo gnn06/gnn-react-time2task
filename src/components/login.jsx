@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Paper } from "@mui/material";
+import { Button, CircularProgress, Paper } from "@mui/material";
 
 import { supabase } from '../services/supabase'
 import { login, accessToken } from "../features/taskSlice";
@@ -10,6 +10,7 @@ import { loginThunk } from "../features/auth-thunk";
 export default function Login({isSignIn}) {
 
     const dispatch = useDispatch();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // useEffect obligatoire : appelé hors effect → fuite mémoire (nouvelle subscription à chaque render,
     // jamais détruite). React 19 Strict Mode aggrave le problème (double montage en dev).
@@ -27,6 +28,7 @@ export default function Login({isSignIn}) {
     async function loginHandle(e) {
         e.preventDefault()
         const formData = new FormData(e.target);
+        setIsSubmitting(true);
         try {
             await dispatch(loginThunk(formData.get('email'), formData.get('password')));
         } catch (error) {
@@ -37,6 +39,8 @@ export default function Login({isSignIn}) {
             const user = { id: '', email: '', accessToken: ''}
             dispatch(login(user));
             dispatch(accessToken(''));
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -54,7 +58,10 @@ export default function Login({isSignIn}) {
                         <label className="block text-sm font-bold mb-1" htmlFor="password">Password</label>
                         <input className="shadow appearance-none border rounded border-gray-500 focus:shadow-outline-none py-1 px-2 w-full leading-tigth" id="password" name="password" aria-label="password" type={isSignIn ? "password" : "text"} placeholder={isSignIn ? "******************" : "mot de passe"}/>
                     </div>
-                    <Button type="submit" variant="contained" >{isSignIn ? "Login" : "Sign up"}</Button>
+                    <Button type="submit" variant="contained" disabled={isSubmitting}
+                        startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : null}>
+                        {isSignIn ? "Login" : "Sign up"}
+                    </Button>
                 </form>
             </Paper>
         </div>
