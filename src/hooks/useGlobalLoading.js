@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useAppInitialized } from './useAppInitialized';
 
-const selectAnyPending = (state) => {
+export const selectAnyPending = (state) => {
     const queries = Object.values(state.api.queries);
     const mutations = Object.values(state.api.mutations);
     return queries.some(q => q?.status === 'pending') ||
