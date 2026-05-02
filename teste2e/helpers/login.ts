@@ -1,11 +1,12 @@
 import { Page, expect } from '@playwright/test';
+import { waitForAppReady } from './api';
 
 const TEST_EMAIL    = process.env.E2E_EMAIL    ?? 'e2e@gorsini.fr';
 const TEST_PASSWORD = process.env.E2E_PASSWORD ?? 'e2e';
 
 /**
  * Effectue le login avec les credentials de test et attend que l'interface
- * principale soit prête (réseau idle + bouton login disparu).
+ * principale soit prête (auth + chargement initial des données).
  */
 export async function login(page: Page): Promise<void> {
     await expect(page.getByRole('button', { name: 'login' })).toBeVisible();
@@ -14,8 +15,8 @@ export async function login(page: Page): Promise<void> {
     await page.getByRole('textbox', { name: 'password' }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Login' }).click();
 
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible({ timeout: 10000 });
+    await waitForAppReady(page);
 }
 
 /**
@@ -32,6 +33,5 @@ export async function gotoAppAndLogin(page: Page): Promise<void> {
  */
 export async function logout(page: Page): Promise<void> {
     await page.getByRole('button', { name: 'Se déconnecter' }).click();
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('button', { name: 'login' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'login' })).toBeVisible({ timeout: 10000 });
 }

@@ -27,6 +27,7 @@ Analyse basée sur la couverture de tests au 2026-04-12 (36 E2E Playwright + 789
 - [x] **react-redux** 8.1.1 (juin 2023) → 9.2.0 (déc. 2024) — *18 mois*
   - Logique Redux bien couverte par Vitest
   - Les E2E valident que l'état global se comporte correctement
+  - ⚠️ **`useIsFetching` et `useIsMutating` retirés de RTK Query v2** : ces hooks n'existent plus dans `@reduxjs/toolkit/query/react`. La détection des requêtes actives passe désormais par les sélecteurs Redux directs sur `state.api.queries` et `state.api.mutations` (statut `pending`). Voir `src/hooks/useGlobalLoading.js`.
 
 - [x] **Vite** 6.4.1 (oct. 2025) → 8.0.8 (avr. 2026) — *6 mois*
   - Saut de deux versions majeures (v6 → v8)
@@ -125,7 +126,7 @@ Avant de commencer chaque upgrade :
 - [ ] Combler les lacunes critiques si nécessaire
 
 Après l'upgrade :
-- [ ] `npm run test` — 789 Vitest verts
+- [ ] `npm run test` — 795 Vitest verts
 - [ ] `npm run test:e2e` — 37 Playwright verts
 - [ ] Consigner les tests unitaires manquants détectés dans "Zones de couverture insuffisante"
 - [ ] Cocher l'entrée dans la liste Todo

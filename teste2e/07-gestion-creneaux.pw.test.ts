@@ -1,5 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex } from './helpers/tasks';
+import { waitForApiIdle } from './helpers/api';
 
 
 const taskRows = (page: Page) =>
@@ -59,7 +60,7 @@ test.describe('Gestion des créneaux', () => {
         const dialog = page.getByRole('dialog');
         await clickSlot(dialog, 'this_month this_week mardi');
         await dialog.getByRole('button', { name: 'Confirm' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week mardi');
     });
@@ -73,7 +74,7 @@ test.describe('Gestion des créneaux', () => {
         const dialog1 = page.getByRole('dialog');
         await clickSlot(dialog1, 'this_month this_week lundi');
         await dialog1.getByRole('button', { name: 'Confirm' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week lundi');
 
@@ -84,7 +85,7 @@ test.describe('Gestion des créneaux', () => {
         await clickSlot(dialog2, 'this_month this_week mardi');  // sélectionne (handleAdd)
         
         await dialog2.getByRole('button', { name: 'Confirm' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week mardi');
     });
@@ -98,7 +99,7 @@ test.describe('Gestion des créneaux', () => {
         await clickSlot(dialog, 'this_month this_week mercredi');
         await clickSlot(dialog, 'this_month this_week jeudi');
         await dialog.getByRole('button', { name: 'Confirm' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week mercredi');
         await expectTaskInSlotPanel(page, title, 'this_month this_week jeudi');
@@ -120,7 +121,7 @@ test.describe('Gestion des créneaux', () => {
         await dialog.getByRole('button').nth(4).click(); // cliquer sur le bouton d'action "Ajouter une répétition" (le 5ème bouton, index 4)
 
         await dialog.getByRole('button', { name: 'Confirm' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week');
         await expectTaskInSlotPanel(page, title, 'this_month next_week');
