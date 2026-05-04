@@ -7,6 +7,10 @@
       "Bash(npm info:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm show *)",
+      "Bash(npx vite *)",
+      "Bash(npm start *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)", 
       "Bash(npx playwright:*)",
       "Bash(npx vitest:*)",
       "Bash(tee test-output.log)",
@@ -28,8 +32,7 @@
       "WebFetch(domain:vite.dev)",
       "WebFetch(domain:mui.com)",
       "WebFetch(domain:registry.npmjs.org)",
-      "WebFetch(domain:www.material-react-table.com)",
-      "Bash(npx vite *)"
+      "WebFetch(domain:www.material-react-table.com)"
     ]
   }
 }

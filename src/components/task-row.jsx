@@ -23,7 +23,7 @@ import { editTask, setFilterTaskId, selectTask as selectTaskAction } from "../fe
 import { useDeleteTaskMutation, useUpdateTaskMutation } from "../features/apiSlice";
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
-import { isTaskUnique, isTaskMulti, isTaskRepeat } from "../data/task.js";
+import { isTaskUnique, isTaskMulti, isTaskRepeat, getTaskNextSlotLabel } from "../data/task.js";
 
 
 export default function TaskRow({ task }) {
@@ -117,6 +117,7 @@ export default function TaskRow({ task }) {
                 </td>
                 <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><ActivityInput activity={task.activity} saveHandler={(value) => onActivityChange(value)} isInline={true}/></td>
                 <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><StatusInput key={task.status} task={task} saveHandler={onStatusChange} isInline={true}/></td>
+                <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}>{getTaskNextSlotLabel(task)}</td>
                 <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}><SlotSelectionButton task={task} handleSave={handleSave} withText={true}/>
                     {task.id && <IconButton onClick={handleTarget} sx={{padding:0, marginLeft:1}}><TargetIcon  /></IconButton>}</td>
                 <td style={{border:'1px dashed rgb(156 163 175 / 1)'}}>{task && isTaskMulti(task)                        && <span className="font-bold">M</span>}

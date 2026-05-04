@@ -3,7 +3,8 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskPredicateEvery1,
     taskPredicateError,
     getNewOrder,
-    taskGroupActivity} from "./task";
+    taskGroupActivity,
+    getTaskNextSlotLabel} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -611,6 +612,43 @@ describe('taskShiftFilter', () => {
         expect(result).toEqual(expected)
     })
 });
+
+describe('getTaskNextSlotLabel', () => {
+    beforeEach(() => vi.setSystemTime(new Date('2023-12-20'))) // mercredi
+    test('slot futur → premier niveau divergent', () => {
+        const task = { slotExpr: 'this_week vendredi' }
+        expect(getTaskNextSlotLabel(task)).toBe('vendredi')
+    })
+    test('slot passé → null', () => {
+        const task = { slotExpr: 'this_week lundi' }
+        expect(getTaskNextSlotLabel(task)).toBeNull()
+    })
+    test('repeat, slot passé → semaine suivante', () => {
+        const task = { slotExpr: 'every 1 this_week lundi' }
+        expect(getTaskNextSlotLabel(task)).toBe('next_week')
+    })
+    test('slot sans semaine, jour futur → complété avec this_week', () => {
+        const task = { slotExpr: 'vendredi' }
+        expect(getTaskNextSlotLabel(task)).toBe('vendredi')
+    })
+
+    test("status 'A faire', slot = aujourd'hui → aujourd'hui inclus", () => {
+        const task = { slotExpr: 'this_week mercredi', status: 'A faire' }
+        expect(getTaskNextSlotLabel(task)).toBe('mercredi')
+    })
+    test("status 'en cours', slot = aujourd'hui → aujourd'hui inclus", () => {
+        const task = { slotExpr: 'this_week mercredi', status: 'en cours' }
+        expect(getTaskNextSlotLabel(task)).toBe('mercredi')
+    })
+    test("status 'fait', slot = aujourd'hui → null", () => {
+        const task = { slotExpr: 'this_week mercredi', status: 'fait' }
+        expect(getTaskNextSlotLabel(task)).toBeNull()
+    })
+    test("sans status, slot = aujourd'hui → null", () => {
+        const task = { slotExpr: 'this_week mercredi' }
+        expect(getTaskNextSlotLabel(task)).toBeNull()
+    })
+})
 
 describe('getNewOrder', () => {
     test('3 becomes 2', () => {

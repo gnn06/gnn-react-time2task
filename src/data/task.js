@@ -4,6 +4,8 @@ import { Parser } from "./parser";
 import _ from 'lodash';
 import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti } from './slot-branch';
 import { branchShift } from './slot-branch++';
+import { SlotPath, getCurrentPathExpr } from './slot-path';
+import { getSlotNextPrev } from './slot-next-prev';
 
 export function taskPredicateEqualAndInclude(task, filter) {
     return isSlotEqualOrInclude(task.slotExpr, filter)
@@ -160,7 +162,27 @@ export function isTaskMulti(task) {
 }
 
 export function isTaskRepeat(task) {
-    return isSlotRepeat1(task.slotExpr)    
+    return isSlotRepeat1(task.slotExpr)
+}
+
+// statuts pour lesquels le jour courant compte comme prochain slot
+const ACTIVE_STATUSES = ['A faire', 'en cours']
+
+/**
+ * Retourne l'expression du prochain slot d'une tâche, ou null si aucun.
+ * branchComplete(branch, 1) complète les slots incomplets (ex: "lundi" → "this_week lundi").
+ * Pour les statuts actifs ('A faire', 'en cours'), aujourd'hui est inclus comme prochain slot.
+ * @returns {string|null}
+ */
+export function getTaskNextSlotLabel(task) {
+    const branch = parser.parse(task.slotExpr)
+    if (!branch) return null
+    const completed = branchComplete(branch, 1)
+    const currentPath = new SlotPath(getCurrentPathExpr(4))
+    const comparison = ACTIVE_STATUSES.includes(task.status) ? 'inclusive' : 'strict'  // 'inclusive' = statut actif, aujourd'hui compte
+    const result = getSlotNextPrev(completed, currentPath, +1, comparison)
+    if (!result) return null
+    return result.mostInformativeId(currentPath)
 }
 
 export function getNewOrder(tasks, activeId, overId) {

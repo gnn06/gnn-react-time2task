@@ -31,6 +31,7 @@ export default function TaskList({tasks, group, className = ''}) {
                 <th style={headStyle}></th>
                 <th style={headStyle}>Activité</th>
                 <th style={headStyle}>Statut</th>
+                <th style={headStyle}>Prochain slot</th>
                 <th style={headStyle}></th>
                 <th style={headStyle}></th>
                 <th style={headStyle}></th>
