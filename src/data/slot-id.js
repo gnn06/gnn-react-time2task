@@ -1,3 +1,5 @@
+import { getNow } from '../utils/now'
+
 export const weight = {
     month     : 1,
     this_month: 1,
@@ -65,18 +67,14 @@ export function getSlotIdCurrent(level) {
     else if (level === 2)
         return 'this_week';
     else if (level === 3) {
-        const currentTime = new Date();
+        const currentTime = getNow();
         const day = currentTime.getDay(); // 0 = dimanche
         const jour = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
         return jour[day];
     }
     else if (level === 4) {
-        const currentTime = new Date();
-        const day = currentTime.getHours();
-        if (day < 12)
-            return 'matin';
-        else
-            return 'aprem';
+        const currentTime = getNow();
+        return currentTime.getHours() < 12 ? 'matin' : 'aprem';
     }
     else
         return '';

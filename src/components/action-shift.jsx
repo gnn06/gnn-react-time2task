@@ -26,7 +26,7 @@ export default function ShiftAction() {
     const userId   = useSelector(state => state.tasks.user.id);
     const activity = useSelector(state => state.tasks.currentActivity);
     
-    const { data:tasksRedux, isLoading } = useGetTasksQuery({userId, activity})
+    const { data:tasksRedux } = useGetTasksQuery({userId, activity})
     const [ updateTask, { error: updateError } ] = useUpdateTaskMutation()
 
     const { data:snapDates, isSuccess:isSuccessSnapDates }= useGetSnapDatesQuery()    
@@ -73,7 +73,7 @@ export default function ShiftAction() {
         setSnapDate(date.target.value)
     }
 
-    if (isLoading) return;
+    if (!tasksRedux) return null;
 
     const shiftedTasks = shiftDialog ? taskShiftFilter(tasksRedux, level.value) : []
 

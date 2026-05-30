@@ -35,7 +35,7 @@ function exprToSelectionMap(expr) {
 
 function makeSlotWithSelection(conf, selection) {
   return slotViewFilterSelection(
-    conf, 
+    conf,
     Array.from(selection.keys()).map(el => IDizer(el))
   )
 }

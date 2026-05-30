@@ -98,6 +98,18 @@ export class SlotPath {
         this.IDs = new_IDs
         return this
     }
+
+    firstDivergingId(current: SlotPath): string | null {
+        for (const id of this.IDs) {
+            const currentId = current.IDs.find(i => getSlotIdLevel(i) === getSlotIdLevel(id))
+            if (id !== currentId) return id
+        }
+        return null
+    }
+
+    mostInformativeId(current: SlotPath): string {
+        return this.firstDivergingId(current) ?? this.getLast()
+    }
 }
 
 export function getCurrentPathExpr(level: number) : string {

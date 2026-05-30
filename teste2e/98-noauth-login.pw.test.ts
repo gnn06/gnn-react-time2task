@@ -42,7 +42,6 @@ test.describe('Authentification', () => {
 
         // Recharger la page : sans session persistée, le login doit réapparaître
         await page.reload();
-        await page.waitForLoadState('networkidle');
 
         await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
     });

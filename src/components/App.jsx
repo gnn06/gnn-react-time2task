@@ -9,20 +9,20 @@ import Paper from '@mui/material/Paper';
 
 import Login from './login';
 import AppMenu from './appmenu';
+import AppLoader from './app-loader';
 import TaskContainer from './task-container';
 import { loadUserConfThunk } from '../features/userConfThunk';
-import { loadLocalStorageThunk } from '../features/localstorageThunk';
 import Mainbar from './main-bar';
+import { useAppInitialized } from '../hooks/useAppInitialized';
+
+// le store est chargé. le userId est chargé par store.preloadedState depuis le localStorage
+// lors du premier render, cela évite un flash de l'écran de login au refresh.
 
 function App() {
   const dispatch = useDispatch();
-  
-  const userId = useSelector(state => state.tasks.user.id);
 
-  /* Chargement des données utilisateur depuis le localStorage au démarrage */
-  useEffect(() => {
-    dispatch(loadLocalStorageThunk());
-  }, [dispatch]);
+  const userId = useSelector(state => state.tasks.user.id);
+  const appInitialized = useAppInitialized();
 
   /* Récupération de la conf utilisateur au démarrage
    * pour gérer le cas du F5 où l'utilisateur a déjà une session active 
@@ -46,6 +46,7 @@ function App() {
         </Paper>
       </Box>
       <TaskContainer/>
+      {!appInitialized && <AppLoader />}
     </Stack>
   );
 }

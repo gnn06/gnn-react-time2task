@@ -7,7 +7,6 @@ import TargetIcon from '@mui/icons-material/AdsClick';
 import SlotView from "./slotview";
 import { setFilterSlot, setSlotViewStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, showRepeatAction, setSlotViewFilterConfView } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
-import { useUpsertUserConfMutation } from "../features/apiSlice";
 import { saveUserConfThunk } from "../features/userConfThunk";
 
 export default function SlotPanel({tasks})  {
@@ -18,8 +17,6 @@ export default function SlotPanel({tasks})  {
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
     const user   = useSelector(state => state.tasks.user);
-    const [upsert, { isLoading, error }] = useUpsertUserConfMutation()
-    
     const onChangeLevelMax = (event) => {
         const level = event.target.value
         dispatch(setSlotViewFilterConfLevel({level}));

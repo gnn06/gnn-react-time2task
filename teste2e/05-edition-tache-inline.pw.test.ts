@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, TEST_ACTIVITY } from './helpers/tasks';
+import { waitForApiIdle } from './helpers/api';
 
 
 const taskRows = (page: any) =>
@@ -25,7 +26,7 @@ test.describe('Édition inline depuis la table de tâches', () => {
         await titleInput.click();
         await titleInput.fill(newTitle);
         await titleInput.press('Enter');
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const found = await page.evaluate((t) =>
@@ -45,7 +46,7 @@ test.describe('Édition inline depuis la table de tâches', () => {
 
         await row.getByRole('combobox', { name: 'statut' }).click();
         await page.getByRole('option', { name: 'en cours' }).click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const i = await getTaskRowIndex(page, title);
@@ -70,7 +71,7 @@ test.describe('Édition inline depuis la table de tâches', () => {
         const option = page.getByRole('option', { name: TEST_ACTIVITY }).first();
         await expect(option).toBeVisible();
         await option.click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
 
         await expect(async () => {
             const i = await getTaskRowIndex(page, title);

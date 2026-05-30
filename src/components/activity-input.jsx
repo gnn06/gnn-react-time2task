@@ -44,7 +44,7 @@ const colorStyle = (isInline) => ({
 
 export default function ActivityInput({activity, saveHandler, className, isInline}) {
     
-    const { data, isLoading, isSuccess } = useGetActivitiesQuery();
+    const { data } = useGetActivitiesQuery();
     const [ addActivity ]                = useAddActivityMutation();
 
     const onChange = (value, action) => {

@@ -1,5 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, setInlineStatus, TEST_ACTIVITY } from './helpers/tasks';
+import { waitForApiIdle } from './helpers/api';
 
 
 const taskRows = (page: Page) =>
@@ -11,7 +12,7 @@ async function affecterCreneau(page: Page, title: string, slotPath: string): Pro
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('dialog').locator(`[data-slot-path="${slotPath}"] div.title`).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Confirm' }).click();
-    await page.waitForLoadState('networkidle');
+    await waitForApiIdle(page);
 }
 
 async function closeFiltresMenu(page: Page): Promise<void> {
@@ -69,7 +70,7 @@ test.describe('Filtrage des tâches', () => {
         const option = page.getByRole('option', { name: TEST_ACTIVITY }).first();
         await expect(option).toBeVisible();
         await option.click();
-        await page.waitForLoadState('networkidle');
+        await waitForApiIdle(page);
         await expect(async () => {
             const i = await getTaskRowIndex(page, titleAvecActivite);
             expect(i).toBeGreaterThanOrEqual(0);

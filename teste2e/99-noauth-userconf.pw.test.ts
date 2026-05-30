@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { login, logout } from './helpers/login';
+import { waitForApiIdle } from './helpers/api';
 
 test.describe('userconf Persistence', () => {
 
@@ -71,7 +72,7 @@ test.describe('userconf Persistence', () => {
 
     // need to wait 1 second to let persistence debouncing to be launched
     await page.waitForTimeout(1000);
-    await page.waitForLoadState('networkidle');
+    await waitForApiIdle(page);
 
     // refresh
     console.log("refresh page");

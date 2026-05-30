@@ -1,9 +1,15 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '29/04/2026';
+export const RELEASE = '30/05/2026';
 
 const text = `
+30/05/2026
+==========
+- add next_slot field
+- add spinners
+- fix : use of max level in slot view
+
 29/04/2026
 ==========
 - upgrade

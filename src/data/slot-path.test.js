@@ -190,3 +190,44 @@ test('getCurrentPathExpr', () => {
     const result = getCurrentPathExpr(3);
     expect(result).toEqual("this_month this_week mercredi");
 });
+
+describe('firstDivergingId', () => {
+    test('semaine diverge → retourne la semaine', () => {
+        const result  = new SlotPath('next_week lundi')
+        const current = new SlotPath('this_month this_week mercredi')
+        expect(result.firstDivergingId(current)).toBe('next_week')
+    })
+    test('jour diverge → retourne le jour', () => {
+        const result  = new SlotPath('this_week vendredi')
+        const current = new SlotPath('this_month this_week mercredi')
+        expect(result.firstDivergingId(current)).toBe('vendredi')
+    })
+    test('heure diverge → retourne l\'heure', () => {
+        const result  = new SlotPath('this_week mercredi aprem')
+        const current = new SlotPath('this_month this_week mercredi matin')
+        expect(result.firstDivergingId(current)).toBe('aprem')
+    })
+    test('aucune divergence → null', () => {
+        const result  = new SlotPath('this_week mercredi aprem')
+        const current = new SlotPath('this_month this_week mercredi aprem')
+        expect(result.firstDivergingId(current)).toBeNull()
+    })
+})
+
+describe('mostInformativeId', () => {
+    test('divergence → premier ID divergent', () => {
+        const result  = new SlotPath('next_week lundi')
+        const current = new SlotPath('this_month this_week mercredi')
+        expect(result.mostInformativeId(current)).toBe('next_week')
+    })
+    test('aucune divergence → dernier ID', () => {
+        const result  = new SlotPath('this_week mercredi aprem')
+        const current = new SlotPath('this_month this_week mercredi aprem')
+        expect(result.mostInformativeId(current)).toBe('aprem')
+    })
+    test('aucune divergence, sans heure → dernier ID', () => {
+        const result  = new SlotPath('this_week mercredi')
+        const current = new SlotPath('this_month this_week mercredi matin')
+        expect(result.mostInformativeId(current)).toBe('mercredi')
+    })
+})
