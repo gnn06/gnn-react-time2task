@@ -62,7 +62,6 @@ export async function openEditDialog(page: Page, title: string): Promise<void> {
     const idx = await getTaskRowIndex(page, title);
     expect(idx).toBeGreaterThanOrEqual(0);
     const taskRows = page.locator('tr').filter({ has: page.locator('input[placeholder="Titre"]') });
-    await taskRows.nth(idx).getByRole('button', { name: 'menu-tâche' }).click();
-    await page.getByRole('menuitem', { name: 'Edit' }).click();
+    await taskRows.nth(idx).getByRole('button', { name: 'éditer-tâche' }).click();
     await expect(page.getByTestId('confirm-dialog')).toBeVisible();
 }

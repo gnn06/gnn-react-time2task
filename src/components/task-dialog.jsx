@@ -19,14 +19,15 @@ import { getTaskNextSlotLabel } from "../data/task.js";
  * @param {*} param0 
  * @returns 
  */
-export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
+export default function TaskDialog({task: taskProp, onCancel, onConfirm, onDelete}) {
     const [task, setTask] = useState(taskProp);
     const handleConfirm = () => {
         onConfirm(task)
     }
-      
+    const handleDelete = onDelete ? () => onDelete(task) : undefined;
+
     return <div>
-        <Confirm titre="Détail de tâche" handleCancel={onCancel} handleConfirm={handleConfirm}>
+        <Confirm titre="Détail de tâche" handleCancel={onCancel} handleConfirm={handleConfirm} handleDelete={handleDelete}>
             <Content task={task} setTask={setTask}/>
         </Confirm>
         </div>
