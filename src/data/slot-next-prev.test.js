@@ -276,5 +276,13 @@ describe('getSlotNextPrev — tâche repeat', () => {
         const slotPath = new SlotPath('this_month this_week jeudi aprem')
         expect(getSlotNextPrev(taskSlot, slotPath, +1, 'inclusive'))
             .toEqual(new SlotPath('this_week jeudi aprem'))
+    });
+
+    test("every 3 ", () => {
+        const taskSlot     = parser.parse('every 3 this_month this_week jeudi aprem');
+        console.log(taskSlot);
+        const slotPath = new SlotPath('this_month this_week jeudi aprem')
+        expect(getSlotNextPrev(taskSlot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath("this_month + 3 this_week jeudi aprem"))
     })
 })

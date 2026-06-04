@@ -64,7 +64,7 @@ function getNextPrevBranch(branch, slotPath, comparison) {
     if (weekIdx < pathWeekIdx) {
         // semaine passée : avancer d'une période pour les repeat, sinon null
         if (!branch.repetition) return null
-        return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, hourId, multiNode)
+        return _advanceRepeat(branch, weekId, dayId, hourId, multiNode)
     }
 
     // même semaine : comparer au niveau du jour
@@ -78,13 +78,13 @@ function getNextPrevBranch(branch, slotPath, comparison) {
         if (dayW > pathDayW) return firstSlotPath(weekId, dayId, hourId, multiNode)
         if (dayW < pathDayW) {
             if (!branch.repetition) return null
-            return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, hourId, multiNode)
+            return _advanceRepeat(branch, weekId, dayId, hourId, multiNode)
         }
         // même jour : comparer les heures
         if (!hourId && !multiNode) {
             if (comparison === 'inclusive') return new SlotPath(`${weekId} ${dayId}`)
             if (!branch.repetition) return null
-            return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, null, null)
+            return _advanceRepeat(branch, weekId, dayId, null, null)
         }
         if (hourId) {
             // heure unique
@@ -92,7 +92,7 @@ function getNextPrevBranch(branch, slotPath, comparison) {
             const cmp = comparison === 'inclusive' ? hourW >= pathHourW : hourW > pathHourW
             if (cmp) return new SlotPath(`${weekId} ${dayId} ${hourId}`)
             if (!branch.repetition) return null
-            return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, hourId, null)
+            return _advanceRepeat(branch, weekId, dayId, hourId, null)
         }
         // multi d'heures sur le même jour (ex: 'mercredi matin aprem')
         const hours = multiNode.value
@@ -101,7 +101,7 @@ function getNextPrevBranch(branch, slotPath, comparison) {
         const nextHour = hours.find(h => comparison === 'inclusive' ? (weight[h] ?? 0) >= pathHourW : (weight[h] ?? 0) > pathHourW)
         if (nextHour) return new SlotPath(`${weekId} ${dayId} ${nextHour}`)
         if (!branch.repetition) return null
-        return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, null, multiNode)
+        return _advanceRepeat(branch, weekId, dayId, null, multiNode)
     }
 
     // multi : {type:'multi', value:[{type:'branch', value:[dayString, ?hourString]}, ...]}
@@ -129,20 +129,21 @@ function getNextPrevBranch(branch, slotPath, comparison) {
     if (next) return slotPathFromItem(weekId, next)
     if (!branch.repetition) return null
     // tous les items sont passés : revenir au premier de la prochaine période
-    return slotPathFromItem(getSlotIdNextPrev(weekId, branch.repetition), items[0])
+    return _advanceRepeatItem(branch, weekId, items[0])
 }
 
 // construit un SlotPath à partir d'un weekId et des composantes jour/heure/multi du premier slot
-function firstSlotPath(weekId, dayId, hourId, multiNode) {
-    if (!dayId && !multiNode) return new SlotPath(weekId)
+function firstSlotPath(weekId, dayId, hourId, multiNode, prefix = null) {
+    const pfx = prefix ? `${prefix} ` : ''
+    if (!dayId && !multiNode) return new SlotPath(`${pfx}${weekId}`)
     if (dayId) {
-        if (hourId) return new SlotPath(`${weekId} ${dayId} ${hourId}`)
-        if (!multiNode) return new SlotPath(`${weekId} ${dayId}`)
+        if (hourId) return new SlotPath(`${pfx}${weekId} ${dayId} ${hourId}`)
+        if (!multiNode) return new SlotPath(`${pfx}${weekId} ${dayId}`)
         // multi d'heures sur le même jour : prendre la première heure triée
         const firstHour = multiNode.value
             .map(b => b.value[0])
             .sort((a, b) => (weight[a] ?? 0) - (weight[b] ?? 0))[0]
-        return new SlotPath(`${weekId} ${dayId} ${firstHour}`)
+        return new SlotPath(`${pfx}${weekId} ${dayId} ${firstHour}`)
     }
     // multi de jours (avec ou sans heure) : prendre le premier item trié par (jour, heure)
     const items = multiNode.value
@@ -154,11 +155,33 @@ function firstSlotPath(weekId, dayId, hourId, multiNode) {
             const d = (weight[a.day] ?? 0) - (weight[b.day] ?? 0)
             return d !== 0 ? d : (weight[a.hour] ?? 0) - (weight[b.hour] ?? 0)
         })
-    return slotPathFromItem(weekId, items[0])
+    return slotPathFromItem(weekId, items[0], prefix)
 }
 
-function slotPathFromItem(weekId, item) {
+function slotPathFromItem(weekId, item, prefix = null) {
+    const pfx = prefix ? `${prefix} ` : ''
     return item.hour
-        ? new SlotPath(`${weekId} ${item.day} ${item.hour}`)
-        : new SlotPath(`${weekId} ${item.day}`)
+        ? new SlotPath(`${pfx}${weekId} ${item.day} ${item.hour}`)
+        : new SlotPath(`${pfx}${weekId} ${item.day}`)
+}
+
+// avance le slot d'une période en tenant compte du niveau de répétition (mois ou semaine)
+function _advanceRepeat(branch, weekId, dayId, hourId, multiNode) {
+    const monthId = typeof branch.value[0] === 'string' && getSlotIdLevel(branch.value[0]) === 1
+        ? branch.value[0]
+        : null
+    if (monthId) {
+        return firstSlotPath(weekId, dayId, hourId, multiNode, getSlotIdNextPrev(monthId, branch.repetition))
+    }
+    return firstSlotPath(getSlotIdNextPrev(weekId, branch.repetition), dayId, hourId, multiNode)
+}
+
+function _advanceRepeatItem(branch, weekId, item) {
+    const monthId = typeof branch.value[0] === 'string' && getSlotIdLevel(branch.value[0]) === 1
+        ? branch.value[0]
+        : null
+    if (monthId) {
+        return slotPathFromItem(weekId, item, getSlotIdNextPrev(monthId, branch.repetition))
+    }
+    return slotPathFromItem(getSlotIdNextPrev(weekId, branch.repetition), item)
 }

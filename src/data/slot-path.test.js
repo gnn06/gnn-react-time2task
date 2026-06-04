@@ -4,17 +4,25 @@ vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
 
 describe('SlotPath', () => {
-    test('constructor', () => {
-        const given = "this_month this_week + 1 mardi aprem"
-        const expected = { IDs: [ "this_month", "this_week + 1", "mardi", "aprem" ]}
-        const result = new SlotPath(given)
-        expect(result).toEqual(expected)
-    });
-    test('constructor empty', () => {
-        const given = "this_month this_week + 1 mardi aprem"
-        const expected = { IDs: [] }
-        const result = new SlotPath("")
-        expect(result).toEqual(expected)
+    describe('constructor', () => {
+        test('constructor', () => {
+            const given = "this_month this_week + 1 mardi aprem"
+            const expected = { IDs: [ "this_month", "this_week + 1", "mardi", "aprem" ]}
+            const result = new SlotPath(given)
+            expect(result).toEqual(expected)
+        });
+        test('constructor empty', () => {
+            const given = "this_month this_week + 1 mardi aprem"
+            const expected = { IDs: [] }
+            const result = new SlotPath("")
+            expect(result).toEqual(expected)
+        });
+        test('constructor empty', () => {
+            const given = "this_month + 3 this_week mardi aprem"
+            const expected = { IDs: [ "this_month + 3", "this_week", "mardi", "aprem" ]}
+            const result = new SlotPath(given)
+            expect(result).toEqual(expected)
+        })
     });
     
     describe('shift', () => {

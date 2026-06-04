@@ -1,10 +1,15 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/xx/2026';
+export const RELEASE = 'xx/06/2026';
 
 const text = `
-xx/xx/2026
+xx/06/2026
+==========
+- FIX next_slot = undefined when every 3 this_month
+- UI : replace contextual menu of task row by edit button ; delete task moved into edit dialog
+
+30/05/2026
 ==========
 - add spinners
 - fix : use of max level in slot view

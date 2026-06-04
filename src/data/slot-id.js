@@ -131,7 +131,7 @@ export function getSlotIdNextPrev(slotId, direction) {
         const index = 
         slots.indexOf(id)
         if (direction > 0) {
-            if (index < slots.length - 1) {
+            if (index + direction < slots.length) {
                 return slots[index + direction]
             } else {
                 return id + " + " + direction
