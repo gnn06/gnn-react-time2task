@@ -1,13 +1,28 @@
 import Slot from "./slot";
 import { DashedTable, DashedColumnHeader, DashedRowHeader, DashedCell } from "./dashed-table";
-import { slotViewFilter } from "../data/slot-view";
+import { slotViewFilterSelection } from "../data/slot-view";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
+import { IDizer } from "../utils/stringUtil";
+import { getBranchHash, branchComplete } from "../data/slot-branch";
+import { Parser } from "../data/parser";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours
+const parser = new Parser();
 
+/**
+ *
+ * @param {tasks} tasks après filtrage
+ * @param {conf} conf issue du store
+ * @returns
+ */
 export default function SlotViewTree({ tasks, selection, handleSelection, conf }) {
 
-    const moisSlots = slotViewFilter(conf);
+    const maxLevel = conf.levelMaxIncluded
+    const taskPaths = tasks
+        .map(t => { const h = getBranchHash(branchComplete(parser.parse(t.slotExpr))); return h ? IDizer(h) : null })
+        .filter(Boolean)
+        .map(tokens => maxLevel ? tokens.slice(0, maxLevel) : tokens);
+    const moisSlots = slotViewFilterSelection(conf, taskPaths);
 
     // Colonnes = jours présents dans les données, dans l'ordre canonique
     const presentDayIds = DAY_IDS.filter(id =>

@@ -94,6 +94,9 @@ export function isSlotEqual(slotExpr, otherSlotExpr, withRepeat = false) {
  * module private
  * @param mono complete slot. if Given multi, test on first slot
  * public used by filtering (except with NONE), slotview on terminal node (findTaskBySlotExpr)
+ *
+ * branchComplete est appliqué aux deux arguments : un slotExpr incomplet (ex: "following_week + 1")
+ * est correctement comparé à un chemin complet (ex: "this_month following_week + 1").
  */
 export function isSlotEqualOrInclude(slotExpr, otherSlotExpr, withRepeat = false) {
     const parser = new Parser()

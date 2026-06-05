@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
+import { isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1271,6 +1271,75 @@ describe('add', () => {
    });
 });
 
+describe('isCleanSlotPath', () => {
+   test('chemin valide simple', () => {
+      expect(isCleanSlotPath(['this_month'])).toBe(true)
+      expect(isCleanSlotPath(['this_month', 'this_week'])).toBe(true)
+      expect(isCleanSlotPath(['this_month', 'this_week', 'lundi'])).toBe(true)
+   })
+
+   test('chemin valide avec offset', () => {
+      expect(isCleanSlotPath(['this_month', 'following_week + 1'])).toBe(true)
+      expect(isCleanSlotPath(['next_month', 'following_week + 2'])).toBe(true)
+   })
+
+   test('rejet : keyword every', () => {
+      expect(isCleanSlotPath(['every', '1', 'this_month', 'this_week'])).toBe(false)
+   })
+
+   test('rejet : nombre pur', () => {
+      expect(isCleanSlotPath(['1', 'this_month'])).toBe(false)
+   })
+
+   test('rejet : séparateur multi-slot |', () => {
+      expect(isCleanSlotPath(['this_month', 'this_week', '|', 'this_month', 'next_week'])).toBe(false)
+   })
+
+   test('rejet : deux slots de même niveau (this_month, next_month)', () => {
+      expect(isCleanSlotPath(['this_month', 'next_month'])).toBe(false)
+   })
+
+   test('rejet : null ou vide', () => {
+      expect(isCleanSlotPath(null)).toBe(false)
+      expect(isCleanSlotPath([])).toBe(false)
+   })
+})
+
+describe('slots offset (following_week + N) — bug: nœud absent dans la vue', () => {
+   test('slotViewFilter avec defaultConf ne produit pas de nœud following_week + 1 — une tâche avec ce slot remonte vers this_month', () => {
+      const result = slotViewFilter(defaultConf)
+      const thisMonth = result.find(s => s.id === 'this_month')
+      expect(thisMonth.inner.some(s => s.id === 'following_week + 1')).toBe(false)
+   })
+
+   test('slotViewFilterSelection injecte following_week + 1 dans l\'arbre — la mécanique existe mais n\'est pas utilisée dans la vue', () => {
+      const result = slotViewFilterSelection(defaultConf, [['this_month', 'following_week + 1']])
+      const thisMonth = result.find(s => s.id === 'this_month')
+      const node = thisMonth.inner.find(s => s.id === 'following_week + 1')
+      expect(node).toBeDefined()
+      expect(node.path).toBe('this_month following_week + 1')
+   })
+
+   test('slotViewFilterSelection injecte plusieurs offsets simultanément', () => {
+      const result = slotViewFilterSelection(defaultConf, [
+         ['this_month', 'following_week + 1'],
+         ['this_month', 'following_week + 2'],
+      ])
+      const thisMonth = result.find(s => s.id === 'this_month')
+      const ids = thisMonth.inner.map(s => s.id)
+      expect(ids).toContain('following_week + 1')
+      expect(ids).toContain('following_week + 2')
+   })
+})
+
+describe('slotViewList — following_week absent (oubli)', () => {
+   test('slotViewList inclut following_week parmi les slots visibles', () => {
+      const result = slotViewList()
+      const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
+      expect(allIds).toContain('following_week')
+   })
+})
+
 describe('create slotView with selection', () => {
    test('nominal - collapse et chemin sélectionné', () => {
       const givenConf = { collapse: [ "next_month" ], remove: [], levelMin: null, levelMaxIncluded: 2 }
@@ -1293,12 +1362,12 @@ describe('create slotView with selection', () => {
       expect(result.find(s => s.id === 'next_month').inner).toEqual([])
    })
 
-   test('levelMaxIncluded est ignoré — tous les niveaux sont navigables', () => {
+   test('levelMaxIncluded: 2 — les nœuds de niveau 3+ sont exclus', () => {
       const givenConf = { collapse: [], remove: [], levelMin: null, levelMaxIncluded: 2 }
       const result = slotViewFilterSelection(givenConf, [])
       const thisMonth = result.find(s => s.id === 'this_month')
       const thisWeek = thisMonth.inner.find(s => s.id === 'this_week')
-      expect(thisWeek.inner.length).toBeGreaterThan(0)
+      expect(thisWeek.inner.length).toBe(0)
    })
 });
 

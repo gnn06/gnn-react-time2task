@@ -255,8 +255,32 @@ export function slotViewAdd(slotView: Slot[], path:string, currentPath = "") : S
     }
 }
 
+/**
+ * Validates that a tokenized slot path (from IDizer) is a clean hierarchical path:
+ * all tokens are valid slot IDs and levels are strictly increasing.
+ * Rejects keyword tokens (every, chaque, disable), numbers, multi-slot separators (|),
+ * and same-level sequences like ["this_month", "next_month"].
+ */
+export function isCleanSlotPath(tokens: string[] | null): boolean {
+    if (!tokens || tokens.length === 0) return false
+    let prevLevel = 0
+    for (const token of tokens) {
+        const base = token.match(/^(\S+)/)?.[1]
+        const level = getSlotIdLevel(base ?? '')
+        if (level === -1 || level <= prevLevel) return false
+        prevLevel = level
+    }
+    return true
+}
+
+/**
+ * Génère une arborescence de slot à afficher 
+ * selon la conf spécifiée en y rajoutant les slots nécessaires 
+ * aux taches qui ne serait pas affichées.
+ * @param paths tableau de sorte de SlotPath à injecter
+ */
 export function slotViewFilterSelection(conf: SlotViewConf, paths: string[]) {
-  let slotView = slotViewFilter({ ...conf, levelMaxIncluded: null })
+  let slotView = slotViewFilter(conf)
   paths.forEach(path => {slotView = slotViewAdd(slotView, path)})
   return slotView
 }

@@ -8,6 +8,7 @@ xx/06/2026
 ==========
 - FIX next_slot = undefined when every 3 this_month
 - UI : replace contextual menu of task row by edit button ; delete task moved into edit dialog
+- FIX slot view tree : tâche avec following_week + N apparaissait sous this_month au lieu de son propre nœud
 
 30/05/2026
 ==========

@@ -370,6 +370,22 @@ describe('hashBranch', () => {
         const result = getBranchHash(given)
         expect(result).toEqual('this_month this_week')
     });
+    test('complexe real cas', () => {
+        const given = { type: 'branch', value: [ 'month', 'this_week',
+            { type: 'multi',
+                value: [ { type: 'branch', value: [ 'mardi' ] },
+                        { type: 'branch', value: [ 'jeudi' ] } ]
+            }
+         ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_month this_week mardi')
+    });
+
+    test('repeat (every N) — repetition ignorée', () => {
+        const given = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], repetition: 2 } ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_month this_week')
+    });
 
 });
 
