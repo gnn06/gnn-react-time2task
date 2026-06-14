@@ -4,9 +4,10 @@ import { CSS } from '@dnd-kit/utilities';
 
 import TaskInSlot from "./task-in-slot";
 import { getNewOrder } from "../data/task";
+import { isSlotEqual } from "../data/slot-expr";
 import { useUpdateTaskMutation } from "../features/apiSlice.js";
 
-export function SortedTaskList({ tasks }) {
+export function SortedTaskList({ tasks, slot, showImpreciseIcon = false }) {
     // sensors is necessary to prevent drag even to block click event
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -47,7 +48,7 @@ export function SortedTaskList({ tasks }) {
 
         return (
             <div ref={setNodeRef} style={style} {...attributes} {...listeners} >
-                <TaskInSlot key={props.item.id} task={props.item} />
+                <TaskInSlot key={props.item.id} task={props.item} isImprecise={showImpreciseIcon && isSlotEqual(props.item.slotExpr, slot.path)} />
             </div>
         );
     }

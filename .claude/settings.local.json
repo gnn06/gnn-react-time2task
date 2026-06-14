@@ -37,7 +37,11 @@
       "Bash(npm outdated *)",
       "Bash(node -e ' *)",
       "Bash(npm test *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(npx tsc *)",
+      "Bash(git stash *)",
+      "Bash(git merge *)"
     ]
   }
 }

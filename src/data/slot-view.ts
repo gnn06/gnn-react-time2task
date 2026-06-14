@@ -157,19 +157,38 @@ export function slotFind(node: Slot, expr: string): Slot | null {
     return null;
 }
 
-export function getSlotsForRow(slots:Slot[]) : [Slot | null, Slot | null, Slot | null] {
+export function getSlotsForRow(slots:Slot[]) : [Slot | null, Slot | null, Slot[]] {
     const givenLevel = new SlotPath(slots[0].path).getLevel();
     const currentPath = getCurrentPathExpr(givenLevel);
     const middle = slots.findIndex(s => s.path === currentPath);
-    const result:[Slot | null, Slot | null, Slot | null] = [null,null,null];
+    const result:[Slot | null, Slot | null, Slot[]] = [null, null, []];
     if (middle >= 1) {
         result[0] = slots[0];
     }
     result[1] = slots[middle];
     if (middle < slots.length - 1) {
-        result[2] = slots[middle + 1];
+        result[2] = slots.slice(middle + 1);
     }
     return result;
+}
+
+export function slotHasImpreciseIcon(slotPath: string, slotLevel: number): boolean {
+    const currentMonthId = getSlotIdCurrent(1);
+    return slotLevel < 4 && (
+        slotPath === currentMonthId ||
+        slotPath.startsWith(currentMonthId + ' ' + getSlotIdCurrent(2))
+    );
+}
+
+function truncateToFirstMissing(tokens: string[], slots: Slot[], depth = 0): string[] | null {
+    if (!tokens || tokens.length === 0) return null;
+    if (depth > 1) return null; // inject au maximum jusqu'au niveau semaine
+    const id = tokens[0];
+    const found = slots?.find(s => s.id === id);
+    if (!found) return tokens.slice(0, 1);
+    const sub = truncateToFirstMissing(tokens.slice(1), found.inner ?? [], depth + 1);
+    if (!sub) return null;
+    return [id, ...sub];
 }
 
 function stripInnerAtMaxLevel(slots: Slot[], maxLevel: number): Slot[] {
@@ -179,8 +198,14 @@ function stripInnerAtMaxLevel(slots: Slot[], maxLevel: number): Slot[] {
     })
 }
 
-export function slotViewList(path:string, conf?: Pick<SlotViewConf, 'levelMaxIncluded'>): Slot[][] {
+export function slotViewList(path:string, conf?: Pick<SlotViewConf, 'levelMaxIncluded'>, taskPaths?: string[][]): Slot[][] {
     let tree = defaultSlotViewList();
+    if (taskPaths) {
+        taskPaths
+            .map(p => truncateToFirstMissing(p, tree.inner))
+            .filter((p): p is string[] => p !== null)
+            .forEach(p => { tree.inner = slotViewAdd(tree.inner, p) });
+    }
     if (path) {
         const temp = slotFind(tree, path) || tree;
         tree = { id:'root', path:'', inner:[temp]};
@@ -232,7 +257,7 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = new S
  * @param {[string]} path 
  * @returns 
  */
-export function slotViewAdd(slotView: Slot[], path:string, currentPath = "") : Slot[] {
+export function slotViewAdd(slotView: Slot[], path:string[], currentPath = "") : Slot[] {
 
     if (slotView === null) return []
     if (path === null || path.length === 0) return slotView
@@ -279,7 +304,7 @@ export function isCleanSlotPath(tokens: string[] | null): boolean {
  * aux taches qui ne serait pas affichées.
  * @param paths tableau de sorte de SlotPath à injecter
  */
-export function slotViewFilterSelection(conf: SlotViewConf, paths: string[]) {
+export function slotViewFilterSelection(conf: SlotViewConf, paths: string[][]) {
   let slotView = slotViewFilter(conf)
   paths.forEach(path => {slotView = slotViewAdd(slotView, path)})
   return slotView

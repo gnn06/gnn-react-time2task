@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
+import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import { IconButton } from "@mui/material";
 import Color from 'color';
 
@@ -16,7 +17,7 @@ import { getActivityColor } from "./ui-helper";
 import { STATUS_LST } from "./task-status";
 import IconButtonLink from "./icon-button-link";
 
-export default function TaskInSlot({task}) {
+export default function TaskInSlot({task, isImprecise = false}) {
 
     const { data } = useGetActivitiesQuery()
     const [ updateTask ] = useUpdateTaskMutation()
@@ -54,6 +55,7 @@ export default function TaskInSlot({task}) {
                     { task.url && <IconButtonLink href={task.url} fontSize="small" color={activityTextColor} /> }
                     </div>
                 
+                { isImprecise && <FileDownloadOffIcon sx={{ fontSize: 24, color: activityTextColor, opacity: 0.6 }} /> }
                 <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} color={activityTextColor} />
             </div>
             <div className="italic">{task.nextAction} </div>

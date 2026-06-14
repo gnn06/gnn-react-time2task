@@ -12,6 +12,7 @@ import { selectSlot, setFilterSlot } from "../features/taskSlice";
 import { SortedTaskList } from "./sorted-task-list";
 import { findTaskBySlotExpr } from "../data/task";
 import { SlotPath } from "../data/slot-path";
+import { slotHasImpreciseIcon } from "../data/slot-view";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -87,6 +88,7 @@ export default function Slot({slot, tasks}) {
                     + ((active !== null || slot.path === tmpPath) ? "visible" : "invisible group-hover:visible")
     }
     const level = new SlotPath(slot.path).getLevel();
+    const showImpreciseIcon = slotHasImpreciseIcon(slot.path, level);
 
     return <React.Fragment>        
             <div className={"group " + slotStyle} data-slot-path={slot.path}>
@@ -97,7 +99,7 @@ export default function Slot({slot, tasks}) {
                 </div>
                 
                 {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}
-                <SortedTaskList tasks={tasksInSlot}/>
+                <SortedTaskList tasks={tasksInSlot} slot={slot} showImpreciseIcon={showImpreciseIcon} />
                 <div {...dropProps}  >
                     <div className="" >
                         { level <= 2 && "Déposer une tâche ici !" }

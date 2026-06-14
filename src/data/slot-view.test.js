@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf } from "./slot-view";
+import { isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf, slotHasImpreciseIcon } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1306,6 +1306,14 @@ describe('isCleanSlotPath', () => {
 })
 
 describe('slots offset (following_week + N) — bug: nœud absent dans la vue', () => {
+   test('slotViewFilterSelection injecte following_week (sans offset) dans l\'arbre tree', () => {
+      const result = slotViewFilterSelection(defaultConf, [['this_month', 'following_week']])
+      const thisMonth = result.find(s => s.id === 'this_month')
+      const node = thisMonth.inner.find(s => s.id === 'following_week')
+      expect(node).toBeDefined()
+      expect(node.path).toBe('this_month following_week')
+   })
+
    test('slotViewFilter avec defaultConf ne produit pas de nœud following_week + 1 — une tâche avec ce slot remonte vers this_month', () => {
       const result = slotViewFilter(defaultConf)
       const thisMonth = result.find(s => s.id === 'this_month')
@@ -1332,9 +1340,15 @@ describe('slots offset (following_week + N) — bug: nœud absent dans la vue', 
    })
 })
 
-describe('slotViewList — following_week absent (oubli)', () => {
-   test('slotViewList inclut following_week parmi les slots visibles', () => {
+describe('slotViewList — following_week injection dynamique', () => {
+   test('slotViewList sans tâche n\'inclut pas following_week', () => {
       const result = slotViewList()
+      const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
+      expect(allIds).not.toContain('following_week')
+   })
+   test('slotViewList avec une tâche following_week injecte le slot', () => {
+      const taskPaths = [['this_month', 'following_week']]
+      const result = slotViewList(null, undefined, taskPaths)
       const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
       expect(allIds).toContain('following_week')
    })
@@ -1807,11 +1821,11 @@ describe('getSlotsForRow', () => {
             "path": "this_month this_week mercredi",
             "inner": [],
          },
-         {
+         [{
             "id": "jeudi",
             "path": "this_month this_week jeudi",
             "inner": [],
-         }
+         }]
       ];
       const result = getSlotsForRow(given);
       expect(result).toEqual(expected);
@@ -1836,11 +1850,11 @@ describe('getSlotsForRow', () => {
                 "path": "this_month this_week mercredi",
                 "inner": [],
             },
-            {
+            [{
                 "id": "jeudi",
                 "path": "this_month this_week jeudi",
                 "inner": [],
-            }
+            }]
         ];
         const result = getSlotsForRow(given);
         expect(result).toEqual(expected);
@@ -1867,9 +1881,59 @@ describe('getSlotsForRow', () => {
                 "path": "this_month this_week mercredi",
                 "inner": [],
             },
-            null
+            []
         ];
         const result = getSlotsForRow(given);
         expect(result).toEqual(expected);
     });
+});
+
+describe('slotViewList — truncateToFirstMissing limite de profondeur', () => {
+    test('une tâche sur un jour déjà dans l\'arbre n\'injecte rien', () => {
+        // mercredi est dans this_week avec matin+aprem — rien à injecter
+        const taskPaths = [['this_month', 'this_week', 'mercredi', 'aprem']]
+        const result = slotViewList(null, undefined, taskPaths)
+        const dayRow = result.find(row => row.some(s => s?.id === 'mercredi'))
+        const mercredi = dayRow?.find(s => s?.id === 'mercredi')
+        expect(mercredi?.inner).toHaveLength(2) // matin + aprem, pas de doublon
+    })
+
+    test('une tâche this_month following_week+1 injecte le slot sous this_month', () => {
+        const taskPaths = [['this_month', 'following_week + 1']]
+        const result = slotViewList(null, undefined, taskPaths)
+        const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
+        expect(allIds).toContain('following_week + 1')
+    })
+
+    test('une tâche next_month following_week+1 injecte le slot sous next_month', () => {
+        const taskPaths = [['next_month', 'following_week + 1']]
+        const result = slotViewList(null, undefined, taskPaths)
+        const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
+        expect(allIds).toContain('following_week + 1')
+    })
+})
+
+describe('slotHasImpreciseIcon', () => {
+    // date mockée : mercredi 2023-12-20 → this_month = 'this_month', this_week = 'this_week'
+    test('this_month (niveau 1) → true', () => {
+        expect(slotHasImpreciseIcon('this_month', 1)).toBe(true)
+    })
+    test('this_month this_week (niveau 2) → true', () => {
+        expect(slotHasImpreciseIcon('this_month this_week', 2)).toBe(true)
+    })
+    test('this_month this_week mercredi (niveau 3) → true', () => {
+        expect(slotHasImpreciseIcon('this_month this_week mercredi', 3)).toBe(true)
+    })
+    test('this_month this_week mercredi matin (niveau 4, heure) → false', () => {
+        expect(slotHasImpreciseIcon('this_month this_week mercredi matin', 4)).toBe(false)
+    })
+    test('this_month next_week (niveau 2, hors this_week) → false', () => {
+        expect(slotHasImpreciseIcon('this_month next_week', 2)).toBe(false)
+    })
+    test('next_month (niveau 1, hors this_month) → false', () => {
+        expect(slotHasImpreciseIcon('next_month', 1)).toBe(false)
+    })
+    test('next_month following_week (niveau 2) → false', () => {
+        expect(slotHasImpreciseIcon('next_month following_week', 2)).toBe(false)
+    })
 });
