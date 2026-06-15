@@ -3,6 +3,8 @@ import { makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
 import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti } from './slot-branch';
+import { IDizer } from '../utils/stringUtil';
+import { slotHasImpreciseIcon } from './slot-view';
 import { branchShift } from './slot-branch++';
 import { SlotPath, getCurrentPathExpr } from './slot-path';
 import { getSlotNextPrev } from './slot-next-prev';
@@ -41,6 +43,22 @@ export function taskPredicateDisable(task) {
 
 export function taskPredicateStatus(task, status) {
     return task.status === status;
+}
+
+export function isTaskImprecise(task, levelMaxIncluded) {
+    const branch = parser.parse(task.slotExpr)
+    if (branch === undefined) return false
+    const hash = getBranchHash(branchComplete(branch))
+    if (!hash) return false
+    const idPath = IDizer(hash)
+    const path = idPath.join(' ')
+    const level = idPath.length
+    const maxLevel = levelMaxIncluded ?? 3
+    return level <= maxLevel && slotHasImpreciseIcon(path, level)
+}
+
+export function makeTaskPredicateImprecise(levelMaxIncluded) {
+    return (task) => isTaskImprecise(task, levelMaxIncluded)
 }
 
 export function taskPredicateId(task, id) {

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Stack } from "@mui/material";
@@ -14,10 +14,10 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
-import { taskPredicateDisable, taskPredicateMulti } from "../data/task";
+import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
-function createFilterConfig(activities = []) {
+function createFilterConfig(activities = [], levelMaxIncluded = null) {
   const baseConfig = [
     {
       key: 'status',
@@ -51,6 +51,14 @@ function createFilterConfig(activities = []) {
       options: [true, false],
       valueLabels: { true: 'contient disabled' },
       predicate: taskPredicateDisable
+    },
+    {
+      key: 'isImprecise',
+      label: 'isImprecise',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'tâche imprécise' },
+      predicate: makeTaskPredicateImprecise(levelMaxIncluded)
     }
   ];
 
@@ -92,7 +100,8 @@ export default function TaskFilter() {
 
     // Générer la configuration des filtres avec les activités dynamiques
     // Seulement si les activités sont chargées avec succès
-    const filterConfig = createFilterConfig(isActivitiesSuccess ? activities : []);
+    const levelMaxIncluded = useSelector(state => state.tasks.slotViewFilterConf.levelMaxIncluded);
+    const filterConfig = createFilterConfig(isActivitiesSuccess ? activities : [], levelMaxIncluded);
 
     const onInputChange = (e) => {
         const filter = e;
@@ -124,6 +133,19 @@ export default function TaskFilter() {
     const onGenericFilterChange = (genericFilters) => {
         dispatch(setFilterGeneric(genericFilters));
     }
+
+    // TODO (option B) : le prédicat isImprecise est une closure sur levelMaxIncluded.
+    // Quand le niveau change, on recrée le prédicat si le filtre est actif.
+    // Solution définitive : stocker un booléen dans Redux et construire le prédicat
+    // dynamiquement dans le moteur de filtrage en lui passant la conf de vue.
+    useEffect(() => {
+        if (typeof genericFilters.isImprecise === 'function') {
+            dispatch(setFilterGeneric({
+                ...genericFilters,
+                isImprecise: makeTaskPredicateImprecise(levelMaxIncluded)
+            }));
+        }
+    }, [levelMaxIncluded]);
 
     const onSlotChange = (slotExpr) => {
         dispatch(setFilterSlot(slotExpr));

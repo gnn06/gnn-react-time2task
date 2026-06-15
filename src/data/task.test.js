@@ -4,7 +4,8 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskPredicateError,
     getNewOrder,
     taskGroupActivity,
-    getTaskNextSlotLabel} from "./task";
+    getTaskNextSlotLabel,
+    isTaskImprecise} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -670,5 +671,46 @@ describe('getNewOrder', () => {
         const tasks = [ { id: 'id1', order: 0.5 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
         const result = getNewOrder(tasks, 'id1', 'id3');
         expect(result).toEqual(8);
+    })
+});
+
+describe('isTaskImprecise', () => {
+    // date mockée : mercredi 2023-12-20 → this_month, this_week
+    const t = (slotExpr) => ({ slotExpr })
+
+    describe('sans levelMaxIncluded (vue complète)', () => {
+        test('this_month → imprecise', () => {
+            expect(isTaskImprecise(t('this_month'), null)).toBe(true)
+        })
+        test('this_month this_week → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week'), null)).toBe(true)
+        })
+        test('this_month this_week mercredi → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi'), null)).toBe(true)
+        })
+        test('this_month this_week mercredi matin (heure) → non imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi matin'), null)).toBe(false)
+        })
+        test('this_month next_week → non imprecise (hors branche this_week)', () => {
+            expect(isTaskImprecise(t('this_month next_week'), null)).toBe(false)
+        })
+        test('next_month → non imprecise', () => {
+            expect(isTaskImprecise(t('next_month'), null)).toBe(false)
+        })
+    })
+
+    describe('avec levelMaxIncluded', () => {
+        test('this_month avec levelMaxIncluded=1 → imprecise', () => {
+            expect(isTaskImprecise(t('this_month'), 1)).toBe(true)
+        })
+        test('this_month this_week avec levelMaxIncluded=1 → non imprecise (niveau > max)', () => {
+            expect(isTaskImprecise(t('this_month this_week'), 1)).toBe(false)
+        })
+        test('this_month this_week avec levelMaxIncluded=2 → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week'), 2)).toBe(true)
+        })
+        test('this_month this_week mercredi avec levelMaxIncluded=2 → non imprecise (niveau > max)', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi'), 2)).toBe(false)
+        })
     })
 });

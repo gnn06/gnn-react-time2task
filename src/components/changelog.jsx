@@ -10,6 +10,7 @@ xx/06/2026
 - UI : replace contextual menu of task row by edit button ; delete task moved into edit dialog
 - FIX slot view tree : tâche avec following_week + N apparaissait sous this_month au lieu de son propre nœud
 - add imprecise icon on task which need to be planified one level more
+- add imprecise filter
 
 30/05/2026
 ==========
