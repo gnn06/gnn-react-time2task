@@ -11,6 +11,7 @@ xx/06/2026
 - FIX slot view tree : tâche avec following_week + N apparaissait sous this_month au lieu de son propre nœud
 - add imprecise icon on task which need to be planified one level more
 - add imprecise filter
+- refactor slot-id : SLOT_DEFS source unique des définitions de slots + classifieurs famille/rôle (préparation today/tomorrow)
 
 30/05/2026
 ==========
