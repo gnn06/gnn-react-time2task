@@ -1516,235 +1516,55 @@ describe('slotFind', () => {
 });
 
 describe('slotViewList', () => {
-   test('without filter', () => {
+   test('without filter — C1b axe relatifPresent (today/tomorrow)', () => {
       const result = slotViewList();
+      const hours = [
+         { id: "matin", inner: [], path: "today matin" },
+         { id: "aprem", inner: [], path: "today aprem" },
+      ];
+      const todaySlot  = { id: "today",    path: "today",    inner: hours };
+      const tomorrowSlot = { id: "tomorrow", path: "tomorrow", inner: [] };
+      const thisWeek = { id: "this_week", path: "this_month this_week", inner: [todaySlot, tomorrowSlot] };
+      const nextWeek = { id: "next_week", path: "this_month next_week", inner: [] };
       const expected = [
+         hours,
+         [todaySlot, tomorrowSlot],
+         [thisWeek, nextWeek],
          [
-            {
-               "id": "matin",
-               "inner": [],
-               "path": "this_month this_week mercredi matin",
-            },
-            {
-               "id": "aprem",
-               "inner": [],
-               "path": "this_month this_week mercredi aprem",
-            },
-         ],
-         [
-            {
-               "id": "mardi",
-               "inner": [],
-               "path": "this_month this_week mardi",
-            },
-            {
-               "id": "mercredi",
-               "inner": [
-                  {
-                     "id": "matin",
-                     "inner": [],
-                     "path": "this_month this_week mercredi matin",
-                  },
-                  {
-                     "id": "aprem",
-                     "inner": [],
-                     "path": "this_month this_week mercredi aprem",
-                  },
-               ],
-               "path": "this_month this_week mercredi",
-            },
-            {
-               "id": "jeudi",
-               "inner": [],
-               "path": "this_month this_week jeudi",
-            },
-         ],
-         [
-            {
-               "id": "this_week",
-               "inner": [
-                  {
-                     "id": "mardi",
-                     "inner": [],
-                     "path": "this_month this_week mardi",
-                  },
-                  {
-                     "id": "mercredi",
-                     "inner": [
-                        {
-                           "id": "matin",
-                           "inner": [],
-                           "path": "this_month this_week mercredi matin",
-                        },
-                        {
-                           "id": "aprem",
-                           "inner": [],
-                           "path": "this_month this_week mercredi aprem",
-                        },
-                     ],
-                     "path": "this_month this_week mercredi",
-                  },
-                  {
-                     "id": "jeudi",
-                     "inner": [],
-                     "path": "this_month this_week jeudi",
-                  },
-               ],
-               "path": "this_month this_week",
-            },
-            {
-               "id": "next_week",
-               "inner": [],
-               "path": "this_month next_week",
-            },
-         ],
-         [
-            {
-               "id": "this_month",
-               "inner": [
-                  {
-                     "id": "this_week",
-                     "inner": [
-                        {
-                           "id": "mardi",
-                           "inner": [],
-                           "path": "this_month this_week mardi",
-                        },
-                        {
-                           "id": "mercredi",
-                           "inner": [
-                              {
-                                 "id": "matin",
-                                 "inner": [],
-                                 "path": "this_month this_week mercredi matin",
-                              },
-                              {
-                                 "id": "aprem",
-                                 "inner": [],
-                                 "path": "this_month this_week mercredi aprem",
-                              },
-                           ],
-                           "path": "this_month this_week mercredi",
-                        },
-                        {
-                           "id": "jeudi",
-                           "inner": [],
-                           "path": "this_month this_week jeudi",
-                        },
-                     ],
-                     "path": "this_month this_week",
-                  },
-                  {
-                     "id": "next_week",
-                     "inner": [],
-                     "path": "this_month next_week",
-                  },
-               ],
-               "path": "this_month",
-            },
-            {
-               "id": "next_month",
-               "inner": [],
-               "path": "next_month",
-            },
+            { id: "this_month", path: "this_month", inner: [thisWeek, nextWeek] },
+            { id: "next_month", path: "next_month", inner: [] },
          ],
       ];
       expect(result).toEqual(expected);
    });
-   test('with filter this_week', () => {
+   test('with filter this_week — C1b axe relatifPresent', () => {
       const givenPath = "this_month this_week";
       const result = slotViewList(givenPath);
+      const hours = [
+         { id: "matin", inner: [], path: "today matin" },
+         { id: "aprem", inner: [], path: "today aprem" },
+      ];
+      const todaySlot  = { id: "today",    path: "today",    inner: hours };
+      const tomorrowSlot = { id: "tomorrow", path: "tomorrow", inner: [] };
+      const thisWeek = { id: "this_week", path: "this_month this_week", inner: [todaySlot, tomorrowSlot] };
       const expected = [
-         [
-            {
-               "id": "matin",
-               "inner": [],
-               "path": "this_month this_week mercredi matin",
-            },
-            {
-               "id": "aprem",
-               "inner": [],
-               "path": "this_month this_week mercredi aprem",
-            },
-         ],
-         // day
-         [
-            {
-               "id": "mardi",
-               "inner": [],
-               "path": "this_month this_week mardi",
-            },
-            {
-               "id": "mercredi",
-               "inner": [
-                  {
-                     "id": "matin",
-                     "inner": [],
-                     "path": "this_month this_week mercredi matin",
-                  },
-                  {
-                     "id": "aprem",
-                     "inner": [],
-                     "path": "this_month this_week mercredi aprem",
-                  },
-               ],
-               "path": "this_month this_week mercredi",
-            },
-            {
-               "id": "jeudi",
-               "inner": [],
-               "path": "this_month this_week jeudi",
-            },
-         ],
-         // week
-         [
-            {
-               "id": "this_week",
-               "inner": [
-                  {
-                     "id": "mardi",
-                     "inner": [],
-                     "path": "this_month this_week mardi",
-                  },
-                  {
-                     "id": "mercredi",
-                     "inner": [
-                        {
-                           "id": "matin",
-                           "inner": [],
-                           "path": "this_month this_week mercredi matin",
-                        },
-                        {
-                           "id": "aprem",
-                           "inner": [],
-                           "path": "this_month this_week mercredi aprem",
-                        },
-                     ],
-                     "path": "this_month this_week mercredi",
-                  },
-                  {
-                     "id": "jeudi",
-                     "inner": [],
-                     "path": "this_month this_week jeudi",
-                  },
-               ],
-               "path": "this_month this_week",
-            },
-         ],
+         hours,
+         [todaySlot, tomorrowSlot],
+         [thisWeek],
       ];
       expect(result).toEqual(expected);
    });
-   test('with filter this_week mercredi', () => {
-      const givenPath = "this_month this_week mercredi aprem";
+   test('with filter today — C1b : filtre sur path standalone "today"', () => {
+      const givenPath = "today";
       const result = slotViewList(givenPath);
+      const hours = [
+         { id: "matin", inner: [], path: "today matin" },
+         { id: "aprem", inner: [], path: "today aprem" },
+      ];
+      const todaySlot = { id: "today", path: "today", inner: hours };
       const expected = [
-         [
-            {
-               "id": "aprem",
-               "inner": [],
-               "path": "this_month this_week mercredi aprem",
-            },
-         ],
+         hours,
+         [todaySlot],
       ];
       expect(result).toEqual(expected);
    });
@@ -1889,13 +1709,13 @@ describe('getSlotsForRow', () => {
 });
 
 describe('slotViewList — truncateToFirstMissing limite de profondeur', () => {
-    test('une tâche sur un jour déjà dans l\'arbre n\'injecte rien', () => {
-        // mercredi est dans this_week avec matin+aprem — rien à injecter
-        const taskPaths = [['this_month', 'this_week', 'mercredi', 'aprem']]
+    test('une tâche today matin déjà dans l\'arbre n\'injecte rien (today.inner reste 2)', () => {
+        // today est dans this_week avec matin+aprem — rien à injecter
+        const taskPaths = [['this_month', 'this_week', 'today', 'matin']]
         const result = slotViewList(null, undefined, taskPaths)
-        const dayRow = result.find(row => row.some(s => s?.id === 'mercredi'))
-        const mercredi = dayRow?.find(s => s?.id === 'mercredi')
-        expect(mercredi?.inner).toHaveLength(2) // matin + aprem, pas de doublon
+        const dayRow = result.find(row => row.some(s => s?.id === 'today'))
+        const today = dayRow?.find(s => s?.id === 'today')
+        expect(today?.inner).toHaveLength(2) // matin + aprem, pas de doublon
     })
 
     test('une tâche this_month following_week+1 injecte le slot sous this_month', () => {
@@ -1910,6 +1730,57 @@ describe('slotViewList — truncateToFirstMissing limite de profondeur', () => {
         const result = slotViewList(null, undefined, taskPaths)
         const allIds = result.flatMap(row => row.filter(Boolean).map(s => s.id))
         expect(allIds).toContain('following_week + 1')
+    })
+})
+
+describe('slotViewList — C1b axe relatifPresent (today/tomorrow)', () => {
+    test('l\'arbre de base contient today et tomorrow à la place des weekdays', () => {
+        const result = slotViewList()
+        const allIds = result.flatMap(row => row.map(s => s.id))
+        expect(allIds).toContain('today')
+        expect(allIds).toContain('tomorrow')
+        expect(allIds).not.toContain('mardi')
+        expect(allIds).not.toContain('mercredi')
+        expect(allIds).not.toContain('vendredi')
+    })
+
+    test('today a pour path "today" (ancre standalone)', () => {
+        const result = slotViewList()
+        const dayRow = result.find(row => row.some(s => s?.id === 'today'))
+        const today = dayRow?.find(s => s?.id === 'today')
+        expect(today?.path).toBe('today')
+    })
+
+    test('today a matin et aprem comme inner avec paths standalone', () => {
+        const result = slotViewList()
+        const dayRow = result.find(row => row.some(s => s?.id === 'today'))
+        const today = dayRow?.find(s => s?.id === 'today')
+        expect(today?.inner.map(s => s.id)).toEqual(['matin', 'aprem'])
+        expect(today?.inner[0].path).toBe('today matin')
+    })
+
+    test('tomorrow a pour path "tomorrow" (ancre standalone)', () => {
+        const result = slotViewList()
+        const dayRow = result.find(row => row.some(s => s?.id === 'tomorrow'))
+        const tomorrow = dayRow?.find(s => s?.id === 'tomorrow')
+        expect(tomorrow?.path).toBe('tomorrow')
+    })
+
+    test('today et tomorrow sont enfants directs de this_week', () => {
+        const result = slotViewList()
+        const weekRow = result.find(row => row.some(s => s?.id === 'this_week'))
+        const thisWeek = weekRow?.find(s => s?.id === 'this_week')
+        const innerIds = thisWeek?.inner.map(s => s.id)
+        expect(innerIds).toContain('today')
+        expect(innerIds).toContain('tomorrow')
+    })
+
+    test('une tâche today est trouvable via slotFind', () => {
+        const result = slotViewList()
+        const dayRow = result.find(row => row.some(s => s?.id === 'today'))
+        expect(dayRow).toBeDefined()
+        const today = dayRow.find(s => s?.id === 'today')
+        expect(today).toBeDefined()
     })
 })
 

@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch, 
          branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendStartToBranch, 
-         getBranchHead, getBranchTail, 
-         branchAppendEnd} from './slot-branch.js';
+         getBranchHead, getBranchTail,
+         branchAppendEnd, branchHasRelatifParentDay} from './slot-branch.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -528,4 +528,28 @@ describe('getTail', () => {
         const result = getBranchTail(given)
         expect(result).toEqual(expected)
     });
+});
+
+describe('branchHasRelatifParentDay', () => {
+    test('this_week mardi (nested) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', { value: ['mardi'] }] })).toBe(true)
+    })
+    test('this_week mardi (flat) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', 'mardi'] })).toBe(true)
+    })
+    test('today → false', () => {
+        expect(branchHasRelatifParentDay({ value: ['today'] })).toBe(false)
+    })
+    test('today matin → false (matin = heure, niveau 4)', () => {
+        expect(branchHasRelatifParentDay({ value: ['today', 'matin'] })).toBe(false)
+    })
+    test('this_week seul → false', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week'] })).toBe(false)
+    })
+    test('multi lundi/mardi → true', () => {
+        expect(branchHasRelatifParentDay({ type: 'multi', value: [{ value: ['lundi'] }, { value: ['mardi'] }] })).toBe(true)
+    })
+    test('this_week mardi matin (profond) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', { value: ['mardi', { value: ['matin'] }] }] })).toBe(true)
+    })
 });

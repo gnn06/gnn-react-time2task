@@ -88,7 +88,7 @@ function Content({task, setTask}) {
             <IconButtonLink href={task.url} fontSize="large" />
         </Stack>
         <Stack direction={"row"} spacing={1} >
-            <SyntaxInputWithSelection key={task.slotExpr} initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+            <SyntaxInputWithSelection key={task.originalSlotExpr ?? task.slotExpr} initialInputValue={task.originalSlotExpr ?? task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
             onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
             <SlotSelectionButton  task={task} handleSave={onSlotExprChange} withText={true} />
         </Stack>

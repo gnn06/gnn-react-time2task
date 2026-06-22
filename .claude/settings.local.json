@@ -1,24 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run *)",
-      "Bash(npm install *)",
-      "Bash(npm list:*)",
-      "Bash(npm info:*)",
-      "Bash(npm uninstall:*)",
-      "Bash(npm show *)",
-      "Bash(npx vite *)",
-      "Bash(npm start *)",
-      "Bash(git add *)",
-      "Bash(git commit -m ' *)",
-      "Bash(npx playwright:*)",
-      "Bash(npx vitest:*)",
-      "Bash(tee test-output.log)",
-      "Bash(tee test-e2e-output.log)",
-      "Bash(node -e \"const rr = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/react-router'\\); console.log\\(Object.keys\\(rr\\).filter\\(k => k.toLowerCase\\(\\).includes\\('hash'\\) || k.toLowerCase\\(\\).includes\\('router'\\)\\)\\)\")",
-      "Bash(node -e \"const pkg = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/@vitejs/plugin-react-swc/package.json'\\); console.log\\('version:', pkg.version\\); console.log\\('peerDeps:', JSON.stringify\\(pkg.peerDependencies\\)\\)\")",
-      "Bash(node -e \"const data = JSON.parse\\(require\\('child_process'\\).execSync\\('npm view @vitejs/plugin-react --json', {maxBuffer: 2*1024*1024}\\).toString\\(\\)\\); const latest = data['dist-tags'].latest; console.log\\('latest:', latest, 'date:', data.time[latest].slice\\(0,10\\)\\)\")",
-      "Bash(node -e \"const pkg = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/material-react-table/package.json'\\); console.log\\('peerDeps:', JSON.stringify\\(pkg.peerDependencies, null, 2\\)\\)\")",
+      "Bash(npm *)",
+      "Bash(npx *)",
       "Bash(export PATH=\"/c/Users/gorsini/AppData/local/nodejs:$PATH\")",
       "Bash(ls:*)",
       "Bash(grep:*)",
@@ -33,16 +17,7 @@
       "WebFetch(domain:mui.com)",
       "WebFetch(domain:registry.npmjs.org)",
       "WebFetch(domain:www.material-react-table.com)",
-      "Bash(npm audit *)",
-      "Bash(npm outdated *)",
-      "Bash(node -e ' *)",
-      "Bash(npm test *)",
-      "Bash(git commit *)",
-      "Bash(git checkout *)",
-      "Bash(npx tsc *)",
-      "Bash(git stash *)",
-      "Bash(git merge *)",
-      "Bash(npx vitest *)"
+      "Bash(tee test-output.log)"
     ]
   }
 }

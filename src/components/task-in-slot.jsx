@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
 import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
+import PushPinIcon from '@mui/icons-material/PushPin';
 import { IconButton } from "@mui/material";
 import Color from 'color';
 
@@ -12,7 +13,7 @@ import FavoriteToggle from "./favorite-toggle";
 import { editTask } from "../features/taskSlice";
 import { useGetActivitiesQuery, useUpdateTaskMutation } from "../features/apiSlice";
 
-import { isTaskUnique } from '../data/task.js'
+import { isTaskUnique, taskHasRelatifParentDay } from '../data/task.js'
 import { getActivityColor } from "./ui-helper";
 import { STATUS_LST } from "./task-status";
 import IconButtonLink from "./icon-button-link";
@@ -29,6 +30,8 @@ export default function TaskInSlot({task, isImprecise = false}) {
     //const colorTail  = STATUS_LST.find(item => item.value === task.status).colorTail;
 
     const isUnique = isTaskUnique(task)
+    const effectiveTask = task.originalSlotExpr ? { ...task, slotExpr: task.originalSlotExpr } : task
+    const isFixed = taskHasRelatifParentDay(effectiveTask)
 
     const onSlotSelectionConfirm = (slotExpr) => {
         updateTask({id:task.id, slotExpr})
@@ -55,7 +58,8 @@ export default function TaskInSlot({task, isImprecise = false}) {
                     { task.url && <IconButtonLink href={task.url} fontSize="small" color={activityTextColor} /> }
                     </div>
                 
-                { isImprecise && <FileDownloadOffIcon sx={{ fontSize: 24, color: activityTextColor, opacity: 0.6 }} /> }
+                { isFixed     && <PushPinIcon data-testid="fixed-slot-icon" sx={{ fontSize: 16, color: activityTextColor, opacity: 0.6 }} /> }
+                { isImprecise && <FileDownloadOffIcon sx={{ fontSize: 18, color: activityTextColor, opacity: 0.6 }} /> }
                 <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} color={activityTextColor} />
             </div>
             <div className="italic">{task.nextAction} </div>

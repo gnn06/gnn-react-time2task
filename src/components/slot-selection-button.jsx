@@ -28,7 +28,7 @@ export default function SlotSelectionButton({task, style, withText = false, hand
         { withText ? <Button variant="contained" size="small" startIcon={<EditIcon />} onClick={onSlotSelect}>Choix créneau</Button> 
         : <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>}
         
-        { showSlotSelect && <SlotSelectDialog selectionExpr={task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
+        { showSlotSelect && <SlotSelectDialog selectionExpr={task.originalSlotExpr ?? task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
     </React.Fragment>
 }
 

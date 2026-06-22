@@ -11,50 +11,72 @@ Toutes les tâches doivent être visibles. Aucune tâche ne doit manquer, quel q
 
 ---
 
-## Vue par famille — v1 TEMPORAIRE (validation du modèle relatif jour)
+## Vue par famille — v1 TEMPORAIRE ~~(validation du modèle relatif jour)~~
 
-> **Statut : temporaire.** Première version pour *voir* le modèle relatif jour
-> (`today`/`tomorrow`) rendu, **sans mixage ni projection**. Elle **casse
-> volontairement l'invariant de visibilité** : une tâche n'est visible que dans la vue
-> de sa famille — il faut basculer de vue pour tout voir. Sera remplacée par la
-> **projection croisée** (toute tâche visible dans les deux vues) dans une phase
-> ultérieure. Choix = « Option 2 / partition » (cf. `docs/plan-today.md` phase C).
+> **Statut : remplacée par la projection croisée C2 (ci-dessous).** Décrite ici pour
+> mémoire. La partition stricte (une tâche dans exactement une vue) **cassait
+> volontairement l'invariant de visibilité**. La projection C2 le rétablit.
 
-### Règle de routage (partition stricte)
+### Règle de routage v1 (obsolète — remplacée par C2)
 
-Par la **famille du slot JOUR** de la tâche (l'heure `matin/aprem` suit le jour et
-n'intervient pas dans le routage) :
+- slot JOUR relatifParent (`lundi`…`vendredi`) → tree uniquement
+- sinon (`today`/`tomorrow`, `this_week`/`this_month` seuls) → list uniquement
 
-- la tâche a un **complément relatifParent au jour** (`lundi`…`vendredi`) → **vue tree** uniquement ;
-- sinon — purement relatifPresent (`today`/`tomorrow`, ou `this_week`/`this_month`
-  **sans** jour) → **vue list** uniquement.
+---
 
-Partition stricte : chaque tâche dans **exactement une** vue, **aucune duplication**.
+## Projection croisée — C2
 
-| slotExpr | Vue |
-|---|---|
-| `this_week mardi`, `every 1 this_week mardi`, `this_week mardi matin` | tree |
-| `today`, `tomorrow`, `today matin` | list |
-| `this_week` seul, `this_month` seul (imprécis) | list |
+Toute tâche est visible dans **les deux** vues. Le routage n'est plus une partition :
+les tâches apparaissent dans les deux vues, directement ou via projection.
+
+### Tâche fantôme et originalSlotExpr
+
+Une **projection** crée une tâche fantôme : `{ ...task, slotExpr: projectedSlotExpr, originalSlotExpr: task.slotExpr }`.
+- `slotExpr` projeté sert au positionnement dans la vue (slot matching).
+- `originalSlotExpr` conserve le slotExpr métier réel.
+- Les composants d'édition (`task-dialog`, `slot-selection-button`) utilisent
+  `originalSlotExpr ?? slotExpr` pour afficher et modifier le slot réel.
 
 ### Vue tree (vision absolue / calendaire)
 
-Structure **inchangée** (mois › semaine › colonnes weekday › matin/aprem). N'affiche
-que les tâches à **jour relatifParent**. Conséquence assumée du caractère temporaire :
-les tâches imprécises niveau semaine/mois (`this_week`/`this_month` seuls)
-**n'apparaissent plus dans le tree** (elles partent en list).
+Structure inchangée (mois › semaine › colonnes weekday › matin/aprem).
+
+**Filtre tree** — par famille du slot JOUR (l'heure ne compte pas dans le routage) :
+
+| slotExpr | Traitement dans le tree |
+|---|---|
+| `this_week mardi`, `this_week mardi matin` | direct — colonne weekday |
+| `today`, `tomorrow`, `today matin` | **projection** → colonne weekday via snapDate jour |
+| `this_week` seul, `next_week` seul (imprécis) | direct — ligne Semaine |
+| `this_month` seul, `next_month` seul (imprécis) | direct — ligne Mois |
+
+Implémentation : `tasks.map(t => taskRelativePresentToParent(t, snapDates) ?? t)`.
+- Si la projection échoue (ex: `tomorrow` un vendredi → weekend), la tâche originale est
+  préservée et apparaît dans la ligne Semaine (invariant maintenu).
 
 ### Vue list (vision relative au présent)
 
-L'axe **jour** passe des weekdays aux **ancres** `today`/`tomorrow`
-(`ANCHOR_IDS_BY_LEVEL['3']`). N'affiche que les tâches **purement relatifPresent**.
+Axe jour = ancres `today`/`tomorrow`.
 
-### Hors périmètre v1 (différé)
+**Filtre list** — symétrique du tree :
 
-- projection croisée (today ↔ weekday) pour rétablir l'invariant ;
-- dates au niveau jour (`getDate` niveau 3 / snapDate jour — incrément B5) ;
-- franchissement de semaine de `tomorrow` un vendredi (→ `next_week`) ;
-- marqueur visuel de nature ; filtrage par nature.
+| slotExpr | Traitement dans la list |
+|---|---|
+| `today`, `tomorrow`, `today matin` | direct — slot today/tomorrow |
+| `this_week mardi` (= aujourd'hui) | **projection** → `today` via snapDate jour |
+| `this_week mardi` (= demain) | **projection** → `tomorrow` via snapDate jour |
+| `this_week mardi` (autre jour) | direct — ligne Semaine |
+| `this_week` seul, `this_month` seul (imprécis) | direct — ligne Semaine/Mois |
+
+Implémentation : `tasks.map(t => taskRelativeParentToPresent(t, snapDates) ?? t)`.
+- Si la projection échoue (weekday ≠ today/tomorrow), la tâche originale est préservée.
+
+### Hors périmètre C2 actuel (différé)
+
+- franchissement de semaine de `tomorrow` un vendredi vers `next_week lundi` (actuellement
+  la tâche reste visible dans la ligne Semaine via le fallback `?? t`, mais n'est pas
+  projetée dans la colonne lundi de la semaine suivante) ;
+- marqueur visuel de nature (rolling / fixe / récurrent) ; filtrage par nature.
 
 ---
 

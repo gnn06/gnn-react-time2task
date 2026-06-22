@@ -1,5 +1,5 @@
 import { appendWithSpace } from "../utils/stringUtil";
-import { getSlotIdCurrent, getSlotIdLevel, getSlotIdNextPrev, SLOTIDS_BY_LEVEL } from "./slot-id";
+import { getSlotIdCurrent, getSlotIdLevel, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { getCurrentPathExpr, SlotPath } from "./slot-path";
 
 interface SlotViewConf {
@@ -97,48 +97,19 @@ export function slotTreeToSlotList(root: Slot): Slot[][] {
     return levels.reverse();
 }
 
+// v1 C1b : axe jour = ancres relatifPresent today/tomorrow (paths standalone).
 function defaultSlotViewList(): Slot {
-    let today = getSlotIdCurrent(3);
-    if (today === "samedi" || today === "dimanche") {
-        today = "lundi";
-    }
-    
     const hours:[Slot, Slot] = [
-        { id: "matin", path: `this_month this_week ${today} matin`, inner: [] },
-        { id: "aprem", path: `this_month this_week ${today} aprem`, inner: [] },
-    ]
-    
-    const todaySlot:Slot = { id: `${today}`, path: `this_month this_week ${today}`, inner: hours };
-    
-    let yesterday = getSlotIdNextPrev(today, -1);
-    if (today === "lundi") {
-        yesterday = "vendredi";
-    }
-    
-    const yesterdaySlot:Slot = { id: `${yesterday}`, path: `this_month this_week ${yesterday}`, inner: [] };
-    
-    let tomorrow = getSlotIdNextPrev(today, 1);
-    let tomorrowWeek = "this_week";
-    if (today === "vendredi" ) {
-        tomorrow = 'lundi';
-        tomorrowWeek = "next_week";
-    }
-
-    const tomorrowSlot:Slot = { id: tomorrow, path: `this_month ${tomorrowWeek} ${tomorrow}`, inner: [] };
-
-    const thisWeek:Slot = { id: "this_week", path: "this_month this_week", inner: [yesterdaySlot, todaySlot] };
-    const nextWeek:Slot = { id: "next_week", path: "this_month next_week", inner: [] };
-    if (tomorrowWeek === "this_week") {
-        thisWeek.inner.push(tomorrowSlot);
-    } else {
-        nextWeek.inner.push(tomorrowSlot);
-    }
-    
-    const thisMonth:Slot = { id: "this_month", path: "this_month", inner: [thisWeek, nextWeek] };
-    const nextMonth:Slot = { id: "next_month", path: "next_month", inner: [] };
-    
-    const root:Slot = { id: "root", path: "", inner: [thisMonth, nextMonth] };
-    return root;
+        { id: "matin",  path: "today matin", inner: [] },
+        { id: "aprem",  path: "today aprem", inner: [] },
+    ];
+    const todaySlot:Slot    = { id: "today",     path: "today",                inner: hours };
+    const tomorrowSlot:Slot = { id: "tomorrow",  path: "tomorrow",             inner: [] };
+    const thisWeek:Slot     = { id: "this_week", path: "this_month this_week", inner: [todaySlot, tomorrowSlot] };
+    const nextWeek:Slot     = { id: "next_week", path: "this_month next_week", inner: [] };
+    const thisMonth:Slot    = { id: "this_month", path: "this_month",          inner: [thisWeek, nextWeek] };
+    const nextMonth:Slot    = { id: "next_month", path: "next_month",          inner: [] };
+    return { id: "root", path: "", inner: [thisMonth, nextMonth] };
 }
 
 /**
@@ -160,7 +131,9 @@ export function slotFind(node: Slot, expr: string): Slot | null {
 export function getSlotsForRow(slots:Slot[]) : [Slot | null, Slot | null, Slot[]] {
     const givenLevel = new SlotPath(slots[0].path).getLevel();
     const currentPath = getCurrentPathExpr(givenLevel);
-    const middle = slots.findIndex(s => s.path === currentPath);
+    const found = slots.findIndex(s => s.path === currentPath);
+    // Fallback: today/tomorrow ont des paths standalone sans weekday → middle = 0.
+    const middle = found >= 0 ? found : 0;
     const result:[Slot | null, Slot | null, Slot[]] = [null, null, []];
     if (middle >= 1) {
         result[0] = slots[0];

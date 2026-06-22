@@ -5,7 +5,11 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     getNewOrder,
     taskGroupActivity,
     getTaskNextSlotLabel,
-    isTaskImprecise} from "./task";
+    isTaskImprecise,
+    taskHasRelatifParentDay,
+    taskHasRelatifPresentDay,
+    taskRelativePresentToParent,
+    taskRelativeParentToPresent} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -711,6 +715,170 @@ describe('isTaskImprecise', () => {
         })
         test('this_month this_week mercredi avec levelMaxIncluded=2 → non imprecise (niveau > max)', () => {
             expect(isTaskImprecise(t('this_month this_week mercredi'), 2)).toBe(false)
+        })
+    })
+
+    describe('taskHasRelatifPresentDay — C2b-bis', () => {
+        const t = slotExpr => ({ slotExpr })
+        test('today → true', () => expect(taskHasRelatifPresentDay(t('today'))).toBe(true))
+        test('tomorrow → true', () => expect(taskHasRelatifPresentDay(t('tomorrow'))).toBe(true))
+        test('today matin → true', () => expect(taskHasRelatifPresentDay(t('today matin'))).toBe(true))
+        test('every 1 today → true (tâche répétante)', () => expect(taskHasRelatifPresentDay(t('every 1 today'))).toBe(true))
+        test('this_week mardi → false', () => expect(taskHasRelatifPresentDay(t('this_week mardi'))).toBe(false))
+        test('this_week seul → false', () => expect(taskHasRelatifPresentDay(t('this_week'))).toBe(false))
+        test('this_month seul → false', () => expect(taskHasRelatifPresentDay(t('this_month'))).toBe(false))
+    })
+
+    describe('taskHasRelatifParentDay (routage vue tree/list)', () => {
+        const task = slotExpr => ({ slotExpr })
+        test('this_week mardi → true', () => {
+            expect(taskHasRelatifParentDay(task('this_week mardi'))).toBe(true)
+        })
+        test('every 1 this_week mardi → true', () => {
+            expect(taskHasRelatifParentDay(task('every 1 this_week mardi'))).toBe(true)
+        })
+        test('today → false', () => {
+            expect(taskHasRelatifParentDay(task('today'))).toBe(false)
+        })
+        test('today matin → false', () => {
+            expect(taskHasRelatifParentDay(task('today matin'))).toBe(false)
+        })
+        test('this_week seul → false', () => {
+            expect(taskHasRelatifParentDay(task('this_week'))).toBe(false)
+        })
+    })
+
+    describe('taskRelativePresentToParent — C2b projection tree', () => {
+        // mock date : vendredi 2025-01-03 (isoWeek 1, isoWeekYear 2025)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => vi.useRealTimers())
+
+        // snapDates explicites (today = vendredi)
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        // snapDates avec today = jeudi (pour tester tomorrow → vendredi)
+        const snapDatesThursday = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-02' },
+        ]
+        // snapDates sans today (Phase E pas encore faite) + this_week périmée — cas réel de prod
+        const snapDatesStaleWeek = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-23' },  // lundi semaine PRÉCÉDENTE
+            // pas de 'today' en base avant Phase E
+        ]
+        const t = slotExpr => ({ slotExpr, status: 'A faire', title: 'test' })
+
+        test('today (vendredi) → vendredi this_week', () => {
+            expect(taskRelativePresentToParent(t('today'), snapDates).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('today matin → vendredi matin this_week', () => {
+            expect(taskRelativePresentToParent(t('today matin'), snapDates).slotExpr)
+                .toBe('this_month this_week vendredi matin')
+        })
+        test('tomorrow (vendredi → samedi) → null (weekend)', () => {
+            expect(taskRelativePresentToParent(t('tomorrow'), snapDates)).toBeNull()
+        })
+        test('tomorrow (jeudi → vendredi) → vendredi this_week', () => {
+            expect(taskRelativePresentToParent(t('tomorrow'), snapDatesThursday).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('snapDate this_week périmée → contexte basé sur moment() courant', () => {
+            expect(taskRelativePresentToParent(t('today'), snapDatesStaleWeek).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('tâche relatifParent (mardi) → null', () => {
+            expect(taskRelativePresentToParent(t('this_week mardi'), snapDates)).toBeNull()
+        })
+        test('tâche sans jour (this_week seul) → null', () => {
+            expect(taskRelativePresentToParent(t('this_week'), snapDates)).toBeNull()
+        })
+        test('les autres propriétés de la tâche sont préservées', () => {
+            const result = taskRelativePresentToParent(t('today'), snapDates)
+            expect(result.status).toBe('A faire')
+            expect(result.title).toBe('test')
+        })
+        test('originalSlotExpr contient le slotExpr original', () => {
+            const result = taskRelativePresentToParent(t('today'), snapDates)
+            expect(result.originalSlotExpr).toBe('today')
+        })
+        test('invariant ?? t : tomorrow vendredi → null, fallback = tâche originale', () => {
+            const task = t('tomorrow')
+            // projection impossible (weekend) → null → l'appelant utilise ?? task
+            const result = taskRelativePresentToParent(task, snapDates) ?? task
+            expect(result).toBe(task)
+        })
+    })
+
+    describe('taskRelativeParentToPresent — C2c', () => {
+        // Fake timer : vendredi 2025-01-03 (isoWeekday=5, semaine du 2024-12-30)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: 'test', status: 'A faire' })
+
+        // snapDates cohérents : today = vendredi 2025-01-03
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        // snapDates avec today = jeudi → vendredi = tomorrow
+        const snapDatesThursday = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-02' },
+        ]
+        // snapDates sans today (avant Phase E)
+        const snapDatesStaleWeek = [
+            { slotid: 'this_month', date: '2024-12' },
+            { slotid: 'this_week',  date: '2024-12-23' },
+        ]
+
+        test('vendredi (= today) → today', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDates).slotExpr)
+                .toBe('today')
+        })
+        test('vendredi matin (= today) → today matin (heure préservée)', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi matin'), snapDates).slotExpr)
+                .toBe('today matin')
+        })
+        test('vendredi (= tomorrow) → tomorrow', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesThursday).slotExpr)
+                .toBe('tomorrow')
+        })
+        test('jeudi (≠ today vendredi) → null', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates)).toBeNull()
+        })
+        test('lundi (≠ today/tomorrow) → null', () => {
+            expect(taskRelativeParentToPresent(t('this_month this_week lundi'), snapDates)).toBeNull()
+        })
+        test('today (pas de relatifParent) → null', () => {
+            expect(taskRelativeParentToPresent(t('today'), snapDates)).toBeNull()
+        })
+        test('snapDate périmée (sans today) → getDefaultDates() → vendredi = today', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesStaleWeek).slotExpr)
+                .toBe('today')
+        })
+        test('les autres propriétés de la tâche sont préservées', () => {
+            const result = taskRelativeParentToPresent(t('this_week vendredi'), snapDates)
+            expect(result.status).toBe('A faire')
+            expect(result.title).toBe('test')
+        })
+        test('originalSlotExpr contient le slotExpr original', () => {
+            const result = taskRelativeParentToPresent(t('this_week vendredi'), snapDates)
+            expect(result.originalSlotExpr).toBe('this_week vendredi')
         })
     })
 });

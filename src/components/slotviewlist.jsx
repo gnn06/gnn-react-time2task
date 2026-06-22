@@ -6,6 +6,8 @@ import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
 import React from "react";
+import { taskRelativeParentToPresent } from "../data/task";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 const parser = new Parser();
 
@@ -25,7 +27,13 @@ function buildRows(conf, tasks) {
 }
 
 export default function SlotViewList({ tasks, conf }) {
-    const rows = buildRows(conf, tasks);
+    const { data: snapDates = [], isSuccess: snapDatesReady } = useGetSnapDatesQuery()
+    // C2c : weekday tasks projetés en today/tomorrow si leur date correspond.
+    // Si la projection échoue (autre jour), la tâche originale est préservée via ?? t.
+    const listTasks = snapDatesReady
+        ? tasks.map(t => taskRelativeParentToPresent(t, snapDates) ?? t)
+        : tasks;
+    const rows = buildRows(conf, listTasks);
 
     return (
         <DashedTable columns={3}>
@@ -39,8 +47,8 @@ export default function SlotViewList({ tasks, conf }) {
                     {row.slots.map((slot, cellIdx) => (
                         <DashedCell key={cellIdx}>
                             { cellIdx < 2
-                                ? <Slot slot={slot} tasks={tasks} />
-                                : slot.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={tasks} /></div>)
+                                ? <Slot slot={slot} tasks={listTasks} />
+                                : slot.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={listTasks} /></div>)
                             }
                         </DashedCell>
                     ))}

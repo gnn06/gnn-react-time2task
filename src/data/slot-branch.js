@@ -1,5 +1,5 @@
 import { isBranchEqualOrInclude } from "./slot-branch++";
-import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance } from "./slot-id";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance, getSlotIdFamily } from "./slot-id";
 
 export function getBranchFirstSlot(branch) {
     return branch.value[0];
@@ -167,6 +167,36 @@ export function isBranchRepeat2(branch) {
 
 export function isBranchDisable(branch) {
     return _applyTestOnBranchOr(branch, branch => branch.flags && branch.flags.indexOf('disable') > -1)
+}
+
+/** Tous les ids de slot (chaînes) d'une branche/multi, récursivement. */
+function _collectSlotIds(node) {
+    if (typeof node === 'string') return [node];
+    if (node === null || typeof node !== 'object' || !Array.isArray(node.value)) return [];
+    return node.value.flatMap(_collectSlotIds);
+}
+
+/**
+ * Vrai si la branche contient un complément relatifParent au niveau JOUR
+ * (lundi..vendredi). L'heure (matin/aprem, niveau 4) n'intervient pas.
+ * Sert au routage vue tree (relatifParent) vs list (relatifPresent).
+ */
+export function branchHasRelatifParentDay(branch) {
+    return _collectSlotIds(branch).some(
+        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent'
+    );
+}
+
+export function branchGetRelatifPresentDayId(branch) {
+    return _collectSlotIds(branch).find(
+        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifPresent'
+    ) ?? null
+}
+
+export function branchGetRelatifParentDayId(branch) {
+    return _collectSlotIds(branch).find(
+        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent'
+    ) ?? null
 }
 
 export function isBranchMulti(branch) {

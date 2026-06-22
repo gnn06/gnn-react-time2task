@@ -4,7 +4,9 @@ import { slotViewFilterSelection } from "../data/slot-view";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import { IDizer } from "../utils/stringUtil";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
+import { taskRelativePresentToParent } from "../data/task";
 import { Parser } from "../data/parser";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours
 const parser = new Parser();
@@ -17,8 +19,16 @@ const parser = new Parser();
  */
 export default function SlotViewTree({ tasks, selection, handleSelection, conf }) {
 
+    const { data: snapDates = [], isSuccess: snapDatesReady } = useGetSnapDatesQuery()
     const maxLevel = conf.levelMaxIncluded
-    const taskPaths = tasks
+
+    // C2b/C2b-bis : today/tomorrow projetés vers leur weekday ; les autres tâches passent
+    // directement. Si la projection échoue (ex: tomorrow un vendredi → weekend), la tâche
+    // originale est conservée et apparaît dans la ligne Semaine.
+    const treeTasks = snapDatesReady
+        ? tasks.map(t => taskRelativePresentToParent(t, snapDates) ?? t)
+        : tasks;
+    const taskPaths = treeTasks
         .map(t => { const h = getBranchHash(branchComplete(parser.parse(t.slotExpr))); return h ? IDizer(h) : null })
         .filter(Boolean)
         .map(tokens => maxLevel ? tokens.slice(0, maxLevel) : tokens);
@@ -35,11 +45,11 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
 
     for (const moisSlot of moisSlots) {
         rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>Mois</DashedRowHeader>);
-        rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={tasks} /></DashedCell>);
+        rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={treeTasks} /></DashedCell>);
 
         for (const semaineSlot of (moisSlot.inner || [])) {
             rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>Semaine</DashedRowHeader>);
-            rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={tasks} /></DashedCell>);
+            rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={treeTasks} /></DashedCell>);
 
             const daySlots = semaineSlot.inner || [];
             if (daySlots.length === 0) continue;
@@ -49,7 +59,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             // Ligne Jour : une cellule par colonne
             rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>Jour</DashedRowHeader>);
             presentDayIds.forEach(dayId =>
-                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + dayId}>{dayById[dayId] && <Slot slot={dayById[dayId]} tasks={tasks} />}</DashedCell>)
+                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + dayId}>{dayById[dayId] && <Slot slot={dayById[dayId]} tasks={treeTasks} />}</DashedCell>)
             );
 
             const matinById = Object.fromEntries(
@@ -63,7 +73,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             if (presentDayIds.some(id => matinById[id])) {
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>Matin</DashedRowHeader>);
                 presentDayIds.forEach(dayId =>
-                    rows.push(<DashedCell key={semaineSlot.path + "-matin-" + dayId}>{matinById[dayId] && <Slot slot={matinById[dayId]} tasks={tasks} />}</DashedCell>)
+                    rows.push(<DashedCell key={semaineSlot.path + "-matin-" + dayId}>{matinById[dayId] && <Slot slot={matinById[dayId]} tasks={treeTasks} />}</DashedCell>)
                 );
             }
 
@@ -71,7 +81,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             if (presentDayIds.some(id => apremById[id])) {
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>Aprem</DashedRowHeader>);
                 presentDayIds.forEach(dayId =>
-                    rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + dayId}>{apremById[dayId] && <Slot slot={apremById[dayId]} tasks={tasks} />}</DashedCell>)
+                    rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + dayId}>{apremById[dayId] && <Slot slot={apremById[dayId]} tasks={treeTasks} />}</DashedCell>)
                 );
             }
         }

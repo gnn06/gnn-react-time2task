@@ -88,7 +88,43 @@ describe('getDate', () => {
     })    
     
     
-    // TODO vérifier les autres level month, day    
+    // TODO vérifier les autres level month, day
+
+    describe('C2a — niveau 3 (today/tomorrow/weekdays)', () => {
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+
+        test('today → snapDate.date', () => {
+            expect(getDate({ id: 'today' }, snapDates)).toBe('2025-01-03')
+        })
+
+        test('tomorrow → snapDate + 1 jour', () => {
+            expect(getDate({ id: 'tomorrow' }, snapDates)).toBe('2025-01-04')
+        })
+
+        test('today sans snapDate jour → date courante par défaut', () => {
+            expect(getDate({ id: 'today' }, [])).toBe('2025-01-03')
+        })
+
+        test('lundi → lundi de la semaine courante (décalage 0)', () => {
+            expect(getDate({ id: 'lundi' }, snapDates)).toBe('2024-12-30')
+        })
+
+        test('mardi → mardi de la semaine courante (décalage 1)', () => {
+            expect(getDate({ id: 'mardi' }, snapDates)).toBe('2024-12-31')
+        })
+
+        test('vendredi → vendredi de la semaine courante (décalage 4)', () => {
+            expect(getDate({ id: 'vendredi' }, snapDates)).toBe('2025-01-03')
+        })
+
+        test('lundi sans snapDate semaine → défaut ISO semaine', () => {
+            expect(getDate({ id: 'lundi' }, [])).toBe('2024-12-30')
+        })
+    })
 });
 
 test('getISODate', () => {
@@ -107,12 +143,30 @@ describe('getDefaultDate', () => {
         // restoring date after each test run
         vi.useRealTimers()
       })
-    test('nominal', () => {
+    test('nominal — C2a : contient now month, this_week et today', () => {
         const result = getDefaultDates()
-        const expected = [{ slotid:"this_month", date: "2025-01" }, { slotid:"this_week", date: "2024-12-30" }]
+        const expected = [
+            { slotid:"this_month", date: "2025-01" },
+            { slotid:"this_week",  date: "2024-12-30" },
+            { slotid:"today",      date: "2025-01-03" },
+        ]
         expect(result).toEqual(expected)
     });
 });
+
+describe('getDefaultDates — VITE_FAKE_NOW', () => {
+    beforeEach(() => { vi.stubEnv('VITE_FAKE_NOW', '2025-01-03') })
+    afterEach(() => { vi.unstubAllEnvs() })
+
+    test('respecte VITE_FAKE_NOW (vendredi 2025-01-03)', () => {
+        const result = getDefaultDates()
+        expect(result).toEqual([
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ])
+    })
+})
 
 describe('getDateString', () => {
     test('week', () => {
@@ -153,4 +207,10 @@ describe('shiftDate', () => {
         const result = shiftDate("", "week")
         expect(result).toEqual("")
     });
+    test('day, not null — C2a', () => {
+        expect(shiftDate("2025-01-03", "day")).toEqual("2025-01-04")
+    })
+    test('day, null — C2a', () => {
+        expect(shiftDate("", "day")).toEqual("")
+    })
 });
