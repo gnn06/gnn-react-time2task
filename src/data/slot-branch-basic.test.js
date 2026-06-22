@@ -432,6 +432,13 @@ describe('slotToExpr', () => {
         expect(result).toEqual(expected)
     });
 
+    test('shift with alias today + 1 = tomorrow', () => {
+        const given    = { value: [ 'today' ], shift: 1 }
+        const expected = 'tomorrow'
+        const result = branchToExpr(given)
+        expect(result).toEqual(expected)
+    });
+
     test('shift 0', () => {
         const given    = { value: [ 'this_week' ], shift: 0 }
         const expected = 'this_week'

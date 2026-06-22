@@ -21,6 +21,8 @@ const SLOT_DEFS = [
     { id: 'next_week',      level: 2, role: 'anchor',     family: 'relatifPresent', weight: 3, alias: 'this_week + 1' },
     { id: 'following_week', level: 2, role: 'anchor',     family: 'relatifPresent', weight: 4, alias: 'this_week + 2' },
     { id: 'day',            level: 3, role: 'generic',    family: 'generic',        weight: 1 },
+    { id: 'today',          level: 3, role: 'anchor',     family: 'relatifPresent', weight: 1 },
+    { id: 'tomorrow',       level: 3, role: 'anchor',     family: 'relatifPresent', weight: 2, alias: 'today + 1' },
     { id: 'lundi',          level: 3, role: 'complement', family: 'relatifParent',  weight: 1 },
     { id: 'mardi',          level: 3, role: 'complement', family: 'relatifParent',  weight: 2 },
     { id: 'mercredi',       level: 3, role: 'complement', family: 'relatifParent',  weight: 3 },
@@ -40,16 +42,41 @@ export const EXPR_KEYWORDS = [
 // seulement (cf. GENERIC_SLOTIDS), historiquement absent de cette liste / de weight.
 export const SLOTIDS_LST = SLOT_DEFS.map(d => d.id);
 
-// Cycles navigables indexables par niveau (ancres aux niveaux 1/2, compléments aux 3/4).
-export const SLOTIDS_BY_LEVEL = (() => {
+/** Regroupe les ids retenus par niveau (clé string), triés par weight. */
+function _groupByLevel(predicate) {
     /** @type {{ [level: string]: string[] }} */
     const byLevel = {};
     SLOT_DEFS
-        .filter(d => d.role !== 'generic')
+        .filter(predicate)
         .sort((a, b) => a.level - b.level || a.weight - b.weight)
         .forEach(d => { (byLevel[String(d.level)] ??= []).push(d.id); });
     return byLevel;
+}
+
+// Séquences de navigation par famille (getSlotIdNextPrev/Previous/Index).
+export const ANCHOR_IDS_BY_LEVEL = _groupByLevel(d => d.role === 'anchor');
+export const COMPLEMENT_IDS_BY_LEVEL = _groupByLevel(d => d.role === 'complement');
+
+// Catalogue d'affichage / nombre de niveaux (vues, slot-panel, getSlotIdFirstLevel) :
+// compléments du niveau s'ils existent, sinon ancres (les ancres jour today/tomorrow
+// ne polluent donc pas la colonne des weekdays).
+export const SLOTIDS_BY_LEVEL = (() => {
+    /** @type {{ [level: string]: string[] }} */
+    const byLevel = {};
+    for (const def of SLOT_DEFS) {
+        const lvl = String(def.level);
+        if (!byLevel[lvl]) byLevel[lvl] = COMPLEMENT_IDS_BY_LEVEL[lvl] ?? ANCHOR_IDS_BY_LEVEL[lvl] ?? [];
+    }
+    return byLevel;
 })();
+
+/** Séquence de navigation d'un id selon sa famille (fallback legacy pour génériques/inconnus). */
+function _navSeq(baseId) {
+    const def = _defById.get(baseId);
+    if (def?.role === 'anchor') return ANCHOR_IDS_BY_LEVEL[def.level];
+    if (def?.role === 'complement') return COMPLEMENT_IDS_BY_LEVEL[def.level];
+    return SLOTIDS_BY_LEVEL[getSlotIdLevel(baseId).toString()];
+}
 
 // Libellés / jokers de niveau (index = niveau - 1). 'hour' n'a pas de slot def.
 export const GENERIC_SLOTIDS = ['month', 'week', 'day', 'hour'];
@@ -130,8 +157,7 @@ export function getSlotIdPrevious(slotId, repetition) {
     if (isSlotIdGeneric(slotId)) {
         return slotId
     }
-    const level = getSlotIdLevel(slotId)
-    const slots = SLOTIDS_BY_LEVEL[level.toString()]
+    const slots = _navSeq(slotId)
     const index = slots.indexOf(slotId)
     if (index === 0 && repetition === undefined) {
         return slotId
@@ -161,10 +187,8 @@ export function getSlotIdNextPrev(slotId, direction) {
     const shift = IdRegExp[2] !== '' ? parseInt(IdRegExp[2]) : undefined
 
     if (shift === undefined) {
-        const level = getSlotIdLevel(id)
-        const slots = SLOTIDS_BY_LEVEL[level.toString()]
-        const index = 
-        slots.indexOf(id)
+        const slots = _navSeq(id)
+        const index = slots.indexOf(id)
         if (direction > 0) {
             if (index + direction < slots.length) {
                 return slots[index + direction]
@@ -208,7 +232,7 @@ export function getSlotIdIndex(slotId) {
         return index + shift
     }
 
-    return SLOTIDS_BY_LEVEL[level].indexOf(id)
+    return _navSeq(id).indexOf(id)
 }
 
 export function getSlotIdDistance(id1, id2) {

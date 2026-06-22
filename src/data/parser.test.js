@@ -107,6 +107,22 @@ describe('parser string', () => {
         const result = parser.parse('lundi mardi');
         expect(result).toEqual({type:'multi', value: [{type:'branch',value:['lundi']}, {type:'branch',value:['mardi']}]})
     })
+
+    test('today (ancre jour relatifPresent)', () => {
+        const parser = new Parser();
+        expect(parser.parse('today')).toEqual({type:'branch',value:['today']})
+    })
+
+    test('today matin', () => {
+        const parser = new Parser();
+        expect(parser.parse('today matin')).toEqual({type:'branch',value:['today', 'matin']})
+    })
+
+    test('tomorrow', () => {
+        const parser = new Parser();
+        expect(parser.parse('tomorrow')).toEqual({type:'branch',value:['tomorrow']})
+    })
+
     test('multi upper node', () => {
         const parser = new Parser();
         const result = parser.parse('this_week mardi mercredi next_month');

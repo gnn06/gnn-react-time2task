@@ -4,6 +4,58 @@
 
 Toutes les tâches doivent être visibles. Aucune tâche ne doit manquer, quel que soit son slotExpr.
 
+> ⚠️ **Exception temporaire** : la « Vue par famille — v1 » (section dédiée ci-dessous)
+> **casse volontairement cet invariant** le temps de valider le modèle relatif jour
+> (`today`/`tomorrow`). Une tâche n'y est visible que dans **une** des deux vues. À
+> rétablir avec la projection croisée (phase ultérieure).
+
+---
+
+## Vue par famille — v1 TEMPORAIRE (validation du modèle relatif jour)
+
+> **Statut : temporaire.** Première version pour *voir* le modèle relatif jour
+> (`today`/`tomorrow`) rendu, **sans mixage ni projection**. Elle **casse
+> volontairement l'invariant de visibilité** : une tâche n'est visible que dans la vue
+> de sa famille — il faut basculer de vue pour tout voir. Sera remplacée par la
+> **projection croisée** (toute tâche visible dans les deux vues) dans une phase
+> ultérieure. Choix = « Option 2 / partition » (cf. `docs/plan-today.md` phase C).
+
+### Règle de routage (partition stricte)
+
+Par la **famille du slot JOUR** de la tâche (l'heure `matin/aprem` suit le jour et
+n'intervient pas dans le routage) :
+
+- la tâche a un **complément relatifParent au jour** (`lundi`…`vendredi`) → **vue tree** uniquement ;
+- sinon — purement relatifPresent (`today`/`tomorrow`, ou `this_week`/`this_month`
+  **sans** jour) → **vue list** uniquement.
+
+Partition stricte : chaque tâche dans **exactement une** vue, **aucune duplication**.
+
+| slotExpr | Vue |
+|---|---|
+| `this_week mardi`, `every 1 this_week mardi`, `this_week mardi matin` | tree |
+| `today`, `tomorrow`, `today matin` | list |
+| `this_week` seul, `this_month` seul (imprécis) | list |
+
+### Vue tree (vision absolue / calendaire)
+
+Structure **inchangée** (mois › semaine › colonnes weekday › matin/aprem). N'affiche
+que les tâches à **jour relatifParent**. Conséquence assumée du caractère temporaire :
+les tâches imprécises niveau semaine/mois (`this_week`/`this_month` seuls)
+**n'apparaissent plus dans le tree** (elles partent en list).
+
+### Vue list (vision relative au présent)
+
+L'axe **jour** passe des weekdays aux **ancres** `today`/`tomorrow`
+(`ANCHOR_IDS_BY_LEVEL['3']`). N'affiche que les tâches **purement relatifPresent**.
+
+### Hors périmètre v1 (différé)
+
+- projection croisée (today ↔ weekday) pour rétablir l'invariant ;
+- dates au niveau jour (`getDate` niveau 3 / snapDate jour — incrément B5) ;
+- franchissement de semaine de `tomorrow` un vendredi (→ `next_week`) ;
+- marqueur visuel de nature ; filtrage par nature.
+
 ---
 
 ## Mécanisme de remontée (bubbling)

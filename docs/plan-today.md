@@ -1,137 +1,137 @@
 # Plan d'exécution — vision relative jour (`today`/`tomorrow`)
 
 > Plan d'implémentation par phases. Conception de référence :
-> `docs/slot-model-spec.md` (règles) et `docs/slot-types-design.md` (types + `SLOT_DEFS`).
-> Branche : `feat_today`.
+> `docs/slot-model-spec.md` (règles), `docs/slot-types-design.md` (types + `SLOT_DEFS`),
+> `docs/slot-view-spec.md` (affichage). Branche : `feat_today`.
 
 ## Conventions (toutes phases)
 
 - **TDD** : test rouge d'abord, puis implémentation au vert (cf. `CLAUDE.md`).
-- Après chaque incrément : `npx tsc --noEmit` + `npx vitest run` doivent être verts.
-- **Un commit par incrément** (message une ligne).
+- Après chaque incrément : `npx tsc --noEmit` + `npx vitest run` verts.
+- **Demander avant de committer** ; message une ligne.
 - Filet : tests golden `src/data/slot-id.defs.test.js` + suite existante.
-- Terminologie : on parle de **séquence de navigation** par famille (et non de
-  « cycle » : `getSlotIdNextPrev` parcourt une **liste ordonnée finie + débordement
-  en shift `+ n`**, ça ne boucle pas).
+- Terminologie : **séquence de navigation** par famille (pas « cycle » :
+  `getSlotIdNextPrev` parcourt une liste ordonnée finie + débordement en shift `+ n`).
 
 ## Vue d'ensemble des phases
 
 | Phase | Objet | Statut |
 |---|---|---|
-| **A** | `SLOT_DEFS` source unique + classifieurs famille/rôle | ✅ fait (`7e68b32`) |
-| **B** | Modèle de données : ancre jour `today`/`tomorrow` (+ snapDate jour, Démarrer Jour) | ⏳ à faire |
-| **C** | Affichage : rendu des familles dans les vues arbre / liste | à concevoir |
-| **D** | Sélecteur : UI de choix relatifPresent / relatifParent (/ absolu) | à concevoir |
-| **E** | Complément relatifParent semaine : `semaine N du mois` | futur |
-| **F** | Famille `absolu` : `mars`, `jour N de l'année`, `semaine N de l'année` (exige niveau année) | futur |
-
-Périmètre **modèle** = phases A+B. Périmètre **UX** = phases C+D. Extensions = E+F.
-
----
-
-## Phase B — ancre jour `today`/`tomorrow` (modèle de données)
-
-Objectif : `today`/`tomorrow`/`today + n` valides, parseables, stockables, navigables,
-ancrés à un **snapDate jour**, roulés par **« Démarrer Jour »**. L'absolu
-`lundi..vendredi` reste **inchangé**. **Aucun changement de vue** (phase C).
-
-### Point structurel clé
-
-`SLOTIDS_BY_LEVEL` cumule aujourd'hui plusieurs usages (cf. `slot-types-design.md` §7) :
-1. **séquence de navigation** (`getSlotIdNextPrev/Previous/Index` font `indexOf`),
-2. **catalogue d'affichage** (slotviewtree `DAY_IDS`, slotViewFilter),
-3. **nombre de niveaux** (slot-panel),
-4. **id par défaut/ancre du niveau** (`getSlotIdFirstLevel(level)` = `[level][0]`,
-   consommé par `slot-date.js` et `getBranchHash`).
-
-`today`/`tomorrow` (ancres, séquence propre) ne peuvent pas cohabiter avec
-`lundi..vendredi` (compléments) dans **une seule** liste niveau 3
-(`getSlotIdNextPrev('vendredi',+1)` renverrait `today`).
-
-⇒ Découplage :
-- **usage 1 (navigation) → EXTRAIT** vers `ANCHOR_IDS_BY_LEVEL` /
-  `COMPLEMENT_IDS_BY_LEVEL` ; `getSlotIdNextPrev/Previous/Index` routent par famille
-  (`isAnchor`/`isComplement`). `SLOTIDS_BY_LEVEL` n'est **plus lu** par la navigation.
-- **usages 2 et 3 → conservés** sur `SLOTIDS_BY_LEVEL` (valeur inchangée en phase B).
-- **usage 4 (`getSlotIdFirstLevel`)** : renvoie `lundi` au niveau 3, alors que le
-  **snapDate jour (B5)** veut l'ancre `today`. ⇒ introduire un helper « première ancre
-  du niveau » (`ANCHOR_IDS_BY_LEVEL[level][0]`) et l'utiliser pour le snapDate jour ;
-  laisser `getSlotIdFirstLevel` inchangé pour ses consommateurs actuels.
-
-Comportement identique pour les ids existants : avant `today`, chaque niveau n'a
-qu'une famille, donc `ANCHOR_IDS_BY_LEVEL[L]` / `COMPLEMENT_IDS_BY_LEVEL[L]`
-reproduisent l'ancien `SLOTIDS_BY_LEVEL[L]`.
-
-### Incréments TDD
-
-**B1 — Séquences de navigation par famille (refactor interne, sans `today`)**
-- Dériver de `SLOT_DEFS` : `ANCHOR_IDS_BY_LEVEL` `{1:[this_month,next_month], 2:[this_week,next_week,following_week]}` et `COMPLEMENT_IDS_BY_LEVEL` `{3:[lundi..vendredi], 4:[matin,aprem]}`.
-- `getSlotIdNextPrev`/`getSlotIdPrevious`/`getSlotIdIndex` : router via `isAnchor(id)`/`isComplement(id)` vers la bonne séquence (au lieu de `SLOTIDS_BY_LEVEL[level]`).
-- `SLOTIDS_BY_LEVEL` conservé pour vues/panel (valeur identique).
-- Tests : non-régression navigation existante (this_week→next_week, lundi→mardi, débordements) + tests de routage. Golden inchangé.
-- *Comportement identique → filet = suite verte.*
-
-**B2 — Ajout `today`/`tomorrow` dans `SLOT_DEFS`**
-- 2 lignes : `today` (anchor, relatifPresent, level 3), `tomorrow` (alias `today + 1`).
-- `ANCHOR_IDS_BY_LEVEL[3] = [today, tomorrow]` (dérivé). `SLOTIDS_BY_LEVEL[3]` **reste** `[lundi..vendredi]` (ajuster la dérivation : catalogue d'affichage = compléments si présents au niveau, sinon ancres).
-- Tests rouge→vert : `getSlotIdLevel('today')===3`, `getSlotIdFamily('today')==='relatifPresent'`, `isAnchor('today')`, `getSlotIdNextPrev('today',+1)==='tomorrow'`, `getSlotIdNextPrev('tomorrow',+1)==='tomorrow + 1'`, `getSlotIdPrevious('tomorrow')==='today'`, parser accepte `today`/`tomorrow`.
-- Golden **mis à jour** (changement *intentionnel*) : `SLOTIDS_LST` et `weight` gagnent `today`/`tomorrow` ; assertion explicite que `SLOTIDS_BY_LEVEL[3]` est inchangé.
-- ⚠️ Décider `weight['today']` : axe distinct des weekdays — voir « Risques ».
-
-**B3 — Alias `today + 1` → `tomorrow`**
-- `_branchAlias` (slot-branch.js) : ajouter le cas, comme `this_week + 1 → next_week`.
-- Tests : `branchToExpr`/`getBranchHash` rendent `tomorrow` pour `today + 1`.
-
-**B4 — `getSlotIdCurrent` conscient de la famille** ⚠️ incrément délicat
-- Aujourd'hui `getSlotIdCurrent(3)` renvoie le **weekday** (utilisé par `branchComplete`/`getBranchCurrentPath` pour comparer aux jours absolus).
-- Cible : distinguer **jour courant relatif** (`today`) du **jour courant absolu** (weekday projeté via snapDate). Probablement deux fonctions séparées, l'appelant choisit.
-- Tests : ne pas casser `getSlotNextPrev` (comparaisons), ni `branchComplete`.
-
-**B5 — snapDate jour**
-- `slot-date.js` : `getDefaultDates` ajoute `{slotid:'today', date:<auj.>}` ; `getDate` gère niveau 3 (projette `today`/`tomorrow` et weekday → date) ; `shiftDate('day')` → +1 jour ; `getSnapDateToSave/Show` niveau 3.
-- Le slotid du snapDate jour = **ancre** `today` (helper « première ancre du niveau »
-  `ANCHOR_IDS_BY_LEVEL[3][0]`), **pas** `getSlotIdFirstLevel(3)` (qui renvoie `lundi`).
-- Tests avec `getNow` mocké.
-
-**B6 — `branchShift` conscient de la famille + « Démarrer Jour »**
-- `slot-branch++.js` `branchShift` : un Démarrer de niveau L ne roule que les **ancres relatifPresent** de L ; laisse compléments et absolus **fixes**. ⇒ « Démarrer Jour » roule `tomorrow→today`, laisse `mardi` fixe.
-- `action-shift.jsx` : 3ᵉ option `day` ; `getSnapDateToSave` niveau jour.
-- Tests : `branchShift(today-branch,'day')`, non-régression `branchShift('week'|'month')`, et **`branchShift('day')` ne touche pas `mardi`**.
-
-### Critère de fin de phase B
-Suite verte + tsc ; changelog ; specs à jour si décisions prises ; **vues inchangées**
-(les tâches `today` ne s'affichent pas encore — c'est la phase C).
-
-### Risques / points ouverts (phase B)
-- **`weight['today']`** : l'axe relatif jour n'est pas commensurable au cycle
-  `lundi..vendredi` (1..5). Le tri/distance inter-familles au niveau jour (`getBranchWeight`,
-  `slot-next-prev`) devra sans doute passer par une **projection via snapDate** plutôt
-  que par `weight`. À cadrer ; peut déborder en phase C (prochain slot / tri).
-- **`getSlotNextPrev`** : comparer une tâche `today` au « maintenant » — via date projetée.
+| **A** | `SLOT_DEFS` source unique + classifieurs famille/rôle | ✅ fait |
+| **B** | Modèle : ancre jour `today`/`tomorrow` (valides, stockables, navigables, aliasées) | ✅ fait |
+| **C** | Affichage : C1 vue par famille (v1 temporaire) · C2 projection croisée (+ snapDate jour) | ⏳ en cours |
+| **D** | Sélecteur : UI de choix relatifPresent / relatifParent | à venir |
+| **E** | Roulement : « Démarrer Jour » (`branchShift` famille-aware + snapDate jour roulé) | à venir |
+| **F** | Complément relatifParent semaine : `semaine N du mois` | futur |
+| **G** | Famille `absolu` : `mars`, `jour N de l'année`, `semaine N de l'année` | futur |
 
 ---
 
-## Phase C — Affichage (à concevoir, spec dédiée)
+## Phase A — `SLOT_DEFS` source unique ✅
 
-Comment rendre, dans **chaque** vue (arbre `slotviewtree`, liste `slotviewlist`),
-les tâches selon leur famille de stockage :
-- projeter `today` → weekday (vue arbre) ; afficher `aujourd'hui`/`demain` (vue liste) ;
-- placer une tâche absolue/récurrente (`every 1 this_week mardi`) ;
-- marqueur visuel de nature ; filtrage éventuel par nature.
-Produira `docs/slot-view-spec.md` (mise à jour) + impl TDD.
+Descripteur unique des slots dans `slot-id.js` ; `SLOTIDS_LST`, `SLOTIDS_BY_LEVEL`,
+`weight`, `getSlotIdLevel` dérivés ; classifieurs `getSlotIdFamily`/`isAnchor`/
+`isComplement`. Golden de caractérisation `slot-id.defs.test.js`.
 
-## Phase D — Sélecteur (à concevoir)
+## Phase B — ancre jour `today`/`tomorrow` ✅
 
-UI du slot-picker pour choisir, à l'affectation d'une tâche, entre jour **roulant**
-(`today`/`tomorrow`) et jour **fixe** (`mardi`), puis plus tard l'absolu.
+`today`/`tomorrow` = ancres relatifPresent niveau 3, valides/stockables/navigables/
+parsables/aliasées. `lundi..vendredi` inchangés. **Vues inchangées** (les tâches
+`today` ne s'affichent pas encore — c'est la phase C).
 
-## Phase E — Complément semaine `semaine N du mois` (futur)
+- **B1** — Navigation routée **par famille** : `ANCHOR_IDS_BY_LEVEL` /
+  `COMPLEMENT_IDS_BY_LEVEL` dérivés ; `getSlotIdNextPrev/Previous/Index` routent via
+  `isAnchor`/`isComplement`. `SLOTIDS_BY_LEVEL` ne sert plus qu'au catalogue
+  d'affichage / au nombre de niveaux / à `getSlotIdFirstLevel`.
+- **B2** — Ajout `today`/`tomorrow` dans `SLOT_DEFS` (ancre niveau 3). `SLOTIDS_BY_LEVEL`
+  re-dérivé (« compléments du niveau s'ils existent, sinon ancres ») ⇒ `['3']` reste
+  `[lundi..vendredi]`.
+- **B3** — Alias `today + 1` → `tomorrow` dans `_branchAlias`.
+
+---
+
+## Phase C — Affichage ⏳
+
+### C1 — Vue par famille (v1 TEMPORAIRE, partition)
+
+Objectif : *voir* le modèle relatif jour rendu, sans mixage ni projection. Spec :
+`docs/slot-view-spec.md` § « Vue par famille — v1 TEMPORAIRE ». Deux incréments, un par
+vue (ordre recommandé : C1a puis C1b).
+
+> ⚠️ **CARACTÈRE TEMPORAIRE — invariant cassé** (C1a + C1b) : « toutes les tâches
+> visibles » n'est plus vrai par vue ; une tâche n'est visible que dans la vue de sa
+> famille (les `this_week`/`this_month` imprécis quittent le tree). Assumé pour la v1,
+> **rétabli en C2** (projection croisée). Entre C1a et C1b, certaines tâches peuvent être
+> temporairement non placées.
+
+**Routage commun (partition)** par la famille du **slot jour** (heure ignorée) :
+complément relatifParent jour (`lundi..vendredi`) → **tree** ; sinon (purement
+relatifPresent : `today`/`tomorrow`, ou `this_week`/`this_month` sans jour) → **list**.
+⇒ prédicat de routage partagé (ex. `taskHasRelatifParentDay`), testé isolément.
+
+**C1a — vue tree (filtre)**
+- Introduire le prédicat de routage (testable seul).
+- Filtrer le tree pour n'afficher que les tâches à **jour relatifParent** ; structure du
+  tree **inchangée**.
+- Tests : `this_week mardi` reste ; `today` / `this_week` seul / `this_month` seul
+  **disparaissent** du tree.
+
+**C1b — vue list (axe relatifPresent)**
+- Réécrire `defaultSlotViewList` / `slotviewlist.jsx` : axe **jour** = ancres
+  `today`/`tomorrow` (`ANCHOR_IDS_BY_LEVEL['3']`) au lieu des weekdays.
+- Filtrer la list sur les tâches **purement relatifPresent** (négation du prédicat).
+- Tests : une tâche `today` rendue sous un slot `today` ; `this_week`/`this_month` seuls
+  présents ; `this_week mardi` absente.
+
+**Hors C1** : dates niveau jour (C2), `tomorrow` franchissant le vendredi (C2), marqueur
+de nature (C2), filtrage par nature.
+
+### C2 — Projection croisée (rétablit l'invariant)
+
+Toute tâche visible dans **les deux** vues via projection, par le **snapDate jour** :
+- **snapDate jour** : `getDefaultDates` ajoute `{slotid:'today', date:<auj.>}` ;
+  `getDate` gère le niveau 3 (projette `today`/`tomorrow` et weekday → date). Le slotid
+  du snapDate jour = ancre `today` (helper « première ancre du niveau »
+  `ANCHOR_IDS_BY_LEVEL[3][0]`).
+- **projection** today ↔ weekday : afficher une tâche `today` aussi dans le tree (sur sa
+  colonne weekday) et une tâche `mardi` aussi dans la list ; `tomorrow` un vendredi →
+  `next_week`.
+- marqueur visuel de **nature** (roulant / fixe / récurrent) ; filtrage par nature.
+
+**Question ouverte — `getSlotIdCurrent(3)` doit-il être famille-aware ?** Pas tranché.
+Hypothèse : il **reste** le weekday (jour courant absolu), le « jour courant relatif »
+étant trivialement `today` géré côté appelant — **sans** modifier `getSlotIdCurrent`. À
+trancher ici.
+
+**Risques** :
+- `weight['today']` (=1) n'est pas commensurable au cycle `lundi..vendredi` (1..5) : le
+  tri/distance inter-familles au niveau jour (`getBranchWeight`, `slot-next-prev`) devra
+  passer par une **projection via snapDate** plutôt que par `weight`.
+- `getSlotNextPrev` : comparer une tâche `today` au « maintenant » via date projetée.
+
+---
+
+## Phase D — Sélecteur
+
+UI du slot-picker (`slot-picker*.jsx`) pour choisir, à l'affectation d'une tâche, entre
+jour **roulant** (`today`/`tomorrow`) et jour **fixe** (`mardi`).
+
+## Phase E — Roulement « Démarrer Jour »
+
+- `branchShift` (`slot-branch++.js`) **conscient de la famille** : un Démarrer de niveau
+  L ne roule que les ancres **relatifPresent** de L ; laisse compléments et absolus
+  fixes ⇒ « Démarrer Jour » roule `tomorrow→today`, laisse `mardi` fixe.
+- `slot-date.js` : `shiftDate('day')` → +1 jour ; `getSnapDateToSave` niveau jour.
+- `action-shift.jsx` : 3ᵉ option `day`.
+- Tests : roulement jour ; non-régression `branchShift('week'|'month')` ; **`'day'` ne
+  touche pas `mardi`**.
+
+## Phase F — Complément semaine `semaine N du mois` (futur)
 
 Complément relatifParent niveau 2 raffinant le mois. La règle « famille » de
-`branchShift` (B6) s'appliquera aussi au niveau semaine. Même patron que les weekdays.
+`branchShift` s'appliquera aussi au niveau semaine. Même patron que les weekdays.
 
-## Phase F — Famille `absolu` (futur)
+## Phase G — Famille `absolu` (futur)
 
 `mars` (mois de l'année), `semaine N de l'année`, `jour N de l'année` : ancres
-auto-localisantes **fixes** (ne roulent pas). Exige un niveau année. Même rôle
-« ancre » que relatifPresent mais référence = calendrier civil.
+auto-localisantes **fixes** (ne roulent pas). Exige un niveau année.

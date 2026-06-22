@@ -255,7 +255,11 @@ export function _branchAlias(branch) {
     if (branch.value[0] === 'next_week' && branch.shift && branch.shift === 1) {
         return transformBranch(branch, 'following_week')
     }
-    
+
+    if (branch.value[0] === 'today' && branch.shift && branch.shift === 1) {
+        return transformBranch(branch, 'tomorrow')
+    }
+
     return branch
 }
 
