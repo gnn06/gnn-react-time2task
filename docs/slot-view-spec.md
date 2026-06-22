@@ -71,12 +71,19 @@ Axe jour = ancres `today`/`tomorrow`.
 Implémentation : `tasks.map(t => taskRelativeParentToPresent(t, snapDates) ?? t)`.
 - Si la projection échoue (weekday ≠ today/tomorrow), la tâche originale est préservée.
 
+### Marqueur de nature (C2d)
+
+`TaskInSlot` affiche une icône `PushPin` pour les tâches à jour **fixe** (complement
+relatifParent : `lundi..vendredi`). Détection via `taskHasRelatifParentDay` appliqué à
+`originalSlotExpr ?? slotExpr` — une tâche projetée en `today` depuis `this_week mardi`
+affiche bien l'icône fixe.
+
 ### Hors périmètre C2 actuel (différé)
 
 - franchissement de semaine de `tomorrow` un vendredi vers `next_week lundi` (actuellement
   la tâche reste visible dans la ligne Semaine via le fallback `?? t`, mais n'est pas
   projetée dans la colonne lundi de la semaine suivante) ;
-- marqueur visuel de nature (rolling / fixe / récurrent) ; filtrage par nature.
+- filtrage par nature (Phase H).
 
 ---
 

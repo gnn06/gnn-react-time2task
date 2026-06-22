@@ -2,7 +2,8 @@ import { insideOrEqual as arrayInsideOrEqual, insideStrict } from "../utils/arra
 import { IDizer } from "../utils/stringUtil";
 import { SlotPath } from "./slot-path";
 
-export function selectionToTree(dataMap) {
+// Construit la forêt complète (toutes les racines) à partir de la selection.
+export function selectionToForest(dataMap) {
     const tree = [];
 
     dataMap.forEach((val, path) => {
@@ -34,6 +35,11 @@ export function selectionToTree(dataMap) {
         });
     });
 
+    return tree;
+}
+
+export function selectionToTree(dataMap) {
+    const tree = selectionToForest(dataMap)
     return tree.length > 0 ? tree[0] : [];
 }
 

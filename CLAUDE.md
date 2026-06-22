@@ -6,6 +6,9 @@
 - Complétude : tous les cas possibles ont une règle
 - Ne pas commencer à coder avant que toutes les questions nécessaires au codage aient une réponse
 
+## Design
+- privilégier des modifications sur la couche data
+
 ## Pendant le développement
 
 Le code doit toujours refléter la spécification — toute divergence est soit un bug, soit un signe que la spec doit être mise à jour.
@@ -27,3 +30,6 @@ Le code doit toujours refléter la spécification — toute divergence est soit 
 - Vérifier que la couverture de test correspond à la spec (cas nominaux + cas limites)
 - Mettre à jour la spec si des décisions ont été prises pendant le développement
 - Proposer de lancer les tests E2E Playwright (ne pas les lancer sans accord)
+
+# Plan
+-privilégier un découpage du plan qui favorise des résultats visuels dans la UI au plus tôt. Cela pour avoir un feedback visuel au plus tôt. Des choix temporaires peuvent faits qui seront mis au propre quand le rendu aura été validé au niveau visuel.

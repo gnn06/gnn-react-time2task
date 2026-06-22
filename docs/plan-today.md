@@ -10,8 +10,6 @@
 - Après chaque incrément : `npx tsc --noEmit` + `npx vitest run` verts.
 - **Demander avant de committer** ; message une ligne.
 - Filet : tests golden `src/data/slot-id.defs.test.js` + suite existante.
-- Terminologie : **séquence de navigation** par famille (pas « cycle » :
-  `getSlotIdNextPrev` parcourt une liste ordonnée finie + débordement en shift `+ n`).
 
 ## Vue d'ensemble des phases
 
@@ -19,176 +17,185 @@
 |---|---|---|
 | **A** | `SLOT_DEFS` source unique + classifieurs famille/rôle | ✅ fait |
 | **B** | Modèle : ancre jour `today`/`tomorrow` (valides, stockables, navigables, aliasées) | ✅ fait |
-| **C** | Affichage : C1 vue par famille (v1 temporaire) · C2 projection croisée (+ snapDate jour) | ⏳ en cours |
-| **D** | Sélecteur : UI de choix relatifPresent / relatifParent | à venir |
+| **C** | Affichage : projection croisée (tree + list) + marqueur de nature | ✅ fait |
+| **D** | Sélecteur : UI de choix relatifPresent / relatifParent | ✅ fait (D5 pureté vue + `disables aux limites` : TODO différés) |
 | **E** | Roulement : « Démarrer Jour » (`branchShift` famille-aware + snapDate jour roulé) | à venir |
 | **F** | Complément relatifParent semaine : `semaine N du mois` | futur |
 | **G** | Famille `absolu` : `mars`, `jour N de l'année`, `semaine N de l'année` | futur |
+| **H** | Filtre par nature (isFixed / isRolling) | futur |
 
 ---
 
 ## Phase A — `SLOT_DEFS` source unique ✅
 
-Descripteur unique des slots dans `slot-id.js` ; `SLOTIDS_LST`, `SLOTIDS_BY_LEVEL`,
-`weight`, `getSlotIdLevel` dérivés ; classifieurs `getSlotIdFamily`/`isAnchor`/
-`isComplement`. Golden de caractérisation `slot-id.defs.test.js`.
+`SLOT_DEFS` source unique dans `slot-id.js`. Classifieurs `getSlotIdFamily`/`isAnchor`/`isComplement`.
+`ANCHOR_IDS_BY_LEVEL` / `COMPLEMENT_IDS_BY_LEVEL` dérivés. Navigation `getSlotIdNextPrev` routée par famille.
+Golden `slot-id.defs.test.js`.
 
 ## Phase B — ancre jour `today`/`tomorrow` ✅
 
-`today`/`tomorrow` = ancres relatifPresent niveau 3, valides/stockables/navigables/
-parsables/aliasées. `lundi..vendredi` inchangés. **Vues inchangées** (les tâches
-`today` ne s'affichent pas encore — c'est la phase C).
+`today`/`tomorrow` = ancres relatifPresent niveau 3 dans `SLOT_DEFS`. Valides/stockables/navigables/parsables.
+Alias `today + 1` → `tomorrow`. `SLOTIDS_BY_LEVEL['3']` reste `[lundi..vendredi]` (compléments en priorité).
 
-- **B1** ✅ FAIT — Navigation routée **par famille** : `ANCHOR_IDS_BY_LEVEL` /
-  `COMPLEMENT_IDS_BY_LEVEL` dérivés ; `getSlotIdNextPrev/Previous/Index` routent via
-  `isAnchor`/`isComplement`. `SLOTIDS_BY_LEVEL` ne sert plus qu'au catalogue
-  d'affichage / au nombre de niveaux / à `getSlotIdFirstLevel`.
-- **B2** ✅ FAIT — Ajout `today`/`tomorrow` dans `SLOT_DEFS` (ancre niveau 3). `SLOTIDS_BY_LEVEL`
-  re-dérivé (« compléments du niveau s'ils existent, sinon ancres ») ⇒ `['3']` reste
-  `[lundi..vendredi]`.
-- **B3** ✅ FAIT — Alias `today + 1` → `tomorrow` dans `_branchAlias`.
+## Phase C — Affichage ✅
 
----
+Toute tâche visible dans les **deux** vues par projection croisée via snapDate jour.
 
-## Phase C — Affichage ⏳
+- **C2a** — `getDefaultDates()` ajoute `today` ; `getDate()` niv. 3 gère today/tomorrow/weekdays.
+- **C2b/C2b-bis** — `taskRelativePresentToParent` projette today/tomorrow → weekday dans le tree.
+  `tasks.map(t => fn(t, snapDates) ?? t)` — invariant garanti, tâches imprécises incluses.
+- **C2c** — `taskRelativeParentToPresent` projette weekday → today/tomorrow dans la list.
+  Tâches projetées portent `originalSlotExpr` ; dialog/slot-button utilisent `originalSlotExpr ?? slotExpr`.
+- **C2d** — Icône `PushPin` sur tâches à jour fixe (`taskHasRelatifParentDay` sur `originalSlotExpr ?? slotExpr`).
 
-### C1 — Vue par famille (v1 TEMPORAIRE, partition)
-
-Objectif : *voir* le modèle relatif jour rendu, sans mixage ni projection. Spec :
-`docs/slot-view-spec.md` § « Vue par famille — v1 TEMPORAIRE ». Deux incréments, un par
-vue (ordre recommandé : C1a puis C1b).
-
-> ⚠️ **CARACTÈRE TEMPORAIRE — invariant cassé** (C1a + C1b) : « toutes les tâches
-> visibles » n'est plus vrai par vue ; une tâche n'est visible que dans la vue de sa
-> famille (les `this_week`/`this_month` imprécis quittent le tree). Assumé pour la v1,
-> **rétabli en C2** (projection croisée). Entre C1a et C1b, certaines tâches peuvent être
-> temporairement non placées.
-
-**Routage commun (partition)** par la famille du **slot jour** (heure ignorée) :
-complément relatifParent jour (`lundi..vendredi`) → **tree** ; sinon (purement
-relatifPresent : `today`/`tomorrow`, ou `this_week`/`this_month` sans jour) → **list**.
-⇒ prédicat de routage partagé (ex. `taskHasRelatifParentDay`), testé isolément.
-
-**C1a — vue tree (filtre)** ✅ FAIT
-- Introduire le prédicat de routage (testable seul).
-- Filtrer le tree pour n'afficher que les tâches à **jour relatifParent** ; structure du
-  tree **inchangée**.
-- Tests : `this_week mardi` reste ; `today` / `this_week` seul / `this_month` seul
-  **disparaissent** du tree.
-
-**C1b — vue list (axe relatifPresent)** ✅ FAIT
-- Réécrire `defaultSlotViewList` / `slotviewlist.jsx` : axe **jour** = ancres
-  `today`/`tomorrow` (paths standalone) au lieu des weekdays.
-- Filtrer la list sur les tâches **purement relatifPresent** (négation du prédicat).
-- Fix `getSlotsForRow` : fallback `middle=0` quand le path `today`/`tomorrow` ne correspond
-  pas à `getCurrentPathExpr(3)` — `today` atterrit en colonne Present.
-- Tests : une tâche `today` rendue sous un slot `today` ; `this_week`/`this_month` seuls
-  présents ; `this_week mardi` absente.
-
-**Hors C1** : dates niveau jour (C2), `tomorrow` franchissant le vendredi (C2), marqueur
-de nature (C2), filtrage par nature.
-
-### Idée
-- Probable intégrer les taches avec répétitions dans la vue Tree. C'est surtout ce discréminant qui a du sens. L'usage des slot relatifParent n'est qu'une conséquence de la répétition
-- réfléchir aux tâches hybrique  qui ont du relatifNow et relatifParent. par exemple le cas (every week jeudi et today). Ca correspond à une tache réguliere qui n'a pas été fini sur son jour normal et qui doit être traité en plus. vérifier si on la voit bien
-- Afficher simutanement les 2 modes de visualisation tree et list
-- on peut rajouter un slot yesterday (ça serait le premier slot dans le passé)
-
-### C2 — Projection croisée (rétablit l'invariant) ⏳
-
-Objectif : toute tâche visible dans **les deux** vues via projection by the snapDate jour.
-`getSlotIdCurrent(3)` **reste** le weekday civil — le « jour courant relatif » est
-trivialement `today`, géré côté appelant.
-
-**C2a ✅ FAIT — snapDate jour** (`slot-date.js`)
-- `getDefaultDates()` ajoute `{slotid:'today', date:<auj.>}`.
-- `getDate()` niveau 3 : `today` → snapDate.date ; `tomorrow` → +1j ; weekday →
-  `snapDate_semaine + (weight[id] - 1)` jours.
-- `shiftDate('day')` → +1 jour.
-
-**C2b ✅ FAIT — Projection tree** (`slotviewtree.jsx`, `task.js`, `slot-branch.js`)
-- `branchGetRelatifPresentDayId(branch)` dans `slot-branch.js` : retourne l'ancre level-3
-  relatifPresent (`today`/`tomorrow`) ou null (analogue à `branchHasRelatifParentDay`).
-- `taskRelativePresentToParent(task, snapDates)` dans `task.js` : projette `today`/`tomorrow`
-  → weekday via `getDate` (C2a) ; gère le contexte semaine (this_week/next_week) et mois ;
-  préserve l'heure (matin/aprem) ; retourne null pour les weekends.
-  Si `today` absent de la DB (avant Phase E), utilise `getDefaultDates()` comme référence
-  cohérente — évite l'incohérence entre un `today` fallback et un `this_week` périmé.
-- `SlotViewTree` récupère snapDates via `useGetSnapDatesQuery()` ; calcule `projectedTasks`
-  (tâches relatifPresent projetées) et les fusionne avec `relatifParentTasks`.
-- ⚠️ **À vérifier en Phase E** : une fois `today` stocké en base via « Démarrer Jour »,
-  vérifier que la projection se positionne sur le bon slot (snapDate DB vs VITE_FAKE_NOW).
-
-**C2b-bis ✅ FAIT — Tâches imprécises dans le tree** (`slotviewtree.jsx`, `task.js`)
-- Décision : `this_week`/`this_month` seuls (et `next_week`/`next_month`) doivent aussi
-  apparaître dans le tree (lignes Semaine/Mois), comme `today` apparaît dans la colonne Jour.
-- Implémentation finale (refactor) : `treeTasks = tasks.map(t => taskRelativePresentToParent(t, snapDates) ?? t)`.
-  Les tâches sans ancre relatifPresent passent directement (fonction retourne null → `?? t`) ;
-  `today`/`tomorrow` sont projetés. Si la projection échoue (ex: `tomorrow` un vendredi →
-  weekend), la tâche originale est préservée et apparaît dans la ligne Semaine.
-- Prédicat `taskHasRelatifPresentDay` disponible dans `task.js` (non utilisé dans le
-  composant, sert à la lisibilité et aux tests).
-
-**C2c ✅ FAIT — Projection list** (`slotviewlist.jsx`, `task.js`, `slot-branch.js`)
-- `branchGetRelatifParentDayId` dans `slot-branch.js` (symétrique de `branchGetRelatifPresentDayId`).
-- `taskRelativeParentToPresent(task, snapDates)` dans `task.js` : projette `mardi`/etc.
-  → `today` ou `tomorrow` si leur date correspond ; null sinon (heure préservée).
-- `SlotViewList` : `tasks.map(t => taskRelativeParentToPresent(t, snapDates) ?? t)`.
-  Invariant maintenu : les weekday ≠ today/tomorrow restent visibles tels quels.
-- Les tâches projetées conservent `originalSlotExpr` ; `task-dialog.jsx` et
-  `slot-selection-button.jsx` utilisent `originalSlotExpr ?? slotExpr` pour l'affichage.
-- ⚠️ **À vérifier** : le double stockage de slotExpr. Vérifier que le bon slotExpr est utilisé partout.
-
-**C2d — Marqueur de nature** (`slot.jsx` ou `slot-title.jsx`) — optionnel, après C2b+C2c
-- Indicateur visuel rolling (relatifPresent) / fixe (relatifParent) / récurrent.
-
-**Fichiers par étape** :
-
-| Étape | Fichiers |
-|---|---|
-| C2a ✅ | `slot-date.js`, `slot-date.test.js` |
-| C2b ✅ | `slot-branch.js`, `task.js`, `slotviewtree.jsx` |
-| C2b-bis ✅ | `task.js`, `task.test.js`, `slotviewtree.jsx` |
-| C2c ✅ | `slotviewlist.jsx`, `task.js`, `slot-branch.js`, `task-dialog.jsx`, `slot-selection-button.jsx` |
-| C2d | `slot.jsx` ou `slot-title.jsx` |
-
-**Risques** :
-- `weight['today']` (=1) non commensurable au cycle `lundi..vendredi` (1..5) : tri/distance
-  inter-familles niveau jour devra passer par projection via snapDate, pas par `weight`.
-- **C2b/C2c — originalSlotExpr à vérifier** : la couverture de test de la projection
-  (detail dialog, slot-selection-button, getTaskNextSlotLabel) est partielle. À valider
-  manuellement sur plusieurs cas (today/tomorrow côté tree, mercredi=today côté list,
-  heure préservée) avant de considérer C2 stable.
+**Risques restants** :
+- `originalSlotExpr` à vérifier dans `getTaskNextSlotLabel` et autres composants.
+- En Phase E : vérifier projection vs snapDate DB après « Démarrer Jour ».
 
 ---
 
 ## Phase D — Sélecteur
 
-UI du slot-picker (`slot-picker*.jsx`) pour choisir, à l'affectation d'une tâche, entre
-jour **roulant** (`today`/`tomorrow`) et jour **fixe** (`mardi`).
+### Objectif
+
+Permettre à l'utilisateur d'affecter `today`/`tomorrow` à une tâche via le slot-picker
+graphique (bouton "Choix créneau"). Actuellement le picker n'affiche que les weekdays.
+
+### Spec UI — Option B : intégrés sous `this_week`
+
+`today`/`tomorrow` apparaissent **aux côtés des weekdays** sous le nœud `this_week` du
+picker, avec sous-slots `matin`/`aprem`. L'utilisateur voit les deux familles sans toggle.
+
+```
+this_month
+  this_week
+    [today]   [tomorrow]   [lundi]   [mardi]   [mercredi]   [jeudi]   [vendredi]
+  next_week …
+next_month …
+```
+
+**Contrainte clé** : `today`/`tomorrow` ont des **chemins autonomes** (`path: 'today'`),
+pas hiérarchiques. Même affichés sous `this_week`, leur `path` doit rester `'today'` pour
+que `selectionMapToExpr` produise l'expression `today` (et non `this_month this_week today`).
+`selectionToTree` ignore les clés vides, et `isInsideSelected` est compatible avec les
+chemins standalone — aucune modification de ces fonctions n'est nécessaire.
+
+Conséquence : quand `today` est sélectionné, `this_week` ne s'affiche pas en bleu clair
+(les chemins ne sont pas hiérarchiquement liés). Comportement correct et assumé.
+
+### Séquence d'étapes
+
+**D1 — Injection dans le picker** (1 fichier, résultat visuel + fonctionnel immédiat)
+
+Dans `src/components/slot-select-dialog.jsx`, post-traitement de `slotsFromConf` :
+
+1. Définir hors composant :
+```jsx
+const PRESENT_DAY_SLOTS = [
+    { id: 'today',    path: 'today',    inner: [
+        { id: 'matin', path: 'today matin',    inner: [] },
+        { id: 'aprem', path: 'today aprem',    inner: [] },
+    ]},
+    { id: 'tomorrow', path: 'tomorrow', inner: [
+        { id: 'matin', path: 'tomorrow matin', inner: [] },
+        { id: 'aprem', path: 'tomorrow aprem', inner: [] },
+    ]},
+]
+```
+
+2. Post-traitement qui injecte ces slots sous `this_week` et filtre le niveau racine
+   (évite la duplication quand `makeSlotWithSelection` injecte `today` à la racine) :
+```jsx
+function withPresentDaySlots(slots) {
+    return slots
+        .filter(s => s.id !== 'today' && s.id !== 'tomorrow')
+        .map(slot => {
+            if (slot.id !== 'this_month') return slot
+            return {
+                ...slot,
+                inner: slot.inner.map(week => {
+                    if (week.id !== 'this_week') return week
+                    return { ...week, inner: [...PRESENT_DAY_SLOTS, ...week.inner] }
+                })
+            }
+        })
+}
+```
+
+3. Remplacer dans le rendu :
+```jsx
+{withPresentDaySlots(slotsFromConf).map((slot, index) => <SlotTreeSelect .../>)}
+```
+
+**D2 — Tests** : `src/components/slot-select-dialog.test.jsx` (nouveau)
+
+- `today` et `tomorrow` présents dans le picker (`[data-slot-path="today"]`)
+- `today matin` / `today aprem` présents
+- Quand `selectionExpr = 'today'` : nœud `today` sélectionné (classe `bg-blue-400`)
+
+**Fichiers par étape** :
+
+| Étape | Fichiers |
+|---|---|
+| D1 | `src/components/slot-select-dialog.jsx` |
+| D2 | `src/components/slot-select-dialog.test.jsx` (nouveau) |
+
+Pas de changement dans `slot-view.ts`, `SLOTIDS_BY_LEVEL`, `slotViewFilter`, `selection-tree.js`.
+
+**D3 — Couverture complète des transitions d'état** ✅
+
+Réducteur pur `src/data/slot-selection.js` (seul point de vérité, importé par le composant
+ET les tests) : `exprToSelection`/`selectionToExpr`/`selectionToggle` (+ répétition, disable,
+shift). Tests `src/data/slot-selection.test.js` couvrant ouverture, raffinage, accumulation,
+remontée/désélection, récurrence + today, shift d'un motif récurrent.
+
+> D3 avait d'abord modélisé `today`/`tomorrow` en **ancres autonomes** (accumulation
+> multi-racine). Voir **D4** : revu en feuilles localisées.
+
+**D4 — `today`/`tomorrow` en feuilles localisantes** ✅
+
+Pour que le raffinage de `this_week` en `today` soit **homogène** avec le raffinage de
+`this_month` en `this_week`, `today`/`tomorrow` deviennent des **feuilles localisées niveau 3**
+sous `this_week` (`this_month this_week today`), comme un weekday — au lieu d'ancres autonomes.
+
+- `slot-select-dialog.jsx` : `PRESENT_DAY_SLOTS` à chemins localisés.
+- `slot-selection.js` : `normalizePresentDayKeys` / `orderForest` / `PRESENT_DAY_IDS` supprimés ;
+  `selectionToggle` générique gère le raffinage `this_week`→`today` sans cas particulier.
+- `this_week` + clic `today` → `this_month this_week today` (raffinage) ; `today` + `mardi` →
+  `this_month this_week today mardi` (multi niveau 3).
+- Impact vérifié : projection (`task.js`) robuste au préfixe ; `branchComplete` localise déjà
+  `today` ; roulement (Phase E) non implémenté. Spec maj (`slot-model-spec.md` §4/§5).
+- **Reste** : `test.todo` *disables aux limites*.
+
+**D5 — Pureté de la vue (TODO TECHNIQUE plus tard)**
+
+Comportement du picker : couvert via `docs/slot-picker.test.md` + `src/data/slot-selection.test.js`.
+
+Reste : la UI de `slot-select.jsx` n'est pas pure par rapport au modèle `isInside` — elle
+reconstruit l'état d'affichage (`selected`/`isInside`/`isDirectParentOfRelativeSelection`/`disable`)
+depuis la Map brute, et `isInside` est recalculé en double dans `slot-tree-select.jsx`.
+Direction : extraire ces dérivations (sélecteur dans `slot-selection.js` ou props calculées
+depuis le dialog).
+
+---
 
 ## Phase E — Roulement « Démarrer Jour »
 
-- `branchShift` (`slot-branch++.js`) **conscient de la famille** : un Démarrer de niveau
-  L ne roule que les ancres **relatifPresent** de L ; laisse compléments et absolus
-  fixes ⇒ « Démarrer Jour » roule `tomorrow→today`, laisse `mardi` fixe.
-- `slot-date.js` : `shiftDate('day')` ✅ C2a ; `getSnapDateToSave` niveau jour.
+- `branchShift` **conscient de la famille** : roule les ancres relatifPresent, laisse les
+  compléments fixes ⇒ `tomorrow→today`, `mardi` reste `mardi`.
+- `slot-date.js` : `getSnapDateToSave` niveau jour.
 - `action-shift.jsx` : 3ᵉ option `day`.
-- Tests : roulement jour ; non-régression `branchShift('week'|'month')` ; **`'day'` ne
-  touche pas `mardi`**.
+- Tests : roulement jour ; non-régression week/month ; `'day'` ne touche pas `mardi`.
 
 ## Phase F — Complément semaine `semaine N du mois` (futur)
 
-Complément relatifParent niveau 2 raffinant le mois. La règle « famille » de
-`branchShift` s'appliquera aussi au niveau semaine. Même patron que les weekdays.
+Complément relatifParent niveau 2 raffinant le mois. Même patron que les weekdays.
 
 ## Phase G — Famille `absolu` (futur)
 
-`mars` (mois de l'année), `semaine N de l'année`, `jour N de l'année` : ancres
-auto-localisantes **fixes** (ne roulent pas). Exige un niveau année.
+`mars`, `semaine N de l'année`, `jour N de l'année` : ancres fixes, ne roulent pas.
 
 ## Phase H — Filtre par nature (futur)
 
-Filtrer les vues pour n'afficher que les tâches `isFixed` (complement relatifParent :
-`lundi..vendredi`) ou `isRolling` (ancre relatifPresent : `today`/`tomorrow`).
+Filtrer les vues pour n'afficher que les tâches `isFixed` ou `isRolling`.
 S'appuie sur `taskHasRelatifParentDay` / `taskHasRelatifPresentDay` déjà disponibles.

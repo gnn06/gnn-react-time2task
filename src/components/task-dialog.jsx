@@ -56,7 +56,10 @@ function Content({task, setTask}) {
     
     const onSlotExprChange = e => {
         const slotExpr = e;
-        const newTask = produce(task, draft => { draft.slotExpr = slotExpr; })
+        const newTask = produce(task, draft => {
+            draft.slotExpr = slotExpr;
+            delete draft.originalSlotExpr;
+        })
         setTask(newTask)
     };
 

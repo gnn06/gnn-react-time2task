@@ -23,6 +23,9 @@ familles coexistent en permanence : aucune n'est déductible des autres.
 
 Conséquence : **pas de migration, pas de réduction** d'une famille vers une autre.
 
+## Glossaire
+forme localisé = this_month this_week mardi. On garde les slot parent.
+
 ## 2. Deux rôles, trois familles
 
 Chaque identifiant joue l'un de deux **rôles** :
@@ -62,7 +65,11 @@ Comportement au roulement (§ 8) : `relatifPresent` roule ; `absolu` est fixe ;
 > `relatifParent`** aux niveaux plus fins, dans l'ordre des niveaux croissants.
 
 - `multi` (plusieurs valeurs au même niveau) autorisé **à tout rang** : ancres
-  (`today tomorrow`, `this_week next_week`) comme compléments (`this_week mardi jeudi`).
+  (`this_week next_week`) comme compléments (`this_week mardi jeudi`, `this_week today mardi`).
+- `today`/`tomorrow` (`relatifPresent` niveau jour) sont des **feuilles localisées** sous
+  l'ancre courante : `this_month this_week today` (et non une racine autonome). Dans le
+  slot-picker ils se comportent comme un weekday (raffinage de `this_week`, multi avec
+  `mardi`). `branchComplete` localise déjà une forme nue `today` → `this_month this_week today`.
 - `every N` (récurrence) porté par **l'ancre**, à **tout niveau**.
 - `+ n` (shift) porté par **l'ancre** `relatifPresent`.
 
@@ -81,8 +88,10 @@ Comportement au roulement (§ 8) : `relatifPresent` roule ; `absolu` est fixe ;
    - `mardi` seul est **incomplet** → normalisé en préfixant l'ancre courante
      (`branchComplete` : `mardi` → `this_week mardi`).
 3. **Pas de saut de niveau** dans la chaîne de compléments.
-4. **`multi` homogène** : un `multi` regroupe des éléments de **même rôle et même
-   niveau**. Mélanger ancre et complément dans un même `multi` est hors modèle.
+4. **`multi` homogène** *au sein d'une branche* : un `multi` complément regroupe des
+   éléments de **même niveau**. `today`/`tomorrow` (`relatifPresent` jour) peuvent figurer
+   dans le `multi` niveau jour aux côtés des weekdays `relatifParent` (`this_week today mardi`) :
+   c'est l'unique cas toléré de feuille `relatifPresent` en position de complément.
 5. `+ n` et `every N` **uniquement sur l'ancre**.
 
 ## 6. Shift et alias

@@ -6,6 +6,11 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- slot-picker : sélection multi-créneaux par accumulation (ex. today + un weekday coexistent)
+- today/tomorrow : slots relatifs jour — visibles dans les deux vues (tree + list) par projection croisée
+- vue tree : today/tomorrow projetés sur leur colonne weekday ; this_week/this_month seuls affichés directement
+- vue list : tâches weekday projetées en today/tomorrow quand leur date correspond
+- icône PushPin sur les tâches à jour fixe (lundi..vendredi)
 - FIX next_slot = undefined when every 3 this_month
 - UI : replace contextual menu of task row by edit button ; delete task moved into edit dialog
 - FIX slot view tree : tâche avec following_week + N apparaissait sous this_month au lieu de son propre nœud

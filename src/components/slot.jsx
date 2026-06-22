@@ -13,6 +13,8 @@ import { SortedTaskList } from "./sorted-task-list";
 import { findTaskBySlotExpr } from "../data/task";
 import { SlotPath } from "../data/slot-path";
 import { slotHasImpreciseIcon } from "../data/slot-view";
+import { getDate } from "../data/slot-date";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
@@ -22,6 +24,7 @@ export default function Slot({slot, tasks}) {
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
+    const { data: snapDates, isSuccess: snapDatesReady } = useGetSnapDatesQuery();
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot?.path ?? "" })
 
     if (!slot) return null;
@@ -93,7 +96,7 @@ export default function Slot({slot, tasks}) {
     return <React.Fragment>        
             <div className={"group " + slotStyle} data-slot-path={slot.path}>
                 <div className="flex flex-row">
-                    <SlotTitle  slot={slot}/>
+                    <SlotTitle slot={slot} date={(snapDatesReady && getDate(slot, snapDates)) || ""}/>
                     <IconButton className={targetClassName} onClick={onSlot}><TargetIcon /></IconButton>
                     <CollapseButton slot={slot}/>
                 </div>
