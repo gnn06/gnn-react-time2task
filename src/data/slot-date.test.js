@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, vi } from 'vitest'
 
-import { getDate, getDateString, getDefaultDates, getISODate, shiftDate } from "./slot-date";
+import { getDate, getDateString, getDefaultDates, getISODate, getSnapSlotId, shiftDate } from "./slot-date";
 
 describe('getDate', () => {
     beforeEach(() => {
@@ -177,6 +177,23 @@ describe('getDateString', () => {
     test('month', () => {
         const result = getDateString(new Date("2024-01-01"), 1)
         expect(result).toEqual("2024-01")
+    })
+
+    test('day — E1b', () => {
+        const result = getDateString(new Date("2024-01-15"), 3)
+        expect(result).toEqual("2024-01-15")
+    })
+});
+
+describe('getSnapSlotId — E1a', () => {
+    test('month → this_month', () => {
+        expect(getSnapSlotId('month')).toBe('this_month')
+    })
+    test('week → this_week', () => {
+        expect(getSnapSlotId('week')).toBe('this_week')
+    })
+    test('day → today', () => {
+        expect(getSnapSlotId('day')).toBe('today')
     })
 });
 

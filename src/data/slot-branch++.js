@@ -1,6 +1,6 @@
 import { _chooseSlotForSortBranch, _getBranchPreviousOrShift, branchRemoveDisable, getBranchLowerSlot, 
           getBranchWeight, getBranchTail, isBranchEqualShallow } from "./slot-branch";
-import { getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
+import { getSlotIdFamily, getSlotIdLevel, getSlotIdPrevious } from "./slot-id";
 
 /**
  * differs from isBranchEqualOrInclude isBranchEqualDeep('this_week lundi', 'this_week') = false)
@@ -103,7 +103,10 @@ export function branchCompare(branch1, branch2) {
 export function branchShift (branch, levelToShift) {
     if (branch === undefined) return undefined
     if (typeof branch === 'string') {
-        if (getSlotIdLevel(branch) === getSlotIdLevel(levelToShift)) {
+        const sameLevel = getSlotIdLevel(branch) === getSlotIdLevel(levelToShift);
+        const relatifPresentOnly = getSlotIdFamily(levelToShift) === 'generic'
+            && getSlotIdFamily(branch) !== 'relatifPresent';
+        if (sameLevel && !relatifPresentOnly) {
             return getSlotIdPrevious(branch, branch.repetition)
         } else {
             return branch
@@ -111,7 +114,11 @@ export function branchShift (branch, levelToShift) {
     }
     if (branch.type === 'branch') {
         let head;
-        if (getSlotIdLevel(branch.value.at(0)) === getSlotIdLevel(levelToShift)) {
+        const headId = branch.value.at(0);
+        const sameLevelBranch = getSlotIdLevel(headId) === getSlotIdLevel(levelToShift);
+        const relatifPresentOnlyBranch = getSlotIdFamily(levelToShift) === 'generic'
+            && getSlotIdFamily(headId) !== 'relatifPresent';
+        if (sameLevelBranch && !relatifPresentOnlyBranch) {
             head = _getBranchPreviousOrShift(branch)
         } else {
             head = branch;

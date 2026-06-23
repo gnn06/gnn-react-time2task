@@ -6,6 +6,7 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- « Démarrer Jour » : roulement today/tomorrow via snapDate jour ; lundi..vendredi inchangés
 - slot-picker : sélection multi-créneaux par accumulation (ex. today + un weekday coexistent)
 - today/tomorrow : slots relatifs jour — visibles dans les deux vues (tree + list) par projection croisée
 - vue tree : today/tomorrow projetés sur leur colonne weekday ; this_week/this_month seuls affichés directement

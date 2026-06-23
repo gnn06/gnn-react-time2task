@@ -18,8 +18,8 @@
 | **A** | `SLOT_DEFS` source unique + classifieurs famille/rôle | ✅ fait |
 | **B** | Modèle : ancre jour `today`/`tomorrow` (valides, stockables, navigables, aliasées) | ✅ fait |
 | **C** | Affichage : projection croisée (tree + list) + marqueur de nature | ✅ fait |
-| **D** | Sélecteur : UI de choix relatifPresent / relatifParent | ✅ fait (D5 pureté vue + `disables aux limites` : TODO différés) |
-| **E** | Roulement : « Démarrer Jour » (`branchShift` famille-aware + snapDate jour roulé) | à venir |
+| **D** | Sélecteur : UI de choix relatifPresent / relatifParent | ✅ fait (D5 pureté vue + `disables aux limites` + répétition/disable sur `today` : TODO différés) |
+| **E** | Roulement : « Démarrer Jour » (`branchShift` famille-aware + snapDate jour roulé) | ✅ fait (label bouton cosmétique : TODO différé) |
 | **F** | Complément relatifParent semaine : `semaine N du mois` | futur |
 | **G** | Famille `absolu` : `mars`, `jour N de l'année`, `semaine N de l'année` | futur |
 | **H** | Filtre par nature (isFixed / isRolling) | futur |
@@ -181,11 +181,48 @@ depuis le dialog).
 
 ## Phase E — Roulement « Démarrer Jour »
 
-- `branchShift` **conscient de la famille** : roule les ancres relatifPresent, laisse les
-  compléments fixes ⇒ `tomorrow→today`, `mardi` reste `mardi`.
-- `slot-date.js` : `getSnapDateToSave` niveau jour.
-- `action-shift.jsx` : 3ᵉ option `day`.
-- Tests : roulement jour ; non-régression week/month ; `'day'` ne touche pas `mardi`.
+### E0 — Stockage DB du snapDate jour ✅ (actionnable sans code)
+
+Row `SnapDates` : `{slotid: 'today', date: 'YYYY-MM-DD'}`.
+`getDate()` et `getDefaultDates()` le lisent déjà (Phase C). L'utilisateur peut insérer
+la ligne manuellement dans Supabase pour gérer le snap à la main.
+
+### E1 — Bugs à corriger (prérequis au bouton « Démarrer Jour »)
+
+**E1a — `getSlotIdFirstLevel(3)` retourne `'lundi'`** (au lieu de `'today'`).
+`SLOTIDS_BY_LEVEL['3']` = weekdays (compléments en priorité).
+Fix : ajouter `getSnapSlotId(levelID)` dans `slot-date.js` → `'this_month'`/`'this_week'`/`'today'`
+(s'appuie sur `ANCHOR_IDS_BY_LEVEL`), et l'utiliser dans `action-shift.jsx:63` à la place de
+`getSlotIdFirstLevel(getSlotIdLevel(level.value))`.
+
+**E1b — `getDateString` ne gère pas le niveau 3** → `getSnapDateToShow('day', …)` retourne `""`.
+Fix : ajouter `else if (level === 3) { return getISODate(date) }` dans `slot-date.js:133`.
+
+**E1c — `branchShift` non conscient de la famille au niveau 3** (`slot-branch++.js:107`).
+Avec `levelToShift = 'day'`, les compléments `lundi..vendredi` (level 3) seraient décalés
+(`mardi → lundi`) alors qu'ils doivent rester fixes.
+Fix : n'appliquer le shift que sur les slots `relatifPresent` quand `levelToShift` est générique :
+```js
+const shouldShift = getSlotIdLevel(branch) === getSlotIdLevel(levelToShift)
+    && (getSlotIdFamily(levelToShift) !== 'generic'
+        || getSlotIdFamily(branch) === 'relatifPresent');
+```
+
+### E2 — Implémentation (non prioritaire)
+
+| Fichier | Modification |
+|---------|-------------|
+| `src/data/slot-date.js` | `getDateString` (E1b) + `getSnapSlotId` (E1a) |
+| `src/data/slot-branch++.js` | `branchShift` family-aware (E1c) |
+| `src/data/task.js` | `taskShiftFilter` cas `'day'` (filtrer `tomorrow`) |
+| `src/components/action-shift.jsx` | Option `{value:'day'}` + `getSnapSlotId` (E1a) |
+
+Tests TDD :
+- `branchShift('tomorrow', 'day')` → `'today'`
+- `branchShift('today', 'day')` → `'today'` (plancher)
+- `branchShift('this_week mardi', 'day')` → inchangé
+- `getSnapSlotId('day')` → `'today'`
+- `getSnapDateToSave('day', '2026-06-22')` → `'2026-06-23'`
 
 ## Phase F — Complément semaine `semaine N du mois` (futur)
 

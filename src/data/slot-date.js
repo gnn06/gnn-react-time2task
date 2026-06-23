@@ -1,5 +1,5 @@
 import moment from "moment"
-import { getSlotIdFirstLevel, getSlotIdLevel, isAnchor, weight } from "./slot-id"
+import { ANCHOR_IDS_BY_LEVEL, getSlotIdFirstLevel, getSlotIdLevel, isAnchor, weight } from "./slot-id"
 import { getNow } from "../utils/now"
 
 export function getDefaultDates() {
@@ -28,6 +28,11 @@ export function getSnapDateToShow(levelID, snapDates) {
     const result = snapDates.find(el => getSlotIdLevel(el.slotid) === getSlotIdLevel(levelID))
     const snapDate = result && getDateString(new Date(result.date), level)
     return (snapDate || "")
+}
+
+export function getSnapSlotId(levelID) {
+    const level = getSlotIdLevel(levelID);
+    return ANCHOR_IDS_BY_LEVEL[level.toString()][0];
 }
 
 export function getSnapDateToSave(levelID, snapDate) {
@@ -134,6 +139,8 @@ export function getDateString(date, level) {
     if (level === 1) { // month
         return moment(date).format("YYYY-MM")
     } else if (level === 2) { // week
+        return getISODate(date)
+    } else if (level === 3) { // day
         return getISODate(date)
     } else return ""
 }

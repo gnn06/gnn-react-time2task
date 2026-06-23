@@ -146,6 +146,13 @@ Le snapDate de niveau est le **pont** : connaissant la date concrète de
 calendaire (`today` → `mercredi`, `this_month` → `janvier`) et réciproquement. C'est un
 **service d'affichage** ; il ne modifie pas le stockage.
 
+**Invariant — les compléments `relatifParent` n'ont pas de snapDate propre.**
+`lundi`…`vendredi` (niveau 3) dérivent leur date concrète du snapDate `this_week` :
+`lundi` = lundi de `this_week`, `mardi` = `this_week` + 1 j, etc. Il n'existe pas de
+ligne `{slotid:'lundi'}` en DB. Seules les **ancres `relatifPresent`** ont une entrée
+dans `SnapDates` (`this_month`, `this_week`, `today`). C'est cohérent avec le fait que
+le roulement ne porte que sur les ancres (§ 8).
+
 > L'affichage des familles dans chaque vue (arbre / liste) et l'UI de sélection
 > (relatifPresent vs relatifParent vs absolu) font l'objet d'une spec séparée —
 > **à concevoir**.
