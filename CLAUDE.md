@@ -13,7 +13,7 @@
 
 Le code doit toujours refléter la spécification — toute divergence est soit un bug, soit un signe que la spec doit être mise à jour.
 
-- **TDD** : écrire un test qui échoue avant de toucher à l'implémentation
+- **TDD** : écrire un test qui échoue avant de toucher à l'implémentation — une règle de filtrage ou de partition doit être testée même si ses fonctions constitutives le sont déjà
 - **DRY** : explorer le code existant avant d'écrire du nouveau — la logique, la valeur ou le type cherché existe peut-être déjà (opérations sur un type, fonctions du domaine comme `getSlotIdCurrent`)
 - **Responsabilité unique** : chaque fonction/composant a une seule responsabilité — scinder puis composer plutôt que mélanger
 - **Encapsulation** : préférer une méthode de classe à une fonction standalone quand la logique opère sur un objet existant

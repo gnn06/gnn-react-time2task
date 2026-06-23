@@ -746,6 +746,41 @@ describe('isTaskImprecise', () => {
         test('this_week seul → false', () => {
             expect(taskHasRelatifParentDay(task('this_week'))).toBe(false)
         })
+        test('today vendredi → true (mixte)', () => {
+            expect(taskHasRelatifParentDay(task('today vendredi'))).toBe(true)
+        })
+    })
+
+    describe('routage tree/list — partition v2', () => {
+        const t = slotExpr => ({ slotExpr })
+        const forTree = t => taskHasRelatifParentDay(t)
+        const forList = t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t)
+
+        test('this_week lundi → tree uniquement', () => {
+            const task = t('this_week lundi')
+            expect(forTree(task)).toBe(true)
+            expect(forList(task)).toBe(false)
+        })
+        test('today → list uniquement', () => {
+            const task = t('today')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('this_week seul → list uniquement', () => {
+            const task = t('this_week')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('this_month seul → list uniquement', () => {
+            const task = t('this_month')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('today vendredi → les deux vues (tâche mixte)', () => {
+            const task = t('today vendredi')
+            expect(forTree(task)).toBe(true)
+            expect(forList(task)).toBe(true)
+        })
     })
 
     describe('taskRelativePresentToParent — C2b projection tree', () => {

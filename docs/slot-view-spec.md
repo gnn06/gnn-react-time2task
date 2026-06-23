@@ -11,79 +11,24 @@ Toutes les tâches doivent être visibles. Aucune tâche ne doit manquer, quel q
 
 ---
 
-## Vue par famille — v1 TEMPORAIRE ~~(validation du modèle relatif jour)~~
+## Partition par famille — v2
 
-> **Statut : remplacée par la projection croisée C2 (ci-dessous).** Décrite ici pour
-> mémoire. La partition stricte (une tâche dans exactement une vue) **cassait
-> volontairement l'invariant de visibilité**. La projection C2 le rétablit.
+Chaque vue affiche un sous-ensemble de tâches selon la famille du slot JOUR.
 
-### Règle de routage v1 (obsolète — remplacée par C2)
+### Règle de routage
 
-- slot JOUR relatifParent (`lundi`…`vendredi`) → tree uniquement
-- sinon (`today`/`tomorrow`, `this_week`/`this_month` seuls) → list uniquement
+| slotExpr | Tree | List |
+|---|---|---|
+| `this_week lundi`, `this_week lundi matin` | ✓ | ✗ |
+| `today`, `tomorrow`, `today matin` | ✗ | ✓ |
+| `this_week` seul, `this_month` seul (imprécis) | ✗ | ✓ |
+| `today vendredi` (mixte) | ✓ | ✓ |
 
----
+- **Tree** : `taskHasRelatifParentDay(t)` — a un jour relatifParent (`lundi`..`vendredi`)
+- **List** : `!taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t)` — pas de jour relatifParent, OU a un jour relatifPresent (tâches mixtes incluses dans les deux vues)
 
-## Projection croisée — C2
-
-Toute tâche est visible dans **les deux** vues. Le routage n'est plus une partition :
-les tâches apparaissent dans les deux vues, directement ou via projection.
-
-### Tâche fantôme et originalSlotExpr
-
-Une **projection** crée une tâche fantôme : `{ ...task, slotExpr: projectedSlotExpr, originalSlotExpr: task.slotExpr }`.
-- `slotExpr` projeté sert au positionnement dans la vue (slot matching).
-- `originalSlotExpr` conserve le slotExpr métier réel.
-- Les composants d'édition (`task-dialog`, `slot-selection-button`) utilisent
-  `originalSlotExpr ?? slotExpr` pour afficher et modifier le slot réel.
-
-### Vue tree (vision absolue / calendaire)
-
-Structure inchangée (mois › semaine › colonnes weekday › matin/aprem).
-
-**Filtre tree** — par famille du slot JOUR (l'heure ne compte pas dans le routage) :
-
-| slotExpr | Traitement dans le tree |
-|---|---|
-| `this_week mardi`, `this_week mardi matin` | direct — colonne weekday |
-| `today`, `tomorrow`, `today matin` | **projection** → colonne weekday via snapDate jour |
-| `this_week` seul, `next_week` seul (imprécis) | direct — ligne Semaine |
-| `this_month` seul, `next_month` seul (imprécis) | direct — ligne Mois |
-
-Implémentation : `tasks.map(t => taskRelativePresentToParent(t, snapDates) ?? t)`.
-- Si la projection échoue (ex: `tomorrow` un vendredi → weekend), la tâche originale est
-  préservée et apparaît dans la ligne Semaine (invariant maintenu).
-
-### Vue list (vision relative au présent)
-
-Axe jour = ancres `today`/`tomorrow`.
-
-**Filtre list** — symétrique du tree :
-
-| slotExpr | Traitement dans la list |
-|---|---|
-| `today`, `tomorrow`, `today matin` | direct — slot today/tomorrow |
-| `this_week mardi` (= aujourd'hui) | **projection** → `today` via snapDate jour |
-| `this_week mardi` (= demain) | **projection** → `tomorrow` via snapDate jour |
-| `this_week mardi` (autre jour) | direct — ligne Semaine |
-| `this_week` seul, `this_month` seul (imprécis) | direct — ligne Semaine/Mois |
-
-Implémentation : `tasks.map(t => taskRelativeParentToPresent(t, snapDates) ?? t)`.
-- Si la projection échoue (weekday ≠ today/tomorrow), la tâche originale est préservée.
-
-### Marqueur de nature (C2d)
-
-`TaskInSlot` affiche une icône `PushPin` pour les tâches à jour **fixe** (complement
-relatifParent : `lundi..vendredi`). Détection via `taskHasRelatifParentDay` appliqué à
-`originalSlotExpr ?? slotExpr` — une tâche projetée en `today` depuis `this_week mardi`
-affiche bien l'icône fixe.
-
-### Hors périmètre C2 actuel (différé)
-
-- franchissement de semaine de `tomorrow` un vendredi vers `next_week lundi` (actuellement
-  la tâche reste visible dans la ligne Semaine via le fallback `?? t`, mais n'est pas
-  projetée dans la colonne lundi de la semaine suivante) ;
-- filtrage par nature (Phase H).
+Les tâches mixtes (ex. `today vendredi`) apparaissent dans les deux vues : la list
+les positionne via `_chooseSlotForSortBranch` qui sélectionne `today` en priorité.
 
 ---
 

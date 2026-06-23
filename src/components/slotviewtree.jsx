@@ -4,9 +4,8 @@ import { slotViewFilterSelection } from "../data/slot-view";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import { IDizer } from "../utils/stringUtil";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
-import { taskRelativePresentToParent } from "../data/task";
+import { taskHasRelatifParentDay } from "../data/task";
 import { Parser } from "../data/parser";
-import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours
 const parser = new Parser();
@@ -19,15 +18,8 @@ const parser = new Parser();
  */
 export default function SlotViewTree({ tasks, selection, handleSelection, conf }) {
 
-    const { data: snapDates = [], isSuccess: snapDatesReady } = useGetSnapDatesQuery()
     const maxLevel = conf.levelMaxIncluded
-
-    // C2b/C2b-bis : today/tomorrow projetés vers leur weekday ; les autres tâches passent
-    // directement. Si la projection échoue (ex: tomorrow un vendredi → weekend), la tâche
-    // originale est conservée et apparaît dans la ligne Semaine.
-    const treeTasks = snapDatesReady
-        ? tasks.map(t => taskRelativePresentToParent(t, snapDates) ?? t)
-        : tasks;
+    const treeTasks = tasks.filter(taskHasRelatifParentDay);
     const taskPaths = treeTasks
         .map(t => { const h = getBranchHash(branchComplete(parser.parse(t.slotExpr))); return h ? IDizer(h) : null })
         .filter(Boolean)
