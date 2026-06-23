@@ -19,8 +19,8 @@ const parser = new Parser();
 export default function SlotViewTree({ tasks, selection, handleSelection, conf }) {
 
     const maxLevel = conf.levelMaxIncluded
-    const treeTasks = tasks.filter(taskHasRelatifParentDay);
-    const taskPaths = treeTasks
+    const allTreeTasks = tasks.filter(taskHasRelatifParentDay)
+    const taskPaths = allTreeTasks
         .map(t => { const h = getBranchHash(branchComplete(parser.parse(t.slotExpr))); return h ? IDizer(h) : null })
         .filter(Boolean)
         .map(tokens => maxLevel ? tokens.slice(0, maxLevel) : tokens);
@@ -37,11 +37,11 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
 
     for (const moisSlot of moisSlots) {
         rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>Mois</DashedRowHeader>);
-        rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={treeTasks} /></DashedCell>);
+        rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={allTreeTasks} /></DashedCell>);
 
         for (const semaineSlot of (moisSlot.inner || [])) {
             rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>Semaine</DashedRowHeader>);
-            rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={treeTasks} /></DashedCell>);
+            rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={allTreeTasks} /></DashedCell>);
 
             const daySlots = semaineSlot.inner || [];
             if (daySlots.length === 0) continue;
@@ -51,7 +51,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             // Ligne Jour : une cellule par colonne
             rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>Jour</DashedRowHeader>);
             presentDayIds.forEach(dayId =>
-                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + dayId}>{dayById[dayId] && <Slot slot={dayById[dayId]} tasks={treeTasks} />}</DashedCell>)
+                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + dayId}>{dayById[dayId] && <Slot slot={dayById[dayId]} tasks={allTreeTasks} />}</DashedCell>)
             );
 
             const matinById = Object.fromEntries(
@@ -65,7 +65,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             if (presentDayIds.some(id => matinById[id])) {
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>Matin</DashedRowHeader>);
                 presentDayIds.forEach(dayId =>
-                    rows.push(<DashedCell key={semaineSlot.path + "-matin-" + dayId}>{matinById[dayId] && <Slot slot={matinById[dayId]} tasks={treeTasks} />}</DashedCell>)
+                    rows.push(<DashedCell key={semaineSlot.path + "-matin-" + dayId}>{matinById[dayId] && <Slot slot={matinById[dayId]} tasks={allTreeTasks} />}</DashedCell>)
                 );
             }
 
@@ -73,7 +73,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf }
             if (presentDayIds.some(id => apremById[id])) {
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>Aprem</DashedRowHeader>);
                 presentDayIds.forEach(dayId =>
-                    rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + dayId}>{apremById[dayId] && <Slot slot={apremById[dayId]} tasks={treeTasks} />}</DashedCell>)
+                    rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + dayId}>{apremById[dayId] && <Slot slot={apremById[dayId]} tasks={allTreeTasks} />}</DashedCell>)
                 );
             }
         }

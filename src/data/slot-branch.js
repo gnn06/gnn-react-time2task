@@ -78,9 +78,14 @@ export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
         const distance = getBranchDistance(branch1, branch2)
         return (distance >= 0 && distance % branch1.repetition === 0)
     }
-    if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
+    const id1 = getBranchFirstSlot(branch1)
+    const id2 = getBranchFirstSlot(branch2)
+    if (isSlotIdGeneric(id1)) {
         return true
     } else {
+        const fam1 = typeof id1 === 'string' ? getSlotIdFamily(id1) : undefined
+        const fam2 = typeof id2 === 'string' ? getSlotIdFamily(id2) : undefined
+        if (fam1 && fam2 && fam1 !== fam2 && fam1 !== 'generic' && fam2 !== 'generic') return false
         return getBranchWeight(branch1) === getBranchWeight(branch2)
     }
 }

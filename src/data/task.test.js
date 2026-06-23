@@ -836,6 +836,10 @@ describe('isTaskImprecise', () => {
         test('tâche sans jour (this_week seul) → null', () => {
             expect(taskRelativePresentToParent(t('this_week'), snapDates)).toBeNull()
         })
+        test('tâche mixte (lundi + today=jeudi) → phantom jeudi', () => {
+            expect(taskRelativePresentToParent(t('this_month this_week lundi today'), snapDatesThursday).slotExpr)
+                .toBe('this_month this_week jeudi')
+        })
         test('les autres propriétés de la tâche sont préservées', () => {
             const result = taskRelativePresentToParent(t('today'), snapDates)
             expect(result.status).toBe('A faire')

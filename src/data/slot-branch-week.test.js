@@ -128,6 +128,10 @@ describe('equality', () => {
             const result = isBranchEqualShallow({ branch: 'branch', value: [ 'month' ] }, { branch: 'branch', value: [ 'this_month' ] })
             expect(result).toBeTruthy()
         });
+        test('today ≠ lundi — même weight, familles différentes', () => {
+            const result = isBranchEqualShallow({ type: 'branch', value: [ 'today' ] }, { type: 'branch', value: [ 'lundi' ] })
+            expect(result).toBeFalsy()
+        });
     })
     describe('isBranchEqualDeep', () => { 
         test('depth = 1, equal', () => {

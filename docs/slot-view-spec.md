@@ -2,12 +2,7 @@
 
 ## Invariant fondamental
 
-Toutes les tâches doivent être visibles. Aucune tâche ne doit manquer, quel que soit son slotExpr.
-
-> ⚠️ **Exception temporaire** : la « Vue par famille — v1 » (section dédiée ci-dessous)
-> **casse volontairement cet invariant** le temps de valider le modèle relatif jour
-> (`today`/`tomorrow`). Une tâche n'y est visible que dans **une** des deux vues. À
-> rétablir avec la projection croisée (phase ultérieure).
+Chaque tâche est visible dans au moins une vue. La partition v2 (ci-dessous) casse volontairement l'invariant global : une tâche n'est visible que dans la vue correspondant à sa famille.
 
 ---
 
@@ -27,8 +22,11 @@ Chaque vue affiche un sous-ensemble de tâches selon la famille du slot JOUR.
 - **Tree** : `taskHasRelatifParentDay(t)` — a un jour relatifParent (`lundi`..`vendredi`)
 - **List** : `!taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t)` — pas de jour relatifParent, OU a un jour relatifPresent (tâches mixtes incluses dans les deux vues)
 
-Les tâches mixtes (ex. `today vendredi`) apparaissent dans les deux vues : la list
-les positionne via `_chooseSlotForSortBranch` qui sélectionne `today` en priorité.
+Les tâches mixtes (ex. `today vendredi`) apparaissent dans les deux vues :
+- **Tree** : positionnée sous le weekday relatifParent (`vendredi`). La partie `today` ne crée pas de colonne supplémentaire.
+- **List** : positionnée sous `today` via `_chooseSlotForSortBranch` qui sélectionne `today` en priorité.
+
+Note : `today` (relatifPresent, weight=1) ne matche pas `lundi` (relatifParent, weight=1) — le matching vérifie la famille avant le weight (`isBranchEqualShallow`).
 
 ---
 
