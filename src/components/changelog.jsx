@@ -6,6 +6,7 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- list : option projectWeekdays — projette les tâches lundi..vendredi sur today/tomorrow (sinon this_week) pour tout voir pendant l'exécution de la journée (flag en base, sans contrôle UI)
 - « Démarrer Jour » : roulement today/tomorrow via snapDate jour ; lundi..vendredi inchangés
 - slot-picker : sélection multi-créneaux par accumulation (ex. today + un weekday coexistent)
 - vues spécialisées : tree = tâches à jour fixe (lundi..vendredi) ; list = tout le reste (today/tomorrow, imprécis) ; tâches mixtes visibles dans les deux

@@ -200,6 +200,23 @@ export function taskHasRelatifPresentDay(task) {
     return branch ? branchGetRelatifPresentDayId(branch) !== null : false
 }
 
+/**
+ * Partition des tâches affichées en vue list.
+ * Base : pas de jour relatifParent, OU a un jour relatifPresent (tâches mixtes).
+ * Si conf.projectWeekdays : ajoute les tâches purement relatifParent (lundi..vendredi),
+ * projetées sur le cadre relatifPresent (today/tomorrow, sinon this_week) via
+ * taskRelativeParentToPresent.
+ */
+export function getListTasks(tasks, conf, snapDates = []) {
+    const listTasks = tasks.filter(t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t))
+    if (!conf?.projectWeekdays) return listTasks
+    const projected = tasks
+        .filter(t => taskHasRelatifParentDay(t) && !taskHasRelatifPresentDay(t))
+        .map(t => taskRelativeParentToPresent(t, snapDates))
+        .filter(Boolean)
+    return [...listTasks, ...projected]
+}
+
 // statuts pour lesquels le jour courant compte comme prochain slot
 const ACTIVE_STATUSES = ['A faire', 'en cours']
 
@@ -323,14 +340,21 @@ export function taskRelativeParentToPresent(task, snapDates) {
     let anchorId
     if      (weekdayDateStr === todayDateStr)    anchorId = 'today'
     else if (weekdayDateStr === tomorrowDateStr) anchorId = 'tomorrow'
-    else return null
 
     const completed = branchComplete(branch)
     const hash = getBranchHash(completed) ?? ''
     const hourToken = hash.split(' ').find(t => getSlotIdLevel(t) === 4) ?? null
 
-    let projectedSlotExpr = anchorId
-    if (hourToken) projectedSlotExpr += ` ${hourToken}`
+    // offset ∈ {0,1} → ancre today/tomorrow (heure préservée).
+    // sinon (jour passé ou ≥ après-demain) → troncature au niveau semaine :
+    // la tâche remonte à this_week via le bubbling de la list.
+    let projectedSlotExpr
+    if (anchorId) {
+        projectedSlotExpr = anchorId
+        if (hourToken) projectedSlotExpr += ` ${hourToken}`
+    } else {
+        projectedSlotExpr = getBranchHash(branchTruncate(completed, 2)) ?? ''
+    }
 
     return { ...task, slotExpr: projectedSlotExpr, originalSlotExpr: task.slotExpr }
 }

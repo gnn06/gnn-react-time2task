@@ -6,7 +6,8 @@ import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
 import React from "react";
-import { taskHasRelatifParentDay, taskHasRelatifPresentDay } from "../data/task";
+import { getListTasks } from "../data/task";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 const parser = new Parser();
 
@@ -26,8 +27,10 @@ function buildRows(conf, tasks) {
 }
 
 export default function SlotViewList({ tasks, conf }) {
-    const listTasks = tasks.filter(t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t));
-    const rows = buildRows(conf, listTasks);
+    const { data: snapDates = [] } = useGetSnapDatesQuery();
+
+    const allListTasks = getListTasks(tasks, conf, snapDates);
+    const rows = buildRows(conf, allListTasks);
 
     return (
         <DashedTable columns={3}>
@@ -41,8 +44,8 @@ export default function SlotViewList({ tasks, conf }) {
                     {row.slots.map((slot, cellIdx) => (
                         <DashedCell key={cellIdx}>
                             { cellIdx < 2
-                                ? <Slot slot={slot} tasks={listTasks} />
-                                : slot.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={listTasks} /></div>)
+                                ? <Slot slot={slot} tasks={allListTasks} />
+                                : slot.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={allListTasks} /></div>)
                             }
                         </DashedCell>
                     ))}

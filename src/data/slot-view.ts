@@ -9,7 +9,8 @@ interface SlotViewConf {
     collapse: string[],
     view: "tree" | "list",
     slotStrict: boolean,
-    showRepeat: boolean
+    showRepeat: boolean,
+    projectWeekdays: boolean
 }
 
 export const DEFAULT_CONF:SlotViewConf = {
@@ -23,7 +24,8 @@ export const DEFAULT_CONF:SlotViewConf = {
     levelMaxIncluded: null,
     view: "tree",
     slotStrict: true,
-    showRepeat: true
+    showRepeat: true,
+    projectWeekdays: false
 }
 
 interface Slot {

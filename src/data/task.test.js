@@ -9,7 +9,8 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskHasRelatifParentDay,
     taskHasRelatifPresentDay,
     taskRelativePresentToParent,
-    taskRelativeParentToPresent} from "./task";
+    taskRelativeParentToPresent,
+    getListTasks} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -897,11 +898,21 @@ describe('isTaskImprecise', () => {
             expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesThursday).slotExpr)
                 .toBe('tomorrow')
         })
-        test('jeudi (≠ today vendredi) → null', () => {
-            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates)).toBeNull()
+        test('jeudi (offset ≥2, ≠ today/tomorrow) → this_month this_week (troncature)', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates).slotExpr)
+                .toBe('this_month this_week')
         })
-        test('lundi (≠ today/tomorrow) → null', () => {
-            expect(taskRelativeParentToPresent(t('this_month this_week lundi'), snapDates)).toBeNull()
+        test('lundi (offset <0, ≠ today/tomorrow) → this_month this_week (troncature)', () => {
+            expect(taskRelativeParentToPresent(t('this_month this_week lundi'), snapDates).slotExpr)
+                .toBe('this_month this_week')
+        })
+        test('jeudi matin → this_month this_week (heure jetée au fallback)', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi matin'), snapDates).slotExpr)
+                .toBe('this_month this_week')
+        })
+        test('fallback : originalSlotExpr préservé', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates).originalSlotExpr)
+                .toBe('this_week jeudi')
         })
         test('today (pas de relatifParent) → null', () => {
             expect(taskRelativeParentToPresent(t('today'), snapDates)).toBeNull()
@@ -918,6 +929,57 @@ describe('isTaskImprecise', () => {
         test('originalSlotExpr contient le slotExpr original', () => {
             const result = taskRelativeParentToPresent(t('this_week vendredi'), snapDates)
             expect(result.originalSlotExpr).toBe('this_week vendredi')
+        })
+    })
+
+    describe('getListTasks — partition vue list', () => {
+        // Fake timer : vendredi 2025-01-03 (today = vendredi)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: slotExpr, status: 'A faire' })
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        const exprs = list => list.map(t => t.slotExpr).sort()
+
+        const tasks = [
+            t('today'),              // relatifPresent pur
+            t('today vendredi'),     // mixte
+            t('this_week'),          // imprécis
+            t('this_week vendredi'), // relatifParent = today
+            t('this_week lundi'),    // relatifParent offset <0
+        ]
+
+        test('projectWeekdays absent → base seule (pas de relatifParent pur)', () => {
+            const result = getListTasks(tasks, {}, snapDates)
+            expect(exprs(result)).toEqual(['this_week', 'today', 'today vendredi'])
+        })
+
+        test('projectWeekdays true → ajoute vendredi (→today) et lundi (→this_month this_week)', () => {
+            const result = getListTasks(tasks, { projectWeekdays: true }, snapDates)
+            expect(exprs(result)).toEqual([
+                'this_month this_week', // this_week lundi tronqué
+                'this_week',
+                'today',                // base
+                'today',                // this_week vendredi projeté
+                'today vendredi',
+            ])
+        })
+
+        test('projectWeekdays true → la tâche mixte n\'est pas dupliquée', () => {
+            const result = getListTasks(tasks, { projectWeekdays: true }, snapDates)
+            expect(result.filter(t => t.slotExpr === 'today vendredi')).toHaveLength(1)
+        })
+
+        test('projection préserve originalSlotExpr', () => {
+            const result = getListTasks([t('this_week lundi')], { projectWeekdays: true }, snapDates)
+            expect(result[0].originalSlotExpr).toBe('this_week lundi')
         })
     })
 });
