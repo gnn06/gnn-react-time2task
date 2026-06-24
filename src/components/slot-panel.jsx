@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import TargetIcon from '@mui/icons-material/AdsClick';
 
 import SlotView from "./slotview";
-import { setFilterSlot, setSlotViewStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, showRepeatAction, setSlotViewFilterConfView } from "../features/taskSlice";
+import { setFilterSlot, setSlotViewStrict, setSlotViewFilterConf, setSlotViewFilterConfLevel, showRepeatAction, setSlotViewFilterConfView, setProjectWeekdays } from "../features/taskSlice";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import { saveUserConfThunk } from "../features/userConfThunk";
 
@@ -16,6 +16,7 @@ export default function SlotPanel({tasks})  {
     const filterPath = useSelector(state => state.tasks.currentFilter.slot);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
+    const projectWeekdays = useSelector(state => state.tasks.slotViewFilterConf.projectWeekdays);
     const user   = useSelector(state => state.tasks.user);
     const onChangeLevelMax = (event) => {
         const level = event.target.value
@@ -55,12 +56,18 @@ export default function SlotPanel({tasks})  {
         dispatch(saveUserConfThunk());
     }
 
+    const handleProjectWeekdays = () => {
+        dispatch(setProjectWeekdays(!projectWeekdays));
+        dispatch(saveUserConfThunk());
+    }
+
     return (<Stack sx={{padding:0, height: '100%'}}>
         <Paper sx={{padding:0.5, backgroundColor:'white', width: 'fit-content', ml:'auto', marginBottom: 0.75}}>
             <Stack direction="row" spacing={1}  >
                 { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
                 <FormControlLabel control={<Checkbox checked={slotStrict} onClick={handleSlotStrict}/>} label="Slot strict" disabled={!filterPath}/>
                 <FormControlLabel control={<Checkbox checked={showRepeat} onClick={handleShowRepeat}/>} label="voir les répétitions" />
+                { conf.view === 'list' && <FormControlLabel control={<Checkbox checked={!!projectWeekdays} onClick={handleProjectWeekdays}/>} label="Voir les tâches du jour (lundi-vendredi)" /> }
                 <Tooltip title="Choisir le niveau le plus profond inclus dans la vue."  placement="top">
                     <Select size="small" value={conf.levelMaxIncluded === null ? Object.keys(SLOTIDS_BY_LEVEL).length  : conf.levelMaxIncluded} onChange={onChangeLevelMax}>
                         <MenuItem value={1}>Month</MenuItem>

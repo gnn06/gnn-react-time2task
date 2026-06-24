@@ -114,6 +114,9 @@ export const taskSlice = createSlice({
         showRepeatAction: (state, action) => {
             state.slotViewFilterConf = { ...state.slotViewFilterConf, showRepeat: action.payload };
         },
+        setProjectWeekdays: (state, action) => {
+            state.slotViewFilterConf = { ...state.slotViewFilterConf, projectWeekdays: action.payload };
+        },
         dragging: (state, action) => {
             state.isDragging = action.payload;
         },
@@ -123,7 +126,7 @@ export const taskSlice = createSlice({
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, setSlotViewStrict,
     confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric,
-    editTask, showRepeatAction, dragging
+    editTask, showRepeatAction, setProjectWeekdays, dragging
 } = taskSlice.actions
 
 export default taskSlice.reducer
