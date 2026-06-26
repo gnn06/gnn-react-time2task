@@ -217,6 +217,16 @@ export function getListTasks(tasks, conf, snapDates = []) {
     return [...listTasks, ...projected]
 }
 
+/**
+ * Tâches affichées par les deux panneaux : projection vue list (si view==='list')
+ * puis filtre courant. La projection précède le filtre pour que ce dernier opère
+ * sur l'expression projetée (ex : tâche weekday projetée sur today, filtrée par today).
+ */
+export function getListTasksFiltered(tasks, conf, filter, snapDates = []) {
+    const base = conf?.view === 'list' ? getListTasks(tasks, conf, snapDates) : tasks
+    return filterSlotExpr(base, filter)
+}
+
 // statuts pour lesquels le jour courant compte comme prochain slot
 const ACTIVE_STATUSES = ['A faire', 'en cours']
 
@@ -227,7 +237,7 @@ const ACTIVE_STATUSES = ['A faire', 'en cours']
  * @returns {string|null}
  */
 export function getTaskNextSlotLabel(task) {
-    const branch = parser.parse(task.slotExpr)
+    const branch = parser.parse(task.originalSlotExpr ?? task.slotExpr)
     if (!branch) return null
     const completed = branchComplete(branch, 1)
     const currentPath = new SlotPath(getCurrentPathExpr(4))

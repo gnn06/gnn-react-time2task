@@ -5,9 +5,9 @@ import { Panel, Group, Separator } from "react-resizable-panels";
 import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
 import TaskDialog from "./task-dialog";
-import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation, useGetSnapDatesQuery } from "../features/apiSlice.js";
 import { dragging, editTask } from "../features/taskSlice";
-import { filterSlotExpr } from '../data/task.js';
+import { getListTasksFiltered } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 import { Box } from "@mui/material";
 
@@ -17,6 +17,8 @@ export default function TaskContainer() {
     const activity = useSelector(state => state.tasks.currentActivity);
     const { data:tasksRedux } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
+    const conf = useSelector(state => state.tasks.slotViewFilterConf);
+    const { data: snapDates = [] } = useGetSnapDatesQuery();
     const [ updateTask ] = useUpdateTaskMutation()
     const [ deleteTask ] = useDeleteTaskMutation()
     const taskToEdit  = useSelector(state => state.tasks.editTask);
@@ -56,7 +58,7 @@ export default function TaskContainer() {
 
     if (tasksRedux) {
         const tasksFetched = tasksRedux.slice();
-        const tasks = filterSlotExpr(tasksFetched, currentFilter);
+        const tasks = getListTasksFiltered(tasksFetched, conf, currentFilter, snapDates);
         const panel1 = <SlotPanel tasks={tasks}/>
         const panel2 = <TaskPanel tasks={tasks}/>
         return (

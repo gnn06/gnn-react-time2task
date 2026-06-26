@@ -10,7 +10,8 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskHasRelatifPresentDay,
     taskRelativePresentToParent,
     taskRelativeParentToPresent,
-    getListTasks} from "./task";
+    getListTasks,
+    getListTasksFiltered} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -654,6 +655,11 @@ describe('getTaskNextSlotLabel', () => {
         const task = { slotExpr: 'this_week mercredi' }
         expect(getTaskNextSlotLabel(task)).toBeNull()
     })
+    test('tâche projetée → libellé basé sur originalSlotExpr', () => {
+        // projetée sur today (slotExpr) mais affectée à vendredi à l'origine
+        const task = { slotExpr: 'today', originalSlotExpr: 'this_week vendredi' }
+        expect(getTaskNextSlotLabel(task)).toBe('vendredi')
+    })
 })
 
 describe('getNewOrder', () => {
@@ -980,6 +986,55 @@ describe('isTaskImprecise', () => {
         test('projection préserve originalSlotExpr', () => {
             const result = getListTasks([t('this_week lundi')], { projectWeekdays: true }, snapDates)
             expect(result[0].originalSlotExpr).toBe('this_week lundi')
+        })
+    })
+
+    describe('getListTasksFiltered — projection puis filtre (synchro panels)', () => {
+        // Fake timer : vendredi 2025-01-03 (today = vendredi)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: slotExpr, status: 'A faire' })
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        const exprs = list => list.map(t => t.slotExpr).sort()
+
+        const tasks = [
+            t('today'),              // directement today
+            t('this_week vendredi'), // relatifParent = today → projeté en today
+            t('this_week lundi'),    // relatifParent passé
+        ]
+        const conf = { view: 'list', projectWeekdays: true }
+        const filterToday = { expression: 'today' }
+
+        test('filtre today : la tâche projetée (vendredi→today) reste visible', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            // les deux tâches qui tombent sur today : la directe + la projetée
+            expect(result.filter(x => x.slotExpr === 'today')).toHaveLength(2)
+        })
+
+        test('filtre today : la tâche directement today reste visible', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            expect(result.some(x => x.slotExpr === 'today' && !x.originalSlotExpr)).toBe(true)
+        })
+
+        test('la tâche projetée garde son originalSlotExpr', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            const projected = result.find(x => x.originalSlotExpr === 'this_week vendredi')
+            expect(projected).toBeDefined()
+            expect(projected.slotExpr).toBe('today')
+        })
+
+        test('vue tree : pas de projection, filtre sur slotExpr brut', () => {
+            const result = getListTasksFiltered(tasks, { view: 'tree', projectWeekdays: true }, filterToday, snapDates)
+            // seule la tâche directement today matche (pas de projection)
+            expect(exprs(result)).toEqual(['today'])
         })
     })
 });

@@ -6,8 +6,6 @@ import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
 import React from "react";
-import { getListTasks } from "../data/task";
-import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 const parser = new Parser();
 
@@ -27,9 +25,8 @@ function buildRows(conf, tasks) {
 }
 
 export default function SlotViewList({ tasks, conf }) {
-    const { data: snapDates = [] } = useGetSnapDatesQuery();
-
-    const allListTasks = getListTasks(tasks, conf, snapDates);
+    // tasks arrivent déjà projetées (getListTasksFiltered en amont, task-container)
+    const allListTasks = tasks;
     const rows = buildRows(conf, allListTasks);
 
     return (
