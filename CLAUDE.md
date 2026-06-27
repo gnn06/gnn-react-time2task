@@ -23,13 +23,14 @@ Le code doit toujours refléter la spécification — toute divergence est soit 
 
 - Compilation : `npx tsc --noEmit`
 - Tests unitaires : `npx vitest run`
+- proposer un test visuel de confirmation
 
 ## En fin d'évolution
 
-- Mettre à jour `src/components/changelog.jsx`
 - Vérifier que la couverture de test correspond à la spec (cas nominaux + cas limites)
 - Mettre à jour la spec si des décisions ont été prises pendant le développement
 - Proposer de lancer les tests E2E Playwright (ne pas les lancer sans accord)
+- Mettre à jour `src/components/changelog.jsx`
 
 # Plan
 -privilégier un découpage du plan qui favorise des résultats visuels dans la UI au plus tôt. Cela pour avoir un feedback visuel au plus tôt. Des choix temporaires peuvent faits qui seront mis au propre quand le rendu aura été validé au niveau visuel.

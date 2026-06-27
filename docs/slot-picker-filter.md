@@ -13,6 +13,13 @@ l'expression de slot d'une tâche.
   notions appartiennent au picker de tâche, pas au filtre.
 - Le créneau choisi alimente `state.tasks.currentFilter.slot` et filtre via
   `isSlotEqualOrInclude(task.slotExpr, filter.slot)`.
+- **En vue list**, `filter.slot` est projeté via `slotPathToPresent` avant application :
+  un weekday (ex. `mercredi`) est converti en `today` ou `tomorrow` si le jour correspond.
+  Cela rend les filtres `mercredi` et `today` équivalents quand aujourd'hui est mercredi,
+  en symétrie avec la projection des tâches weekday dans `getListTasksFiltered`.
+- **En vue tree**, aucune projection du filtre : `today` filtre les tâches stockées en
+  `today`, `mercredi` filtre les tâches stockées en `mercredi`. Les deux concepts sont
+  distincts par construction — la vue tree raisonne par slot structurel, pas par date.
 
 ## Catalogue affiché
 

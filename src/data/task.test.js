@@ -1044,5 +1044,14 @@ describe('isTaskImprecise', () => {
             // seule la tâche directement today matche (pas de projection)
             expect(exprs(result)).toEqual(['today'])
         })
+
+        test('filtre slot vendredi = filtre slot today quand today est vendredi', () => {
+            const filterVendredi = { slot: 'this_month this_week vendredi' }
+            const filterTodaySlot = { slot: 'this_month this_week today' }
+            const resultVendredi = getListTasksFiltered(tasks, conf, filterVendredi, snapDates)
+            const resultToday    = getListTasksFiltered(tasks, conf, filterTodaySlot, snapDates)
+            expect(resultVendredi).toHaveLength(resultToday.length)
+            expect(exprs(resultVendredi)).toEqual(exprs(resultToday))
+        })
     })
 });
