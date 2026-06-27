@@ -30,11 +30,11 @@ Note : `today` (relatifPresent, weight=1) ne matche pas `lundi` (relatifParent, 
 
 ---
 
-## Projection des weekdays dans la list — flag `projectWeekdays`
+## Projection des weekdays dans la list — flag `includeWeekDays`
 
 La partition v2 sépare deux **phases** de la journée : le matin on *planifie* (tree par weekday, list par today/tomorrow), une fois la journée lancée on *exécute* et on veut voir d'un seul coup toutes les tâches qui tombent aujourd'hui — qu'elles soient arrivées via `today` (relatifPresent) ou via `lundi` (relatifParent, parce qu'on est lundi).
 
-Le flag `projectWeekdays: boolean` de `SlotViewConf` (défaut `false`, **list uniquement**) active ce mode : les tâches purement relatifParent-day sont **incluses** dans la list après projection de leur jour sur le cadre relatifPresent.
+Le flag `includeWeekDays: boolean` de `SlotViewConf` (défaut `false`, **list uniquement**) active ce mode : les tâches purement relatifParent-day sont **incluses** dans la list après projection de leur jour sur le cadre relatifPresent.
 
 ### Règle de projection
 
@@ -54,10 +54,11 @@ La projection est une **réécriture du token jour** ; le placement et le bubbli
 
 - **Niveau heure** : projetable avec le jour. `this_week lundi matin`, offset 0 → `today matin`. Si le jour n'est pas projetable, la troncature emporte aussi l'heure → `this_week`.
 - **Troncature** : remonte au parent semaine `this_week` (les weekdays concernés sont ceux de `this_week`), pas à `this_month`.
+- **Périmètre de la projection** : seuls les weekdays de `this_week` sont projetables sur `today`/`tomorrow`. Un weekday d'une autre semaine (`next_week mercredi`, etc.) tombe directement en troncature vers son parent semaine (`next_week`, `following_week`…), sans passer par la comparaison today/tomorrow.
 - **Perte de distinction assumée** : un weekday en retard (offset < 0) et un weekday à venir (offset ≥ 2) atterrissent tous deux dans `this_week`. Acceptable tant que `yesterday` n'existe pas ; l'invariant « toujours visible » reste respecté.
 - **Forward-compatible** : à l'arrivée de `yesterday`, insérer `offset −1 → yesterday` avant le fallback ; le « sinon parent » reste le filet de sécurité final.
 
-Quand `projectWeekdays` est `false`, le routage v2 ci-dessus s'applique inchangé (les tâches relatifParent-day restent hors list).
+Quand `includeWeekDays` est `false`, le routage v2 ci-dessus s'applique inchangé (les tâches relatifParent-day restent hors list).
 
 ---
 

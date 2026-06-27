@@ -923,6 +923,14 @@ describe('isTaskImprecise', () => {
         test('today (pas de relatifParent) → null', () => {
             expect(taskRelativeParentToPresent(t('today'), snapDates)).toBeNull()
         })
+        test('next_week vendredi (today=vendredi) → next_week, PAS today (projection seulement depuis this_week)', () => {
+            expect(taskRelativeParentToPresent(t('next_week vendredi'), snapDates).slotExpr)
+                .toBe('this_month next_week')
+        })
+        test('next_week vendredi matin (today=vendredi) → next_week (heure jetée), PAS today matin', () => {
+            expect(taskRelativeParentToPresent(t('next_week vendredi matin'), snapDates).slotExpr)
+                .toBe('this_month next_week')
+        })
         test('snapDate périmée (sans today) → getDefaultDates() → vendredi = today', () => {
             expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesStaleWeek).slotExpr)
                 .toBe('today')
@@ -962,13 +970,13 @@ describe('isTaskImprecise', () => {
             t('this_week lundi'),    // relatifParent offset <0
         ]
 
-        test('projectWeekdays absent → base seule (pas de relatifParent pur)', () => {
+        test('includeWeekDays absent → base seule (pas de relatifParent pur)', () => {
             const result = getListTasks(tasks, {}, snapDates)
             expect(exprs(result)).toEqual(['this_week', 'today', 'today vendredi'])
         })
 
-        test('projectWeekdays true → ajoute vendredi (→today) et lundi (→this_month this_week)', () => {
-            const result = getListTasks(tasks, { projectWeekdays: true }, snapDates)
+        test('includeWeekDays true → ajoute vendredi (→today) et lundi (→this_month this_week)', () => {
+            const result = getListTasks(tasks, { includeWeekDays: true }, snapDates)
             expect(exprs(result)).toEqual([
                 'this_month this_week', // this_week lundi tronqué
                 'this_week',
@@ -978,13 +986,13 @@ describe('isTaskImprecise', () => {
             ])
         })
 
-        test('projectWeekdays true → la tâche mixte n\'est pas dupliquée', () => {
-            const result = getListTasks(tasks, { projectWeekdays: true }, snapDates)
+        test('includeWeekDays true → la tâche mixte n\'est pas dupliquée', () => {
+            const result = getListTasks(tasks, { includeWeekDays: true }, snapDates)
             expect(result.filter(t => t.slotExpr === 'today vendredi')).toHaveLength(1)
         })
 
         test('projection préserve originalSlotExpr', () => {
-            const result = getListTasks([t('this_week lundi')], { projectWeekdays: true }, snapDates)
+            const result = getListTasks([t('this_week lundi')], { includeWeekDays: true }, snapDates)
             expect(result[0].originalSlotExpr).toBe('this_week lundi')
         })
     })
@@ -1010,7 +1018,7 @@ describe('isTaskImprecise', () => {
             t('this_week vendredi'), // relatifParent = today → projeté en today
             t('this_week lundi'),    // relatifParent passé
         ]
-        const conf = { view: 'list', projectWeekdays: true }
+        const conf = { view: 'list', includeWeekDays: true }
         const filterToday = { expression: 'today' }
 
         test('filtre today : la tâche projetée (vendredi→today) reste visible', () => {
@@ -1032,7 +1040,7 @@ describe('isTaskImprecise', () => {
         })
 
         test('vue tree : pas de projection, filtre sur slotExpr brut', () => {
-            const result = getListTasksFiltered(tasks, { view: 'tree', projectWeekdays: true }, filterToday, snapDates)
+            const result = getListTasksFiltered(tasks, { view: 'tree', includeWeekDays: true }, filterToday, snapDates)
             // seule la tâche directement today matche (pas de projection)
             expect(exprs(result)).toEqual(['today'])
         })

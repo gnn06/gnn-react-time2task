@@ -16,7 +16,8 @@
       "WebFetch(domain:vite.dev)",
       "WebFetch(domain:mui.com)",
       "WebFetch(domain:registry.npmjs.org)",
-      "WebFetch(domain:www.material-react-table.com)"
+      "WebFetch(domain:www.material-react-table.com)",
+      "Bash(tee /tmp/claude-1000/-home-gnn-dev-gnn-react-time2task/cf29996a-1a5a-4d81-afa5-69166a82b2b4/scratchpad/test-red.log)"
     ]
   }
 }

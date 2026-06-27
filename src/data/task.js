@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
 import moment from 'moment';
 import { getDate, getDefaultDates } from './slot-date';
-import { getSlotIdLevel, getSlotIdFamily, SLOTIDS_BY_LEVEL } from './slot-id';
+import { getSlotIdLevel, getSlotIdFamily, SLOTIDS_BY_LEVEL, weight } from './slot-id';
 import { IDizer } from '../utils/stringUtil';
 import { slotHasImpreciseIcon } from './slot-view';
 import { branchShift } from './slot-branch++';
@@ -203,13 +203,13 @@ export function taskHasRelatifPresentDay(task) {
 /**
  * Partition des tâches affichées en vue list.
  * Base : pas de jour relatifParent, OU a un jour relatifPresent (tâches mixtes).
- * Si conf.projectWeekdays : ajoute les tâches purement relatifParent (lundi..vendredi),
+ * Si conf.includeWeekDays : ajoute les tâches purement relatifParent (lundi..vendredi),
  * projetées sur le cadre relatifPresent (today/tomorrow, sinon this_week) via
  * taskRelativeParentToPresent.
  */
 export function getListTasks(tasks, conf, snapDates = []) {
     const listTasks = tasks.filter(t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t))
-    if (!conf?.projectWeekdays) return listTasks
+    if (!conf?.includeWeekDays) return listTasks
     const projected = tasks
         .filter(t => taskHasRelatifParentDay(t) && !taskHasRelatifPresentDay(t))
         .map(t => taskRelativeParentToPresent(t, snapDates))
@@ -343,17 +343,24 @@ export function taskRelativeParentToPresent(task, snapDates) {
     const hasTodayInDB = snapDates.some(el => el.slotid === 'today')
     const referenceDates = hasTodayInDB ? snapDates : getDefaultDates()
 
-    const weekdayDateStr  = getDate({ id: weekdayId   }, referenceDates)
-    const todayDateStr    = getDate({ id: 'today'     }, referenceDates)
-    const tomorrowDateStr = getDate({ id: 'tomorrow'  }, referenceDates)
+    const completed = branchComplete(branch)
+    const hash = getBranchHash(completed) ?? ''
+    const hourToken = hash.split(' ').find(t => getSlotIdLevel(t) === 4) ?? null
+    const weekToken = hash.split(' ').find(t => getSlotIdLevel(t) === 2) ?? 'this_week'
+
+    // Date réelle du weekday dans SA semaine : lundi de weekToken + offset du jour.
+    // getDate({ id: weekday }) résoudrait toujours dans this_week, d'où la projection
+    // erronée d'un « next_week mardi » sur today. La projection vers today/tomorrow
+    // ne doit se faire que depuis this_week.
+    const weekStartStr    = getDate({ id: weekToken }, referenceDates)
+    const dayOffset       = weight[weekdayId] - 1
+    const weekdayDateStr  = moment(weekStartStr).add(dayOffset, 'days').format('YYYY-MM-DD')
+    const todayDateStr    = getDate({ id: 'today'    }, referenceDates)
+    const tomorrowDateStr = getDate({ id: 'tomorrow' }, referenceDates)
 
     let anchorId
     if      (weekdayDateStr === todayDateStr)    anchorId = 'today'
     else if (weekdayDateStr === tomorrowDateStr) anchorId = 'tomorrow'
-
-    const completed = branchComplete(branch)
-    const hash = getBranchHash(completed) ?? ''
-    const hourToken = hash.split(' ').find(t => getSlotIdLevel(t) === 4) ?? null
 
     // offset ∈ {0,1} → ancre today/tomorrow (heure préservée).
     // sinon (jour passé ou ≥ après-demain) → troncature au niveau semaine :

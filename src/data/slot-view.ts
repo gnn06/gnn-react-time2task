@@ -10,7 +10,7 @@ interface SlotViewConf {
     view: "tree" | "list",
     slotStrict: boolean,
     showRepeat: boolean,
-    projectWeekdays: boolean
+    includeWeekDays: boolean
 }
 
 export const DEFAULT_CONF:SlotViewConf = {
@@ -25,7 +25,7 @@ export const DEFAULT_CONF:SlotViewConf = {
     view: "tree",
     slotStrict: true,
     showRepeat: true,
-    projectWeekdays: false
+    includeWeekDays: false
 }
 
 interface Slot {

@@ -8,8 +8,9 @@ xx/06/2026
 ==========
 - filtre-créneau : on peut désormais filtrer sur les créneaux relatifs today / tomorrow et leurs créneaux matin / aprem (injectés sous this_week, à côté des weekdays)
 - filtre-créneau : rendu des slots harmonisé avec le picker de tâche (fond gris par défaut, bleu pour le créneau sélectionné)
-- list : option projectWeekdays — projette les tâches lundi..vendredi sur today/tomorrow (sinon this_week) pour tout voir pendant l'exécution de la journée (flag en base, sans contrôle UI)
-- FIX list : avec projectWeekdays actif et un filtre today/tomorrow, les tâches projetées (ex. mardi → today) ne disparaissent plus ; projection appliquée avant le filtre, en amont des deux panneaux (grille slots + task-list synchronisés). Le libellé d'origine (mardi) reste affiché dans la task-list
+- list : option includeWeekDays — projette les tâches lundi..vendredi sur today/tomorrow (sinon this_week) pour tout voir pendant l'exécution de la journée (flag en base, sans contrôle UI)
+- FIX list : avec includeWeekDays actif et un filtre today/tomorrow, les tâches projetées (ex. mardi → today) ne disparaissent plus ; projection appliquée avant le filtre, en amont des deux panneaux (grille slots + task-list synchronisés). Le libellé d'origine (mardi) reste affiché dans la task-list
+- FIX list : avec includeWeekDays, une tâche d'une autre semaine (ex. next_week mercredi) n'est plus projetée sur today ; la projection vers today/tomorrow ne se fait que depuis this_week (date du weekday calculée dans sa vraie semaine)
 - « Démarrer Jour » : roulement today/tomorrow via snapDate jour ; lundi..vendredi inchangés
 - slot-picker : sélection multi-créneaux par accumulation (ex. today + un weekday coexistent)
 - vues spécialisées : tree = tâches à jour fixe (lundi..vendredi) ; list = tout le reste (today/tomorrow, imprécis) ; tâches mixtes visibles dans les deux
