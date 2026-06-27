@@ -4,33 +4,17 @@ import './slot.css';
 
 import SlotTitle from "./slot-title";
 
-import { getSlotIdLevel } from "../data/slot-id";
-import { SlotPath } from "../data/slot-path";
-
 export default function SlotPickerCard({slot, selectedSlotExpr, onSlotChange}) {
     const { id, title, path, start, end } = slot;
     const isSelected = selectedSlotExpr === path;
-    
-    // Utiliser equalsOrInclude pour vérifier si le slot est à l'intérieur du slotExpr
-    // Inversé : selectedPath.equalsOrInclude(currentPath) car equalsOrInclude vérifie si this inclut other
-    const currentRecursivePath = new SlotPath(path);
-    const selectedPath = selectedSlotExpr ? new SlotPath(selectedSlotExpr) : null;
-    const isInside = selectedPath ? selectedPath.equalsOrInclude(currentRecursivePath) : false;
 
+    // Mêmes fonds que SlotSelect (picker de tâche) : carte grise par défaut,
+    // accent bleu saturé pour le créneau sélectionné. Pas d'ancêtre ni de disable ici.
     let slotStyle = "rounded p-1 m-0 mt-1 mr-1 ";
     if (isSelected) {
-        slotStyle += "bg-blue-400 ";
-    } else if (isInside) {
-        const level = getSlotIdLevel(id);
-        if (level > -1) {
-            slotStyle += [
-                "bg-blue-100",
-                "bg-blue-200", 
-                "bg-blue-300"
-            ][level-1] + " ";
-        }
+        slotStyle += "bg-blue-400 hover:bg-blue-300 ";
     } else {
-        slotStyle += "hover:bg-gray-100 ";
+        slotStyle += "bg-gray-100 hover:bg-gray-50 ";
     }
 
     const onSlotClick = (e) => {

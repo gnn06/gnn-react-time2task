@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, transPathToConf, slotHasImpreciseIcon } from "./slot-view";
+import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1807,4 +1807,37 @@ describe('slotHasImpreciseIcon', () => {
     test('next_month following_week (niveau 2) → false', () => {
         expect(slotHasImpreciseIcon('next_month following_week', 2)).toBe(false)
     })
+});
+
+describe('slotViewPicker — injecte les ancres relatifPresent sous this_week', () => {
+    const findThisWeek = (roots) =>
+        roots.find(s => s.id === 'this_month').inner.find(s => s.id === 'this_week');
+
+    test('this_week contient today/tomorrow en tête, devant les weekdays', () => {
+        const thisWeek = findThisWeek(slotViewPicker(DEFAULT_CONF));
+        expect(thisWeek.inner.map(s => s.id)).toEqual(
+            ['today', 'tomorrow', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']
+        );
+    });
+
+    test('today porte un path standalone avec ses créneaux matin/aprem', () => {
+        const thisWeek = findThisWeek(slotViewPicker(DEFAULT_CONF));
+        const today = thisWeek.inner.find(s => s.id === 'today');
+        expect(today.path).toBe('today');
+        expect(today.inner).toEqual([
+            { id: 'matin', path: 'today matin', inner: [] },
+            { id: 'aprem', path: 'today aprem', inner: [] },
+        ]);
+        const tomorrow = thisWeek.inner.find(s => s.id === 'tomorrow');
+        expect(tomorrow.path).toBe('tomorrow');
+        expect(tomorrow.inner).toEqual([
+            { id: 'matin', path: 'tomorrow matin', inner: [] },
+            { id: 'aprem', path: 'tomorrow aprem', inner: [] },
+        ]);
+    });
+
+    test('les weekdays conservent leurs paths absolus', () => {
+        const thisWeek = findThisWeek(slotViewPicker(DEFAULT_CONF));
+        expect(thisWeek.inner.find(s => s.id === 'lundi').path).toBe('this_month this_week lundi');
+    });
 });

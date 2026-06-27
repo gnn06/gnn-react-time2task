@@ -100,13 +100,20 @@ export function slotTreeToSlotList(root: Slot): Slot[][] {
 }
 
 // v1 C1b : axe jour = ancres relatifPresent today/tomorrow (paths standalone).
-function defaultSlotViewList(): Slot {
+// today porte ses créneaux matin/aprem ; tomorrow reste au niveau jour.
+function relativePresentDaySlots(): [Slot, Slot] {
     const hours:[Slot, Slot] = [
         { id: "matin",  path: "today matin", inner: [] },
         { id: "aprem",  path: "today aprem", inner: [] },
     ];
-    const todaySlot:Slot    = { id: "today",     path: "today",                inner: hours };
-    const tomorrowSlot:Slot = { id: "tomorrow",  path: "tomorrow",             inner: [] };
+    return [
+        { id: "today",    path: "today",    inner: hours },
+        { id: "tomorrow", path: "tomorrow", inner: [] },
+    ];
+}
+
+function defaultSlotViewList(): Slot {
+    const [todaySlot, tomorrowSlot] = relativePresentDaySlots();
     const thisWeek:Slot     = { id: "this_week", path: "this_month this_week", inner: [todaySlot, tomorrowSlot] };
     const nextWeek:Slot     = { id: "next_week", path: "this_month next_week", inner: [] };
     const thisMonth:Slot    = { id: "this_month", path: "this_month",          inner: [thisWeek, nextWeek] };
@@ -226,11 +233,44 @@ export function slotViewFilter(conf: SlotViewConf, level = 0, parentPath = new S
     return result;
 }
 
+// Ancres jour relatifPresent pour le picker de filtre : today ET tomorrow portent
+// leurs créneaux matin/aprem (paths standalone), homogène avec le picker de tâche.
+// (La vue liste, elle, garde tomorrow en feuille via relativePresentDaySlots.)
+function relativePresentDayPickerSlots(): [Slot, Slot] {
+    const dayHours = (day: string): Slot[] => [
+        { id: "matin", path: `${day} matin`, inner: [] },
+        { id: "aprem", path: `${day} aprem`, inner: [] },
+    ];
+    return [
+        { id: "today",    path: "today",    inner: dayHours("today") },
+        { id: "tomorrow", path: "tomorrow", inner: dayHours("tomorrow") },
+    ];
+}
+
+/** Préfixe l'inner du nœud this_week avec les ancres relatifPresent (today/tomorrow). */
+function injectRelativeDaysUnderThisWeek(slots: Slot[]): Slot[] {
+    return slots.map(slot => {
+        if (slot.id === "this_week") {
+            return { ...slot, inner: [...relativePresentDayPickerSlots(), ...(slot.inner ?? [])] };
+        }
+        return { ...slot, inner: injectRelativeDaysUnderThisWeek(slot.inner ?? []) };
+    });
+}
+
 /**
- * 
- * @param {*} slotView 
- * @param {[string]} path 
- * @returns 
+ * Arbre de slots du picker de filtre : la grille absolue (weekdays) de slotViewFilter
+ * augmentée des ancres relatifPresent today/tomorrow injectées sous this_week, afin de
+ * pouvoir filtrer aussi bien sur les weekdays que sur today / today matin / today aprem / tomorrow.
+ */
+export function slotViewPicker(conf: SlotViewConf): Slot[] {
+    return injectRelativeDaysUnderThisWeek(slotViewFilter(conf));
+}
+
+/**
+ *
+ * @param {*} slotView
+ * @param {[string]} path
+ * @returns
  */
 export function slotViewAdd(slotView: Slot[], path:string[], currentPath = "") : Slot[] {
 

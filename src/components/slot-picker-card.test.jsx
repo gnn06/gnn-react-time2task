@@ -59,9 +59,10 @@ describe('SlotPickerCard', () => {
       expect(container.querySelector('.bg-blue-400')).toBeInTheDocument();
     })
 
-    test('applies inside style when slot is inside selected path', () => {
+    test('applies neutral gray style when slot is not selected (ancestor non géré)', () => {
       const { container } = render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="this_month this_week mercredi matin" onSlotChange={mockOnSlotChange} />)
-      expect(container.querySelector('.bg-blue-300')).toBeInTheDocument();
+      expect(container.querySelector('.bg-gray-100')).toBeInTheDocument();
+      expect(container.querySelector('.bg-blue-300')).not.toBeInTheDocument();
     })
   })
 
