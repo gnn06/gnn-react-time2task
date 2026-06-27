@@ -1,5 +1,5 @@
 import moment from "moment"
-import { ANCHOR_IDS_BY_LEVEL, getSlotIdFirstLevel, getSlotIdLevel, isAnchor, weight } from "./slot-id"
+import { ANCHOR_IDS_BY_LEVEL, getSlotIdLevel, isAnchor, weight } from "./slot-id"
 import { getNow } from "../utils/now"
 
 export function getDefaultDates() {
@@ -36,7 +36,7 @@ export function getSnapSlotId(levelID) {
 }
 
 export function getSnapDateToSave(levelID, snapDate) {
-    const snapSlotID = getSlotIdFirstLevel(getSlotIdLevel(levelID));
+    const snapSlotID = getSnapSlotId(levelID);
     let result
     if (snapDate === "") {
         result = getDefaultDate(snapSlotID)

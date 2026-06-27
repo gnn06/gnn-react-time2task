@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, vi } from 'vitest'
 
-import { getDate, getDateString, getDefaultDates, getISODate, getSnapSlotId, shiftDate } from "./slot-date";
+import { getDate, getDateString, getDefaultDates, getISODate, getSnapDateToSave, getSnapSlotId, shiftDate } from "./slot-date";
 
 describe('getDate', () => {
     beforeEach(() => {
@@ -194,6 +194,24 @@ describe('getSnapSlotId — E1a', () => {
     })
     test('day → today', () => {
         expect(getSnapSlotId('day')).toBe('today')
+    })
+});
+
+describe('getSnapDateToSave — snapDate vide (pas de snap en BDD)', () => {
+    beforeEach(() => {
+        vi.useFakeTimers()
+        vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+    })
+    afterEach(() => { vi.useRealTimers() })
+
+    test('day, snapDate="" → date du jour par défaut (ne plante pas)', () => {
+        expect(getSnapDateToSave('day', '')).toBe('2025-01-03')
+    })
+    test('week, snapDate="" → lundi de la semaine courante par défaut', () => {
+        expect(getSnapDateToSave('week', '')).toBe('2024-12-30')
+    })
+    test('month, snapDate="" → premier du mois courant par défaut', () => {
+        expect(getSnapDateToSave('month', '')).toBe('2025-01')
     })
 });
 
