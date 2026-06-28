@@ -215,6 +215,18 @@ describe('getSnapDateToSave — snapDate vide (pas de snap en BDD)', () => {
     })
 });
 
+describe('getSnapDateToSave — snapDate non vide (avancement)', () => {
+    test('day → avance d\'un jour', () => {
+        expect(getSnapDateToSave('day', '2025-01-03')).toBe('2025-01-04')
+    })
+    test('week → avance d\'une semaine', () => {
+        expect(getSnapDateToSave('week', '2024-12-30')).toBe('2025-01-06')
+    })
+    test('month → avance d\'un mois', () => {
+        expect(getSnapDateToSave('month', '2025-01')).toBe('2025-02')
+    })
+});
+
 describe('shiftDate', () => {
     beforeEach(() => {
         // tell vitest we use mocked time

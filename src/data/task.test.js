@@ -613,10 +613,29 @@ describe('taskShiftFilter', () => {
     });
 
     test('expression with space', () => {
-        const given    = [ { slotExpr: 'this_week ' } ] 
+        const given    = [ { slotExpr: 'this_week ' } ]
         const expected = [  ] ;
         const result = taskShiftFilter(given, 'this_week')
         expect(result).toEqual(expected)
+    })
+
+    describe('level day', () => {
+        test('tomorrow → today', () => {
+            const given    = [ { slotExpr: 'tomorrow' } ]
+            const expected = [ { slotExpr: 'today', oldSlotExpr: 'tomorrow' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+        test('today → inchangé (plancher, non inclus)', () => {
+            expect(taskShiftFilter([ { slotExpr: 'today' } ], 'day')).toEqual([])
+        })
+        test('weekday → inchangé', () => {
+            expect(taskShiftFilter([ { slotExpr: 'this_week mardi' } ], 'day')).toEqual([])
+        })
+        test('this_week tomorrow → this_week today', () => {
+            const given    = [ { slotExpr: 'this_week tomorrow' } ]
+            const expected = [ { slotExpr: 'this_week today', oldSlotExpr: 'this_week tomorrow' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
     })
 });
 
