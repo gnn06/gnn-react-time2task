@@ -49,6 +49,9 @@ test.describe('Gestion des créneaux', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('');
         await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
+        // Garantir la vue tree au départ de chaque test (indépendamment de l'état laissé par le test précédent)
+        await page.getByRole('combobox', { name: 'slot-view-select' }).click();
+        await page.getByRole('option', { name: 'Tree' }).click();
     });
 
     test('affecter un créneau à une tâche sans créneau', async ({ page }) => {
@@ -122,6 +125,10 @@ test.describe('Gestion des créneaux', () => {
 
         await dialog.getByRole('button', { name: 'Confirm' }).click();
         await waitForApiIdle(page);
+
+        // Les tâches this_week sans weekday ne sont pas dans la vue tree — passer en vue list
+        await page.getByRole('combobox', { name: 'slot-view-select' }).click();
+        await page.getByRole('option', { name: 'List' }).click();
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week');
         await expectTaskInSlotPanel(page, title, 'this_month next_week');
