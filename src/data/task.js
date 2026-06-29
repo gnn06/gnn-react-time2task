@@ -218,9 +218,10 @@ export function getListTasks(tasks, conf, snapDates = []) {
 }
 
 /**
- * Tâches affichées par les deux panneaux : projection vue list (si view==='list')
+ * Tâches affichées par le SlotPanel : projection vue list (si view==='list')
  * puis filtre courant. La projection précède le filtre pour que ce dernier opère
  * sur l'expression projetée (ex : tâche weekday projetée sur today, filtrée par today).
+ * Le TaskPanel utilise filterSlotExpr directement, sans conf de vue.
  */
 export function getListTasksFiltered(tasks, conf, filter, snapDates = []) {
     const base = conf?.view === 'list' ? getListTasks(tasks, conf, snapDates) : tasks

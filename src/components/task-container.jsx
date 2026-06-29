@@ -7,7 +7,7 @@ import SlotPanel from "./slot-panel";
 import TaskDialog from "./task-dialog";
 import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation, useGetSnapDatesQuery } from "../features/apiSlice.js";
 import { dragging, editTask } from "../features/taskSlice";
-import { getListTasksFiltered } from '../data/task.js';
+import { getListTasksFiltered, filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 import { Box } from "@mui/material";
 
@@ -58,9 +58,10 @@ export default function TaskContainer() {
 
     if (tasksRedux) {
         const tasksFetched = tasksRedux.slice();
-        const tasks = getListTasksFiltered(tasksFetched, conf, currentFilter, snapDates);
-        const panel1 = <SlotPanel tasks={tasks}/>
-        const panel2 = <TaskPanel tasks={tasks}/>
+        const tasksForSlotPanel = getListTasksFiltered(tasksFetched, conf, currentFilter, snapDates);
+        const tasksForTaskPanel = filterSlotExpr(tasksFetched, currentFilter);
+        const panel1 = <SlotPanel tasks={tasksForSlotPanel}/>
+        const panel2 = <TaskPanel tasks={tasksForTaskPanel}/>
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart} >            
             { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm} onDelete={onTaskDialogDelete}/>}

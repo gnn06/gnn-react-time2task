@@ -2,7 +2,9 @@
 
 ## Invariant fondamental
 
-Chaque tâche est visible dans au moins une vue. La partition v2 (ci-dessous) casse volontairement l'invariant global : une tâche n'est visible que dans la vue correspondant à sa famille.
+Cette spec décrit uniquement le **SlotPanel** (vues tree et list). Le TaskPanel est indépendant : il affiche toutes les tâches correspondant au `currentFilter`, sans partition ni projection liée à la vue.
+
+Dans le SlotPanel, chaque tâche est visible dans au moins une vue. La partition v2 (ci-dessous) casse volontairement cet invariant : une tâche n'est visible que dans la vue correspondant à sa famille.
 
 ---
 

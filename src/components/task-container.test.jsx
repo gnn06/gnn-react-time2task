@@ -5,12 +5,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-import taskReducer, { editTask } from '../features/taskSlice';
+import taskReducer, { editTask, setSlotViewFilterConfView } from '../features/taskSlice';
 import { apiSlice } from '../features/apiSlice';
 import TaskContainer from './task-container';
 
-vi.mock('./slot-panel', () => ({ default: () => <div>SlotPanel</div> }));
-vi.mock('./task-panel',  () => ({ default: () => <div>TaskPanel</div>  }));
+let capturedSlotPanelTasks, capturedTaskPanelTasks;
+vi.mock('./slot-panel', () => ({ default: ({ tasks }) => { capturedSlotPanelTasks = tasks; return <div>SlotPanel</div> } }));
+vi.mock('./task-panel',  () => ({ default: ({ tasks }) => { capturedTaskPanelTasks = tasks; return <div>TaskPanel</div>  } }));
 vi.mock('react-resizable-panels', () => ({
     Group:     ({ children }) => <div>{children}</div>,
     Panel:     ({ children }) => <div>{children}</div>,
@@ -30,6 +31,7 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => { capturedSlotPanelTasks = undefined; capturedTaskPanelTasks = undefined; });
 afterEach(() => { server.resetHandlers(); deleteSpy.mockReset(); vi.restoreAllMocks(); });
 afterAll(() => server.close());
 
@@ -55,6 +57,27 @@ test('confirmer la suppression appelle deleteTask et ferme le dialog', async () 
     expect(window.confirm).toHaveBeenCalledWith('Supprimer la tâche ?');
     await waitFor(() => expect(deleteSpy).toHaveBeenCalledOnce());
     expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
+});
+
+test('en vue list, TaskPanel reçoit les tâches weekday exclues du SlotPanel', async () => {
+    const WEEKDAY_TASK = { ...TASK, id: 1, slotExpr: 'this_month this_week lundi' };
+    const TODAY_TASK   = { ...TASK, id: 2, slotExpr: 'today' };
+    const store = makeStore();
+    store.dispatch(setSlotViewFilterConfView({ view: 'list' }));
+    await store.dispatch(apiSlice.util.upsertQueryData('getTasks', { userId: '', activity: null }, [WEEKDAY_TASK, TODAY_TASK]));
+    await store.dispatch(apiSlice.util.upsertQueryData('getSnapDates', undefined, []));
+
+    render(<Provider store={store}><TaskContainer /></Provider>);
+
+    await waitFor(() => expect(capturedSlotPanelTasks).toBeDefined());
+
+    const slotIds  = capturedSlotPanelTasks.map(t => t.id);
+    const taskIds  = capturedTaskPanelTasks.map(t => t.id);
+
+    expect(slotIds).not.toContain(1);  // weekday absent du SlotPanel en vue list
+    expect(slotIds).toContain(2);      // today présent dans les deux
+    expect(taskIds).toContain(1);      // weekday présent dans le TaskPanel
+    expect(taskIds).toContain(2);
 });
 
 test('annuler la suppression ne ferme pas le dialog et ne supprime pas', async () => {
