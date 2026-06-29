@@ -93,7 +93,7 @@ export default function TaskFilter() {
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const genericFilters = useSelector(state => state.tasks.currentFilter.genericFilters) || {};
-    const filterSlot = useSelector(state => state.tasks.currentFilter.slot);    
+    const filterSlots = useSelector(state => state.tasks.currentFilter.slots);
     const activity = useSelector(state => state.tasks.currentActivity);
 
     const filterRef = useRef(null);
@@ -168,7 +168,7 @@ export default function TaskFilter() {
               { error && <div className="m-1 text-red-500">{error}</div>}
           </div>
           <DialogHelpExpression/>            
-          <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
+          <SlotPickerButton selectedSlotExprs={filterSlots} onSlotChange={onSlotChange} />
           <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
         </Stack>
     );

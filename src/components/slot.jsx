@@ -20,7 +20,7 @@ export default function Slot({slot, tasks}) {
     const dispatch = useDispatch();
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === (slot?.id));
-    const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const filterPaths = useSelector(state => state.tasks.currentFilter.slots);
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
@@ -32,14 +32,13 @@ export default function Slot({slot, tasks}) {
     const { id, start, end, inner } = slot;
     
     let tasksInSlot = [];
-    if (!filterPath || filterExpr) {
+    if (!filterPaths?.length || filterExpr) {
         tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
     } else if (slotStrict) {
-        if (new SlotPath(slot.path).equalsOrInclude(new SlotPath(filterPath))) {
+        if (filterPaths.some(fp => new SlotPath(slot.path).equalsOrInclude(new SlotPath(fp)))) {
             tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
-        } else {
-            // nothing
         }
+        // else nothing
     } else {
         tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
     }
@@ -72,17 +71,13 @@ export default function Slot({slot, tasks}) {
         slotStyle += "hover:bg-blue-100 ";
     }
     const onSlot = (event) => {
-        if (slot.path === filterPath) {
-            dispatch(setFilterSlot(""));
-        } else {
-            dispatch(setFilterSlot(slot.path));
-        }
+        dispatch(setFilterSlot(slot.path));
     }
 
-    const isTargetVisible = slot.path === filterPath
+    const isTargetVisible = filterPaths?.includes(slot.path)
     const targetClassName = (isTargetVisible ? "visible" : ( active !== null ? "invisible" : "invisible group-hover:visible"))
 
-    const tmpPath = filterPath || "this_month this_week"
+    const tmpPath = filterPaths?.[0] || "this_month this_week"
 
     const dropProps = { 
         ref: setNodeRefDrop, 

@@ -56,5 +56,5 @@ test('SlotPickerButton renders and updates store', async () => {
   const thisWeekSlot = screen.getByText('this_week')
   await userEvent.click(thisWeekSlot)
 
-  expect(store.getState().tasks.currentFilter.slot).toEqual('this_month this_week');  
+  expect(store.getState().tasks.currentFilter.slots).toEqual(['this_month this_week']);
 })

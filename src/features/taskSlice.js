@@ -13,7 +13,7 @@ const initialState = {
         isStatusARepo: false,
         genericFilters: {},
         isError: false,
-        slot: null,
+        slots: [],
         taskId: null,
     },
     slotViewFilterConf: DEFAULT_CONF,
@@ -70,7 +70,21 @@ export const taskSlice = createSlice({
         },
         setFilterSlot: (state, action) => {
             const path = action.payload
-            state.currentFilter = {...state.currentFilter, slot: path }
+            if (!path) {
+                state.currentFilter = {...state.currentFilter, slots: [] }
+                return
+            }
+            const current = state.currentFilter.slots
+            const idx = current.indexOf(path)
+            if (idx !== -1) {
+                // toggle off
+                state.currentFilter = {...state.currentFilter, slots: current.filter(s => s !== path) }
+            } else if (current.length < 2) {
+                state.currentFilter = {...state.currentFilter, slots: [...current, path] }
+            } else {
+                // FIFO : replace oldest
+                state.currentFilter = {...state.currentFilter, slots: [current[1], path] }
+            }
         },
         setFilterTaskId: (state, action) => {
             const taskId = action.payload

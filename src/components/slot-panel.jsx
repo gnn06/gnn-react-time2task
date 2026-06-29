@@ -13,7 +13,7 @@ export default function SlotPanel({tasks})  {
     const dispatch = useDispatch();
     const [confVisible, setConfVisible] = useState(false);
     const conf   = useSelector(state => state.tasks.slotViewFilterConf);
-    const filterPath = useSelector(state => state.tasks.currentFilter.slot);
+    const filterPaths = useSelector(state => state.tasks.currentFilter.slots);
     const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
     const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
     const includeWeekDays = useSelector(state => state.tasks.slotViewFilterConf.includeWeekDays);
@@ -64,8 +64,8 @@ export default function SlotPanel({tasks})  {
     return (<Stack sx={{padding:0, height: '100%'}}>
         <Paper sx={{padding:0.5, backgroundColor:'white', width: 'fit-content', ml:'auto', marginBottom: 0.75}}>
             <Stack direction="row" spacing={1}  >
-                { filterPath && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
-                <FormControlLabel control={<Checkbox checked={slotStrict} onClick={handleSlotStrict}/>} label="Slot strict" disabled={!filterPath}/>
+                { filterPaths?.length > 0 && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
+                <FormControlLabel control={<Checkbox checked={slotStrict} onClick={handleSlotStrict}/>} label="Slot strict" disabled={!filterPaths?.length}/>
                 <FormControlLabel control={<Checkbox checked={showRepeat} onClick={handleShowRepeat}/>} label="voir les répétitions" />
                 { conf.view === 'list' && <FormControlLabel control={<Checkbox checked={!!includeWeekDays} onClick={handleIncludeWeekDays}/>} label="Voir les tâches du jour (lundi-vendredi)" /> }
                 <Tooltip title="Choisir le niveau le plus profond inclus dans la vue."  placement="top">

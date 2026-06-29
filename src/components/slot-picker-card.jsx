@@ -4,9 +4,9 @@ import './slot.css';
 
 import SlotTitle from "./slot-title";
 
-export default function SlotPickerCard({slot, selectedSlotExpr, onSlotChange}) {
+export default function SlotPickerCard({slot, selectedSlotExprs, onSlotChange}) {
     const { id, title, path, start, end } = slot;
-    const isSelected = selectedSlotExpr === path;
+    const isSelected = selectedSlotExprs?.includes(path);
 
     // Mêmes fonds que SlotSelect (picker de tâche) : carte grise par défaut,
     // accent bleu saturé pour le créneau sélectionné. Pas d'ancêtre ni de disable ici.
@@ -18,9 +18,7 @@ export default function SlotPickerCard({slot, selectedSlotExpr, onSlotChange}) {
     }
 
     const onSlotClick = (e) => {
-        if (!isSelected) {
-            onSlotChange && onSlotChange(path);
-        }
+        onSlotChange && onSlotChange(path);
     };
 
     return (

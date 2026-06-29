@@ -6,9 +6,11 @@ import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 
 import SlotPicker from "./slot-picker";
 
-export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
+export default function SlotPickerButton({ selectedSlotExprs, onSlotChange }) {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
+
+    const hasSelection = selectedSlotExprs?.length > 0;
 
     const handleClick = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -34,20 +36,21 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
                 aria-label="filtre-créneau"
                 variant="outlined"
                 startIcon={<FilterList />}
-                endIcon={ selectedSlotExpr ? <Clear data-testid="ClearIcon" onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
+                endIcon={ hasSelection ? <Clear data-testid="ClearIcon" onClick={handleClearSelection}/> : <KeyboardArrowDown /> }
                 onClick={handleClick}
             >
-                {!selectedSlotExpr && "Créneau"}
-                {selectedSlotExpr && (
-                    <Chip 
-                        label={selectedSlotExpr.split(' ').slice(-2).join(' ')} 
-                        size="small" 
+                {!hasSelection && "Créneau"}
+                {hasSelection && selectedSlotExprs.map((expr, i) => (
+                    <Chip
+                        key={i}
+                        label={expr.split(' ').slice(-2).join(' ')}
+                        size="small"
                         color="secondary"
-                        sx={{ ml: 1, height: '20px' }}
+                        sx={{ ml: 0.5, height: '20px' }}
                     />
-                )}
+                ))}
             </Button>
-            
+
             <Popper
                 open={open}
                 anchorEl={anchorRef.current}
@@ -56,8 +59,8 @@ export default function SlotPickerButton({ selectedSlotExpr, onSlotChange }) {
             >
                 <ClickAwayListener onClickAway={handleClose}>
                     <Paper elevation={8} style={{ padding: '6px', overflow: 'auto' }} data-testid="slot-picker-popper">
-                        <SlotPicker 
-                            selectedSlotExpr={selectedSlotExpr} 
+                        <SlotPicker
+                            selectedSlotExprs={selectedSlotExprs}
                             onSlotChange={handleSlotChange}
                         />
                     </Paper>

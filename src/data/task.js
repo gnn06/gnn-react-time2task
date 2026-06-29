@@ -224,10 +224,10 @@ export function getListTasks(tasks, conf, snapDates = []) {
  */
 export function getListTasksFiltered(tasks, conf, filter, snapDates = []) {
     const base = conf?.view === 'list' ? getListTasks(tasks, conf, snapDates) : tasks
-    const slot = conf?.view === 'list' && filter?.slot
-        ? slotPathToPresent(filter.slot, snapDates)
-        : filter?.slot
-    return filterSlotExpr(base, { ...filter, slot })
+    const slots = conf?.view === 'list' && filter?.slots?.length
+        ? filter.slots.map(s => slotPathToPresent(s, snapDates))
+        : filter?.slots
+    return filterSlotExpr(base, { ...filter, slots })
 }
 
 // statuts pour lesquels le jour courant compte comme prochain slot
