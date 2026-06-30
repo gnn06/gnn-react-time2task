@@ -14,10 +14,10 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
-import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise } from "../data/task";
+import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1 } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
-function createFilterConfig(activities = [], levelMaxIncluded = null) {
+export function createFilterConfig(activities = [], levelMaxIncluded = null) {
   const baseConfig = [
     {
       key: 'status',
@@ -59,6 +59,14 @@ function createFilterConfig(activities = [], levelMaxIncluded = null) {
       options: [true, false],
       valueLabels: { true: 'tâche imprécise' },
       predicate: makeTaskPredicateImprecise(levelMaxIncluded)
+    },
+    {
+      key: 'isRepeat',
+      label: 'isRepeat',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins une répétition' },
+      predicate: taskPredicateEvery1
     }
   ];
 

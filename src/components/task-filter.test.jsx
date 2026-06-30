@@ -7,9 +7,30 @@ import { vi } from 'vitest'
 import { Provider } from 'react-redux';
 import { configureTestStorePreloaded } from '../features/test-store'
 
-import TaskFilter from './task-filter'
+import TaskFilter, { createFilterConfig } from './task-filter'
 
 const store = configureTestStorePreloaded({ user:{ id: 12 }})
+
+describe('createFilterConfig isRepeat', () => {
+  const getRepeatFilter = () => createFilterConfig().find(f => f.key === 'isRepeat')
+
+  test('expose un filtre isRepeat de type slotexpr', () => {
+    const filter = getRepeatFilter()
+    expect(filter).toBeDefined()
+    expect(filter.type).toBe('slotexpr')
+    expect(typeof filter.predicate).toBe('function')
+  })
+
+  test('predicate true pour une tâche avec au moins une répétition', () => {
+    const filter = getRepeatFilter()
+    expect(filter.predicate({ slotExpr: 'every 1 this_week mardi' })).toBeTruthy()
+  })
+
+  test('predicate false pour une tâche sans répétition', () => {
+    const filter = getRepeatFilter()
+    expect(filter.predicate({ slotExpr: 'mardi' })).toBeFalsy()
+  })
+})
 
 test('bad filter, check error message', async () => {
   render(<Provider store={store}><TaskFilter /></Provider>)
