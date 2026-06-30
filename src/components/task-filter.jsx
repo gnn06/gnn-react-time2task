@@ -14,7 +14,7 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
-import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1 } from "../data/task";
+import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1, taskHasRelatifParentDay, taskHasPathWithoutWeekDay } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
 export function createFilterConfig(activities = [], levelMaxIncluded = null) {
@@ -67,6 +67,22 @@ export function createFilterConfig(activities = [], levelMaxIncluded = null) {
       options: [true, false],
       valueLabels: { true: 'au moins une répétition' },
       predicate: taskPredicateEvery1
+    },
+    {
+      key: 'isWeekDay',
+      label: 'isWeekDay',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins un weekday (lundi..vendredi)' },
+      predicate: taskHasRelatifParentDay
+    },
+    {
+      key: 'isRelatifPresent',
+      label: 'isRelatifPresent',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins un créneau sans jour précis (hors lundi..vendredi)' },
+      predicate: taskHasPathWithoutWeekDay
     }
   ];
 

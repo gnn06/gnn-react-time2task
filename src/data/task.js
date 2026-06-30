@@ -2,7 +2,7 @@ import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrIn
 import { makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
-import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
+import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchHasPathWithoutWeekDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
 import moment from 'moment';
 import { getDate, getDefaultDates } from './slot-date';
 import { getSlotIdLevel, getSlotIdFamily, SLOTIDS_BY_LEVEL, weight } from './slot-id';
@@ -198,6 +198,12 @@ export function taskHasRelatifParentDay(task) {
 export function taskHasRelatifPresentDay(task) {
     const branch = parser.parse(task.slotExpr)
     return branch ? branchGetRelatifPresentDayId(branch) !== null : false
+}
+
+/** Vrai si la tâche admet au moins un créneau (chemin) sans jour précis (lundi..vendredi). */
+export function taskHasPathWithoutWeekDay(task) {
+    const branch = parser.parse(task.slotExpr)
+    return branch ? branchHasPathWithoutWeekDay(branch) : false
 }
 
 /**

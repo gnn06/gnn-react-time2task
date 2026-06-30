@@ -181,15 +181,31 @@ function _collectSlotIds(node) {
     return node.value.flatMap(_collectSlotIds);
 }
 
+/** Jour relatifParent (lundi..vendredi) : complément de niveau JOUR. L'heure (matin/aprem, niveau 4) ne compte pas. */
+function _isWeekDayId(id) {
+    return getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent';
+}
+
 /**
  * Vrai si la branche contient un complément relatifParent au niveau JOUR
  * (lundi..vendredi). L'heure (matin/aprem, niveau 4) n'intervient pas.
  * Sert au routage vue tree (relatifParent) vs list (relatifPresent).
  */
 export function branchHasRelatifParentDay(branch) {
-    return _collectSlotIds(branch).some(
-        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent'
-    );
+    return _collectSlotIds(branch).some(_isWeekDayId);
+}
+
+/**
+ * Vrai si au moins un chemin racine→feuille ne contient aucun weekday (lundi..vendredi).
+ * Multi (OU) : il suffit qu'une alternative soit sans weekday (ex. "today jeudi" → ok via today).
+ * Branche (chemin AND) : tous les éléments doivent éviter un weekday (un weekday sur le chemin
+ * disqualifie, ex. "mercredi aprem" → non). L'heure (matin/aprem) ne disqualifie pas.
+ */
+export function branchHasPathWithoutWeekDay(node) {
+    if (typeof node === 'string') return !_isWeekDayId(node);
+    if (node === null || typeof node !== 'object' || !Array.isArray(node.value)) return false;
+    if (node.type === 'multi') return node.value.some(branchHasPathWithoutWeekDay);
+    return node.value.every(branchHasPathWithoutWeekDay);
 }
 
 export function branchGetRelatifPresentDayId(branch) {

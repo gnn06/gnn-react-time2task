@@ -32,6 +32,52 @@ describe('createFilterConfig isRepeat', () => {
   })
 })
 
+describe('createFilterConfig isWeekDay', () => {
+  const getWeekDayFilter = () => createFilterConfig().find(f => f.key === 'isWeekDay')
+
+  test('expose un filtre isWeekDay de type slotexpr', () => {
+    const filter = getWeekDayFilter()
+    expect(filter).toBeDefined()
+    expect(filter.type).toBe('slotexpr')
+    expect(typeof filter.predicate).toBe('function')
+  })
+
+  test('predicate true pour une tâche avec un weekday', () => {
+    const filter = getWeekDayFilter()
+    expect(filter.predicate({ slotExpr: 'this_week mardi' })).toBeTruthy()
+  })
+
+  test('predicate false pour une tâche sans weekday', () => {
+    const filter = getWeekDayFilter()
+    expect(filter.predicate({ slotExpr: 'today' })).toBeFalsy()
+  })
+})
+
+describe('createFilterConfig isRelatifPresent', () => {
+  const getRelatifPresentFilter = () => createFilterConfig().find(f => f.key === 'isRelatifPresent')
+
+  test('expose un filtre isRelatifPresent de type slotexpr', () => {
+    const filter = getRelatifPresentFilter()
+    expect(filter).toBeDefined()
+    expect(filter.type).toBe('slotexpr')
+    expect(typeof filter.predicate).toBe('function')
+  })
+
+  test('predicate true pour un créneau sans jour précis (y compris heure et multi)', () => {
+    const filter = getRelatifPresentFilter()
+    expect(filter.predicate({ slotExpr: 'this_week' })).toBeTruthy()
+    expect(filter.predicate({ slotExpr: 'today' })).toBeTruthy()
+    expect(filter.predicate({ slotExpr: 'today aprem' })).toBeTruthy()
+    expect(filter.predicate({ slotExpr: 'today jeudi' })).toBeTruthy()
+  })
+
+  test('predicate false quand tous les créneaux sont épinglés à un jour', () => {
+    const filter = getRelatifPresentFilter()
+    expect(filter.predicate({ slotExpr: 'this_week mercredi' })).toBeFalsy()
+    expect(filter.predicate({ slotExpr: 'mercredi aprem' })).toBeFalsy()
+  })
+})
+
 test('bad filter, check error message', async () => {
   render(<Provider store={store}><TaskFilter /></Provider>)
 

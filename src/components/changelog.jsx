@@ -6,6 +6,8 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- filtre-créneau : nouveau filtre « isWeekDay » (n'affiche que les tâches ayant au moins un jour lundi..vendredi)
+- filtre-créneau : nouveau filtre « isRelatifPresent » (n'affiche que les tâches ayant au moins un créneau sans jour précis : this_week, today, today aprem, today/jeudi… ; exclut les tâches épinglées à un jour lundi..vendredi comme this_week mercredi ou mercredi aprem)
 - filtre-créneau : nouveau filtre « au moins une répétition » (n'affiche que les tâches répétées)
 - filtre-créneau : on peut désormais filtrer sur les créneaux relatifs today / tomorrow et leurs créneaux matin / aprem (injectés sous this_week, à côté des weekdays)
 - filtre-créneau : rendu des slots harmonisé avec le picker de tâche (fond gris par défaut, bleu pour le créneau sélectionné)

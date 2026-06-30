@@ -8,6 +8,7 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     isTaskImprecise,
     taskHasRelatifParentDay,
     taskHasRelatifPresentDay,
+    taskHasPathWithoutWeekDay,
     taskRelativePresentToParent,
     taskRelativeParentToPresent,
     getListTasks,
@@ -753,6 +754,23 @@ describe('isTaskImprecise', () => {
         test('this_week mardi → false', () => expect(taskHasRelatifPresentDay(t('this_week mardi'))).toBe(false))
         test('this_week seul → false', () => expect(taskHasRelatifPresentDay(t('this_week'))).toBe(false))
         test('this_month seul → false', () => expect(taskHasRelatifPresentDay(t('this_month'))).toBe(false))
+    })
+
+    describe('taskHasPathWithoutWeekDay (au moins un créneau sans jour précis)', () => {
+        const t = slotExpr => ({ slotExpr })
+        test('this_week → true', () => expect(taskHasPathWithoutWeekDay(t('this_week'))).toBe(true))
+        test('today → true', () => expect(taskHasPathWithoutWeekDay(t('today'))).toBe(true))
+        test('tomorrow → true', () => expect(taskHasPathWithoutWeekDay(t('tomorrow'))).toBe(true))
+        test('this_month → true', () => expect(taskHasPathWithoutWeekDay(t('this_month'))).toBe(true))
+        test('next_week → true', () => expect(taskHasPathWithoutWeekDay(t('next_week'))).toBe(true))
+        test('today aprem → true (heure ne disqualifie pas)', () => expect(taskHasPathWithoutWeekDay(t('today aprem'))).toBe(true))
+        test('today jeudi → true (multi : alternative today)', () => expect(taskHasPathWithoutWeekDay(t('today jeudi'))).toBe(true))
+        test('every 1 today → true', () => expect(taskHasPathWithoutWeekDay(t('every 1 today'))).toBe(true))
+        test('this_week mardi → false (mardi sur le chemin)', () => expect(taskHasPathWithoutWeekDay(t('this_week mardi'))).toBe(false))
+        test('next_week mercredi → false', () => expect(taskHasPathWithoutWeekDay(t('next_week mercredi'))).toBe(false))
+        test('mercredi aprem → false (mercredi sur le chemin)', () => expect(taskHasPathWithoutWeekDay(t('mercredi aprem'))).toBe(false))
+        test('mercredi jeudi → false (multi sans alternative sans weekday)', () => expect(taskHasPathWithoutWeekDay(t('mercredi jeudi'))).toBe(false))
+        test('lundi seul → false (relatifParent)', () => expect(taskHasPathWithoutWeekDay(t('lundi'))).toBe(false))
     })
 
     describe('taskHasRelatifParentDay (routage vue tree/list)', () => {
