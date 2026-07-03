@@ -6,6 +6,9 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- SlotPanel : vérité unique — le SlotPanel affiche désormais exactement le même ensemble de tâches que le TaskPanel (filtre courant partagé). Le tree ne se limite plus aux tâches à jour fixe : toutes les tâches filtrées y sont disposées, celles sans colonne jour (today/tomorrow, imprécises) remontant par bubbling
+- SlotPanel : options retirées au profit des filtres par prédicat — « Voir les tâches du jour » (→ filtres isWeekDay / isRelatifPresent), « voir les répétitions » (→ filtre isRepeat / NOREPEAT), « Slot strict » (→ le filtre créneau restreint déjà l'ensemble). La barre ne garde que le niveau et le type de vue
+- projection weekday→today/tomorrow mise en pause (code conservé dormant), le placement se fait par bubbling
 - filtre-créneau : nouveau filtre « isWeekDay » (n'affiche que les tâches ayant au moins un jour lundi..vendredi)
 - filtre-créneau : nouveau filtre « isRelatifPresent » (n'affiche que les tâches ayant au moins un créneau sans jour précis : this_week, today, today aprem, today/jeudi… ; exclut les tâches épinglées à un jour lundi..vendredi comme this_week mercredi ou mercredi aprem)
 - filtre-créneau : nouveau filtre « au moins une répétition » (n'affiche que les tâches répétées)

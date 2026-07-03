@@ -109,10 +109,6 @@ export const taskSlice = createSlice({
         setSlotViewFilterConfView: (state, action) => {
             state.slotViewFilterConf = { ...state.slotViewFilterConf, view: action.payload.view };
         },
-        setSlotViewStrict: (state, action) => {
-            const strict = action.payload
-            state.slotViewFilterConf = {...state.slotViewFilterConf, slotStrict: strict }
-        },
         setSlotViewFilterConf: (state, action) => {
             state.slotViewFilterConf = action.payload.conf;
         },
@@ -125,12 +121,6 @@ export const taskSlice = createSlice({
             const task = action.payload;
             state.editTask = task;
         },
-        showRepeatAction: (state, action) => {
-            state.slotViewFilterConf = { ...state.slotViewFilterConf, showRepeat: action.payload };
-        },
-        setIncludeWeekDays: (state, action) => {
-            state.slotViewFilterConf = { ...state.slotViewFilterConf, includeWeekDays: action.payload };
-        },
         dragging: (state, action) => {
             state.isDragging = action.payload;
         },
@@ -138,9 +128,9 @@ export const taskSlice = createSlice({
 })
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
-    setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView, setSlotViewStrict,
+    setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView,
     confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric,
-    editTask, showRepeatAction, setIncludeWeekDays, dragging
+    editTask, dragging
 } = taskSlice.actions
 
 export default taskSlice.reducer

@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon } from "./slot-view";
+import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1839,5 +1839,26 @@ describe('slotViewPicker — injecte les ancres relatifPresent sous this_week', 
     test('les weekdays conservent leurs paths absolus', () => {
         const thisWeek = findThisWeek(slotViewPicker(DEFAULT_CONF));
         expect(thisWeek.inner.find(s => s.id === 'lundi').path).toBe('this_month this_week lundi');
+    });
+});
+
+describe('truncatePathAtAnchorDay (grille tree : colonnes = weekdays)', () => {
+    test('tronque un jour ancre (today) → remonte à la semaine', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week', 'today'])).toEqual(['this_month', 'this_week']);
+    });
+    test('tronque today et son heure (today aprem)', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week', 'today', 'aprem'])).toEqual(['this_month', 'this_week']);
+    });
+    test('tomorrow est aussi tronqué', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week', 'tomorrow'])).toEqual(['this_month', 'this_week']);
+    });
+    test('un weekday (vendredi) est conservé', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week', 'vendredi'])).toEqual(['this_month', 'this_week', 'vendredi']);
+    });
+    test('weekday + heure conservés', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week', 'vendredi', 'aprem'])).toEqual(['this_month', 'this_week', 'vendredi', 'aprem']);
+    });
+    test('chemin sans jour inchangé', () => {
+        expect(truncatePathAtAnchorDay(['this_month', 'this_week'])).toEqual(['this_month', 'this_week']);
     });
 });

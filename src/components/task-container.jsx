@@ -5,9 +5,9 @@ import { Panel, Group, Separator } from "react-resizable-panels";
 import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
 import TaskDialog from "./task-dialog";
-import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation, useGetSnapDatesQuery } from "../features/apiSlice.js";
+import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { dragging, editTask } from "../features/taskSlice";
-import { getListTasksFiltered, filterSlotExpr } from '../data/task.js';
+import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
 import { Box } from "@mui/material";
 
@@ -17,8 +17,6 @@ export default function TaskContainer() {
     const activity = useSelector(state => state.tasks.currentActivity);
     const { data:tasksRedux } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
-    const conf = useSelector(state => state.tasks.slotViewFilterConf);
-    const { data: snapDates = [] } = useGetSnapDatesQuery();
     const [ updateTask ] = useUpdateTaskMutation()
     const [ deleteTask ] = useDeleteTaskMutation()
     const taskToEdit  = useSelector(state => state.tasks.editTask);
@@ -58,10 +56,11 @@ export default function TaskContainer() {
 
     if (tasksRedux) {
         const tasksFetched = tasksRedux.slice();
-        const tasksForSlotPanel = getListTasksFiltered(tasksFetched, conf, currentFilter, snapDates);
-        const tasksForTaskPanel = filterSlotExpr(tasksFetched, currentFilter);
-        const panel1 = <SlotPanel tasks={tasksForSlotPanel}/>
-        const panel2 = <TaskPanel tasks={tasksForTaskPanel}/>
+        // Vérité unique : le filtre courant décide QUELLES tâches ; les deux panneaux
+        // reçoivent le même ensemble, chacun le disposant à sa façon.
+        const tasksFiltered = filterSlotExpr(tasksFetched, currentFilter);
+        const panel1 = <SlotPanel tasks={tasksFiltered}/>
+        const panel2 = <TaskPanel tasks={tasksFiltered}/>
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart} >            
             { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm} onDelete={onTaskDialogDelete}/>}

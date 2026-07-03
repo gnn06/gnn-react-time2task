@@ -1,16 +1,24 @@
 import { appendWithSpace } from "../utils/stringUtil";
-import { getSlotIdCurrent, getSlotIdLevel, SLOTIDS_BY_LEVEL } from "./slot-id";
+import { getSlotIdCurrent, getSlotIdLevel, isAnchor, SLOTIDS_BY_LEVEL } from "./slot-id";
 import { getCurrentPathExpr, SlotPath } from "./slot-path";
+
+/**
+ * Tronque un chemin (tokens de slot-id) au premier jour "ancre" (today/tomorrow).
+ * La grille tree n'a de colonnes que pour les weekdays (lundi..vendredi) ; une tâche
+ * sur un jour ancre n'y a donc pas de colonne et doit remonter au niveau semaine par
+ * bubbling. Les weekdays (compléments) sont conservés, avec leur éventuelle heure.
+ */
+export function truncatePathAtAnchorDay(tokens: string[]): string[] {
+    const cut = tokens.findIndex(t => getSlotIdLevel(t) === 3 && isAnchor(t));
+    return cut === -1 ? tokens : tokens.slice(0, cut);
+}
 
 interface SlotViewConf {
   levelMin:         number | null,
     levelMaxIncluded: number | null,
     remove: string[],
     collapse: string[],
-    view: "tree" | "list",
-    slotStrict: boolean,
-    showRepeat: boolean,
-    includeWeekDays: boolean
+    view: "tree" | "list"
 }
 
 export const DEFAULT_CONF:SlotViewConf = {
@@ -22,10 +30,7 @@ export const DEFAULT_CONF:SlotViewConf = {
     remove: [],
     levelMin: null,
     levelMaxIncluded: null,
-    view: "tree",
-    slotStrict: true,
-    showRepeat: true,
-    includeWeekDays: false
+    view: "tree"
 }
 
 interface Slot {

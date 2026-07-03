@@ -1,16 +1,22 @@
 # Spécifications fonctionnelles — Vue des slots
 
-## Invariant fondamental
+## Invariant fondamental — vérité unique
 
-Cette spec décrit uniquement le **SlotPanel** (vues tree et list). Le TaskPanel est indépendant : il affiche toutes les tâches correspondant au `currentFilter`, sans partition ni projection liée à la vue.
+Le **filtre courant (`currentFilter`) est la seule source de vérité** : il décide QUELLES tâches sont visibles. Le **SlotPanel affiche exactement le même ensemble que le TaskPanel** — les deux panneaux sont alimentés par `filterSlotExpr(tasks, currentFilter)`.
 
-Dans le SlotPanel, chaque tâche est visible dans au moins une vue. La partition v2 (ci-dessous) casse volontairement cet invariant : une tâche n'est visible que dans la vue correspondant à sa famille.
+La conf de vue (`SlotViewConf` : `view`, `levelMaxIncluded`, `collapse`, `remove`) ne décide que la **disposition** (comment ranger ces tâches dans les créneaux), jamais leur présence ou absence. Aucune option de vue ne doit ajouter/retirer une tâche.
+
+Le **placement se fait par bubbling** (voir plus bas) : une tâche va dans le slot le plus précis qui la contient et qui existe dans la vue ; sinon elle remonte. En tree, les colonnes jour restent les weekdays (`lundi`..`vendredi`) ; une tâche `today`/`tomorrow` ou imprécise (`this_week` seul) n'a pas de colonne jour dédiée et remonte au niveau semaine/mois.
+
+Les options `includeWeekDays`, `showRepeat` et `slotStrict` ont été retirées de la barre du SlotPanel : elles sont couvertes par les filtres par prédicat (`isWeekDay`/`isRelatifPresent`, `isRepeat`/`NOREPEAT`, filtre créneau).
 
 ---
 
-## Partition par famille — v2
+## Partition par famille — v2 (SUSPENDU / dormant)
 
-Chaque vue affiche un sous-ensemble de tâches selon la famille du slot JOUR.
+> **Statut** : cette partition n'est plus appliquée depuis le passage à la vérité unique. Le tree ne filtre plus par famille (il dispose toutes les tâches filtrées). Les fonctions `getListTasks`/`getListTasksFiltered` sont conservées dormantes dans `src/data/task.js`. La section ci-dessous documente ce code dormant, à réactiver seulement si l'on tranche pour la projection plutôt que le bubbling.
+
+Chaque vue affichait un sous-ensemble de tâches selon la famille du slot JOUR.
 
 ### Règle de routage
 
@@ -32,7 +38,9 @@ Note : `today` (relatifPresent, weight=1) ne matche pas `lundi` (relatifParent, 
 
 ---
 
-## Projection des weekdays dans la list — flag `includeWeekDays`
+## Projection des weekdays dans la list — flag `includeWeekDays` (SUSPENDU / dormant)
+
+> **Statut** : la projection et le flag `includeWeekDays` ne sont plus câblés (checkbox retirée, champ retiré de `SlotViewConf`). Les primitives (`taskRelativeParentToPresent`, `slotPathToPresent`) et le câblage (`getListTasksFiltered`) restent dormants dans `src/data/task.js`. Décision reportée : bubbling (actuel) vs projection. La section ci-dessous documente le comportement dormant.
 
 La partition v2 sépare deux **phases** de la journée : le matin on *planifie* (tree par weekday, list par today/tomorrow), une fois la journée lancée on *exécute* et on veut voir d'un seul coup toutes les tâches qui tombent aujourd'hui — qu'elles soient arrivées via `today` (relatifPresent) ou via `lundi` (relatifParent, parce qu'on est lundi).
 

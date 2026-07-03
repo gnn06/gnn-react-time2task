@@ -108,7 +108,10 @@ test.describe('Gestion des créneaux', () => {
         await expectTaskInSlotPanel(page, title, 'this_month this_week jeudi');
     });
 
-    test('ajouter une répétition sur un créneau (this_week)', async ({ page }) => {
+    // TEMPORAIRE : la visualisation des répétitions est désactivée (slot.jsx includeRepeat=false),
+    // donc une tâche répétée n'apparaît plus qu'en this_week. Réactiver ce test quand la décision
+    // répétition/filtre NOREPEAT sera tranchée (cf. slot.jsx et docs/slot-view-spec.md).
+    test.fixme('ajouter une répétition sur un créneau (this_week)', async ({ page }) => {
         const title = uniqueTitle('créneau-répétition');
         await creerTache(page, title);
 

@@ -25,7 +25,7 @@ function buildRows(conf, tasks) {
 }
 
 export default function SlotViewList({ tasks, conf }) {
-    // tasks arrivent déjà projetées (getListTasksFiltered en amont, task-container)
+    // Vérité unique : tasks = ensemble filtré (identique au TaskPanel), disposé par bubbling.
     const allListTasks = tasks;
     const rows = buildRows(conf, allListTasks);
 

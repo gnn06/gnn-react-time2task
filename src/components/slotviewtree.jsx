@@ -1,10 +1,9 @@
 import Slot from "./slot";
 import { DashedTable, DashedColumnHeader, DashedRowHeader, DashedCell } from "./dashed-table";
-import { slotViewFilterSelection } from "../data/slot-view";
+import { slotViewFilterSelection, truncatePathAtAnchorDay } from "../data/slot-view";
 import { SLOTIDS_BY_LEVEL } from "../data/slot-id";
 import { IDizer } from "../utils/stringUtil";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
-import { taskHasRelatifParentDay } from "../data/task";
 import { Parser } from "../data/parser";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours
@@ -19,10 +18,15 @@ const parser = new Parser();
 export default function SlotViewTree({ tasks, selection, handleSelection, conf }) {
 
     const maxLevel = conf.levelMaxIncluded
-    const allTreeTasks = tasks.filter(taskHasRelatifParentDay)
+    // Vérité unique : le tree dispose toutes les tâches filtrées. Celles sans colonne
+    // jour (today/tomorrow, imprécises) remontent par bubbling (cf. findTaskBySlotExpr).
+    const allTreeTasks = tasks
     const taskPaths = allTreeTasks
         .map(t => { const h = getBranchHash(branchComplete(parser.parse(t.slotExpr))); return h ? IDizer(h) : null })
         .filter(Boolean)
+        // Jours ancres (today/tomorrow) : pas de colonne dans la grille tree → on tronque
+        // à la semaine pour que ces tâches remontent par bubbling (pas de nœud orphelin).
+        .map(truncatePathAtAnchorDay)
         .map(tokens => maxLevel ? tokens.slice(0, maxLevel) : tokens);
     const moisSlots = slotViewFilterSelection(conf, taskPaths);
 

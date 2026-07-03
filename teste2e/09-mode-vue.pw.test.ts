@@ -29,22 +29,4 @@ test.describe('Mode de vue et configuration du slot panel', () => {
         // La vue arbre n'affiche pas les colonnes Past / Present / Future
         await expect(page.getByText('Past')).not.toBeVisible();
     });
-
-    test('activer l\'affichage des répétitions', async ({ page }) => {
-        const checkbox = page.getByLabel('voir les répétitions');
-        await expect(checkbox).toBeVisible();
-
-        const etatInitial = await checkbox.isChecked();
-
-        // Toggle
-        await checkbox.click();
-        await expect(checkbox).toBeChecked({ checked: !etatInitial });
-
-        // Le slot panel reste fonctionnel après le toggle
-        await expect(page.getByRole('combobox', { name: 'slot-view-select' })).toBeVisible();
-
-        // Restaurer l'état initial
-        await checkbox.click();
-        await expect(checkbox).toBeChecked({ checked: etatInitial });
-    });
 });

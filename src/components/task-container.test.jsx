@@ -59,7 +59,7 @@ test('confirmer la suppression appelle deleteTask et ferme le dialog', async () 
     expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
 });
 
-test('en vue list, TaskPanel reçoit les tâches weekday exclues du SlotPanel', async () => {
+test('les deux panneaux reçoivent le même ensemble de tâches (vérité unique)', async () => {
     const WEEKDAY_TASK = { ...TASK, id: 1, slotExpr: 'this_month this_week lundi' };
     const TODAY_TASK   = { ...TASK, id: 2, slotExpr: 'today' };
     const store = makeStore();
@@ -71,13 +71,12 @@ test('en vue list, TaskPanel reçoit les tâches weekday exclues du SlotPanel', 
 
     await waitFor(() => expect(capturedSlotPanelTasks).toBeDefined());
 
-    const slotIds  = capturedSlotPanelTasks.map(t => t.id);
-    const taskIds  = capturedTaskPanelTasks.map(t => t.id);
+    const slotIds = capturedSlotPanelTasks.map(t => t.id).sort();
+    const taskIds = capturedTaskPanelTasks.map(t => t.id).sort();
 
-    expect(slotIds).not.toContain(1);  // weekday absent du SlotPanel en vue list
-    expect(slotIds).toContain(2);      // today présent dans les deux
-    expect(taskIds).toContain(1);      // weekday présent dans le TaskPanel
-    expect(taskIds).toContain(2);
+    // le filtre est la vérité unique : SlotPanel et TaskPanel affichent le même ensemble
+    expect(slotIds).toEqual([1, 2]);
+    expect(slotIds).toEqual(taskIds);
 });
 
 test('annuler la suppression ne ferme pas le dialog et ne supprime pas', async () => {

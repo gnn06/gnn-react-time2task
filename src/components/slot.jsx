@@ -21,9 +21,6 @@ export default function Slot({slot, tasks}) {
     const selectedTaskLst = useSelector(state => state.tasks.selectedTaskId)
     const selected = useSelector(state => state.tasks.selectedSlotId).some(slotId => slotId === (slot?.id));
     const filterPaths = useSelector(state => state.tasks.currentFilter.slots);
-    const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
-    const slotStrict = useSelector(state => state.tasks.slotViewFilterConf.slotStrict);
-    const showRepeat = useSelector(state => state.tasks.slotViewFilterConf.showRepeat);
     const { data: snapDates, isSuccess: snapDatesReady } = useGetSnapDatesQuery();
     const { isOver, setNodeRef: setNodeRefDrop, active } = useDroppable({ id: slot?.path ?? "" })
 
@@ -31,17 +28,11 @@ export default function Slot({slot, tasks}) {
 
     const { id, start, end, inner } = slot;
     
-    let tasksInSlot = [];
-    if (!filterPaths?.length || filterExpr) {
-        tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
-    } else if (slotStrict) {
-        if (filterPaths.some(fp => new SlotPath(slot.path).equalsOrInclude(new SlotPath(fp)))) {
-            tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
-        }
-        // else nothing
-    } else {
-        tasksInSlot = findTaskBySlotExpr(tasks, slot, showRepeat);
-    }
+    // Placement par bubbling seul : la tâche va dans le slot le plus précis qui la
+    // contient et qui existe dans la vue ; sinon elle remonte. Le filtre courant a déjà
+    // restreint l'ensemble en amont (vérité unique), donc pas de gating par slot ici.
+    // TEMPORAIRE : includeRepeat=false → chaque tâche répétée n'apparaît qu'une fois.
+    let tasksInSlot = findTaskBySlotExpr(tasks, slot, false);
 
     // need to reorder tasks byb order because task order is affected by multi slots
     tasksInSlot = tasksInSlot.sort((a, b) => {
