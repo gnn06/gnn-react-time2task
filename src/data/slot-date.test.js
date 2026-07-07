@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, vi } from 'vitest'
 
-import { getDate, getDateString, getDefaultDates, getISODate, getSnapDateToSave, getSnapSlotId, shiftDate } from "./slot-date";
+import { getDate, getDateString, getDefaultDates, getISODate, getSnapDateToSave, getSnapSlotId, shiftDate, getCurrentWeekdayId } from "./slot-date";
 
 describe('getDate', () => {
     beforeEach(() => {
@@ -130,6 +130,32 @@ describe('getDate', () => {
 test('getISODate', () => {
     const result = getISODate(new Date("2024-12-25T02:15:45Z"))
     expect(result).toEqual("2024-12-25")
+});
+
+describe('getCurrentWeekdayId — jour du today STOCKÉ (snapDates), pas l\'horloge', () => {
+    // this_week = lundi 2023-12-18
+    const week = { slotid: 'this_week', date: '2023-12-18' };
+    test('today mercredi (2023-12-20) → mercredi', () => {
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-20' }])).toBe('mercredi');
+    });
+    test('today lundi (= début de semaine) → lundi', () => {
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-18' }])).toBe('lundi');
+    });
+    test('today vendredi (2023-12-22) → vendredi', () => {
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-22' }])).toBe('vendredi');
+    });
+    test('today samedi (2023-12-23) → samedi (hors weekday → overflow côté vue)', () => {
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-23' }])).toBe('samedi');
+    });
+    test('today hors de la semaine (semaine suivante) → null', () => {
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-25' }])).toBe(null);
+    });
+    test('indépendant de l\'horloge : today stocké mercredi même si système = mardi', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2023-12-19')); // mardi système
+        expect(getCurrentWeekdayId([week, { slotid: 'today', date: '2023-12-20' }])).toBe('mercredi');
+        vi.useRealTimers();
+    });
 });
 
 describe('getDefaultDate', () => {

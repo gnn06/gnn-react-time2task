@@ -1,5 +1,8 @@
 import { appendWithSpace } from "../utils/stringUtil";
 import { getSlotIdCurrent, getSlotIdLevel, isAnchor, SLOTIDS_BY_LEVEL } from "./slot-id";
+// Semaine calendaire complète (lundi→dimanche) pour aligner today/tomorrow sur une
+// colonne weekday. samedi/dimanche ne sont pas des slot-ids : ils marquent l'overflow.
+const WEEK_CALENDAR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 import { getCurrentPathExpr, SlotPath } from "./slot-path";
 
 /**
@@ -253,7 +256,7 @@ function relativePresentDayPickerSlots(): [Slot, Slot] {
 }
 
 /** Préfixe l'inner du nœud this_week avec les ancres relatifPresent (today/tomorrow). */
-function injectRelativeDaysUnderThisWeek(slots: Slot[]): Slot[] {
+export function injectRelativeDaysUnderThisWeek(slots: Slot[]): Slot[] {
     return slots.map(slot => {
         if (slot.id === "this_week") {
             return { ...slot, inner: [...relativePresentDayPickerSlots(), ...(slot.inner ?? [])] };
@@ -328,4 +331,49 @@ export function slotViewFilterSelection(conf: SlotViewConf, paths: string[][]) {
   let slotView = slotViewFilter(conf)
   paths.forEach(path => {slotView = slotViewAdd(slotView, path)})
   return slotView
+}
+
+/**
+ * Colonne weekday sur laquelle aligner un jour rolling dans la section rollingDays du tree.
+ * today → jour courant ; tomorrow → lendemain calendaire. Renvoie un weekday id
+ * (lundi..vendredi) ou null si hors plage (week-end) → colonne overflow.
+ * @param dayId 'today' | 'tomorrow'
+ * @param currentWeekdayId nom du jour courant (getSlotIdCurrent(3)), ex. 'mercredi'
+ */
+export function getRollingDayColumnId(dayId: string, currentWeekdayId: string): string | null {
+    const offset = dayId === 'tomorrow' ? 1 : 0;
+    const idx = WEEK_CALENDAR.indexOf(currentWeekdayId);
+    if (idx === -1) return null;
+    const targetId = WEEK_CALENDAR[idx + offset];
+    return SLOTIDS_BY_LEVEL['3'].includes(targetId) ? targetId : null;
+}
+
+// Chemin de la semaine courante (this_week sous le mois courant). SLOTIDS_BY_LEVEL['2']
+// place un nœud this_week sous CHAQUE mois ; seule la semaine courante porte la section
+// rollingDays (today/tomorrow sont ancrés au présent).
+export const CURRENT_WEEK_PATH = "this_month this_week";
+
+/** Injecte today/tomorrow (avec matin/aprem) sous le seul nœud de la semaine courante. */
+function injectRollingUnderCurrentWeek(slots: Slot[]): Slot[] {
+    return slots.map(slot => {
+        if (slot.path === CURRENT_WEEK_PATH) {
+            return { ...slot, inner: [...relativePresentDayPickerSlots(), ...(slot.inner ?? [])] };
+        }
+        return { ...slot, inner: injectRollingUnderCurrentWeek(slot.inner ?? []) };
+    });
+}
+
+/**
+ * Arbre de slots de la vue tree : grille weekday augmentée de la section rollingDays
+ * (today/tomorrow avec matin/aprem) injectée sous la semaine courante uniquement.
+ * today/tomorrow ne sont pas des colonnes weekday : le composant les rend dans une
+ * section séparée, alignée. Respecte levelMaxIncluded : pas d'injection sous le niveau
+ * jour (3), pas de matin/aprem si le max s'arrête au jour.
+ */
+export function slotViewTreeSelection(conf: SlotViewConf, paths: string[][]): Slot[] {
+    const base = slotViewFilterSelection(conf, paths);
+    const max = conf.levelMaxIncluded;
+    if (max && max < 3) return base; // pas de niveau jour affiché → pas de rollingDays
+    const injected = injectRollingUnderCurrentWeek(base);
+    return max ? stripInnerAtMaxLevel(injected, max) : injected;
 }

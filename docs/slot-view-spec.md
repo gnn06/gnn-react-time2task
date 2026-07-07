@@ -109,6 +109,34 @@ Si une tâche est assignée à un slot absent de la vue par défaut, ce slot est
 - Tout slot absent de la vue par défaut est injecté dynamiquement si une tâche le requiert
 - La distinction imprécis / remonté s'applique aux nœuds `this_month`, `this_week` et ses jours (sauf heure)
 
+### Section « Jours roulants » (today / tomorrow) — sans projection
+
+Les colonnes jour de l'arbre sont les weekdays `relatifParent` (`lundi`..`vendredi`). Les
+jours `relatifPresent` (`today`/`tomorrow`) n'y ont pas de colonne. Plutôt que de les
+projeter sur un weekday (réécriture de `slotExpr`, cf. section dormante ci-dessus) ou de
+les laisser remonter à la semaine par bubbling, ils s'affichent dans une **section
+rollingDays séparée**, sous la **semaine courante uniquement** (`this_month this_week`).
+
+Règles :
+- **Familles distinctes** : `today` et `mardi` restent deux créneaux différents même s'ils
+  désignent le même jour réel — aucune fusion, aucune réécriture de donnée.
+- **Sous-lignes Jour / Matin / Aprem** propres à la section, miroir de la grille weekday.
+- **Alignement visuel** : la cellule `today` est positionnée dans la colonne du jour du
+  `today` **stocké** (`getCurrentWeekdayId(snapDates)`, dérivé des snapDates `today`/
+  `this_week` — **pas** de l'horloge système, sinon décalage si les snaps ont été roulés
+  manuellement), `tomorrow` dans la colonne du lendemain. C'est un positionnement de
+  colonne (helper `getRollingDayColumnId`), **pas** une projection : le pire cas d'une
+  incohérence de snapDate est un décalage cosmétique, jamais une tâche perdue ou déplacée.
+  La colonne d'alignement est forcée présente même vide.
+- **Débordement week-end** : si `today`/`tomorrow` tombe hors `lundi`..`vendredi`
+  (ex. `tomorrow` un vendredi, ou `today` un samedi), la cellule va dans une **colonne
+  dédiée** ajoutée en fin de ligne.
+- **Tâche mixte** (`today jeudi`) : le bubbling la place à la fois dans la colonne `jeudi`
+  (grille weekday) et dans la cellule `today` (section rollingDays) → **affichée deux fois**.
+- Construction data : `slotViewTreeSelection` injecte les nœuds today/tomorrow (+ matin/
+  aprem) sous la semaine courante ; le placement des tâches reste le bubbling
+  (`findTaskBySlotExpr`). Périmètre : **vue tree** (la déclinaison list reste à concevoir).
+
 ## Mode liste
 
 - Grille 2D : lignes = niveaux (mois, semaine, jour), colonnes = position temporelle

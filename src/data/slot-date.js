@@ -135,6 +135,19 @@ export function getDate(slotID, snapDates) {
     return ""
 }
 
+// Jour de la semaine (lundi..dimanche) du `today` STOCKÉ, dérivé des snapDates — et non
+// de l'horloge système. Cohérent avec les colonnes weekday (offset depuis le lundi de
+// this_week). Sert à aligner la section rollingDays du tree. null si today tombe hors de
+// la semaine (snapDates incohérents) → la cellule bascule en colonne overflow.
+const WEEKDAY_BY_OFFSET = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+export function getCurrentWeekdayId(snapDates = []) {
+    const todayDate = moment(getDate({ id: 'today' }, snapDates))
+    const weekSnap = snapDates.find(el => el.slotid === 'this_week')
+        ?? getDefaultDates().find(el => el.slotid === 'this_week')
+    const offset = todayDate.diff(moment(weekSnap.date), 'days')
+    return (offset >= 0 && offset <= 6) ? WEEKDAY_BY_OFFSET[offset] : null
+}
+
 export function getDateString(date, level) {
     if (level === 1) { // month
         return moment(date).format("YYYY-MM")

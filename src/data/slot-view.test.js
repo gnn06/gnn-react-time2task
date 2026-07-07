@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay } from "./slot-view";
+import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1839,6 +1839,68 @@ describe('slotViewPicker — injecte les ancres relatifPresent sous this_week', 
     test('les weekdays conservent leurs paths absolus', () => {
         const thisWeek = findThisWeek(slotViewPicker(DEFAULT_CONF));
         expect(thisWeek.inner.find(s => s.id === 'lundi').path).toBe('this_month this_week lundi');
+    });
+});
+
+describe('getRollingDayColumnId — colonne weekday d\'alignement d\'un jour rolling', () => {
+    test('today → la colonne du jour courant', () => {
+        expect(getRollingDayColumnId('today', 'mercredi')).toBe('mercredi');
+        expect(getRollingDayColumnId('today', 'lundi')).toBe('lundi');
+        expect(getRollingDayColumnId('today', 'vendredi')).toBe('vendredi');
+    });
+    test('tomorrow → la colonne du lendemain calendaire', () => {
+        expect(getRollingDayColumnId('tomorrow', 'mercredi')).toBe('jeudi');
+        expect(getRollingDayColumnId('tomorrow', 'lundi')).toBe('mardi');
+    });
+    test('tomorrow un vendredi → samedi hors plage → overflow (null)', () => {
+        expect(getRollingDayColumnId('tomorrow', 'vendredi')).toBe(null);
+    });
+    test('today un week-end → hors plage → overflow (null)', () => {
+        expect(getRollingDayColumnId('today', 'samedi')).toBe(null);
+        expect(getRollingDayColumnId('today', 'dimanche')).toBe(null);
+    });
+    test('tomorrow un samedi → dimanche hors plage → overflow (null)', () => {
+        expect(getRollingDayColumnId('tomorrow', 'samedi')).toBe(null);
+    });
+});
+
+describe('slotViewTreeSelection — injecte today/tomorrow sous this_week (section rollingDays)', () => {
+    const findThisWeek = (roots) =>
+        roots.find(s => s.id === 'this_month').inner.find(s => s.id === 'this_week');
+
+    test('this_week contient today/tomorrow (avec matin/aprem) devant les weekdays', () => {
+        const thisWeek = findThisWeek(slotViewTreeSelection(DEFAULT_CONF, []));
+        expect(thisWeek.inner.map(s => s.id)).toEqual(
+            ['today', 'tomorrow', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']
+        );
+        const today = thisWeek.inner.find(s => s.id === 'today');
+        expect(today.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+    });
+
+    test('next_week n\'a pas de section rollingDays (weekdays only)', () => {
+        const roots = slotViewTreeSelection(DEFAULT_CONF, []);
+        const nextWeek = roots.find(s => s.id === 'this_month').inner.find(s => s.id === 'next_week');
+        expect((nextWeek?.inner ?? []).some(s => s.id === 'today' || s.id === 'tomorrow')).toBe(false);
+    });
+
+    test('this_week sous next_month (semaine non courante) n\'a PAS de rollingDays', () => {
+        const roots = slotViewTreeSelection({ ...DEFAULT_CONF, collapse: [] }, []);
+        const nextMonthWeek = roots.find(s => s.id === 'next_month')?.inner.find(s => s.id === 'this_week');
+        expect((nextMonthWeek?.inner ?? []).some(s => s.id === 'today' || s.id === 'tomorrow')).toBe(false);
+    });
+
+    test('niveau max = semaine (2) : pas d\'injection rollingDays', () => {
+        const conf = { ...DEFAULT_CONF, levelMaxIncluded: 2 };
+        const thisWeek = findThisWeek(slotViewTreeSelection(conf, []));
+        expect((thisWeek.inner ?? []).some(s => s.id === 'today')).toBe(false);
+    });
+
+    test('niveau max = jour (3) : today/tomorrow présents mais sans matin/aprem', () => {
+        const conf = { ...DEFAULT_CONF, levelMaxIncluded: 3 };
+        const thisWeek = findThisWeek(slotViewTreeSelection(conf, []));
+        const today = thisWeek.inner.find(s => s.id === 'today');
+        expect(today).toBeTruthy();
+        expect(today.inner).toEqual([]);
     });
 });
 

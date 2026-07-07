@@ -352,6 +352,33 @@ describe('findTaskBySlotExpr', () => {
         expect(result).toEqual(expected);
     })
 
+    it('tâche mixte cross-famille (today jeudi) trouvée par le nœud today', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const todayNode = { id: 'today', path: 'today', inner: [
+            { id: 'matin', path: 'today matin', inner: [] },
+            { id: 'aprem', path: 'today aprem', inner: [] },
+        ] };
+        const result = findTaskBySlotExpr(tasks, todayNode, false);
+        expect(result.map(t => t.id)).toEqual(['mixte']);
+    });
+
+    it('tâche mixte cross-famille (today jeudi) trouvée aussi par le nœud jeudi (→ affichée deux fois)', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const jeudiNode = { id: 'jeudi', path: 'this_month this_week jeudi', inner: [] };
+        const result = findTaskBySlotExpr(tasks, jeudiNode, false);
+        expect(result.map(t => t.id)).toEqual(['mixte']);
+    });
+
+    it('tâche mixte (today jeudi) exclue de this_week quand today et jeudi sont des inner', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const thisWeek = { id: 'this_week', path: 'this_month this_week', inner: [
+            { id: 'today', path: 'today', inner: [] },
+            { id: 'jeudi', path: 'this_month this_week jeudi', inner: [] },
+        ] };
+        const result = findTaskBySlotExpr(tasks, thisWeek, false);
+        expect(result).toEqual([]);
+    });
+
     it('test findTaskBySlotExpr empty slotExpr', () => {
         const tasks = [ {
             id: 'task1'
