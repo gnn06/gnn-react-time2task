@@ -13,6 +13,14 @@ const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours (lundi..vend
 const OVERFLOW = '__rolling_overflow__'; // colonne dédiée pour today/tomorrow hors lundi..vendredi
 const parser = new Parser();
 
+// En-tête de niveau : chevrons cumulés matérialisant la profondeur (1=mois … 4=heure).
+// L'en-tête est en writing-mode sideways-lr (texte de bas en haut, glyphes pivotés 90°
+// anti-horaire). Les chevrons sont donc placés APRÈS le texte (→ visuellement au-dessus)
+// et utilisent « ‹ » (pointe-gauche) qui, une fois pivoté, pointe vers le bas.
+const levelLabel = (depth, text) => (
+    <>{text}<span style={{ fontSize: '1.5em', fontWeight: 600 }}>{' ' + '‹'.repeat(depth)}</span></>
+);
+
 /**
  *
  * @param {tasks} tasks après filtrage
@@ -72,11 +80,11 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
     const rows = [];
 
     for (const moisSlot of moisSlots) {
-        rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>Mois</DashedRowHeader>);
+        rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>{levelLabel(1, 'Mois')}</DashedRowHeader>);
         rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={allTreeTasks} /></DashedCell>);
 
         for (const semaineSlot of (moisSlot.inner || [])) {
-            rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>Semaine</DashedRowHeader>);
+            rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>{levelLabel(2, 'Semaine')}</DashedRowHeader>);
             rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={allTreeTasks} /></DashedCell>);
 
             const daySlots = semaineSlot.inner || [];
@@ -85,7 +93,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             const dayById = Object.fromEntries(daySlots.map(d => [d.id, d]));
 
             // Ligne Jour : une cellule par colonne (weekdays + colonne overflow)
-            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>weekDays</DashedRowHeader>);
+            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>{levelLabel(3, 'weekDays')}</DashedRowHeader>);
             columns.forEach(col =>
                 rows.push(<DashedCell key={semaineSlot.path + "-jour-" + col}>{col !== OVERFLOW && dayById[col] && <Slot slot={dayById[col]} tasks={allTreeTasks} />}</DashedCell>)
             );
@@ -99,7 +107,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Matin : alignée par colonne de jour
             if (columns.some(col => col !== OVERFLOW && matinById[col])) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>Matin</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
                 columns.forEach(col =>
                     rows.push(<DashedCell key={semaineSlot.path + "-matin-" + col}>{col !== OVERFLOW && matinById[col] && <Slot slot={matinById[col]} tasks={allTreeTasks} />}</DashedCell>)
                 );
@@ -107,7 +115,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Aprem : alignée par colonne de jour
             if (columns.some(col => col !== OVERFLOW && apremById[col])) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>Aprem</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
                 columns.forEach(col =>
                     rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + col}>{col !== OVERFLOW && apremById[col] && <Slot slot={apremById[col]} tasks={allTreeTasks} />}</DashedCell>)
                 );
@@ -128,7 +136,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
                 // Ligne Jour (rolling) : l'en-tête « rollingDays » remplace le séparateur et
                 // distingue la section roulante de la grille « weekDays » ci-dessus.
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>rollingDays</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{levelLabel(3, 'rollingDays')}</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
                     rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
@@ -138,7 +146,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
                 // Ligne Matin (rolling)
                 if (hourRowHasTasks('matin')) {
-                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>Matin</DashedRowHeader>);
+                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
                     columns.forEach(col => {
                         const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'matin')).filter(Boolean);
                         rows.push(<DashedCell key={semaineSlot.path + "-rolling-matin-" + col}>
@@ -149,7 +157,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
                 // Ligne Aprem (rolling)
                 if (hourRowHasTasks('aprem')) {
-                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>Aprem</DashedRowHeader>);
+                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
                     columns.forEach(col => {
                         const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'aprem')).filter(Boolean);
                         rows.push(<DashedCell key={semaineSlot.path + "-rolling-aprem-" + col}>

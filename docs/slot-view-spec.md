@@ -109,13 +109,13 @@ Si une tâche est assignée à un slot absent de la vue par défaut, ce slot est
 - Tout slot absent de la vue par défaut est injecté dynamiquement si une tâche le requiert
 - La distinction imprécis / remonté s'applique aux nœuds `this_month`, `this_week` et ses jours (sauf heure)
 
-### Section « Jours roulants » (today / tomorrow) — sans projection
+### Section `rollingDays` (today / tomorrow) — sans projection
 
 Les colonnes jour de l'arbre sont les weekdays `relatifParent` (`lundi`..`vendredi`). Les
 jours `relatifPresent` (`today`/`tomorrow`) n'y ont pas de colonne. Plutôt que de les
 projeter sur un weekday (réécriture de `slotExpr`, cf. section dormante ci-dessus) ou de
 les laisser remonter à la semaine par bubbling, ils s'affichent dans une **section
-rollingDays séparée**, sous la **semaine courante uniquement** (`this_month this_week`).
+`rollingDays` séparée**, sous la **semaine courante uniquement** (`this_month this_week`).
 
 Règles :
 - **Familles distinctes** : `today` et `mardi` restent deux créneaux différents même s'ils
@@ -128,14 +128,25 @@ Règles :
   colonne (helper `getRollingDayColumnId`), **pas** une projection : le pire cas d'une
   incohérence de snapDate est un décalage cosmétique, jamais une tâche perdue ou déplacée.
   La colonne d'alignement est forcée présente même vide.
-- **Débordement week-end** : si `today`/`tomorrow` tombe hors `lundi`..`vendredi`
-  (ex. `tomorrow` un vendredi, ou `today` un samedi), la cellule va dans une **colonne
-  dédiée** ajoutée en fin de ligne.
+- **Débordement week-end** : si `today`/`tomorrow` tombe hors `lundi`..`vendredi`, la cellule
+  va dans une **colonne dédiée** (sans en-tête) ajoutée en fin de ligne. Cas atteignable
+  naturellement quand l'app est ouverte le week-end (`today` stocké = `now` par défaut) :
+  - `today` un **vendredi** → `tomorrow` (samedi) déborde seul ;
+  - `today` un **samedi/dimanche** → `today` ET `tomorrow` débordent tous deux et sont
+    **empilés** dans la même colonne overflow (pas de collision).
 - **Tâche mixte** (`today jeudi`) : le bubbling la place à la fois dans la colonne `jeudi`
   (grille weekday) et dans la cellule `today` (section rollingDays) → **affichée deux fois**.
 - Construction data : `slotViewTreeSelection` injecte les nœuds today/tomorrow (+ matin/
   aprem) sous la semaine courante ; le placement des tâches reste le bubbling
   (`findTaskBySlotExpr`). Périmètre : **vue tree** (la déclinaison list reste à concevoir).
+
+**Présentation (colonne de titre)** : il n'y a **pas de ligne séparateur** entre grille
+weekday et section rollingDays. La colonne de titre porte le niveau de chaque ligne et,
+au niveau jour, distingue les deux sections : en-tête **`weekDays`** pour la grille,
+**`rollingDays`** pour la section roulante. La **profondeur** du niveau est matérialisée
+par des **chevrons cumulés** (`› Mois`, `›› Semaine`, `››› weekDays`/`rollingDays`,
+`›››› Matin`/`Aprem`). L'en-tête étant en `writing-mode: sideways-lr` (texte de bas en
+haut), les chevrons sont rendus **au-dessus** du texte et **pointent vers le bas**.
 
 ## Mode liste
 
