@@ -1,13 +1,20 @@
 import Slot from "./slot";
 import { DashedTable, DashedColumnHeader, DashedRowHeader, DashedCell } from "./dashed-table";
-import { getSlotsForRow, slotViewList } from "../data/slot-view";
-import { GENERIC_SLOTIDS, getSlotIdLevel } from "../data/slot-id";
+import { getSlotsForRow, slotViewListSelection, slotViewListDaySections } from "../data/slot-view";
+import { getSlotIdLevel } from "../data/slot-id";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
+import { getCurrentWeekdayId } from "../data/slot-date";
+import { findTaskBySlotExpr } from "../data/task";
+import { levelLabel } from "./level-label";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
 import React from "react";
 
 const parser = new Parser();
+
+// Libellés de niveau homogènes avec le tree (colonne de titre en chevrons).
+const GENERIC_LABEL = { 1: 'Mois', 2: 'Semaine' };
+const HOUR_LABEL = { matin: 'Matin', aprem: 'Aprem' };
 
 function computeTaskPaths(tasks) {
     return tasks
@@ -15,19 +22,68 @@ function computeTaskPaths(tasks) {
         .filter(Boolean);
 }
 
-function buildRows(conf, tasks) {
-    const taskPaths = computeTaskPaths(tasks);
-    const slots = slotViewList(null, conf, taskPaths);
-    return slots.map(item => ({
-        level: GENERIC_SLOTIDS[getSlotIdLevel(item[0].id) - 1],
-        slots: getSlotsForRow(item),
-    }));
+// Contenu d'une cellule : plusieurs slots empilés (Future des niveaux absolus), un slot
+// unique, ou rien (colonne Past des lignes rolling/weekDays, cellule week-end vide).
+function cellContent(cell, tasks) {
+    if (Array.isArray(cell)) {
+        return cell.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={tasks} /></div>);
+    }
+    return cell ? <Slot slot={cell} tasks={tasks} /> : null;
 }
 
-export default function SlotViewList({ tasks, conf }) {
+export default function SlotViewList({ tasks, conf, snapDates }) {
     // Vérité unique : tasks = ensemble filtré (identique au TaskPanel), disposé par bubbling.
     const allListTasks = tasks;
-    const rows = buildRows(conf, allListTasks);
+    const taskPaths = computeTaskPaths(allListTasks);
+    const maxLevel = conf.levelMaxIncluded;
+    const currentWeekday = getCurrentWeekdayId(snapDates);
+
+    // Lignes Mois/Semaine : axe temporel Past/Present/Future (getSlotsForRow). Les weekdays
+    // mappés par today/tomorrow sont injectés sous this_week pour que son bubbling les exclue
+    // (sinon double affichage : case weekday + remontée à this_week).
+    const genericRows = slotViewListSelection(currentWeekday, conf, taskPaths)
+        .filter(item => getSlotIdLevel(item[0].id) <= 2)
+        .map(item => {
+            const depth = getSlotIdLevel(item[0].id);
+            return { key: `gen-${depth}`, depth, label: GENERIC_LABEL[depth], cells: getSlotsForRow(item) };
+        })
+        .sort((a, b) => a.depth - b.depth); // Mois (haut) → Semaine
+
+    // Niveau jour : deux sections parallèles (rollingDays / weekDays) partageant les colonnes
+    // Present/Future, entrelacées par niveau (option B). today/mercredi → Present ;
+    // tomorrow/jeudi → Future. Les autres weekdays remontent à this_week (non affichés).
+    const { rolling, weekday } = slotViewListDaySections(currentWeekday);
+    const showDay = !maxLevel || maxLevel >= 3;
+    const showHour = !maxLevel || maxLevel >= 4;
+    const hasWeekday = weekday.present || weekday.future;
+
+    const hourNode = (dayNode, hour) => dayNode && (dayNode.inner || []).find(h => h.id === hour);
+    const sectionHourHasTasks = (present, future, hour) =>
+        [present, future].some(node => {
+            const h = hourNode(node, hour);
+            return h && findTaskBySlotExpr(allListTasks, h, false).length > 0;
+        });
+
+    const rows = [...genericRows];
+
+    if (showDay) {
+        rows.push({ key: 'rolling-jour', depth: 3, label: 'rollingDays', cells: [null, rolling.present, rolling.future] });
+        if (hasWeekday) {
+            rows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [null, weekday.present, weekday.future] });
+        }
+        if (showHour) {
+            for (const hour of ['matin', 'aprem']) {
+                if (sectionHourHasTasks(rolling.present, rolling.future, hour)) {
+                    rows.push({ key: `rolling-${hour}`, depth: 4, label: HOUR_LABEL[hour],
+                        cells: [null, hourNode(rolling.present, hour), hourNode(rolling.future, hour)] });
+                }
+                if (hasWeekday && sectionHourHasTasks(weekday.present, weekday.future, hour)) {
+                    rows.push({ key: `weekdays-${hour}`, depth: 4, label: HOUR_LABEL[hour],
+                        cells: [null, hourNode(weekday.present, hour), hourNode(weekday.future, hour)] });
+                }
+            }
+        }
+    }
 
     return (
         <DashedTable columns={3}>
@@ -35,16 +91,11 @@ export default function SlotViewList({ tasks, conf }) {
             <DashedColumnHeader>Present</DashedColumnHeader>
             <DashedColumnHeader>Future</DashedColumnHeader>
 
-            { rows.map((row, idx) => (
-                <React.Fragment key={idx}>
-                    <DashedRowHeader>{row.level}</DashedRowHeader>
-                    {row.slots.map((slot, cellIdx) => (
-                        <DashedCell key={cellIdx}>
-                            { cellIdx < 2
-                                ? <Slot slot={slot} tasks={allListTasks} />
-                                : slot.map((s, i) => <div key={i} className={i > 0 ? "mt-2" : ""}><Slot slot={s} tasks={allListTasks} /></div>)
-                            }
-                        </DashedCell>
+            {rows.map(row => (
+                <React.Fragment key={row.key}>
+                    <DashedRowHeader>{levelLabel(row.depth, row.label)}</DashedRowHeader>
+                    {row.cells.map((cell, cellIdx) => (
+                        <DashedCell key={cellIdx}>{cellContent(cell, allListTasks)}</DashedCell>
                     ))}
                 </React.Fragment>
             ))}

@@ -8,18 +8,11 @@ import { isSlotEqualOrInclude } from "../data/slot-expr";
 import { getCurrentWeekdayId } from "../data/slot-date";
 import { findTaskBySlotExpr } from "../data/task";
 import { Parser } from "../data/parser";
+import { levelLabel } from "./level-label";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours (lundi..vendredi)
 const OVERFLOW = '__rolling_overflow__'; // colonne dédiée pour today/tomorrow hors lundi..vendredi
 const parser = new Parser();
-
-// En-tête de niveau : chevrons cumulés matérialisant la profondeur (1=mois … 4=heure).
-// L'en-tête est en writing-mode sideways-lr (texte de bas en haut, glyphes pivotés 90°
-// anti-horaire). Les chevrons sont donc placés APRÈS le texte (→ visuellement au-dessus)
-// et utilisent « ‹ » (pointe-gauche) qui, une fois pivoté, pointe vers le bas.
-const levelLabel = (depth, text) => (
-    <>{text}<span style={{ fontSize: '1.5em', fontWeight: 600 }}>{' ' + '‹'.repeat(depth)}</span></>
-);
 
 /**
  *

@@ -158,17 +158,58 @@ haut), les chevrons sont rendus **au-dessus** du texte et **pointent vers le bas
 - Chaque ligne affiche les slots de son niveau. Les tâches assignées à un niveau plus profond que celui de la ligne remontent au slot de cette ligne (bubbling). Exemple : en vue limitée au mois, les tâches de `this_week` ou `following_week` remontent à `this_month`.
 - La distinction imprécis / remonté s'applique aux slots Present de `this_month`, `this_week` et ses jours (sauf heure)
 
+### Niveau jour — deux sections `rollingDays` / `weekDays`
+
+Miroir de la section `rollingDays` du tree, adapté à l'axe temporel de la list. Les colonnes
+étant déjà temporelles (Present/Future), today/tomorrow y tombent naturellement ; on ajoute
+une seconde ligne pour les weekdays. Deux **sections parallèles** partagent les colonnes
+Present/Future :
+
+- **`rollingDays`** : `today` → Present, `tomorrow` → Future (chacun avec ses sous-lignes
+  Matin/Aprem).
+- **`weekDays`** : le weekday que **mappe** today → Present, celui que mappe tomorrow →
+  Future (via `getCurrentWeekdayId(snapDates)` + `getRollingDayColumnId`). Les **autres**
+  weekdays (lundi, mardi, vendredi… hors jour de today/tomorrow) ne sont **pas affichés** :
+  leurs tâches remontent à `this_week` par bubbling (vérité unique préservée).
+
+Règles :
+- **Ordre = entrelacé par niveau** (option B) : `rollingDays`(jour) → `weekDays`(jour), puis
+  `rollingDays Matin` → `weekDays Matin`, puis `rollingDays Aprem` → `weekDays Aprem`. Comme
+  les deux sections partagent les colonnes, ce rapprochement fait lire le **même jour réel
+  sous ses deux familles** (relatifPresent vs relatifParent) verticalement.
+- **Pas de projection ni de fusion** : today et son weekday (ex. mercredi) restent des
+  créneaux distincts. Chaque cellule = un seul slot (pas d'empilement, pas de colonne
+  overflow — contrairement au tree).
+- **Anti-doublon** : les weekdays mappés sont injectés sous `this_week` (bubbling), pour que
+  leurs tâches n'apparaissent pas aussi remontées à `this_week`.
+- **Bord week-end** : si le weekday mappé est hors `lundi`..`vendredi` (today=vendredi →
+  tomorrow=samedi, ou today=samedi/dimanche), la cellule `weekDays` correspondante est **vide** ;
+  si les deux le sont, la ligne `weekDays` est **omise**. La ligne `rollingDays` reste.
+- Les sous-lignes **Matin/Aprem** ne sont émises que si elles **portent des tâches**.
+- **Présentation** : colonne de titre en chevrons de profondeur (`levelLabel`, partagé avec le
+  tree), libellés `rollingDays` / `weekDays` / `Matin` / `Aprem`.
+
+Construction data : `slotViewListDaySections(currentWeekday)` fournit les nœuds de rendu
+(today/tomorrow + weekdays mappés) ; `slotViewListSelection` injecte les weekdays mappés sous
+`this_week` pour le bubbling. Le placement des tâches reste `findTaskBySlotExpr`.
+
 ---
 
 ## Exemple — mode liste, semaine courante = `this_week`
 
 Slots disponibles au niveau semaine : `this_week`, `next_week`, `following_week`
 
+Semaine courante, today stocké = mercredi (→ tomorrow = jeudi) :
+
 | Niveau | Past | Present | Future |
 |--------|------|---------|--------|
 | mois   | —    | this_month | next_month · next_month+1 |
 | semaine | —   | this_week | next_week · following_week |
-| jour   | hier | aujourd'hui | demain |
+| rollingDays | — | today | tomorrow |
+| weekDays | — | mercredi | jeudi |
+
+(lundi, mardi, vendredi non affichés → remontent à `this_week` ; sous-lignes Matin/Aprem
+ajoutées sous chaque section quand des tâches les occupent, dans l'ordre entrelacé.)
 
 ## Exemple — mode liste, affichage limité au niveau mois
 

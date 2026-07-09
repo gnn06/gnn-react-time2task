@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection } from "./slot-view";
+import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection, slotViewListDaySections } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1922,5 +1922,43 @@ describe('truncatePathAtAnchorDay (grille tree : colonnes = weekdays)', () => {
     });
     test('chemin sans jour inchangé', () => {
         expect(truncatePathAtAnchorDay(['this_month', 'this_week'])).toEqual(['this_month', 'this_week']);
+    });
+});
+
+describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue list)', () => {
+    test('rolling : today en present, tomorrow en future, chacun avec matin/aprem', () => {
+        const { rolling } = slotViewListDaySections('mercredi');
+        expect(rolling.present.id).toBe('today');
+        expect(rolling.present.path).toBe('today');
+        expect(rolling.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+        expect(rolling.present.inner[0].path).toBe('today matin');
+        expect(rolling.future.id).toBe('tomorrow');
+        expect(rolling.future.path).toBe('tomorrow');
+        expect(rolling.future.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+        expect(rolling.future.inner[1].path).toBe('tomorrow aprem');
+    });
+
+    test('weekday : today=mercredi → present=mercredi, future=jeudi (nœuds weekday complets)', () => {
+        const { weekday } = slotViewListDaySections('mercredi');
+        expect(weekday.present.id).toBe('mercredi');
+        expect(weekday.present.path).toBe('this_month this_week mercredi');
+        expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+        expect(weekday.present.inner[0].path).toBe('this_month this_week mercredi matin');
+        expect(weekday.future.id).toBe('jeudi');
+        expect(weekday.future.path).toBe('this_month this_week jeudi');
+    });
+
+    test('week-end (today=vendredi) : future weekday null (tomorrow=samedi hors plage)', () => {
+        const { weekday } = slotViewListDaySections('vendredi');
+        expect(weekday.present.id).toBe('vendredi');
+        expect(weekday.future).toBeNull();
+    });
+
+    test('week-end (today=samedi) : les deux weekday null, rolling toujours présent', () => {
+        const { rolling, weekday } = slotViewListDaySections('samedi');
+        expect(weekday.present).toBeNull();
+        expect(weekday.future).toBeNull();
+        expect(rolling.present.id).toBe('today');
+        expect(rolling.future.id).toBe('tomorrow');
     });
 });
