@@ -85,7 +85,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             const dayById = Object.fromEntries(daySlots.map(d => [d.id, d]));
 
             // Ligne Jour : une cellule par colonne (weekdays + colonne overflow)
-            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>Jour</DashedRowHeader>);
+            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>weekDays</DashedRowHeader>);
             columns.forEach(col =>
                 rows.push(<DashedCell key={semaineSlot.path + "-jour-" + col}>{col !== OVERFLOW && dayById[col] && <Slot slot={dayById[col]} tasks={allTreeTasks} />}</DashedCell>)
             );
@@ -126,11 +126,9 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
                         return h && findTaskBySlotExpr(allTreeTasks, h, false).length > 0;
                     });
 
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-sep-h"}> </DashedRowHeader>);
-                rows.push(<DashedCell key={semaineSlot.path + "-rolling-sep-c"} style={{ ...spanAll, fontStyle: 'italic' }} className="text-xs text-gray-500">Jours roulants (today / tomorrow)</DashedCell>);
-
-                // Ligne Jour (rolling)
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>Jour</DashedRowHeader>);
+                // Ligne Jour (rolling) : l'en-tête « rollingDays » remplace le séparateur et
+                // distingue la section roulante de la grille « weekDays » ci-dessus.
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>rollingDays</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
                     rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
