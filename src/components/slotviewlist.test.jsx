@@ -26,6 +26,7 @@ const SNAP_SAT = [{ slotid: 'this_week', date: '2023-12-18' }, { slotid: 'today'
 
 const paths = () => screen.getAllByTestId('slot').map(el => el.getAttribute('data-path'));
 const headerTexts = () => screen.getAllByText(/rollingDays|weekDays|Mois|Semaine|Matin|Aprem/).map(el => el.textContent.replace(/[‹\s]/g, ''));
+const rowKeys = () => screen.getAllByTestId(/^row-/).map(el => el.getAttribute('data-testid').replace('row-', ''));
 
 afterEach(() => cleanup());
 
@@ -41,12 +42,12 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).toContain('this_month this_week jeudi');
     });
 
-    test('ordre B : Mois → Semaine → rollingDays → weekDays', () => {
+    test('ordre B : rollingDays → weekDays → Semaine → Mois (du plus profond au plus superficiel)', () => {
         render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
         const h = headerTexts();
-        expect(h.indexOf('Mois')).toBeLessThan(h.indexOf('Semaine'));
-        expect(h.indexOf('Semaine')).toBeLessThan(h.indexOf('rollingDays'));
         expect(h.indexOf('rollingDays')).toBeLessThan(h.indexOf('weekDays'));
+        expect(h.indexOf('weekDays')).toBeLessThan(h.indexOf('Semaine'));
+        expect(h.indexOf('Semaine')).toBeLessThan(h.indexOf('Mois'));
     });
 
     test('week-end (today=vendredi) : weekDays present=vendredi, future vide', () => {
@@ -81,6 +82,31 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).toContain('this_month this_week mercredi matin');
         // rollingDays (jour) avant weekDays (jour), puis Matin rolling avant Matin weekDays
         expect(p.indexOf('today matin')).toBeLessThan(p.indexOf('this_month this_week mercredi matin'));
+    });
+
+    test('niveau heure (Matin) au-dessus du niveau jour (rollingDays/weekDays)', () => {
+        render(<SlotViewList tasks={[{ id: 1, title: 'a', slotExpr: 'today matin' }]} conf={CONF} snapDates={SNAP_WED} />);
+        const h = headerTexts();
+        expect(h.indexOf('Matin')).toBeLessThan(h.indexOf('rollingDays'));
+    });
+
+    test('rollingDays précède toujours weekDays (garanti par construction, pas par le hasard des données)', () => {
+        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
+        const keys = rowKeys();
+        expect(keys.indexOf('rolling-jour')).toBeLessThan(keys.indexOf('weekdays-jour'));
+    });
+
+    test('rolling précède weekdays à chaque niveau heure quand les deux ont des tâches', () => {
+        render(<SlotViewList tasks={[
+            { id: 1, title: 'a', slotExpr: 'today matin' },
+            { id: 2, title: 'b', slotExpr: 'this_week mercredi matin' },
+            { id: 3, title: 'c', slotExpr: 'today aprem' },
+            { id: 4, title: 'd', slotExpr: 'this_week mercredi aprem' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+        const keys = rowKeys();
+        expect(keys.indexOf('rolling-matin')).toBeLessThan(keys.indexOf('weekdays-matin'));
+        expect(keys.indexOf('rolling-aprem')).toBeLessThan(keys.indexOf('weekdays-aprem'));
+        expect(keys.indexOf('rolling-jour')).toBeLessThan(keys.indexOf('weekdays-jour'));
     });
 
     test('niveau max = semaine (2) : pas de lignes rollingDays / weekDays', () => {

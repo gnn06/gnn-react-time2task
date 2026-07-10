@@ -6,6 +6,7 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- FIX vue list : ordre des lignes rétabli du plus profond au plus superficiel (jour/heure en haut, semaine, mois en dernier), inversé par erreur lors de l'ajout de la section weekDays
 - vue list : au niveau jour, deux sections parallèles partageant les colonnes Present/Future — « rollingDays » (today → Present, tomorrow → Future) et « weekDays » (le weekday qu'incarne today → Present, celui de tomorrow → Future). Les autres weekdays ne sont pas affichés (leurs tâches remontent à this_week). Lignes entrelacées par niveau (rollingDays puis weekDays à chaque niveau Jour/Matin/Aprem) pour lire le même jour réel sous ses deux familles. Bord week-end : cellule weekDays vide (voire ligne omise). Sous-lignes Matin/Aprem uniquement si tâches
 - vue tree : les tâches sur today / tomorrow s'affichent dans une section « rollingDays » sous la semaine courante (au lieu de remonter à la semaine), alignées sous la colonne du jour réel ; débordement week-end (ex. tomorrow un vendredi, ou today + tomorrow le week-end) dans une colonne dédiée en bout de ligne. Pas de projection : une tâche mixte today+jeudi apparaît dans les deux (colonne jeudi et section rollingDays)
 - vue tree : la colonne de titre distingue la grille « weekDays » de la section « rollingDays » (plus de ligne séparateur) et matérialise la profondeur du niveau par des chevrons cumulés (› Mois, ›› Semaine, ››› weekDays / rollingDays, ›››› Matin / Aprem)

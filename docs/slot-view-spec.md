@@ -151,6 +151,7 @@ haut), les chevrons sont rendus **au-dessus** du texte et **pointent vers le bas
 ## Mode liste
 
 - Grille 2D : lignes = niveaux (mois, semaine, jour), colonnes = position temporelle
+- **Ordre des lignes = du plus profond au plus superficiel** : heure (Matin/Aprem) en haut, puis jour (rollingDays/weekDays), semaine, mois en dernier
 - **Past** : slot current-1
 - **Present** : slot current
 - **Future** : tous les slots futurs sont visibles dans la case Future
@@ -173,10 +174,12 @@ Present/Future :
   leurs tâches remontent à `this_week` par bubbling (vérité unique préservée).
 
 Règles :
-- **Ordre = entrelacé par niveau** (option B) : `rollingDays`(jour) → `weekDays`(jour), puis
-  `rollingDays Matin` → `weekDays Matin`, puis `rollingDays Aprem` → `weekDays Aprem`. Comme
-  les deux sections partagent les colonnes, ce rapprochement fait lire le **même jour réel
-  sous ses deux familles** (relatifPresent vs relatifParent) verticalement.
+- **Ordre = entrelacé par niveau** (option B), du plus profond au plus superficiel :
+  `rollingDays Matin` → `weekDays Matin`, puis `rollingDays Aprem` → `weekDays Aprem`
+  (niveau heure), puis `rollingDays`(jour) → `weekDays`(jour). Comme les deux sections
+  partagent les colonnes, ce rapprochement fait lire le **même jour réel sous ses deux
+  familles** (relatifPresent vs relatifParent) verticalement. Ce bloc jour/heure est
+  placé **avant** les lignes semaine/mois (ordre global du plus profond au plus superficiel).
 - **Pas de projection ni de fusion** : today et son weekday (ex. mercredi) restent des
   créneaux distincts. Chaque cellule = un seul slot (pas d'empilement, pas de colonne
   overflow — contrairement au tree).
@@ -203,13 +206,14 @@ Semaine courante, today stocké = mercredi (→ tomorrow = jeudi) :
 
 | Niveau | Past | Present | Future |
 |--------|------|---------|--------|
-| mois   | —    | this_month | next_month · next_month+1 |
-| semaine | —   | this_week | next_week · following_week |
 | rollingDays | — | today | tomorrow |
 | weekDays | — | mercredi | jeudi |
+| semaine | —   | this_week | next_week · following_week |
+| mois   | —    | this_month | next_month · next_month+1 |
 
 (lundi, mardi, vendredi non affichés → remontent à `this_week` ; sous-lignes Matin/Aprem
-ajoutées sous chaque section quand des tâches les occupent, dans l'ordre entrelacé.)
+ajoutées **au-dessus** de `rollingDays`/`weekDays` quand des tâches les occupent, dans
+l'ordre entrelacé — ex. `rollingDays Matin`, `weekDays Matin`, puis `rollingDays`, `weekDays`.)
 
 ## Exemple — mode liste, affichage limité au niveau mois
 

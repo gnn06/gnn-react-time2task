@@ -47,7 +47,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
             const depth = getSlotIdLevel(item[0].id);
             return { key: `gen-${depth}`, depth, label: GENERIC_LABEL[depth], cells: getSlotsForRow(item) };
         })
-        .sort((a, b) => a.depth - b.depth); // Mois (haut) → Semaine
+        .sort((a, b) => b.depth - a.depth); // du plus profond au plus superficiel : Semaine (haut) → Mois
 
     // Niveau jour : deux sections parallèles (rollingDays / weekDays) partageant les colonnes
     // Present/Future, entrelacées par niveau (option B). today/mercredi → Present ;
@@ -64,26 +64,30 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
             return h && findTaskBySlotExpr(allListTasks, h, false).length > 0;
         });
 
-    const rows = [...genericRows];
+    const hourRows = [];
+    const dayRows = [];
 
     if (showDay) {
-        rows.push({ key: 'rolling-jour', depth: 3, label: 'rollingDays', cells: [null, rolling.present, rolling.future] });
+        dayRows.push({ key: 'rolling-jour', depth: 3, label: 'rollingDays', cells: [null, rolling.present, rolling.future] });
         if (hasWeekday) {
-            rows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [null, weekday.present, weekday.future] });
+            dayRows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [null, weekday.present, weekday.future] });
         }
         if (showHour) {
             for (const hour of ['matin', 'aprem']) {
                 if (sectionHourHasTasks(rolling.present, rolling.future, hour)) {
-                    rows.push({ key: `rolling-${hour}`, depth: 4, label: HOUR_LABEL[hour],
+                    hourRows.push({ key: `rolling-${hour}`, depth: 4, label: HOUR_LABEL[hour],
                         cells: [null, hourNode(rolling.present, hour), hourNode(rolling.future, hour)] });
                 }
                 if (hasWeekday && sectionHourHasTasks(weekday.present, weekday.future, hour)) {
-                    rows.push({ key: `weekdays-${hour}`, depth: 4, label: HOUR_LABEL[hour],
+                    hourRows.push({ key: `weekdays-${hour}`, depth: 4, label: HOUR_LABEL[hour],
                         cells: [null, hourNode(weekday.present, hour), hourNode(weekday.future, hour)] });
                 }
             }
         }
     }
+
+    // Du plus profond au plus superficiel : heure en haut, puis jour, Semaine, Mois en dernier.
+    const rows = [...hourRows, ...dayRows, ...genericRows];
 
     return (
         <DashedTable columns={3}>
@@ -93,7 +97,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
 
             {rows.map(row => (
                 <React.Fragment key={row.key}>
-                    <DashedRowHeader>{levelLabel(row.depth, row.label)}</DashedRowHeader>
+                    <DashedRowHeader data-testid={`row-${row.key}`}>{levelLabel(row.depth, row.label)}</DashedRowHeader>
                     {row.cells.map((cell, cellIdx) => (
                         <DashedCell key={cellIdx}>{cellContent(cell, allListTasks)}</DashedCell>
                     ))}
