@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection, slotViewListDaySections, slotViewListSelection } from "./slot-view";
-import { getSlotsForRow } from "./slot-view";
+import { getSlotsForRow, getHourSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
 vi.useFakeTimers()
@@ -1705,6 +1705,35 @@ describe('getSlotsForRow', () => {
         ];
         const result = getSlotsForRow(given);
         expect(result).toEqual(expected);
+    });
+});
+
+describe('getHourSlotsForRow', () => {
+    const matin = { id: 'matin', path: 'today matin', inner: [] };
+    const aprem = { id: 'aprem', path: 'today aprem', inner: [] };
+    const dayNode = { id: 'today', path: 'today', inner: [matin, aprem] };
+
+    afterEach(() => vi.setSystemTime(new Date('2023-12-20'))); // restaure 00:00 (matin)
+
+    test('heure courante = matin : matin en Present, aprem en Future', () => {
+        const result = getHourSlotsForRow(dayNode);
+        expect(result).toEqual([null, matin, aprem]);
+    });
+
+    test('heure courante = aprem : matin en Past, aprem en Present', () => {
+        vi.setSystemTime(new Date('2023-12-20T14:00:00'));
+        const result = getHourSlotsForRow(dayNode);
+        expect(result).toEqual([matin, aprem, null]);
+    });
+
+    test('jour sans inner (Past/Future stripped) : rien à répartir', () => {
+        const result = getHourSlotsForRow({ id: 'lundi', path: 'this_month this_week lundi', inner: [] });
+        expect(result).toEqual([null, null, null]);
+    });
+
+    test('jour null : rien à répartir', () => {
+        const result = getHourSlotsForRow(null);
+        expect(result).toEqual([null, null, null]);
     });
 });
 

@@ -162,6 +162,26 @@ export function getSlotsForRow(slots:Slot[]) : [Slot | null, Slot | null, Slot[]
     return result;
 }
 
+const HOUR_ORDER = ['matin', 'aprem'];
+
+/**
+ * Répartit les nœuds heure (matin/aprem) d'un jour sur l'axe Past/Present/Future, selon
+ * l'heure courante (getSlotIdCurrent(4)). Miroir de getSlotsForRow pour un axe à 2 valeurs :
+ * pas d'empilement possible (un seul slot avant/après l'heure courante).
+ */
+export function getHourSlotsForRow(dayNode: Slot | null): [Slot | null, Slot | null, Slot | null] {
+    const currentIdx = HOUR_ORDER.indexOf(getSlotIdCurrent(4));
+    const result: [Slot | null, Slot | null, Slot | null] = [null, null, null];
+    for (const node of dayNode?.inner ?? []) {
+        const idx = HOUR_ORDER.indexOf(node.id);
+        if (idx === -1) continue;
+        if (idx < currentIdx) result[0] = node;
+        else if (idx > currentIdx) result[2] = node;
+        else result[1] = node;
+    }
+    return result;
+}
+
 export function slotHasImpreciseIcon(slotPath: string, slotLevel: number): boolean {
     const currentMonthId = getSlotIdCurrent(1);
     return slotLevel < 4 && (
