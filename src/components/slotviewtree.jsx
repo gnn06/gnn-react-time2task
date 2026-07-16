@@ -98,6 +98,32 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
                 daySlots.map(d => [d.id, (d.inner || []).find(h => h.id === 'aprem')])
             );
 
+            // Section rollingDays : uniquement sous this_week, today/tomorrow alignés sous
+            // leur colonne weekday (ou colonne overflow au week-end). La ligne jour rollingDay
+            // est intercalée juste après la ligne jour weekDay ; ses lignes heure sont rendues
+            // après les lignes heure weekDay.
+            const showRollingHere = showRolling && semaineSlot.path === CURRENT_WEEK_PATH;
+            const todayNode = showRollingHere ? dayById['today'] : undefined;
+            const tomorrowNode = showRollingHere ? dayById['tomorrow'] : undefined;
+            const rollingHour = (node, hour) => node && (node.inner || []).find(h => h.id === hour);
+            const rollingHourRowHasTasks = (hour) => showRollingHere &&
+                [todayNode, tomorrowNode].some(node => {
+                    const h = rollingHour(node, hour);
+                    return h && findTaskBySlotExpr(allTreeTasks, h, false).length > 0;
+                });
+
+            // Ligne Jour (rolling) : l'en-tête « rollingDays » distingue la section roulante
+            // de la grille « weekDays » ci-dessus.
+            if (showRollingHere) {
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{levelLabel(3, 'rollingDays')}</DashedRowHeader>);
+                columns.forEach(col => {
+                    const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
+                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
+                        {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
+                    </DashedCell>);
+                });
+            }
+
             // Ligne Matin : alignée par colonne de jour
             if (columns.some(col => col !== OVERFLOW && matinById[col])) {
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
@@ -114,50 +140,26 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
                 );
             }
 
-            // Section rollingDays : uniquement sous this_week, today/tomorrow alignés sous
-            // leur colonne weekday (ou colonne overflow au week-end).
-            if (showRolling && semaineSlot.path === CURRENT_WEEK_PATH) {
-                const todayNode = dayById['today'];
-                const tomorrowNode = dayById['tomorrow'];
-
-                const rollingHour = (node, hour) => node && (node.inner || []).find(h => h.id === hour);
-                const hourRowHasTasks = (hour) =>
-                    [todayNode, tomorrowNode].some(node => {
-                        const h = rollingHour(node, hour);
-                        return h && findTaskBySlotExpr(allTreeTasks, h, false).length > 0;
-                    });
-
-                // Ligne Jour (rolling) : l'en-tête « rollingDays » remplace le séparateur et
-                // distingue la section roulante de la grille « weekDays » ci-dessus.
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{levelLabel(3, 'rollingDays')}</DashedRowHeader>);
+            // Ligne Matin (rolling)
+            if (rollingHourRowHasTasks('matin')) {
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
                 columns.forEach(col => {
-                    const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
-                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
+                    const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'matin')).filter(Boolean);
+                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-matin-" + col}>
                         {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
                     </DashedCell>);
                 });
+            }
 
-                // Ligne Matin (rolling)
-                if (hourRowHasTasks('matin')) {
-                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
-                    columns.forEach(col => {
-                        const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'matin')).filter(Boolean);
-                        rows.push(<DashedCell key={semaineSlot.path + "-rolling-matin-" + col}>
-                            {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
-                        </DashedCell>);
-                    });
-                }
-
-                // Ligne Aprem (rolling)
-                if (hourRowHasTasks('aprem')) {
-                    rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
-                    columns.forEach(col => {
-                        const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'aprem')).filter(Boolean);
-                        rows.push(<DashedCell key={semaineSlot.path + "-rolling-aprem-" + col}>
-                            {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
-                        </DashedCell>);
-                    });
-                }
+            // Ligne Aprem (rolling)
+            if (rollingHourRowHasTasks('aprem')) {
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
+                columns.forEach(col => {
+                    const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'aprem')).filter(Boolean);
+                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-aprem-" + col}>
+                        {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
+                    </DashedCell>);
+                });
             }
         }
     }

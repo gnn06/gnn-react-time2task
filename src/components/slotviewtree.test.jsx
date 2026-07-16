@@ -57,4 +57,25 @@ describe('SlotViewTree — section rollingDays', () => {
         render(<SlotViewTree tasks={[{ id: 1, title: 'a', slotExpr: 'today' }]} conf={{ ...CONF, levelMaxIncluded: 2 }} snapDates={SNAP_WED} />);
         expect(screen.queryByText(/rollingDays/)).not.toBeInTheDocument();
     });
+
+    test('ordre des lignes : weekDays, rollingDays, puis les heures weekDay, puis les heures rollingDay', () => {
+        const { container } = render(<SlotViewTree tasks={[
+            { id: 1, title: 'a', slotExpr: 'this_week mercredi matin' },
+            { id: 2, title: 'b', slotExpr: 'today aprem' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+
+        // Labels des en-têtes de ligne dans l'ordre du DOM (chevrons retirés).
+        const headers = [...container.querySelectorAll('div')]
+            .filter(d => /sideways/.test(d.getAttribute('style') || ''))
+            .map(d => d.textContent.replace(/[‹\s]+$/, ''));
+
+        // La section rollingDays n'existe que sous la semaine courante → en-tête unique.
+        const rolling = headers.indexOf('rollingDays');
+        expect(rolling).toBeGreaterThan(-1);
+
+        // Ligne jour weekDay immédiatement suivie de la ligne jour rollingDay,
+        // puis les heures weekDay (Matin/Aprem), puis les heures rollingDay (Aprem).
+        expect(headers.slice(rolling - 1, rolling + 4))
+            .toEqual(['weekDays', 'rollingDays', 'Matin', 'Aprem', 'Aprem']);
+    });
 });
