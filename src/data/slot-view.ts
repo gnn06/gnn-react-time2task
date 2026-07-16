@@ -391,7 +391,7 @@ export function slotViewTreeSelection(conf: SlotViewConf, paths: string[][]): Sl
 
 interface ListDaySections {
     rolling: { present: Slot, future: Slot },
-    weekday: { present: Slot | null, future: Slot | null },
+    weekday: { past: Slot[], present: Slot | null, future: Slot[] },
 }
 
 /** Nœud weekday complet (avec matin/aprem) de la semaine courante, ou null hors plage. */
@@ -402,31 +402,51 @@ function weekdayNode(weekdayId: string | null): Slot | null {
 }
 
 /**
- * Sections du niveau jour de la vue list, alignées sur l'axe Present/Future :
+ * Partitionne les weekdays (lundi..vendredi) de la semaine courante par rapport au jour de
+ * today : avant → past, égal → present, après → future (indices calendaires). Un currentWeekday
+ * hors lundi..vendredi (week-end) place tous les weekdays en past ; un currentWeekday inconnu
+ * (null) laisse toutes les cases vides.
+ */
+function partitionWeekdays(currentWeekday: string | null): { past: Slot[], present: Slot | null, future: Slot[] } {
+    const idx = currentWeekday ? WEEK_CALENDAR.indexOf(currentWeekday) : -1;
+    if (idx === -1) return { past: [], present: null, future: [] };
+    const past: Slot[] = [];
+    const future: Slot[] = [];
+    let present: Slot | null = null;
+    for (const id of SLOTIDS_BY_LEVEL['3']) {
+        const node = weekdayNode(id);
+        if (!node) continue;
+        const dayIdx = WEEK_CALENDAR.indexOf(id);
+        if (dayIdx < idx) past.push(node);
+        else if (dayIdx > idx) future.push(node);
+        else present = node;
+    }
+    return { past, present, future };
+}
+
+/**
+ * Sections du niveau jour de la vue list, alignées sur l'axe Past/Present/Future :
  * - rolling : today (present) / tomorrow (future), chacun avec matin/aprem.
- * - weekday : le weekday que MAPPE today (present) et celui que mappe tomorrow (future),
- *   nœuds weekday complets ou null si hors lundi..vendredi (week-end).
- * Les deux sections partagent les colonnes Present/Future ; le composant les rend
- * entrelacées par niveau. Pas de projection : today/tomorrow et leur weekday restent
- * des créneaux distincts (familles séparées), le placement des tâches reste le bubbling.
+ * - weekday : le jour de today (present) ; les weekdays de la semaine après today (future,
+ *   empilés) ; avant today (past, empilés). Miroir de la ligne semaine (Future empile ses
+ *   slots). Chaque weekday ayant sa case, aucun ne remonte à this_week par bubbling.
+ * Les sections partagent les colonnes ; le composant les rend entrelacées par niveau. Pas de
+ * projection : today/tomorrow et les weekdays restent des créneaux distincts (familles séparées).
  * @param currentWeekday jour du today STOCKÉ (getCurrentWeekdayId(snapDates))
  */
 export function slotViewListDaySections(currentWeekday: string | null): ListDaySections {
     const [today, tomorrow] = relativePresentDayPickerSlots();
     return {
         rolling: { present: today, future: tomorrow },
-        weekday: {
-            present: weekdayNode(currentWeekday && getRollingDayColumnId('today', currentWeekday)),
-            future: weekdayNode(currentWeekday && getRollingDayColumnId('tomorrow', currentWeekday)),
-        },
+        weekday: partitionWeekdays(currentWeekday),
     };
 }
 
 /**
- * Ajoute les weekdays mappés (par today/tomorrow) sous le nœud de la semaine courante,
- * à côté de today/tomorrow. Rend ces weekdays « visibles » pour le bubbling : les tâches
- * qui leur sont affectées ne remontent plus à this_week (elles ont une case propre au
- * niveau jour), tandis que les autres weekdays continuent de remonter.
+ * Ajoute les weekdays de la semaine courante (past + present + future) sous le nœud de la
+ * semaine courante, à côté de today/tomorrow. Les rend « visibles » pour le bubbling : les
+ * tâches qui leur sont affectées ne remontent plus à this_week (chaque jour a sa case au
+ * niveau jour). this_week ne reçoit donc plus que les tâches réellement imprécises.
  */
 function injectMappedWeekdaysUnderCurrentWeek(slots: Slot[], mapped: Slot[]): Slot[] {
     return slots.map(slot => {
@@ -445,7 +465,7 @@ function injectMappedWeekdaysUnderCurrentWeek(slots: Slot[], mapped: Slot[]): Sl
  */
 export function slotViewListSelection(currentWeekday: string | null, conf?: Pick<SlotViewConf, 'levelMaxIncluded'>, taskPaths?: string[][]): Slot[][] {
     const { weekday } = slotViewListDaySections(currentWeekday);
-    const mapped = [weekday.present, weekday.future].filter((s): s is Slot => s !== null);
+    const mapped = [...weekday.past, weekday.present, ...weekday.future].filter((s): s is Slot => s !== null);
     const base = buildListTree(taskPaths);
     const tree = { ...base, inner: injectMappedWeekdaysUnderCurrentWeek(base.inner, mapped) };
     return listTreeToRows(tree, conf);

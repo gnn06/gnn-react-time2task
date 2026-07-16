@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection, slotViewListDaySections } from "./slot-view";
+import { DEFAULT_CONF, isCleanSlotPath, reduceCollapseOnConf, slotFind, slotViewAdd, slotViewFilter, slotViewFilterSelection, slotViewList, slotViewPicker, transPathToConf, slotHasImpreciseIcon, truncatePathAtAnchorDay, getRollingDayColumnId, slotViewTreeSelection, slotViewListDaySections, slotViewListSelection } from "./slot-view";
 import { getSlotsForRow } from "./slot-view";
 import { getSlotIdLevel } from "./slot-id";
 
@@ -1938,27 +1938,59 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(rolling.future.inner[1].path).toBe('tomorrow aprem');
     });
 
-    test('weekday : today=mercredi → present=mercredi, future=jeudi (nœuds weekday complets)', () => {
+    test('weekday : today=mercredi → present=mercredi ; future=[jeudi, vendredi] ; past=[lundi, mardi]', () => {
         const { weekday } = slotViewListDaySections('mercredi');
         expect(weekday.present.id).toBe('mercredi');
         expect(weekday.present.path).toBe('this_month this_week mercredi');
         expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
         expect(weekday.present.inner[0].path).toBe('this_month this_week mercredi matin');
-        expect(weekday.future.id).toBe('jeudi');
-        expect(weekday.future.path).toBe('this_month this_week jeudi');
+        expect(weekday.future.map(s => s.id)).toEqual(['jeudi', 'vendredi']);
+        expect(weekday.future[0].path).toBe('this_month this_week jeudi');
+        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi']);
+        expect(weekday.past[0].path).toBe('this_month this_week lundi');
     });
 
-    test('week-end (today=vendredi) : future weekday null (tomorrow=samedi hors plage)', () => {
+    test('weekday : today=vendredi → future vide, past=[lundi..jeudi]', () => {
         const { weekday } = slotViewListDaySections('vendredi');
         expect(weekday.present.id).toBe('vendredi');
-        expect(weekday.future).toBeNull();
+        expect(weekday.future).toEqual([]);
+        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi', 'mercredi', 'jeudi']);
     });
 
-    test('week-end (today=samedi) : les deux weekday null, rolling toujours présent', () => {
+    test('weekday : today=lundi → past vide, future=[mardi..vendredi]', () => {
+        const { weekday } = slotViewListDaySections('lundi');
+        expect(weekday.present.id).toBe('lundi');
+        expect(weekday.past).toEqual([]);
+        expect(weekday.future.map(s => s.id)).toEqual(['mardi', 'mercredi', 'jeudi', 'vendredi']);
+    });
+
+    test('week-end (today=samedi) : present null, tous les weekdays en past, rolling présent', () => {
         const { rolling, weekday } = slotViewListDaySections('samedi');
         expect(weekday.present).toBeNull();
-        expect(weekday.future).toBeNull();
+        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']);
+        expect(weekday.future).toEqual([]);
         expect(rolling.present.id).toBe('today');
         expect(rolling.future.id).toBe('tomorrow');
+    });
+});
+
+describe('slotViewListSelection — option B : tous les weekdays visibles (plus de bubbling vers this_week)', () => {
+    // Les 5 weekdays de la semaine courante ont désormais une case propre (Past/Present/Future) :
+    // ils sont injectés sous this_week pour que son bubbling les exclue. this_week ne reçoit
+    // donc plus que les tâches réellement imprécises (assignées à this_week sans jour).
+    function currentWeekNode(rows) {
+        const weekRow = rows.find(r => r.some(s => s.id === 'this_week'));
+        return weekRow.find(s => s.id === 'this_week');
+    }
+
+    test('today=mercredi : les 5 weekdays sont injectés sous la semaine courante', () => {
+        const thisWeek = currentWeekNode(slotViewListSelection('mercredi'));
+        const ids = thisWeek.inner.map(s => s.id);
+        expect(ids).toEqual(expect.arrayContaining(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']));
+    });
+
+    test('vendredi (postérieur à today=mercredi) est un nœud visible → ne remonte plus à this_week', () => {
+        const thisWeek = currentWeekNode(slotViewListSelection('mercredi'));
+        expect(thisWeek.inner.some(s => s.id === 'vendredi')).toBe(true);
     });
 });

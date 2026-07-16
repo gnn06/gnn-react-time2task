@@ -50,19 +50,29 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
         .sort((a, b) => b.depth - a.depth); // du plus profond au plus superficiel : Semaine (haut) → Mois
 
     // Niveau jour : deux sections parallèles (rollingDays / weekDays) partageant les colonnes
-    // Present/Future, entrelacées par niveau (option B). today/mercredi → Present ;
-    // tomorrow/jeudi → Future. Les autres weekdays remontent à this_week (non affichés).
+    // Past/Present/Future, entrelacées par niveau (option B). rollingDays : today → Present,
+    // tomorrow → Future (une cellule = un slot). weekDays : today → Present, jours après today
+    // → Future (empilés), avant today → Past (empilés). Chaque weekday a sa case, aucun ne
+    // remonte à this_week.
     const { rolling, weekday } = slotViewListDaySections(currentWeekday);
     const showDay = !maxLevel || maxLevel >= 3;
     const showHour = !maxLevel || maxLevel >= 4;
-    const hasWeekday = weekday.present || weekday.future;
+    const hasWeekday = weekday.past.length > 0 || weekday.present || weekday.future.length > 0;
 
+    // Une cellule de section jour est un nœud unique (rolling), un tableau de nœuds empilés
+    // (weekDays Past/Future) ou null. asDays normalise en tableau pour un traitement uniforme.
+    const asDays = (cell) => Array.isArray(cell) ? cell : (cell ? [cell] : []);
     const hourNode = (dayNode, hour) => dayNode && (dayNode.inner || []).find(h => h.id === hour);
-    const sectionHourHasTasks = (present, future, hour) =>
-        [present, future].some(node => {
-            const h = hourNode(node, hour);
+    // Sous-nœuds heure d'une cellule : tableau (empilé) si plusieurs jours, nœud unique sinon, null si vide.
+    const hourCell = (cell, hour) => {
+        const nodes = asDays(cell).map(d => hourNode(d, hour)).filter(Boolean);
+        return nodes.length === 0 ? null : (nodes.length === 1 ? nodes[0] : nodes);
+    };
+    const sectionHourHasTasks = (cells, hour) =>
+        cells.some(cell => asDays(cell).some(d => {
+            const h = hourNode(d, hour);
             return h && findTaskBySlotExpr(allListTasks, h, false).length > 0;
-        });
+        }));
 
     const hourRows = [];
     const dayRows = [];
@@ -70,17 +80,17 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     if (showDay) {
         dayRows.push({ key: 'rolling-jour', depth: 3, label: 'rollingDays', cells: [null, rolling.present, rolling.future] });
         if (hasWeekday) {
-            dayRows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [null, weekday.present, weekday.future] });
+            dayRows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [weekday.past, weekday.present, weekday.future] });
         }
         if (showHour) {
             for (const hour of ['matin', 'aprem']) {
-                if (sectionHourHasTasks(rolling.present, rolling.future, hour)) {
+                if (sectionHourHasTasks([rolling.present, rolling.future], hour)) {
                     hourRows.push({ key: `rolling-${hour}`, depth: 4, label: HOUR_LABEL[hour],
-                        cells: [null, hourNode(rolling.present, hour), hourNode(rolling.future, hour)] });
+                        cells: [null, hourCell(rolling.present, hour), hourCell(rolling.future, hour)] });
                 }
-                if (hasWeekday && sectionHourHasTasks(weekday.present, weekday.future, hour)) {
+                if (hasWeekday && sectionHourHasTasks([weekday.past, weekday.present, weekday.future], hour)) {
                     hourRows.push({ key: `weekdays-${hour}`, depth: 4, label: HOUR_LABEL[hour],
-                        cells: [null, hourNode(weekday.present, hour), hourNode(weekday.future, hour)] });
+                        cells: [hourCell(weekday.past, hour), hourCell(weekday.present, hour), hourCell(weekday.future, hour)] });
                 }
             }
         }

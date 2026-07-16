@@ -58,10 +58,13 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).not.toContain('this_month this_week samedi');
     });
 
-    test('week-end (today=samedi) : les deux weekday null → ligne weekDays omise, rollingDays reste', () => {
+    test('week-end (today=samedi) : Present/Future vides, Past = les 5 weekdays passés (ligne weekDays affichée)', () => {
         render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_SAT} />);
         expect(screen.getByText(/rollingDays/)).toBeInTheDocument();
-        expect(screen.queryByText(/weekDays/)).not.toBeInTheDocument();
+        expect(screen.getByText(/weekDays/)).toBeInTheDocument();
+        const p = paths();
+        expect(p).toContain('this_month this_week lundi');
+        expect(p).toContain('this_month this_week vendredi');
     });
 
     test('lignes heure émises seulement si tâches (today matin → ligne Matin rolling)', () => {

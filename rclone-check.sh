@@ -9,10 +9,14 @@ if ! rclone check time2task.SYNC_FILE onedriveperso:Documents/dev/ >/dev/null 2>
     echo "\n"
     echo -e "\nderniers commits en local depuis sync"
     git log --after="$(awk '{print $1, $2}' time2task.SYNC_FILE)" --format="%h %ad %s" --date=short
+    echo "git status"
+    git status
 else
     # modification détectée
     echo -n "onedrive et local synchro : "
     cat time2task.SYNC_FILE
     echo -e "\nderniers commits en local depuis sync"
     git log --after="$(awk '{print $1, $2}' time2task.SYNC_FILE)" --format="%h %ad %s" --date=short
+    echo "git status"
+    git status
 fi
