@@ -1926,7 +1926,7 @@ describe('truncatePathAtAnchorDay (grille tree : colonnes = weekdays)', () => {
 });
 
 describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue list)', () => {
-    test('rolling : today en present, tomorrow en future, chacun avec matin/aprem', () => {
+    test('rolling : today en present avec matin/aprem ; tomorrow en future sans inner (heure bubble vers le jour)', () => {
         const { rolling } = slotViewListDaySections('mercredi');
         expect(rolling.present.id).toBe('today');
         expect(rolling.present.path).toBe('today');
@@ -1934,8 +1934,7 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(rolling.present.inner[0].path).toBe('today matin');
         expect(rolling.future.id).toBe('tomorrow');
         expect(rolling.future.path).toBe('tomorrow');
-        expect(rolling.future.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
-        expect(rolling.future.inner[1].path).toBe('tomorrow aprem');
+        expect(rolling.future.inner).toEqual([]);
     });
 
     test('weekday : today=mercredi → present=mercredi ; future=[jeudi, vendredi] ; past=[lundi, mardi]', () => {
@@ -1948,6 +1947,14 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(weekday.future[0].path).toBe('this_month this_week jeudi');
         expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi']);
         expect(weekday.past[0].path).toBe('this_month this_week lundi');
+    });
+
+    test('weekday.past/future n\'ont pas de matin/aprem en inner : les tâches heure de ces jours bubblent sur la case jour (Past/Future), pas sur une ligne heure dédiée', () => {
+        const { weekday } = slotViewListDaySections('mercredi');
+        expect(weekday.past.every(s => s.inner.length === 0)).toBe(true);
+        expect(weekday.future.every(s => s.inner.length === 0)).toBe(true);
+        // le jour présent (équivalent weekDay de today) garde matin/aprem : seul lui alimente la ligne heure.
+        expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
     });
 
     test('weekday : today=vendredi → future vide, past=[lundi..jeudi]', () => {

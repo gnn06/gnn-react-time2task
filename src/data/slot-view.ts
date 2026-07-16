@@ -406,6 +406,11 @@ function weekdayNode(weekdayId: string | null): Slot | null {
  * today : avant → past, égal → present, après → future (indices calendaires). Un currentWeekday
  * hors lundi..vendredi (week-end) place tous les weekdays en past ; un currentWeekday inconnu
  * (null) laisse toutes les cases vides.
+ *
+ * Seul le jour present (l'équivalent weekDay de today) garde ses matin/aprem en inner : c'est
+ * le seul à alimenter la ligne heure. Les jours past/future ont un inner vide pour que leurs
+ * tâches heure bubblent sur leur propre case jour (Past/Future) plutôt que de créer une ligne
+ * heure pour un jour qui n'est pas today.
  */
 function partitionWeekdays(currentWeekday: string | null): { past: Slot[], present: Slot | null, future: Slot[] } {
     const idx = currentWeekday ? WEEK_CALENDAR.indexOf(currentWeekday) : -1;
@@ -417,8 +422,8 @@ function partitionWeekdays(currentWeekday: string | null): { past: Slot[], prese
         const node = weekdayNode(id);
         if (!node) continue;
         const dayIdx = WEEK_CALENDAR.indexOf(id);
-        if (dayIdx < idx) past.push(node);
-        else if (dayIdx > idx) future.push(node);
+        if (dayIdx < idx) past.push({ ...node, inner: [] });
+        else if (dayIdx > idx) future.push({ ...node, inner: [] });
         else present = node;
     }
     return { past, present, future };
@@ -436,8 +441,10 @@ function partitionWeekdays(currentWeekday: string | null): { past: Slot[], prese
  */
 export function slotViewListDaySections(currentWeekday: string | null): ListDaySections {
     const [today, tomorrow] = relativePresentDayPickerSlots();
+    // tomorrow (Future) perd son inner matin/aprem : seul today (Present) alimente la ligne
+    // heure, symétrique au traitement des weekDays past/future (cf. partitionWeekdays).
     return {
-        rolling: { present: today, future: tomorrow },
+        rolling: { present: today, future: { ...tomorrow, inner: [] } },
         weekday: partitionWeekdays(currentWeekday),
     };
 }
