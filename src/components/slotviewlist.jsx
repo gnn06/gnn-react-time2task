@@ -72,10 +72,11 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
             dayRows.push({ key: 'weekdays-jour', titleKey: 'weekDays', cells: [weekday.past, weekday.present, weekday.future] });
         }
         if (showHour) {
-            const rollingHourCells = getHourSlotsForRow(rolling.present);
-            if (rowHasTasks(rollingHourCells)) {
-                hourRows.push({ key: 'rolling-heure', titleKey: 'rollingHours', cells: rollingHourCells });
-            }
+            // rollingDays = type de jour PRINCIPAL de la vue list : sa ligne heure est
+            // structurelle et s'affiche toujours, même sans tâche. weekDays = type SECONDAIRE :
+            // sa ligne heure n'apparaît que si elle contient des tâches (symétrique du tree, où
+            // le principal est weekDays — toujours affiché — et le secondaire rolling — si tâches).
+            hourRows.push({ key: 'rolling-heure', titleKey: 'rollingHours', cells: getHourSlotsForRow(rolling.present) });
             if (hasWeekday) {
                 const weekdayHourCells = getHourSlotsForRow(weekday.present);
                 if (rowHasTasks(weekdayHourCells)) {

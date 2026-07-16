@@ -72,10 +72,14 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).toContain('this_month this_week vendredi');
     });
 
-    test('ligne heure émise seulement si tâches (today matin → une seule ligne rollingHours)', () => {
-        const { rerender } = render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
-        expect(screen.queryByText(/rollingHours/)).not.toBeInTheDocument();
-        rerender(<SlotViewList tasks={[{ id: 1, title: 'a', slotExpr: 'today matin' }]} conf={CONF} snapDates={SNAP_WED} />);
+    test('ligne heure rolling (primaire) toujours affichée même sans tâche ; weekHours (secondaire) seulement si tâches', () => {
+        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
+        // rollingDays = type de jour PRINCIPAL de la vue list → sa ligne heure est structurelle.
+        expect(screen.getByText(/rollingHours/)).toBeInTheDocument();
+        // weekDays = type SECONDAIRE → pas de ligne heure sans tâche heure weekday.
+        expect(screen.queryByText(/weekHours/)).not.toBeInTheDocument();
+        cleanup();
+        render(<SlotViewList tasks={[{ id: 1, title: 'a', slotExpr: 'today matin' }]} conf={CONF} snapDates={SNAP_WED} />);
         expect(screen.getByText(/rollingHours/)).toBeInTheDocument();
         expect(paths()).toContain('today matin');
     });
@@ -155,12 +159,12 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(screen.queryByText(/weekDays/)).not.toBeInTheDocument();
     });
 
-    test('tâche sur un jour passé (mardi aprem, today=mercredi) : pas de ligne heure dédiée, bubble sur weekDays', () => {
+    test('tâche sur un jour passé (mardi aprem, today=mercredi) : pas de ligne heure weekDays (secondaire), bubble sur weekDays', () => {
         render(<SlotViewList tasks={[
             { id: 1, title: 'a', slotExpr: 'this_week mardi aprem' },
         ]} conf={CONF} snapDates={SNAP_WED} />);
-        // Aucune ligne heure : la tâche du jour passé ne crée pas de ligne 'weekdays-heure'.
-        expect(screen.queryByText(/rollingHours|weekHours/)).not.toBeInTheDocument();
+        // Section secondaire : la tâche du jour passé ne crée pas de ligne 'weekdays-heure'.
+        expect(screen.queryByText(/weekHours/)).not.toBeInTheDocument();
         const keys = rowKeys();
         expect(keys).not.toContain('weekdays-heure');
         // La ligne weekDays reste affichée avec la case mardi (Past) : la tâche y bubble.
@@ -168,21 +172,23 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(paths()).toContain('this_month this_week mardi');
     });
 
-    test('tâche sur un jour futur (vendredi aprem, today=mercredi) : symétrique, pas de ligne heure non plus', () => {
+    test('tâche sur un jour futur (vendredi aprem, today=mercredi) : symétrique, pas de ligne heure weekDays non plus', () => {
         render(<SlotViewList tasks={[
             { id: 1, title: 'a', slotExpr: 'this_week vendredi aprem' },
         ]} conf={CONF} snapDates={SNAP_WED} />);
-        expect(screen.queryByText(/rollingHours|weekHours/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/weekHours/)).not.toBeInTheDocument();
         expect(rowKeys()).not.toContain('weekdays-heure');
         expect(paths()).toContain('this_month this_week vendredi');
     });
 
-    test('tâche sur tomorrow aprem (jour futur rolling) : pas de ligne heure rolling dédiée non plus', () => {
+    test('tâche sur tomorrow aprem (jour futur rolling) : la ligne heure rolling (primaire) reste toujours affichée', () => {
         render(<SlotViewList tasks={[
             { id: 1, title: 'a', slotExpr: 'tomorrow aprem' },
         ]} conf={CONF} snapDates={SNAP_WED} />);
-        expect(screen.queryByText(/rollingHours|weekHours/)).not.toBeInTheDocument();
-        expect(rowKeys()).not.toContain('rolling-heure');
+        // rollingHours (primaire) toujours présente ; weekHours (secondaire) absente.
+        expect(screen.getByText(/rollingHours/)).toBeInTheDocument();
+        expect(screen.queryByText(/weekHours/)).not.toBeInTheDocument();
+        expect(rowKeys()).toContain('rolling-heure');
         expect(paths()).toContain('tomorrow');
     });
 });

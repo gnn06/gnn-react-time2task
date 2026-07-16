@@ -58,6 +58,17 @@ describe('SlotViewTree — section rollingDays', () => {
         expect(screen.queryByText(/rollingDays/)).not.toBeInTheDocument();
     });
 
+    test('type principal (weekDays) : lignes heure affichées même sans tâche ; rolling (secondaire) seulement si tâches', () => {
+        const { container } = render(<SlotViewTree tasks={[{ id: 1, title: 'a', slotExpr: 'this_week mardi' }]} conf={CONF} snapDates={SNAP_WED} />);
+        const headers = [...container.querySelectorAll('div')]
+            .filter(d => /sideways/.test(d.getAttribute('style') || ''))
+            .map(d => d.textContent.replace(/[‹\s]+$/, ''));
+        // weekHours (primaire) présent bien qu'aucune tâche n'ait de créneau heure.
+        expect(headers).toContain('weekHours');
+        // rollingHours (secondaire) absent sans tâche today/tomorrow heure.
+        expect(headers).not.toContain('rollingHours');
+    });
+
     test('titres homogènes avec la vue list : weekHours / rollingHours', () => {
         const { container } = render(<SlotViewTree tasks={[
             { id: 1, title: 'a', slotExpr: 'this_week mercredi matin' },
