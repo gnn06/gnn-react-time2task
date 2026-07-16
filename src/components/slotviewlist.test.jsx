@@ -6,7 +6,11 @@ import { render, screen, cleanup } from '@testing-library/react';
 // cellules week-end, lignes heure conditionnelles). Le placement des tâches (bubbling)
 // est couvert au niveau data (slot-view.test.js, task.test.js).
 vi.mock('./slot', () => ({
-    default: ({ slot }) => <span data-testid="slot" data-path={slot.path}>{slot.path}</span>
+    default: ({ slot }) => (
+        <span data-testid="slot" data-path={slot.path} data-inner={(slot.inner ?? []).map(s => s.id).join(',')}>
+            {slot.path}
+        </span>
+    )
 }));
 
 import SlotViewList from './slotviewlist';
@@ -25,6 +29,7 @@ const SNAP_FRI = [{ slotid: 'this_week', date: '2023-12-18' }, { slotid: 'today'
 const SNAP_SAT = [{ slotid: 'this_week', date: '2023-12-18' }, { slotid: 'today', date: '2023-12-23' }];
 
 const paths = () => screen.getAllByTestId('slot').map(el => el.getAttribute('data-path'));
+const innerOf = (path) => screen.getAllByTestId('slot').find(el => el.getAttribute('data-path') === path)?.getAttribute('data-inner');
 const headerTexts = () => screen.getAllByText(/rollingDays|weekDays|Mois|Semaine|rollingHours|weekHours/).map(el => el.textContent.replace(/[‹\s]/g, ''));
 const rowKeys = () => screen.getAllByTestId(/^row-/).map(el => el.getAttribute('data-testid').replace('row-', ''));
 
@@ -120,6 +125,28 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         const keys = rowKeys();
         expect(keys.indexOf('rolling-heure')).toBeLessThan(keys.indexOf('weekdays-heure'));
         expect(keys.indexOf('rolling-jour')).toBeLessThan(keys.indexOf('weekdays-jour'));
+    });
+
+    test('niveau max = jour (3) : pas de ligne heure, mais les cases today/mercredi restent sans inner pour que les tâches heure y bubblent (ne disparaissent pas)', () => {
+        render(<SlotViewList tasks={[
+            { id: 1, title: 'a', slotExpr: 'today matin' },
+            { id: 2, title: 'b', slotExpr: 'this_week mercredi aprem' },
+        ]} conf={{ ...CONF, levelMaxIncluded: 3 }} snapDates={SNAP_WED} />);
+        expect(rowKeys()).not.toContain('rolling-heure');
+        expect(rowKeys()).not.toContain('weekdays-heure');
+        // inner vide : findTaskBySlotExpr (task.js) ne doit pas exclure ces tâches heure de la
+        // case jour, faute de quoi elles disparaîtraient (aucune ligne heure pour les recevoir).
+        expect(innerOf('today')).toBe('');
+        expect(innerOf('this_month this_week mercredi')).toBe('');
+    });
+
+    test('niveau max = heure (4, sans restriction) : les cases today/mercredi gardent matin/aprem en inner', () => {
+        render(<SlotViewList tasks={[
+            { id: 1, title: 'a', slotExpr: 'today matin' },
+            { id: 2, title: 'b', slotExpr: 'this_week mercredi aprem' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+        expect(innerOf('today')).toBe('matin,aprem');
+        expect(innerOf('this_month this_week mercredi')).toBe('matin,aprem');
     });
 
     test('niveau max = semaine (2) : pas de lignes rollingDays / weekDays', () => {

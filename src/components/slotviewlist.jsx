@@ -53,7 +53,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     // tomorrow → Future (une cellule = un slot). weekDays : today → Present, jours après today
     // → Future (empilés), avant today → Past (empilés). Chaque weekday a sa case, aucun ne
     // remonte à this_week.
-    const { rolling, weekday } = slotViewListDaySections(currentWeekday);
+    const { rolling, weekday } = slotViewListDaySections(currentWeekday, maxLevel);
     const showDay = !maxLevel || maxLevel >= 3;
     const showHour = !maxLevel || maxLevel >= 4;
     const hasWeekday = weekday.past.length > 0 || weekday.present || weekday.future.length > 0;

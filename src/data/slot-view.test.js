@@ -2008,6 +2008,24 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(rolling.present.id).toBe('today');
         expect(rolling.future.id).toBe('tomorrow');
     });
+
+    test('maxLevel=3 (jour, pas d\'heure affichée) : present strippé de son inner matin/aprem pour que les tâches heure bubblent sur la case jour au lieu de disparaître', () => {
+        const { rolling, weekday } = slotViewListDaySections('mercredi', 3);
+        expect(rolling.present.inner).toEqual([]);
+        expect(weekday.present.inner).toEqual([]);
+    });
+
+    test('maxLevel=4 (heure affichée) : present garde son inner matin/aprem', () => {
+        const { rolling, weekday } = slotViewListDaySections('mercredi', 4);
+        expect(rolling.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+        expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+    });
+
+    test('maxLevel absent (undefined/null) : comportement inchangé, inner conservé', () => {
+        const { rolling, weekday } = slotViewListDaySections('mercredi', null);
+        expect(rolling.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+        expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
+    });
 });
 
 describe('slotViewListSelection — option B : tous les weekdays visibles (plus de bubbling vers this_week)', () => {

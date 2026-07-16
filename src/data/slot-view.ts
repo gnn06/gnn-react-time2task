@@ -457,15 +457,29 @@ function partitionWeekdays(currentWeekday: string | null): { past: Slot[], prese
  *   slots). Chaque weekday ayant sa case, aucun ne remonte à this_week par bubbling.
  * Les sections partagent les colonnes ; le composant les rend entrelacées par niveau. Pas de
  * projection : today/tomorrow et les weekdays restent des créneaux distincts (familles séparées).
+ *
+ * maxLevel : quand la ligne heure n'est pas affichée (< niveau 4), le present doit perdre son
+ * inner matin/aprem — sinon findTaskBySlotExpr (cf. task.js) exclut les tâches heure de la case
+ * jour en pensant qu'elles seront rendues par une case heure qui n'existe pas, et elles
+ * disparaissent. Une tâche doit toujours rester visible : elle bubble alors sur la case jour.
  * @param currentWeekday jour du today STOCKÉ (getCurrentWeekdayId(snapDates))
+ * @param maxLevel conf.levelMaxIncluded ; falsy = pas de restriction
  */
-export function slotViewListDaySections(currentWeekday: string | null): ListDaySections {
+export function slotViewListDaySections(currentWeekday: string | null, maxLevel?: number | null): ListDaySections {
     const [today, tomorrow] = relativePresentDayPickerSlots();
     // tomorrow (Future) perd son inner matin/aprem : seul today (Present) alimente la ligne
     // heure, symétrique au traitement des weekDays past/future (cf. partitionWeekdays).
-    return {
+    const sections = {
         rolling: { present: today, future: { ...tomorrow, inner: [] } },
         weekday: partitionWeekdays(currentWeekday),
+    };
+    if (!maxLevel) return sections;
+    return {
+        rolling: { ...sections.rolling, present: stripInnerAtMaxLevel([sections.rolling.present], maxLevel)[0] },
+        weekday: {
+            ...sections.weekday,
+            present: sections.weekday.present && stripInnerAtMaxLevel([sections.weekday.present], maxLevel)[0],
+        },
     };
 }
 
