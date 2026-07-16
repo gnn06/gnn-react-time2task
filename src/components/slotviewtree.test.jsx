@@ -58,6 +58,21 @@ describe('SlotViewTree — section rollingDays', () => {
         expect(screen.queryByText(/rollingDays/)).not.toBeInTheDocument();
     });
 
+    test('titres homogènes avec la vue list : weekHours / rollingHours', () => {
+        const { container } = render(<SlotViewTree tasks={[
+            { id: 1, title: 'a', slotExpr: 'this_week mercredi matin' },
+            { id: 2, title: 'b', slotExpr: 'today aprem' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+        const headers = [...container.querySelectorAll('div')]
+            .filter(d => /sideways/.test(d.getAttribute('style') || ''))
+            .map(d => d.textContent.replace(/[‹\s]+$/, ''));
+        // Les lignes heure portent le libellé de famille (pas Matin/Aprem).
+        expect(headers).not.toContain('Matin');
+        expect(headers).not.toContain('Aprem');
+        expect(headers).toContain('weekHours');
+        expect(headers).toContain('rollingHours');
+    });
+
     test('ordre des lignes : weekDays, rollingDays, puis les heures weekDay, puis les heures rollingDay', () => {
         const { container } = render(<SlotViewTree tasks={[
             { id: 1, title: 'a', slotExpr: 'this_week mercredi matin' },
@@ -76,6 +91,6 @@ describe('SlotViewTree — section rollingDays', () => {
         // Ligne jour weekDay immédiatement suivie de la ligne jour rollingDay,
         // puis les heures weekDay (Matin/Aprem), puis les heures rollingDay (Aprem).
         expect(headers.slice(rolling - 1, rolling + 4))
-            .toEqual(['weekDays', 'rollingDays', 'Matin', 'Aprem', 'Aprem']);
+            .toEqual(['weekDays', 'rollingDays', 'weekHours', 'weekHours', 'rollingHours']);
     });
 });

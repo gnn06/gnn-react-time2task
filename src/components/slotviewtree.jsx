@@ -8,7 +8,7 @@ import { isSlotEqualOrInclude } from "../data/slot-expr";
 import { getCurrentWeekdayId } from "../data/slot-date";
 import { findTaskBySlotExpr } from "../data/task";
 import { Parser } from "../data/parser";
-import { levelLabel } from "./level-label";
+import { rowLabel } from "./level-label";
 
 const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours (lundi..vendredi)
 const OVERFLOW = '__rolling_overflow__'; // colonne dédiée pour today/tomorrow hors lundi..vendredi
@@ -73,11 +73,11 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
     const rows = [];
 
     for (const moisSlot of moisSlots) {
-        rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>{levelLabel(1, 'Mois')}</DashedRowHeader>);
+        rows.push(<DashedRowHeader key={moisSlot.path + "-mois-h"}>{rowLabel('mois')}</DashedRowHeader>);
         rows.push(<DashedCell key={moisSlot.path + "-mois-c"} style={spanAll}><Slot slot={moisSlot} tasks={allTreeTasks} /></DashedCell>);
 
         for (const semaineSlot of (moisSlot.inner || [])) {
-            rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>{levelLabel(2, 'Semaine')}</DashedRowHeader>);
+            rows.push(<DashedRowHeader key={semaineSlot.path + "-semaine-h"}>{rowLabel('semaine')}</DashedRowHeader>);
             rows.push(<DashedCell key={semaineSlot.path + "-semaine-c"} style={spanAll}><Slot slot={semaineSlot} tasks={allTreeTasks} /></DashedCell>);
 
             const daySlots = semaineSlot.inner || [];
@@ -86,7 +86,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             const dayById = Object.fromEntries(daySlots.map(d => [d.id, d]));
 
             // Ligne Jour : une cellule par colonne (weekdays + colonne overflow)
-            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>{levelLabel(3, 'weekDays')}</DashedRowHeader>);
+            rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>{rowLabel('weekDays')}</DashedRowHeader>);
             columns.forEach(col =>
                 rows.push(<DashedCell key={semaineSlot.path + "-jour-" + col}>{col !== OVERFLOW && dayById[col] && <Slot slot={dayById[col]} tasks={allTreeTasks} />}</DashedCell>)
             );
@@ -115,7 +115,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             // Ligne Jour (rolling) : l'en-tête « rollingDays » distingue la section roulante
             // de la grille « weekDays » ci-dessus.
             if (showRollingHere) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{levelLabel(3, 'rollingDays')}</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{rowLabel('rollingDays')}</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
                     rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
@@ -126,7 +126,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Matin : alignée par colonne de jour
             if (columns.some(col => col !== OVERFLOW && matinById[col])) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-matin-h"}>{rowLabel('weekHours')}</DashedRowHeader>);
                 columns.forEach(col =>
                     rows.push(<DashedCell key={semaineSlot.path + "-matin-" + col}>{col !== OVERFLOW && matinById[col] && <Slot slot={matinById[col]} tasks={allTreeTasks} />}</DashedCell>)
                 );
@@ -134,7 +134,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Aprem : alignée par colonne de jour
             if (columns.some(col => col !== OVERFLOW && apremById[col])) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-aprem-h"}>{rowLabel('weekHours')}</DashedRowHeader>);
                 columns.forEach(col =>
                     rows.push(<DashedCell key={semaineSlot.path + "-aprem-" + col}>{col !== OVERFLOW && apremById[col] && <Slot slot={apremById[col]} tasks={allTreeTasks} />}</DashedCell>)
                 );
@@ -142,7 +142,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Matin (rolling)
             if (rollingHourRowHasTasks('matin')) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>{levelLabel(4, 'Matin')}</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-matin-h"}>{rowLabel('rollingHours')}</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'matin')).filter(Boolean);
                     rows.push(<DashedCell key={semaineSlot.path + "-rolling-matin-" + col}>
@@ -153,7 +153,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
 
             // Ligne Aprem (rolling)
             if (rollingHourRowHasTasks('aprem')) {
-                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>{levelLabel(4, 'Aprem')}</DashedRowHeader>);
+                rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-aprem-h"}>{rowLabel('rollingHours')}</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode).map(n => rollingHour(n, 'aprem')).filter(Boolean);
                     rows.push(<DashedCell key={semaineSlot.path + "-rolling-aprem-" + col}>

@@ -5,15 +5,15 @@ import { getSlotIdLevel } from "../data/slot-id";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { getCurrentWeekdayId } from "../data/slot-date";
 import { findTaskBySlotExpr } from "../data/task";
-import { levelLabel } from "./level-label";
+import { rowLabel } from "./level-label";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
 import React from "react";
 
 const parser = new Parser();
 
-// Libellés de niveau homogènes avec le tree (colonne de titre en chevrons).
-const GENERIC_LABEL = { 1: 'Mois', 2: 'Semaine' };
+// Clés de titre des lignes génériques (cf. ROW_TITLES, source unique partagée avec le tree).
+const GENERIC_TITLE_KEY = { 1: 'mois', 2: 'semaine' };
 
 function computeTaskPaths(tasks) {
     return tasks
@@ -44,7 +44,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
         .filter(item => getSlotIdLevel(item[0].id) <= 2)
         .map(item => {
             const depth = getSlotIdLevel(item[0].id);
-            return { key: `gen-${depth}`, depth, label: GENERIC_LABEL[depth], cells: getSlotsForRow(item) };
+            return { key: `gen-${depth}`, depth, titleKey: GENERIC_TITLE_KEY[depth], cells: getSlotsForRow(item) };
         })
         .sort((a, b) => b.depth - a.depth); // du plus profond au plus superficiel : Semaine (haut) → Mois
 
@@ -67,19 +67,19 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     const dayRows = [];
 
     if (showDay) {
-        dayRows.push({ key: 'rolling-jour', depth: 3, label: 'rollingDays', cells: [null, rolling.present, rolling.future] });
+        dayRows.push({ key: 'rolling-jour', titleKey: 'rollingDays', cells: [null, rolling.present, rolling.future] });
         if (hasWeekday) {
-            dayRows.push({ key: 'weekdays-jour', depth: 3, label: 'weekDays', cells: [weekday.past, weekday.present, weekday.future] });
+            dayRows.push({ key: 'weekdays-jour', titleKey: 'weekDays', cells: [weekday.past, weekday.present, weekday.future] });
         }
         if (showHour) {
             const rollingHourCells = getHourSlotsForRow(rolling.present);
             if (rowHasTasks(rollingHourCells)) {
-                hourRows.push({ key: 'rolling-heure', depth: 4, label: 'rollingHours', cells: rollingHourCells });
+                hourRows.push({ key: 'rolling-heure', titleKey: 'rollingHours', cells: rollingHourCells });
             }
             if (hasWeekday) {
                 const weekdayHourCells = getHourSlotsForRow(weekday.present);
                 if (rowHasTasks(weekdayHourCells)) {
-                    hourRows.push({ key: 'weekdays-heure', depth: 4, label: 'weekHours', cells: weekdayHourCells });
+                    hourRows.push({ key: 'weekdays-heure', titleKey: 'weekHours', cells: weekdayHourCells });
                 }
             }
         }
@@ -96,7 +96,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
 
             {rows.map(row => (
                 <React.Fragment key={row.key}>
-                    <DashedRowHeader data-testid={`row-${row.key}`}>{levelLabel(row.depth, row.label)}</DashedRowHeader>
+                    <DashedRowHeader data-testid={`row-${row.key}`}>{rowLabel(row.titleKey)}</DashedRowHeader>
                     {row.cells.map((cell, cellIdx) => (
                         <DashedCell key={cellIdx}>{cellContent(cell, allListTasks)}</DashedCell>
                     ))}
