@@ -21,7 +21,9 @@
       "Bash(npx vitest *)",
       "Bash(git -C /home/gnn/dev/gnn-react-time2task log master..list-weekDays --oneline)",
       "Bash(git -C /home/gnn/dev/gnn-react-time2task diff master...list-weekDays --stat)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "mcp__notion__notion-fetch",
+      "mcp__notion__notion-update-page"
     ]
   }
 }

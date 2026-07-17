@@ -36,15 +36,18 @@ const rowKeys = () => screen.getAllByTestId(/^row-/).map(el => el.getAttribute('
 afterEach(() => cleanup());
 
 describe('SlotViewList — sections rollingDays / weekDays', () => {
-    test('sans tâche : lignes rollingDays et weekDays présentes, mercredi/jeudi mappés', () => {
+    test('sans tâche : lignes rollingDays et weekDays présentes, today/tomorrow et le present mercredi mappés', () => {
         render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
         expect(screen.getByText(/rollingDays/)).toBeInTheDocument();
         expect(screen.getByText(/weekDays/)).toBeInTheDocument();
         const p = paths();
+        // rollingDays (principal) : today/tomorrow structurels, affichés même vides.
         expect(p).toContain('today');
         expect(p).toContain('tomorrow');
+        // weekDays (secondaire) : seul le present (mercredi) est affiché sans tâche ; jeudi
+        // (future) est masqué faute de tâche (cf. describe dédié plus bas).
         expect(p).toContain('this_month this_week mercredi');
-        expect(p).toContain('this_month this_week jeudi');
+        expect(p).not.toContain('this_month this_week jeudi');
     });
 
     test('ordre B : rollingDays → weekDays → Semaine → Mois (du plus profond au plus superficiel)', () => {
@@ -63,8 +66,12 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).not.toContain('this_month this_week samedi');
     });
 
-    test('week-end (today=samedi) : Present/Future vides, Past = les 5 weekdays passés (ligne weekDays affichée)', () => {
-        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_SAT} />);
+    // Les 5 weekdays portent une tâche → tous affichés en Past (today=samedi).
+    const TASKS_ALL_WEEKDAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']
+        .map((d, i) => ({ id: i + 1, title: d, slotExpr: `this_week ${d}` }));
+
+    test('week-end (today=samedi) : Present/Future vides, Past = les weekdays passés porteurs de tâche (ligne weekDays affichée)', () => {
+        render(<SlotViewList tasks={TASKS_ALL_WEEKDAYS} conf={CONF} snapDates={SNAP_SAT} />);
         expect(screen.getByText(/rollingDays/)).toBeInTheDocument();
         expect(screen.getByText(/weekDays/)).toBeInTheDocument();
         const p = paths();
@@ -72,8 +79,8 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).toContain('this_month this_week vendredi');
     });
 
-    test('colonne Past : les weekdays passés sont empilés de bas en haut (vendredi en haut, lundi en bas)', () => {
-        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_SAT} />);
+    test('colonne Past : les weekdays passés (porteurs de tâche) sont empilés de bas en haut (vendredi en haut, lundi en bas)', () => {
+        render(<SlotViewList tasks={TASKS_ALL_WEEKDAYS} conf={CONF} snapDates={SNAP_SAT} />);
         const p = paths();
         // today=samedi → les 5 weekdays sont en Past. Ordre vertical inversé : le plus
         // récent (vendredi) en haut (index DOM le plus petit), le plus ancien (lundi) en bas.
@@ -201,5 +208,40 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(screen.queryByText(/weekHours/)).not.toBeInTheDocument();
         expect(rowKeys()).toContain('rolling-heure');
         expect(paths()).toContain('tomorrow');
+    });
+});
+
+describe('SlotViewList — weekDays (secondaire) : slots Past/Future masqués sans tâche', () => {
+    test('sans tâche (today=mercredi) : present (mercredi) affiché, mais jeudi (future vide) masqué', () => {
+        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
+        const p = paths();
+        expect(p).toContain('this_month this_week mercredi'); // present : toujours affiché
+        expect(p).not.toContain('this_month this_week jeudi'); // future vide : masqué
+    });
+
+    test('jour futur vide masqué, jour futur avec tâche affiché (today=mercredi)', () => {
+        // vendredi porte une tâche → affiché ; jeudi reste vide → masqué.
+        render(<SlotViewList tasks={[
+            { id: 1, title: 'a', slotExpr: 'this_week vendredi' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+        const p = paths();
+        expect(p).toContain('this_month this_week vendredi');
+        expect(p).not.toContain('this_month this_week jeudi');
+    });
+
+    test('jour passé vide masqué, jour passé avec tâche affiché (today=mercredi)', () => {
+        // mardi porte une tâche → affiché ; lundi reste vide → masqué.
+        render(<SlotViewList tasks={[
+            { id: 1, title: 'a', slotExpr: 'this_week mardi aprem' },
+        ]} conf={CONF} snapDates={SNAP_WED} />);
+        const p = paths();
+        expect(p).toContain('this_month this_week mardi');
+        expect(p).not.toContain('this_month this_week lundi');
+    });
+
+    test('week-end (today=samedi) sans tâche : aucun weekday à afficher → ligne weekDays omise', () => {
+        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_SAT} />);
+        expect(screen.getByText(/rollingDays/)).toBeInTheDocument();
+        expect(screen.queryByText(/weekDays/)).not.toBeInTheDocument();
     });
 });

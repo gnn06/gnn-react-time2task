@@ -72,11 +72,11 @@ justifications. En cas de doute, la table de loi fait foi.
 
 - La case Future réunit tous les slots futurs (nextWeek, followingWeek, nextWeek+3).
 - Au niveau jour, deux sections parallèles `rollingDays` et `weekDays` partagent les colonnes.
-- `rollingDays` : `today` → Present, `tomorrow` → Future.
-- `weekDays` : le jour de `today` → Present, le jour de `tomorrow` → Future.
-- Les autres weekdays ne sont pas affichés et remontent à `this_week`.
+- `rollingDays` (famille principale) : `today` → Present, `tomorrow` → Future ; ces cellules sont structurelles, affichées même vides. `rollingDays` n'a pas de cellule Past.
+- `weekDays` (famille secondaire) : le jour de `today` → Present ; les weekdays après `today` → Future (empilés) ; ceux avant `today` → Past (empilés). Chaque weekday a sa case, aucun ne remonte à `this_week`.
+- Un slot `weekDays` en Past ou Future n'est affiché que s'il porte une tâche ; le present est toujours affiché (aligné sur le `today` de `rollingDays`).
 - Une cellule `weekDays` hors `lundi`..`vendredi` est vide.
-- La ligne `weekDays` est omise si ses deux cellules sont vides ; la ligne `rollingDays` reste.
+- La ligne `weekDays` est omise si aucune de ses cellules ne porte de slot affiché ; la ligne `rollingDays` reste.
 - Les sous-lignes Matin/Aprem ne sont émises que si elles portent des tâches.
 
 ### Mise en forme (secondaire)
@@ -90,7 +90,7 @@ justifications. En cas de doute, la table de loi fait foi.
 - Dans le tree au week-end, une cellule rolling sans colonne weekday va dans une colonne overflow en fin de ligne ; si `today` et `tomorrow` y tombent tous deux, ils sont empilés.
 - En liste, les lignes vont du plus profond (heure, en haut) au plus superficiel (mois, en bas).
 - En liste, les sections `rollingDays`/`weekDays` sont entrelacées par niveau (`rollingDays` puis `weekDays`), ce qui aligne verticalement le même jour réel sous ses deux familles.
-- En liste au niveau jour, chaque cellule ne contient qu'un seul slot (ni empilement, ni overflow).
+- En liste au niveau jour, une cellule `rollingDays` ne contient qu'un seul slot (pas d'overflow). Une cellule `weekDays` Past/Future peut empiler plusieurs weekdays ; la colonne Past se lit du plus récent (en haut) au plus ancien (en bas), miroir de la colonne Future en ordre calendaire.
 
 ---
 
@@ -165,15 +165,24 @@ Miroir de la section `rollingDays` du tree, adapté à l'axe temporel. Les colon
 temporelles, today/tomorrow y tombent naturellement ; une seconde ligne accueille les
 weekdays. Deux sections parallèles partagent les colonnes Present/Future :
 
-- `rollingDays` : `today` → Present, `tomorrow` → Future.
-- `weekDays` : le jour de `today` → Present, le jour de `tomorrow` → Future. Les autres
-  weekdays ne sont pas affichés ; leurs tâches remontent à `this_week`.
+- `rollingDays` (**principale**) : `today` → Present, `tomorrow` → Future. Cellules
+  structurelles, affichées même vides ; pas de cellule Past.
+- `weekDays` (**secondaire**) : le jour de `today` → Present ; les weekdays après `today` →
+  Future ; ceux avant → Past. Chaque weekday a sa case, aucun ne remonte à `this_week`.
+
+Comme au niveau semaine, les colonnes Past/Future de `weekDays` empilent leurs slots ; Past se
+lit du plus récent (haut) au plus ancien (bas). `weekDays` étant la famille **secondaire** en
+liste (symétrique du tree, où `weekDays` est principale et `rollingDays` secondaire), un slot
+Past/Future ne s'affiche **que s'il porte une tâche** — un jour passé ou futur vide est du
+bruit qu'on masque. Le present reste toujours affiché, aligné verticalement sur le `today` de
+`rollingDays`. Même logique que la ligne heure secondaire (`weekHours`), émise seulement si
+elle porte des tâches.
 
 L'ordre entrelacé par niveau (`rollingDays Matin`, `weekDays Matin`, puis Aprem, puis jour)
 fait lire **le même jour réel sous ses deux familles** verticalement, puisque les sections
-partagent les colonnes. Contrairement au tree : pas de projection ni de fusion, une cellule =
-un seul slot (ni empilement, ni overflow). Bord week-end : une cellule `weekDays` hors
-`lundi`..`vendredi` est vide, et la ligne `weekDays` est omise si ses deux cellules le sont.
+partagent les colonnes. Contrairement au tree : pas de projection ni de fusion. Bord week-end :
+une cellule `weekDays` hors `lundi`..`vendredi` est vide, et la ligne `weekDays` est omise si
+aucune cellule ne porte de slot affiché.
 
 ---
 
@@ -181,15 +190,19 @@ un seul slot (ni empilement, ni overflow). Bord week-end : une cellule `weekDays
 
 ### Semaine courante, today stocké = mercredi (→ tomorrow = jeudi)
 
+Avec une tâche sur `mardi` (passé) et une sur `vendredi` (futur), les autres jours vides :
+
 | Niveau | Past | Present | Future |
 |--------|------|---------|--------|
 | rollingDays | — | today | tomorrow |
-| weekDays | — | mercredi | jeudi |
+| weekDays | mardi | mercredi | vendredi |
 | semaine | — | this_week | next_week · following_week |
 | mois | — | this_month | next_month · next_month+1 |
 
-lundi, mardi, vendredi non affichés → remontent à `this_week`. Matin/Aprem s'ajoutent
-au-dessus quand des tâches les occupent, dans l'ordre entrelacé.
+`weekDays` étant secondaire, seuls les jours Past/Future porteurs de tâche apparaissent :
+lundi (Past vide) et jeudi (Future vide) sont **masqués**. Le present `mercredi` reste affiché
+même vide. Sans aucune tâche weekday, la ligne se réduit à `| — | mercredi | — |`. Matin/Aprem
+s'ajoutent au-dessus quand des tâches les occupent, dans l'ordre entrelacé.
 
 ### Affichage limité au niveau mois
 

@@ -56,7 +56,15 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     const { rolling, weekday } = slotViewListDaySections(currentWeekday, maxLevel);
     const showDay = !maxLevel || maxLevel >= 3;
     const showHour = !maxLevel || maxLevel >= 4;
-    const hasWeekday = weekday.past.length > 0 || weekday.present || weekday.future.length > 0;
+
+    // weekDays = famille de jour SECONDAIRE de la vue list : un jour Past/Future ne s'affiche
+    // que s'il porte une tâche (le present reste toujours affiché, aligné verticalement sur le
+    // today de rollingDays). Symétrique de la ligne heure secondaire (weekHours) et cohérent
+    // avec rollingDays (principal), qui n'a aucune cellule Past. rollingDays reste inconditionnel.
+    const keepIfHasTask = (slots) => slots.filter(s => findTaskBySlotExpr(allListTasks, s, false).length > 0);
+    const weekdayPast = keepIfHasTask(weekday.past);
+    const weekdayFuture = keepIfHasTask(weekday.future);
+    const hasWeekday = weekdayPast.length > 0 || weekday.present || weekdayFuture.length > 0;
 
     // Seul le jour present d'une section porte matin/aprem en inner (past/future sont
     // strippés, cf. slotViewListDaySections) : la ligne heure d'une section se déduit donc
@@ -69,7 +77,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     if (showDay) {
         dayRows.push({ key: 'rolling-jour', titleKey: 'rollingDays', cells: [null, rolling.present, rolling.future] });
         if (hasWeekday) {
-            dayRows.push({ key: 'weekdays-jour', titleKey: 'weekDays', cells: [weekday.past, weekday.present, weekday.future] });
+            dayRows.push({ key: 'weekdays-jour', titleKey: 'weekDays', cells: [weekdayPast, weekday.present, weekdayFuture] });
         }
         if (showHour) {
             // rollingDays = type de jour PRINCIPAL de la vue list : sa ligne heure est
