@@ -72,6 +72,17 @@ describe('SlotViewList — sections rollingDays / weekDays', () => {
         expect(p).toContain('this_month this_week vendredi');
     });
 
+    test('colonne Past : les weekdays passés sont empilés de bas en haut (vendredi en haut, lundi en bas)', () => {
+        render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_SAT} />);
+        const p = paths();
+        // today=samedi → les 5 weekdays sont en Past. Ordre vertical inversé : le plus
+        // récent (vendredi) en haut (index DOM le plus petit), le plus ancien (lundi) en bas.
+        expect(p.indexOf('this_month this_week vendredi'))
+            .toBeLessThan(p.indexOf('this_month this_week jeudi'));
+        expect(p.indexOf('this_month this_week jeudi'))
+            .toBeLessThan(p.indexOf('this_month this_week lundi'));
+    });
+
     test('ligne heure rolling (primaire) toujours affichée même sans tâche ; weekHours (secondaire) seulement si tâches', () => {
         render(<SlotViewList tasks={[]} conf={CONF} snapDates={SNAP_WED} />);
         // rollingDays = type de jour PRINCIPAL de la vue list → sa ligne heure est structurelle.

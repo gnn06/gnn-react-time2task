@@ -1966,7 +1966,7 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(rolling.future.inner).toEqual([]);
     });
 
-    test('weekday : today=mercredi → present=mercredi ; future=[jeudi, vendredi] ; past=[lundi, mardi]', () => {
+    test('weekday : today=mercredi → present=mercredi ; future=[jeudi, vendredi] ; past=[mardi, lundi] (inversé, du plus récent au plus ancien)', () => {
         const { weekday } = slotViewListDaySections('mercredi');
         expect(weekday.present.id).toBe('mercredi');
         expect(weekday.present.path).toBe('this_month this_week mercredi');
@@ -1974,8 +1974,9 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(weekday.present.inner[0].path).toBe('this_month this_week mercredi matin');
         expect(weekday.future.map(s => s.id)).toEqual(['jeudi', 'vendredi']);
         expect(weekday.future[0].path).toBe('this_month this_week jeudi');
-        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi']);
-        expect(weekday.past[0].path).toBe('this_month this_week lundi');
+        // past inversé pour l'affichage bas→haut : le plus récent (mardi) en tête.
+        expect(weekday.past.map(s => s.id)).toEqual(['mardi', 'lundi']);
+        expect(weekday.past[0].path).toBe('this_month this_week mardi');
     });
 
     test('weekday.past/future n\'ont pas de matin/aprem en inner : les tâches heure de ces jours bubblent sur la case jour (Past/Future), pas sur une ligne heure dédiée', () => {
@@ -1986,11 +1987,11 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(weekday.present.inner.map(s => s.id)).toEqual(['matin', 'aprem']);
     });
 
-    test('weekday : today=vendredi → future vide, past=[lundi..jeudi]', () => {
+    test('weekday : today=vendredi → future vide, past=[jeudi..lundi] (inversé)', () => {
         const { weekday } = slotViewListDaySections('vendredi');
         expect(weekday.present.id).toBe('vendredi');
         expect(weekday.future).toEqual([]);
-        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi', 'mercredi', 'jeudi']);
+        expect(weekday.past.map(s => s.id)).toEqual(['jeudi', 'mercredi', 'mardi', 'lundi']);
     });
 
     test('weekday : today=lundi → past vide, future=[mardi..vendredi]', () => {
@@ -2000,10 +2001,10 @@ describe('slotViewListDaySections — 2 sections rollingDays / weekDays (vue lis
         expect(weekday.future.map(s => s.id)).toEqual(['mardi', 'mercredi', 'jeudi', 'vendredi']);
     });
 
-    test('week-end (today=samedi) : present null, tous les weekdays en past, rolling présent', () => {
+    test('week-end (today=samedi) : present null, tous les weekdays en past (inversé), rolling présent', () => {
         const { rolling, weekday } = slotViewListDaySections('samedi');
         expect(weekday.present).toBeNull();
-        expect(weekday.past.map(s => s.id)).toEqual(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']);
+        expect(weekday.past.map(s => s.id)).toEqual(['vendredi', 'jeudi', 'mercredi', 'mardi', 'lundi']);
         expect(weekday.future).toEqual([]);
         expect(rolling.present.id).toBe('today');
         expect(rolling.future.id).toBe('tomorrow');

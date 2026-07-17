@@ -6,6 +6,7 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- vue list : dans la colonne Past, les weekdays passés sont désormais empilés de bas en haut (le plus récent en haut, le plus ancien en bas — ex. vendredi en haut, lundi en bas). La colonne Future reste en ordre calendaire
 - vue tree : ordre des lignes réorganisé — ligne jour weekDays puis ligne jour rollingDays, puis les heures (Matin/Aprem) weekDays, puis les heures rollingDays ; les deux lignes jour sont désormais adjacentes en haut de la section
 - vue tree : titres des lignes homogénéisés avec la vue list — les lignes heure portent désormais le libellé de famille (weekHours / rollingHours) au lieu de Matin / Aprem. Source unique des titres (ROW_TITLES / rowLabel) partagée entre les deux vues pour garantir des libellés identiques
 - lignes heure : chaque vue a un type de jour principal (tree = weekDays, list = rollingDays) et un secondaire. Les lignes heure du type principal s'affichent toujours (structure stable, même sans tâche) ; celles du type secondaire uniquement si elles contiennent des tâches. La vue list affiche donc désormais toujours la ligne rollingHours

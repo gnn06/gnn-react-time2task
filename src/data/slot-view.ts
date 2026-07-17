@@ -469,9 +469,12 @@ export function slotViewListDaySections(currentWeekday: string | null, maxLevel?
     const [today, tomorrow] = relativePresentDayPickerSlots();
     // tomorrow (Future) perd son inner matin/aprem : seul today (Present) alimente la ligne
     // heure, symétrique au traitement des weekDays past/future (cf. partitionWeekdays).
+    const weekday = partitionWeekdays(currentWeekday);
+    // Colonne Past affichée de bas en haut : le plus récent en haut, le plus ancien en bas
+    // (miroir de la colonne Future, qui reste en ordre calendaire). Ne concerne que Past.
     const sections = {
         rolling: { present: today, future: { ...tomorrow, inner: [] } },
-        weekday: partitionWeekdays(currentWeekday),
+        weekday: { ...weekday, past: [...weekday.past].reverse() },
     };
     if (!maxLevel) return sections;
     return {
