@@ -21,6 +21,9 @@ function computeTaskPaths(tasks) {
         .filter(Boolean);
 }
 
+// Ordre des colonnes de l'axe temporel (index → nom), pour les data-testid de cellule.
+const LIST_COLS = ['past', 'present', 'future'];
+
 // Contenu d'une cellule : plusieurs slots empilés (Future des niveaux absolus), un slot
 // unique, ou rien (colonne Past des lignes rolling/weekDays, cellule week-end vide).
 function cellContent(cell, tasks) {
@@ -107,7 +110,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
                 <React.Fragment key={row.key}>
                     <DashedRowHeader data-testid={`row-${row.key}`}>{rowLabel(row.titleKey)}</DashedRowHeader>
                     {row.cells.map((cell, cellIdx) => (
-                        <DashedCell key={cellIdx}>{cellContent(cell, allListTasks)}</DashedCell>
+                        <DashedCell key={cellIdx} data-testid={`lcell-${row.key}-${LIST_COLS[cellIdx]}`}>{cellContent(cell, allListTasks)}</DashedCell>
                     ))}
                 </React.Fragment>
             ))}

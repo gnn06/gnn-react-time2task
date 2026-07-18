@@ -14,6 +14,10 @@ const DAY_IDS = SLOTIDS_BY_LEVEL['3']; // ordre canonique des jours (lundi..vend
 const OVERFLOW = '__rolling_overflow__'; // colonne dédiée pour today/tomorrow hors lundi..vendredi
 const parser = new Parser();
 
+// data-testid d'une cellule, indexée par la ligne et la colonne (weekday id ou 'overflow').
+// Permet de cibler « colonne mercredi de la ligne rollingDays » dans les tests E2E.
+const colTestId = (rowKind, col) => `tcell-${rowKind}-${col === OVERFLOW ? 'overflow' : col}`;
+
 /**
  *
  * @param {tasks} tasks après filtrage
@@ -88,7 +92,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             // Ligne Jour : une cellule par colonne (weekdays + colonne overflow)
             rows.push(<DashedRowHeader key={semaineSlot.path + "-jour-h"}>{rowLabel('weekDays')}</DashedRowHeader>);
             columns.forEach(col =>
-                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + col}>{col !== OVERFLOW && dayById[col] && <Slot slot={dayById[col]} tasks={allTreeTasks} />}</DashedCell>)
+                rows.push(<DashedCell key={semaineSlot.path + "-jour-" + col} data-testid={colTestId('weekdays-jour', col)}>{col !== OVERFLOW && dayById[col] && <Slot slot={dayById[col]} tasks={allTreeTasks} />}</DashedCell>)
             );
 
             const matinById = Object.fromEntries(
@@ -118,7 +122,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
                 rows.push(<DashedRowHeader key={semaineSlot.path + "-rolling-jour-h"}>{rowLabel('rollingDays')}</DashedRowHeader>);
                 columns.forEach(col => {
                     const nodes = rollingNodesForColumn(col, todayNode, tomorrowNode);
-                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col}>
+                    rows.push(<DashedCell key={semaineSlot.path + "-rolling-jour-" + col} data-testid={colTestId('rolling-jour', col)}>
                         {nodes.map((n, i) => <div key={n.id} className={i > 0 ? "mt-2" : ""}><Slot slot={n} tasks={allTreeTasks} /></div>)}
                     </DashedCell>);
                 });

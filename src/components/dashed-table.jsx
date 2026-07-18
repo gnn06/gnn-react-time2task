@@ -16,9 +16,9 @@ export function DashedRowHeader({ children, className = "", ...rest }) {
     );
 }
 
-export function DashedCell({ children, className = "", style }) {
+export function DashedCell({ children, className = "", style, ...rest }) {
     return (
-        <div className={`p-2 ${className}`} style={style}>
+        <div className={`p-2 ${className}`} style={style} {...rest}>
             {children}
         </div>
     );

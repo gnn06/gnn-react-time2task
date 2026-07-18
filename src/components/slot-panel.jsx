@@ -48,7 +48,7 @@ export default function SlotPanel({tasks})  {
             <Stack direction="row" spacing={1}  >
                 { filterPaths?.length > 0 && <IconButton onClick={onClearPathFilter}><TargetIcon /> <Typography > Filtré</Typography> </IconButton>}
                 <Tooltip title="Choisir le niveau le plus profond inclus dans la vue."  placement="top">
-                    <Select size="small" value={conf.levelMaxIncluded === null ? Object.keys(SLOTIDS_BY_LEVEL).length  : conf.levelMaxIncluded} onChange={onChangeLevelMax}>
+                    <Select size="small" value={conf.levelMaxIncluded === null ? Object.keys(SLOTIDS_BY_LEVEL).length  : conf.levelMaxIncluded} onChange={onChangeLevelMax} SelectDisplayProps={{ "aria-label":"slot-level-max-select"}}>
                         <MenuItem value={1}>Month</MenuItem>
                         <MenuItem value={2}>Week</MenuItem>
                         <MenuItem value={3}>Day</MenuItem>

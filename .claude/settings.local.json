@@ -23,7 +23,8 @@
       "Bash(git -C /home/gnn/dev/gnn-react-time2task diff master...list-weekDays --stat)",
       "Bash(npx tsc *)",
       "mcp__notion__notion-fetch",
-      "mcp__notion__notion-update-page"
+      "mcp__notion__notion-update-page",
+      "mcp__notion__notion-search"
     ]
   }
 }
