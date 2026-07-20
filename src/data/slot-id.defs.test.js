@@ -60,6 +60,8 @@ describe('SLOT_DEFS golden — getSlotIdLevel', () => {
         ['week', 2], ['this_week', 2], ['next_week', 2], ['following_week', 2],
         ['day', 3], ['today', 3], ['tomorrow', 3], ['lundi', 3], ['mardi', 3], ['mercredi', 3], ['jeudi', 3], ['vendredi', 3],
         ['matin', 4], ['aprem', 4],
+        // suffixe shift : le niveau doit ignorer "+ n" (cohérent avec getSlotIdFamily/isAnchor)
+        ['tomorrow + 1', 3], ['today + 2', 3], ['next_week + 1', 2], ['this_month + 1', 1],
         ['inconnu', -1], ['', -1],
     ];
     test.each(cases)('getSlotIdLevel(%s) === %i', (id, level) => {

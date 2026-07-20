@@ -93,7 +93,8 @@ export function getSlotIdAndKeywords() {
  * public used by parser.js
  */
 export function getSlotIdLevel(slotId) {
-    return _defById.get(slotId)?.level ?? -1;
+    const base = slotId?.match(/(\S+)/)?.[1];
+    return _defById.get(base)?.level ?? -1;
 }
 
 /**

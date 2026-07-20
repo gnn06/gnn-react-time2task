@@ -46,6 +46,33 @@ describe('getSlotNextPrev — tâche unique', () => {
     })
 })
 
+describe('getSlotNextPrev — jour-ancre relatifPresent avec shift (today/tomorrow + N)', () => {
+    // Un jour-ancre porté par un shift ('tomorrow + 1') est emballé par le parser dans
+    // un nœud branch imbriqué. Il est par construction aujourd'hui-ou-futur (offset >= 0
+    // depuis today) → c'est le prochain slot tel quel. Régression : ce nœud était pris
+    // pour un multi et faisait crasher (b.value undefined).
+    test('tomorrow + 1 → futur, retourné', () => {
+        const slot     = parser.parse('this_week tomorrow + 1')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1))
+            .toEqual(new SlotPath('this_week tomorrow + 1'))
+    })
+
+    test('today + 2 → futur, retourné (comparison inclusive)', () => {
+        const slot     = parser.parse('this_week today + 2')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today + 2'))
+    })
+
+    test('tomorrow + 1 aprem → conserve l\'heure', () => {
+        const slot     = parser.parse('this_week tomorrow + 1 aprem')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1))
+            .toEqual(new SlotPath('this_week tomorrow + 1 aprem'))
+    })
+})
+
 describe('getSlotNextPrev — slot niveau mois', () => {
 
     test('next_month → retourné', () => {

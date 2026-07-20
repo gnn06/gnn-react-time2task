@@ -1,4 +1,4 @@
-import { weight, getSlotIdIndex, getSlotIdLevel, getSlotIdNextPrev } from './slot-id'
+import { weight, getSlotIdIndex, getSlotIdLevel, getSlotIdNextPrev, isAnchor } from './slot-id'
 import { SlotPath } from './slot-path'
 
 /**
@@ -44,10 +44,25 @@ function getNextPrevBranch(branch, slotPath, comparison) {
         return null
     }
 
+    // jour-ancre relatifPresent porté par un shift (ex. 'tomorrow + 1') : le parser
+    // l'emballe dans un nœud branch imbriqué {value:[anchor, ?hour], shift}. Par
+    // construction il est aujourd'hui-ou-futur (offset >= 0 depuis today) → c'est le
+    // prochain slot tel quel. (Sans ce court-circuit, le nœud était pris pour un multi.)
+    const dayNode = branch.value.find(v => typeof v === 'object' && v.type === 'branch')
+    if (dayNode && isAnchor(dayNode.value[0])) {
+        const base   = dayNode.value[0]
+        const shift  = dayNode.shift ?? 0
+        const offset = (base === 'tomorrow' ? 1 : 0) + shift
+        if (offset === 0 && comparison !== 'inclusive') return null  // = aujourd'hui, mode strict
+        const dayLabel = shift ? `${base} + ${shift}` : base
+        const hour = dayNode.value.find(v => typeof v === 'string' && getSlotIdLevel(v) === 4)
+        return new SlotPath(hour ? `${weekId} ${dayLabel} ${hour}` : `${weekId} ${dayLabel}`)
+    }
+
     // extraire jour (level-3), heure (level-4) et nœud multi séparément
     const dayId     = branch.value.find(v => typeof v === 'string' && getSlotIdLevel(v) === 3)
     const hourId    = branch.value.find(v => typeof v === 'string' && getSlotIdLevel(v) === 4)
-    const multiNode = branch.value.find(v => typeof v !== 'string')
+    const multiNode = branch.value.find(v => typeof v === 'object' && v.type === 'multi')
 
     const pathWeekId  = slotPath.IDs.find(id => getSlotIdLevel(id) === 2)
     const pathDayId   = slotPath.IDs.find(id => getSlotIdLevel(id) === 3)
