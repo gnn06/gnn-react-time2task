@@ -25,7 +25,7 @@ test.describe('Affichage initial', () => {
     test('panel tâches : barre de commandes visible', async ({ page }) => {
         await expect(page.getByRole('button', { name: /Créer Tâche/i }).first()).toBeVisible();
         await expect(page.getByRole('button', { name: 'Todo' })).toBeVisible();
-        await expect(page.getByRole('button', { name: /Démarrer Semaine/i })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Démarrer Créneau/i })).toBeVisible();
     });
 
     test('panel tâches : table ou message vide affiché après chargement', async ({ page }) => {

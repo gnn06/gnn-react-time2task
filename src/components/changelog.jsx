@@ -6,6 +6,7 @@ export const RELEASE = 'xx/06/2026';
 const text = `
 xx/06/2026
 ==========
+- FIX bouton « Démarrer Semaine » : libellé et texte du dialog en dur en sémantique semaine alors que le sélecteur permet aussi jour/mois. Bouton renommé en « Démarrer Créneau », niveau par défaut passé à « day », texte explicatif genericisé (ne cite plus this/next/following, spécifiques à la semaine)
 - FIX : les créneaux jour-ancre décalés (today / tomorrow + N, ex. « tomorrow + 1 ») ne font plus planter l'application. Deux corrections : getSlotIdLevel ignore désormais le suffixe de décalage (« + N »), et le calcul du prochain créneau reconnaît un jour-ancre décalé au lieu de le prendre pour un créneau multiple
 - vue list : dans la ligne weekDays (famille de jour secondaire), un jour Past ou Future n'est affiché que s'il porte une tâche — un jour passé ou futur vide est masqué. Le jour present reste toujours affiché (aligné sur le today de rollingDays). Symétrique de la ligne heure secondaire (weekHours), et cohérent avec rollingDays qui n'a aucune cellule Past
 - vue list : dans la colonne Past, les weekdays passés sont désormais empilés de bas en haut (le plus récent en haut, le plus ancien en bas — ex. vendredi en haut, lundi en bas). La colonne Future reste en ordre calendaire
