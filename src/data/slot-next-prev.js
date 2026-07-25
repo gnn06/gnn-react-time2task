@@ -1,4 +1,4 @@
-import { weight, getSlotIdIndex, getSlotIdLevel, getSlotIdNextPrev, isAnchor } from './slot-id'
+import { weight, getSlotIdDayWeight, getSlotIdIndex, getSlotIdLevel, getSlotIdNextPrev, isAnchor } from './slot-id'
 import { SlotPath } from './slot-path'
 
 /**
@@ -89,7 +89,7 @@ function getNextPrevBranch(branch, slotPath, comparison) {
     const pathHourW = weight[pathHourId] ?? 0
 
     if (dayId) {
-        const dayW = weight[dayId] ?? 0
+        const dayW = getSlotIdDayWeight(dayId, pathDayW)
         if (dayW > pathDayW) return firstSlotPath(weekId, dayId, hourId, multiNode)
         if (dayW < pathDayW) {
             if (!branch.repetition) return null

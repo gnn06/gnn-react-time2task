@@ -83,6 +83,19 @@ export const GENERIC_SLOTIDS = ['month', 'week', 'day', 'hour'];
 
 export const weight = Object.fromEntries(SLOT_DEFS.map(d => [d.id, d.weight]));
 
+/**
+ * Poids d'un jour (niveau 3) comparable à celui d'un jour de semaine réel (`referenceWeight`,
+ * le poids du jour "maintenant" — toujours lundi..vendredi). `weight` seul ne suffit pas :
+ * il mélange deux échelles incompatibles (today/tomorrow = famille relatifPresent,
+ * lundi..vendredi = famille relatifParent). Par construction, 'today' vaut toujours le jour
+ * de référence lui-même, et 'tomorrow' ce jour + 1 — quel que soit le vrai jour de la semaine.
+ */
+export function getSlotIdDayWeight(dayId, referenceWeight) {
+    if (dayId === 'today') return referenceWeight;
+    if (dayId === 'tomorrow') return referenceWeight + 1;
+    return weight[dayId] ?? 0;
+}
+
 export function getSlotIdAndKeywords() {
     return SLOTIDS_LST.concat(EXPR_KEYWORDS)
 }

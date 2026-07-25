@@ -46,6 +46,33 @@ describe('getSlotNextPrev — tâche unique', () => {
     })
 })
 
+describe('getSlotNextPrev — jour-ancre today (sans shift) vs weekday', () => {
+    // 'today' désigne par définition le jour courant : quel que soit le vrai jour de la
+    // semaine porté par slotPath (lundi..vendredi), 'this_week today' doit être traité
+    // comme "même jour", jamais comme passé ni futur. Bug : weight['today']=1 (échelle
+    // relatifPresent) était comparé directement à weight[vraiJour] (échelle relatifParent,
+    // lundi=1..vendredi=5) → dès que le vrai jour n'est pas lundi, 'today' était classé
+    // "passé" à tort.
+    test.each(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "today vs %s (comparison='inclusive') → même jour, retourné",
+        (weekday) => {
+            const slot     = parser.parse('this_week today')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+                .toEqual(new SlotPath('this_week today'))
+        }
+    )
+
+    test.each(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "today vs %s (comparison='strict') → même jour, sans répétition → null",
+        (weekday) => {
+            const slot     = parser.parse('this_week today')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'strict')).toBeNull()
+        }
+    )
+})
+
 describe('getSlotNextPrev — jour-ancre relatifPresent avec shift (today/tomorrow + N)', () => {
     // Un jour-ancre porté par un shift ('tomorrow + 1') est emballé par le parser dans
     // un nœud branch imbriqué. Il est par construction aujourd'hui-ou-futur (offset >= 0
