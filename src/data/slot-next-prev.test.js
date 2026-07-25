@@ -149,6 +149,86 @@ describe('getSlotNextPrev — multi jours mêlant ancre (today/tomorrow) et week
     )
 })
 
+describe('getSlotNextPrev — niveau heure mêlant ancre (today/tomorrow) et weekday', () => {
+    // Les ids d'heure (matin/aprem) n'existent que dans une seule famille (complement,
+    // relatifParent) : pas de mélange d'échelle possible au niveau heure lui-même. Le seul
+    // risque est en amont, au niveau jour, qui doit être traduit avant que la comparaison
+    // d'heure ne s'applique — déjà couvert par getSlotIdDayWeight. Tests de couverture pour
+    // le confirmer explicitement (jour unique + heure, multi-heures sur jour ancre, multi-
+    // jours mêlant ancre+weekday avec heures).
+
+    test("today matin vs mardi matin (today=mardi, même jour/heure, inclusive) → retourné", () => {
+        const slot     = parser.parse('this_week today matin')
+        const slotPath = new SlotPath('this_month this_week mardi matin')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today matin'))
+    })
+
+    test("today matin vs mardi matin (même jour/heure, strict) → null", () => {
+        const slot     = parser.parse('this_week today matin')
+        const slotPath = new SlotPath('this_month this_week mardi matin')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict')).toBeNull()
+    })
+
+    test("today aprem vs mardi matin (même jour, heure future) → retourné quel que soit comparison", () => {
+        const slot     = parser.parse('this_week today aprem')
+        const slotPath = new SlotPath('this_month this_week mardi matin')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('this_week today aprem'))
+    })
+
+    test("today matin vs mardi aprem (même jour, heure passée) → null", () => {
+        const slot     = parser.parse('this_week today matin')
+        const slotPath = new SlotPath('this_month this_week mardi aprem')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive')).toBeNull()
+    })
+
+    test("tomorrow matin vs vendredi aprem (tomorrow toujours futur) → retourné avec heure", () => {
+        const slot     = parser.parse('this_week tomorrow matin')
+        const slotPath = new SlotPath('this_month this_week vendredi aprem')
+        expect(getSlotNextPrev(slot, slotPath, +1))
+            .toEqual(new SlotPath('this_week tomorrow matin'))
+    })
+
+    test("multi-heures sur jour ancre : today matin aprem vs jeudi matin (inclusive) → matin (même heure)", () => {
+        const slot     = parser.parse('this_week today matin aprem')
+        const slotPath = new SlotPath('this_month this_week jeudi matin')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today matin'))
+    })
+
+    test("multi-heures sur jour ancre : today matin aprem vs jeudi matin (strict) → aprem", () => {
+        const slot     = parser.parse('this_week today matin aprem')
+        const slotPath = new SlotPath('this_month this_week jeudi matin')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('this_week today aprem'))
+    })
+
+    test.each(['inclusive', 'strict'])(
+        "multi-jours avec heure, ancre+weekday : today aprem + lundi matin vs mercredi (comparison=%s) → today aprem (lundi passé, path sans heure)",
+        (comparison) => {
+            const slot     = parser.parse('this_week today aprem lundi matin')
+            const slotPath = new SlotPath('this_month this_week mercredi')
+            expect(getSlotNextPrev(slot, slotPath, +1, comparison))
+                .toEqual(new SlotPath('this_week today aprem'))
+        }
+    )
+
+    test("multi-jours avec heure, ancre sans heure + weekday avec heure : today jeudi matin vs mardi (inclusive) → today (même jour, sans heure suffit)", () => {
+        const slot     = parser.parse('this_week today jeudi matin')
+        const slotPath = new SlotPath('this_month this_week mardi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today'))
+    })
+
+    test("multi-jours avec heure, ancre sans heure + weekday avec heure : today jeudi matin vs mardi (strict) → jeudi matin (today sans heure ne compte pas en strict)", () => {
+        const slot     = parser.parse('this_week today jeudi matin')
+        const slotPath = new SlotPath('this_month this_week mardi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('this_week jeudi matin'))
+    })
+})
+
 describe('getSlotNextPrev — jour-ancre relatifPresent avec shift (today/tomorrow + N)', () => {
     // Un jour-ancre porté par un shift ('tomorrow + 1') est emballé par le parser dans
     // un nœud branch imbriqué. Il est par construction aujourd'hui-ou-futur (offset >= 0
