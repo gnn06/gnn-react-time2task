@@ -135,12 +135,12 @@ function getNextPrevBranch(branch, slotPath, comparison) {
             hour: b.value.find(v => getSlotIdLevel(v) === 4),
         }))
         .sort((a, b) => {
-            const d = (weight[a.day] ?? 0) - (weight[b.day] ?? 0)
+            const d = getSlotIdDayWeight(a.day, pathDayW) - getSlotIdDayWeight(b.day, pathDayW)
             return d !== 0 ? d : (weight[a.hour] ?? 0) - (weight[b.hour] ?? 0)
         })
 
     const next = items.find(item => {
-        const dayW = weight[item.day] ?? 0
+        const dayW = getSlotIdDayWeight(item.day, pathDayW)
         if (dayW > pathDayW) return true
         if (dayW < pathDayW) return false
         // même jour : comparer l'heure

@@ -73,6 +73,82 @@ describe('getSlotNextPrev — jour-ancre today (sans shift) vs weekday', () => {
     )
 })
 
+describe('getSlotNextPrev — jour-ancre tomorrow (sans shift) vs weekday', () => {
+    // 'tomorrow' = maintenant + 1 jour, toujours strictement futur par rapport à n'importe
+    // quel jour de la semaine courante (y compris vendredi : tomorrow "déborde" sur le
+    // week-end, mais reste après tous les weekdays de la semaine). Même mécanisme que
+    // 'today' (getSlotIdDayWeight), déjà couvert par le fix — tests de couverture.
+    test.each(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "tomorrow vs %s (comparison='inclusive') → futur, retourné",
+        (weekday) => {
+            const slot     = parser.parse('this_week tomorrow')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+                .toEqual(new SlotPath('this_week tomorrow'))
+        }
+    )
+
+    test.each(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "tomorrow vs %s (comparison='strict') → futur, retourné",
+        (weekday) => {
+            const slot     = parser.parse('this_week tomorrow')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+                .toEqual(new SlotPath('this_week tomorrow'))
+        }
+    )
+})
+
+describe('getSlotNextPrev — multi jours mêlant ancre (today/tomorrow) et weekday', () => {
+    // Même bug que 'today'/'tomorrow' seuls, mais dans la branche multi-jours
+    // (lignes triant/comparant plusieurs items {day,hour} — le tri et le prédicat
+    // utilisaient weight[] brut au lieu de getSlotIdDayWeight). Reproduit
+    // "Today et Tomorrow ⇒ null" : les deux ancres étaient classées "passées" dès que le
+    // vrai jour n'était pas lundi.
+    test.each(['mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "today+tomorrow vs %s (comparison='inclusive') → today (même jour) gagne",
+        (weekday) => {
+            const slot     = parser.parse('this_week today tomorrow')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+                .toEqual(new SlotPath('this_week today'))
+        }
+    )
+
+    test.each(['mardi', 'mercredi', 'jeudi', 'vendredi'])(
+        "today+tomorrow vs %s (comparison='strict') → tomorrow (today exclu, même jour)",
+        (weekday) => {
+            const slot     = parser.parse('this_week today tomorrow')
+            const slotPath = new SlotPath(`this_month this_week ${weekday}`)
+            expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+                .toEqual(new SlotPath('this_week tomorrow'))
+        }
+    )
+
+    test("today+lundi vs vendredi (comparison='inclusive') → today (même jour) gagne, lundi est passé", () => {
+        const slot     = parser.parse('this_week today lundi')
+        const slotPath = new SlotPath('this_month this_week vendredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today'))
+    })
+
+    test("today+lundi vs vendredi (comparison='strict') → tous passés/même jour strict → null", () => {
+        const slot     = parser.parse('this_week today lundi')
+        const slotPath = new SlotPath('this_month this_week vendredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict')).toBeNull()
+    })
+
+    test.each(['inclusive', 'strict'])(
+        "tomorrow+lundi vs jeudi (comparison=%s) → tomorrow (futur) gagne, lundi est passé",
+        (comparison) => {
+            const slot     = parser.parse('this_week tomorrow lundi')
+            const slotPath = new SlotPath('this_month this_week jeudi')
+            expect(getSlotNextPrev(slot, slotPath, +1, comparison))
+                .toEqual(new SlotPath('this_week tomorrow'))
+        }
+    )
+})
+
 describe('getSlotNextPrev — jour-ancre relatifPresent avec shift (today/tomorrow + N)', () => {
     // Un jour-ancre porté par un shift ('tomorrow + 1') est emballé par le parser dans
     // un nœud branch imbriqué. Il est par construction aujourd'hui-ou-futur (offset >= 0
