@@ -34,8 +34,11 @@ function getNextPrevBranch(branch, slotPath, comparison) {
     const weekId = branch.value.find(v => typeof v === 'string' && getSlotIdLevel(v) === 2)
 
     if (!weekId) {
-        // branchComplete(branch, 1) enveloppe les branches repeat dans un nœud mois sans weekId au premier niveau
-        const inner = branch.value.find(v => typeof v === 'object' && v.type === 'branch')
+        // branchComplete(branch, 1) enveloppe les branches repeat dans un nœud mois sans weekId au premier niveau.
+        // Un nœud imbriqué peut aussi être un 'multi' (alternatives partageant this_month comme
+        // préfixe commun, ex. 'this_month this_week today aprem next_week') — récursion vers le
+        // même point d'entrée, qui sait déjà itérer un 'multi' (cf. tout en haut de la fonction).
+        const inner = branch.value.find(v => typeof v === 'object' && (v.type === 'branch' || v.type === 'multi'))
         if (inner) return getNextPrevBranch(inner, slotPath, comparison)
 
         // slot de niveau mois uniquement (ex: 'next_month') : comparer les mois
@@ -45,7 +48,11 @@ function getNextPrevBranch(branch, slotPath, comparison) {
             const monthIdx = getSlotIdIndex(monthId)
             const pathMonthIdx = getSlotIdIndex(pathMonthId)
             if (monthIdx > pathMonthIdx) return new SlotPath(monthId)
-            if (monthIdx === pathMonthIdx) return comparison === 'inclusive' ? new SlotPath(monthId) : null
+            if (monthIdx === pathMonthIdx) {
+                if (comparison === 'inclusive') return new SlotPath(monthId)
+                if (!branch.repetition) return null
+                return new SlotPath(getSlotIdNextPrev(monthId, branch.repetition))
+            }
             return null
         }
 

@@ -229,6 +229,36 @@ describe('getSlotNextPrev — niveau heure mêlant ancre (today/tomorrow) et wee
     })
 })
 
+describe('getSlotNextPrev — multi imbriqué sous this_month (alternative semaine courante / semaine future)', () => {
+    // 'this_month this_week today aprem next_week' : deux alternatives (this_week today
+    // aprem OU next_week) partagent this_month comme préfixe commun → le parser produit un
+    // multi imbriqué SOUS this_month (pas à la racine). getNextPrevBranch ne savait explorer
+    // un nœud imbriqué que s'il était de type 'branch' (cas repeat) — jamais 'multi'. Il
+    // tombait alors dans le fallback "slot niveau mois seul", ignorait complètement les deux
+    // alternatives, et comparait this_month à lui-même → null, même quand une alternative
+    // (next_week) est clairement future.
+    test("today aprem (même heure que maintenant, strict) + next_week → next_week (l'alternative today aprem est déjà passée)", () => {
+        const slot     = parser.parse('this_month this_week today aprem next_week')
+        const slotPath = new SlotPath('this_month this_week mercredi aprem')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('next_week'))
+    })
+
+    test("today aprem (même heure que maintenant, inclusive) + next_week → today aprem (l'alternative la plus proche gagne)", () => {
+        const slot     = parser.parse('this_month this_week today aprem next_week')
+        const slotPath = new SlotPath('this_month this_week mercredi aprem')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_week today aprem'))
+    })
+
+    test("today matin (heure future) + next_week → today matin (alternative la plus proche, avant next_week)", () => {
+        const slot     = parser.parse('this_month this_week today matin next_week')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1))
+            .toEqual(new SlotPath('this_week today matin'))
+    })
+})
+
 describe('getSlotNextPrev — jour-ancre relatifPresent avec shift (today/tomorrow + N)', () => {
     // Un jour-ancre porté par un shift ('tomorrow + 1') est emballé par le parser dans
     // un nœud branch imbriqué. Il est par construction aujourd'hui-ou-futur (offset >= 0
@@ -494,5 +524,31 @@ describe('getSlotNextPrev — tâche repeat', () => {
         const slotPath = new SlotPath('this_month this_week jeudi aprem')
         expect(getSlotNextPrev(taskSlot, slotPath, +1, 'strict'))
             .toEqual(new SlotPath("this_month + 3 this_week jeudi aprem"))
+    })
+
+    // 'every N this_month' (mois seul, sans semaine) : la branche {value:['this_month'],
+    // repetition:N} tombe dans le fallback "slot niveau mois seul" de getNextPrevBranch, qui
+    // ignorait branch.repetition et renvoyait null inconditionnellement en comparison='strict'
+    // au lieu d'avancer de N mois — seul le cas avec semaine (ci-dessus, 'every 3 this_month
+    // this_week...') passait par le chemin qui gère correctement la répétition.
+    test("every 2 this_month (mois seul, strict) → avance de 2 mois", () => {
+        const slot     = parser.parse('every 2 this_month')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('this_month + 2'))
+    })
+
+    test("every 1 this_month (mois seul, strict) → avance à next_month", () => {
+        const slot     = parser.parse('every 1 this_month')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'strict'))
+            .toEqual(new SlotPath('next_month'))
+    })
+
+    test("every 2 this_month (mois seul, inclusive) → inchangé (mois courant actif)", () => {
+        const slot     = parser.parse('every 2 this_month')
+        const slotPath = new SlotPath('this_month this_week mercredi')
+        expect(getSlotNextPrev(slot, slotPath, +1, 'inclusive'))
+            .toEqual(new SlotPath('this_month'))
     })
 })
