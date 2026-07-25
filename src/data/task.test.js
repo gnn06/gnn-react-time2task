@@ -707,6 +707,31 @@ describe('getTaskNextSlotLabel', () => {
         const task = { slotExpr: 'today', originalSlotExpr: 'this_week vendredi' }
         expect(getTaskNextSlotLabel(task)).toBe('vendredi')
     })
+
+    describe('source du "maintenant" au niveau jour — today stocké (snapDates) plutôt que horloge', () => {
+        // Horloge système = mercredi (beforeEach ci-dessus), mais today a été avancé
+        // manuellement (« Démarrer Jour ») jusqu'à jeudi : le "maintenant" utilisé pour
+        // nextSlot doit suivre le today stocké, pas l'horloge.
+        const snapDatesTodayJeudi = [
+            { slotid: 'this_week', date: '2023-12-18' }, // lundi
+            { slotid: 'today',     date: '2023-12-21' }, // jeudi
+        ]
+
+        test("today stocké = jeudi, tâche jeudi 'fait' (strict) → plus de prochain créneau (même jour, pas de répétition)", () => {
+            const task = { slotExpr: 'this_week jeudi', status: 'fait' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodayJeudi)).toBeNull()
+        })
+
+        test("today stocké = jeudi, tâche mercredi (jour de l'horloge) 'A faire' → considérée passée, pas 'aujourd'hui'", () => {
+            const task = { slotExpr: 'this_week mercredi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodayJeudi)).toBeNull()
+        })
+
+        test('sans snapDates → comportement inchangé, fallback horloge (non-régression)', () => {
+            const task = { slotExpr: 'this_week mercredi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task)).toBe('mercredi')
+        })
+    })
 })
 
 describe('getNewOrder', () => {

@@ -4,8 +4,8 @@ import { Parser } from "./parser";
 import _ from 'lodash';
 import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchHasPathWithoutWeekDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
 import moment from 'moment';
-import { getDate, getDefaultDates } from './slot-date';
-import { getSlotIdLevel, getSlotIdFamily, SLOTIDS_BY_LEVEL, weight } from './slot-id';
+import { getDate, getDefaultDates, getCurrentWeekdayId } from './slot-date';
+import { getSlotIdLevel, getSlotIdFamily, getSlotIdCurrent, SLOTIDS_BY_LEVEL, weight } from './slot-id';
 import { IDizer } from '../utils/stringUtil';
 import { slotHasImpreciseIcon } from './slot-view';
 import { branchShift } from './slot-branch++';
@@ -249,13 +249,19 @@ const ACTIVE_STATUSES = ['A faire', 'en cours']
  * Retourne l'expression du prochain slot d'une tâche, ou null si aucun.
  * branchComplete(branch, 1) complète les slots incomplets (ex: "lundi" → "this_week lundi").
  * Pour les statuts actifs ('A faire', 'en cours'), aujourd'hui est inclus comme prochain slot.
+ * Le jour de "maintenant" suit le today stocké (snapDates, décalable via « Démarrer Jour »),
+ * pas l'horloge système — cohérent avec le modèle today/tomorrow. Fallback horloge si
+ * snapDates absent ou si today a dérivé hors de this_week (getCurrentWeekdayId → null).
+ * @param {object} task
+ * @param {Array<{slotid:string,date:string}>} [snapDates]
  * @returns {string|null}
  */
-export function getTaskNextSlotLabel(task) {
+export function getTaskNextSlotLabel(task, snapDates) {
     const branch = parser.parse(task.originalSlotExpr ?? task.slotExpr)
     if (!branch) return null
     const completed = branchComplete(branch, 1)
-    const currentPath = new SlotPath(getCurrentPathExpr(4))
+    const weekday = getCurrentWeekdayId(snapDates) ?? getSlotIdCurrent(3)
+    const currentPath = new SlotPath(`${getCurrentPathExpr(2)} ${weekday} ${getSlotIdCurrent(4)}`)
     const comparison = ACTIVE_STATUSES.includes(task.status) ? 'inclusive' : 'strict'  // 'inclusive' = statut actif, aujourd'hui compte
     const result = getSlotNextPrev(completed, currentPath, +1, comparison)
     if (!result) return null

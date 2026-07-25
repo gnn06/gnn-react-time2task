@@ -3,8 +3,16 @@ import { SlotPath } from './slot-path'
 
 /**
  * Retourne le prochain slot d'une tâche futur par rapport à slotPath.
- * @param {SlotBranch} slot - branche issue du parser (unique, multi-jour ou repeat)
- * @param {SlotPath} slotPath - représente "maintenant" ; ne lit pas la date courante
+ * @param {SlotBranch} slot - branche issue du parser (unique, multi-jour ou repeat) ; son
+ *   jour (niveau 3) peut être un vrai jour de semaine (lundi..vendredi) OU une ancre
+ *   relatifPresent (today/tomorrow) — les deux sont gérés (cf. getSlotIdDayWeight).
+ * @param {SlotPath} slotPath - représente "maintenant" ; ne lit pas la date courante.
+ *   INVARIANT : le jour (niveau 3) de slotPath est toujours un vrai jour de semaine
+ *   (lundi..vendredi), jamais une ancre today/tomorrow — c'est le seul repère qui permette
+ *   de positionner les deux familles de jour (offset trivial pour les ancres, comparaison
+ *   directe pour les jours de semaine) sans lire de donnée externe. Au niveau applicatif,
+ *   ce jour doit lui-même dériver du today STOCKÉ (getCurrentWeekdayId(snapDates)), pas de
+ *   l'horloge système, pour rester cohérent avec le modèle today/tomorrow décalable.
  * @param {number} direction - seul +1 est traité
  * @param {'strict'|'inclusive'} comparison - 'inclusive' : le créneau courant compte (>=) ; 'strict' : uniquement l'avenir (>)
  * @returns {SlotPath|null} null = pas de prochain slot
