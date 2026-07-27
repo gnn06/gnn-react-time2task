@@ -84,6 +84,46 @@ describe('taskCompare', () => {
         expect(result).toBe(1)
     })
 
+    // Les tâches les plus urgentes ouvrent la liste : le bloc relatifPresent passe devant
+    // les weekdays, quel que soit le jour réel (cf. slot-model-spec.md § 10).
+    describe('day family order', () => {
+        it('today before lundi', () => {
+            const task1 = { slotExpr: 'this_month this_week today', order: 9 }
+            const task2 = { slotExpr: 'this_month this_week lundi', order: 1 }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('tomorrow before mardi', () => {
+            const task1 = { slotExpr: 'this_month this_week tomorrow', order: 9 }
+            const task2 = { slotExpr: 'this_month this_week mardi', order: 1 }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today aprem before lundi matin', () => {
+            const task1 = { slotExpr: 'this_month this_week today aprem' }
+            const task2 = { slotExpr: 'this_month this_week lundi matin' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today matin before today aprem', () => {
+            const task1 = { slotExpr: 'this_month this_week today matin' }
+            const task2 = { slotExpr: 'this_month this_week today aprem' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today without hour closes the today block', () => {
+            const task1 = { slotExpr: 'this_month this_week today' }
+            const task2 = { slotExpr: 'this_month this_week today aprem' }
+            expect(taskCompare(task1, task2)).toBe(1)
+        })
+
+        it('vendredi before this_week alone', () => {
+            const task1 = { slotExpr: 'this_month this_week vendredi' }
+            const task2 = { slotExpr: 'this_month this_week' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+    })
+
     describe('multi slot', () => {
         it('compare task with param1 multislot', () => {
             const task1 = { slotExpr: 'this_month next_week jeudi mardi' }

@@ -119,6 +119,19 @@ export function getSlotIdFamily(slotId) {
     return _defById.get(base)?.family;
 }
 
+/**
+ * Rang de la famille dans l'ordre d'affichage, à niveau égal (cf. slot-model-spec.md § 10).
+ * Départage les slots que `weight` seul ne sait pas ordonner : au niveau jour, les deux
+ * familles partagent la même échelle (`today` = `lundi` = 1). Le joker ouvre le niveau,
+ * puis le `relatifPresent` (toujours urgent), puis le `relatifParent`.
+ * @returns 0 | 1 | 2 (0 pour un id inconnu)
+ */
+export function getSlotIdFamilyRank(slotId) {
+    return FAMILY_RANK[getSlotIdFamily(slotId)] ?? 0;
+}
+
+const FAMILY_RANK = { generic: 0, relatifPresent: 1, relatifParent: 2 };
+
 /** Ancre relative au présent (peut porter shift/repetition en tête de branche). */
 export function isAnchor(slotId) {
     const base = slotId.match(/(\S+)/)?.[1];

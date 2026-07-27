@@ -157,7 +157,58 @@ le roulement ne porte que sur les ancres (§ 8).
 > (relatifPresent vs relatifParent vs absolu) font l'objet d'une spec séparée —
 > **à concevoir**.
 
-## 10. Exemples canoniques
+## 10. Ordre des créneaux (tri)
+
+Le tri compare deux expressions **niveau par niveau**, du plus grossier au plus fin
+(`branchCompare`, `slot-branch++.js`). Deux règles le complètent.
+
+**Règle de famille — le `relatifPresent` ouvre le niveau.** À niveau égal, la famille
+tranche **avant** le poids (`getSlotIdFamilyRank`, `slot-id.js`) :
+
+| Rang | Famille | Niveau 3 |
+|---|---|---|
+| 0 | joker | `day` |
+| 1 | `relatifPresent` | `today` < `tomorrow` |
+| 2 | `relatifParent` | `lundi` < … < `vendredi` |
+
+Elle est **nécessaire** au niveau jour : les deux familles y partagent l'échelle de
+`weight` (`today` = `lundi` = 1), donc le poids seul ne les départage pas. Les tâches
+roulantes — les plus urgentes — ouvrent ainsi la liste :
+
+```
+today matin < today aprem < today
+  < tomorrow matin < tomorrow aprem < tomorrow
+    < lundi matin < … < vendredi
+```
+
+`today` **n'est pas converti** en son weekday réel : aucune lecture de `snapDates`, donc
+l'ordre est déterministe et ne se réorganise pas au « Démarrer Jour » (§ 8). C'est le
+corollaire de l'invariant § 1 (pas de réduction d'une famille vers une autre) et du refus
+de la projection pour l'affichage.
+
+> Aux niveaux 1, 2 et 4, une seule famille est en jeu (ou le joker face à une ancre) :
+> la règle y est neutre et l'ordre reste celui de `weight`.
+
+**Règle de profondeur — le précis passe avant l'imprécis.** À poids égal, la branche qui
+se prolonge d'un niveau vient en premier :
+
+| | Ordre |
+|---|---|
+| niveau 4 | `today matin` < `today aprem` < `today` |
+| niveau 3 | `this_week lundi` < … < `this_week vendredi` < `this_week` |
+| niveau 2 | `this_month this_week` < `this_month` |
+
+Lecture : **un slot sans complément est dû avant la fin de son conteneur**, donc son
+échéance est plus tardive que celle de n'importe quel complément — il *ferme* son bloc.
+La formulation vaut aux quatre niveaux et pour les deux familles.
+
+> Le besoin de mettre en avant les tâches **non encore placées** (`today` sans heure)
+> relève d'un **filtre** (« tâche imprécise »), pas du tri.
+
+**Slots exclus du tri** : un slot `disable` est renvoyé en dernier ; un `multi` est trié
+sur un seul de ses slots (le slot courant s'il en fait partie, sinon le premier).
+
+## 11. Exemples canoniques
 
 | Expression | Ancre | Compléments | Sens |
 |---|---|---|---|
@@ -176,7 +227,7 @@ le roulement ne porte que sur les ancres (§ 8).
 | `this_month semaine1 lundi` *(futur)* | this_month | semaine1, lundi | 1ᵉʳ lundi du mois |
 | `mars semaine1 lundi` *(futur)* | mars *(absolu)* | semaine1, lundi | 1ᵉʳ lundi de mars |
 
-## 11. Périmètre d'implémentation
+## 12. Périmètre d'implémentation
 
 **Build immédiat — ancre jour `relatifPresent` `today`/`tomorrow`** :
 - `slot-id.js` : `today`/`tomorrow` niveau 3, routés chemin **shift** (hors cycle des
