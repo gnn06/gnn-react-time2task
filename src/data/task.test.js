@@ -705,6 +705,30 @@ describe('taskShiftFilter', () => {
             expect(taskShiftFilter(given, 'day')).toEqual(expected)
         })
     })
+
+    describe('conservation de la répétition (multi jour-ancre + weekday répété)', () => {
+        test('tomorrow + every 1 this_week jeudi → today, every et jeudi conservés', () => {
+            const given    = [ { slotExpr: 'tomorrow every 1 this_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 1 this_week jeudi', oldSlotExpr: 'tomorrow every 1 this_week jeudi' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+
+        test('tomorrow + every 2 this_week jeudi → today, every 2 conservé', () => {
+            const given    = [ { slotExpr: 'tomorrow every 2 this_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 2 this_week jeudi', oldSlotExpr: 'tomorrow every 2 this_week jeudi' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+
+        test('today + every 1 this_week jeudi → inchangé au niveau jour', () => {
+            expect(taskShiftFilter([ { slotExpr: 'today every 1 this_week jeudi' } ], 'day')).toEqual([])
+        })
+
+        test('today + every 1 next_week jeudi → this_week, every conservé au niveau semaine', () => {
+            const given    = [ { slotExpr: 'today every 1 next_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 1 this_week jeudi', oldSlotExpr: 'today every 1 next_week jeudi' } ]
+            expect(taskShiftFilter(given, 'week')).toEqual(expected)
+        })
+    })
 });
 
 describe('getTaskNextSlotLabel', () => {
