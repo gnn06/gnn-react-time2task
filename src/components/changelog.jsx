@@ -1,45 +1,19 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = 'xx/06/2026';
+export const RELEASE = '28/07/2026';
 
 const text = `
-xx/06/2026
+28/07/2026
 ==========
-- tri des tâches : au niveau jour, les créneaux roulants passent désormais devant les jours de la semaine — today (matin, aprem, puis sans heure) puis tomorrow, puis lundi..vendredi. Les tâches les plus urgentes ouvrent la liste. today n'est pas converti en son jour réel : l'ordre ne se réorganise pas au « Démarrer Créneau ». À créneau égal, un slot sans heure ferme son bloc (today matin < today aprem < today)
-- FIX bouton « Démarrer Semaine » : libellé et texte du dialog en dur en sémantique semaine alors que le sélecteur permet aussi jour/mois. Bouton renommé en « Démarrer Créneau », niveau par défaut passé à « day », texte explicatif genericisé (ne cite plus this/next/following, spécifiques à la semaine)
-- FIX : les créneaux jour-ancre décalés (today / tomorrow + N, ex. « tomorrow + 1 ») ne font plus planter l'application. Deux corrections : getSlotIdLevel ignore désormais le suffixe de décalage (« + N »), et le calcul du prochain créneau reconnaît un jour-ancre décalé au lieu de le prendre pour un créneau multiple
-- vue list : dans la ligne weekDays (famille de jour secondaire), un jour Past ou Future n'est affiché que s'il porte une tâche — un jour passé ou futur vide est masqué. Le jour present reste toujours affiché (aligné sur le today de rollingDays). Symétrique de la ligne heure secondaire (weekHours), et cohérent avec rollingDays qui n'a aucune cellule Past
-- vue list : dans la colonne Past, les weekdays passés sont désormais empilés de bas en haut (le plus récent en haut, le plus ancien en bas — ex. vendredi en haut, lundi en bas). La colonne Future reste en ordre calendaire
-- vue tree : ordre des lignes réorganisé — ligne jour weekDays puis ligne jour rollingDays, puis les heures (Matin/Aprem) weekDays, puis les heures rollingDays ; les deux lignes jour sont désormais adjacentes en haut de la section
-- vue tree : titres des lignes homogénéisés avec la vue list — les lignes heure portent désormais le libellé de famille (weekHours / rollingHours) au lieu de Matin / Aprem. Source unique des titres (ROW_TITLES / rowLabel) partagée entre les deux vues pour garantir des libellés identiques
-- lignes heure : chaque vue a un type de jour principal (tree = weekDays, list = rollingDays) et un secondaire. Les lignes heure du type principal s'affichent toujours (structure stable, même sans tâche) ; celles du type secondaire uniquement si elles contiennent des tâches. La vue list affiche donc désormais toujours la ligne rollingHours
-- FIX vue list : ordre des lignes rétabli du plus profond au plus superficiel (jour/heure en haut, semaine, mois en dernier), inversé par erreur lors de l'ajout de la section weekDays
-- vue list : au niveau jour, deux sections parallèles partageant les colonnes Past/Present/Future — « rollingDays » (today → Present, tomorrow → Future ; une cellule = un slot) et « weekDays » (today → Present ; les weekdays de la semaine après today → Future empilés ; avant today → Past empilés, à l'image de la case Future de la ligne semaine). Chaque weekday a désormais sa case : aucun ne remonte à this_week, qui ne garde donc que les tâches réellement imprécises (marqueur d'imprécision exact). Lignes entrelacées par niveau (rollingDays puis weekDays à chaque niveau Jour/Matin/Aprem) pour lire le même jour réel sous ses deux familles. Bord week-end : Present/Future vides, Past réunit les weekdays passés (ligne weekDays affichée). Sous-lignes Matin/Aprem uniquement si tâches
-- vue tree : les tâches sur today / tomorrow s'affichent dans une section « rollingDays » sous la semaine courante (au lieu de remonter à la semaine), alignées sous la colonne du jour réel ; débordement week-end (ex. tomorrow un vendredi, ou today + tomorrow le week-end) dans une colonne dédiée en bout de ligne. Pas de projection : une tâche mixte today+jeudi apparaît dans les deux (colonne jeudi et section rollingDays)
-- vue tree : la colonne de titre distingue la grille « weekDays » de la section « rollingDays » (plus de ligne séparateur) et matérialise la profondeur du niveau par des chevrons cumulés (› Mois, ›› Semaine, ››› weekDays / rollingDays, ›››› Matin / Aprem)
-- SlotPanel : vérité unique — le SlotPanel affiche désormais exactement le même ensemble de tâches que le TaskPanel (filtre courant partagé). Le tree ne se limite plus aux tâches à jour fixe : toutes les tâches filtrées y sont disposées, celles sans colonne jour (today/tomorrow, imprécises) remontant par bubbling
-- SlotPanel : options retirées au profit des filtres par prédicat — « Voir les tâches du jour » (→ filtres isWeekDay / isRelatifPresent), « voir les répétitions » (→ filtre isRepeat / NOREPEAT), « Slot strict » (→ le filtre créneau restreint déjà l'ensemble). La barre ne garde que le niveau et le type de vue
-- projection weekday→today/tomorrow mise en pause (code conservé dormant), le placement se fait par bubbling
-- filtre-créneau : nouveau filtre « isWeekDay » (n'affiche que les tâches ayant au moins un jour lundi..vendredi)
-- filtre-créneau : nouveau filtre « isRelatifPresent » (n'affiche que les tâches ayant au moins un créneau sans jour précis : this_week, today, today aprem, today/jeudi… ; exclut les tâches épinglées à un jour lundi..vendredi comme this_week mercredi ou mercredi aprem)
-- filtre-créneau : nouveau filtre « au moins une répétition » (n'affiche que les tâches répétées)
-- filtre-créneau : on peut désormais filtrer sur les créneaux relatifs today / tomorrow et leurs créneaux matin / aprem (injectés sous this_week, à côté des weekdays)
-- filtre-créneau : rendu des slots harmonisé avec le picker de tâche (fond gris par défaut, bleu pour le créneau sélectionné)
-- list : option includeWeekDays — projette les tâches lundi..vendredi sur today/tomorrow (sinon this_week) pour tout voir pendant l'exécution de la journée (flag en base, sans contrôle UI)
-- FIX list : avec includeWeekDays actif et un filtre today/tomorrow, les tâches projetées (ex. mardi → today) ne disparaissent plus ; projection appliquée avant le filtre, en amont des deux panneaux (grille slots + task-list synchronisés). Le libellé d'origine (mardi) reste affiché dans la task-list
-- FIX filtre-créneau : filtrer par « mercredi » (slot picker) et filtrer par « today » produisent désormais le même résultat quand today est mercredi ; le slot du filtre est projeté vers today/tomorrow avant application (symétrique avec la projection des tâches)
-- FIX list : avec includeWeekDays, une tâche d'une autre semaine (ex. next_week mercredi) n'est plus projetée sur today ; la projection vers today/tomorrow ne se fait que depuis this_week (date du weekday calculée dans sa vraie semaine)
-- « Démarrer Jour » : roulement today/tomorrow via snapDate jour ; lundi..vendredi inchangés
-- slot-picker : sélection multi-créneaux par accumulation (ex. today + un weekday coexistent)
-- vues spécialisées : tree = tâches à jour fixe (lundi..vendredi) ; list = tout le reste (today/tomorrow, imprécis) ; tâches mixtes visibles dans les deux
-- icône PushPin sur les tâches à jour fixe (lundi..vendredi)
-- FIX next_slot = undefined when every 3 this_month
-- UI : replace contextual menu of task row by edit button ; delete task moved into edit dialog
-- FIX slot view tree : tâche avec following_week + N apparaissait sous this_month au lieu de son propre nœud
-- add imprecise icon on task which need to be planified one level more
-- add imprecise filter
-- refactor slot-id : SLOT_DEFS source unique des définitions de slots + classifieurs famille/rôle (préparation today/tomorrow)
+- nouveaux créneaux « today » et « tomorrow » : une tâche peut être posée sur aujourd'hui ou demain, et plus seulement sur un jour de la semaine. Les deux familles de jour cohabitent dans les vues, les jours de la semaine (weekDays) sur une ligne, aujourd'hui et demain (rollingDays) sur une autre
+- chaque jour de la semaine a désormais sa propre case en vue list. Une tâche sur mercredi ne remonte plus à la semaine : this_week ne regroupe plus que les tâches réellement imprécises
+- possible de filtrer deux créneaux (today et un jour de la semaine)
+- les options « Voir les tâches du jour », « voir les répétitions » et « Slot strict » laissent place à des filtres
+- Rajout de 'prochain créneau' (dépend de l'état fait ou non de la tâche)
+- vue tree : la colonne de titre marque la profondeur du niveau par des chevrons (› Mois, ›› Semaine, ››› jours, ›››› Matin / Aprem)
+- édition d'une tâche : le menu contextuel de la ligne devient un bouton d'édition, la suppression passe dans le dialog
+- FIX : un créneau décalé « today + N » ou « tomorrow + N » ne fait plus planter l'application
 
 30/05/2026
 ==========
