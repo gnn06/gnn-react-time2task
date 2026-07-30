@@ -1,12 +1,22 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '30/05/2026';
+export const RELEASE = '28/07/2026';
 
 const text = `
+28/07/2026
+==========
+- nouveaux créneaux « today » et « tomorrow » : une tâche peut être posée sur aujourd'hui ou demain, et plus seulement sur un jour de la semaine. Les deux familles de jour cohabitent dans les vues, les jours de la semaine (weekDays) sur une ligne, aujourd'hui et demain (rollingDays) sur une autre
+- chaque jour de la semaine a désormais sa propre case en vue list. Une tâche sur mercredi ne remonte plus à la semaine : this_week ne regroupe plus que les tâches réellement imprécises
+- possible de filtrer deux créneaux (today et un jour de la semaine)
+- les options « Voir les tâches du jour », « voir les répétitions » et « Slot strict » laissent place à des filtres
+- vue tree : la colonne de titre marque la profondeur du niveau par des chevrons (› Mois, ›› Semaine, ››› jours, ›››› Matin / Aprem)
+- édition d'une tâche : le menu contextuel de la ligne devient un bouton d'édition, la suppression passe dans le dialog
+- FIX : un créneau décalé « today + N » ou « tomorrow + N » ne fait plus planter l'application
+
 30/05/2026
 ==========
-- add next_slot field
+- add next_slot field (depends on status of task)
 - add spinners
 - fix : use of max level in slot view
 

@@ -15,16 +15,17 @@ test.describe('Affichage initial', () => {
         await expect(page.getByRole('button', { name: /Créer Tâche/i }).first()).toBeVisible();
     });
 
-    test('panel slots : contrôles de configuration visibles', async ({ page }) => {
-        await expect(page.getByLabel('voir les répétitions')).toBeVisible();
-        await expect(page.getByLabel('Slot strict')).toBeVisible();
+    test('panel slots : sélecteur de vue visible, contrôles redondants retirés', async ({ page }) => {
         await expect(page.getByRole('combobox', { name: 'slot-view-select' })).toBeVisible();
+        // Options retirées au profit des filtres par prédicat (vérité unique)
+        await expect(page.getByLabel('voir les répétitions')).toHaveCount(0);
+        await expect(page.getByLabel('Slot strict')).toHaveCount(0);
     });
 
     test('panel tâches : barre de commandes visible', async ({ page }) => {
         await expect(page.getByRole('button', { name: /Créer Tâche/i }).first()).toBeVisible();
         await expect(page.getByRole('button', { name: 'Todo' })).toBeVisible();
-        await expect(page.getByRole('button', { name: /Démarrer Semaine/i })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Démarrer Créneau/i })).toBeVisible();
     });
 
     test('panel tâches : table ou message vide affiché après chargement', async ({ page }) => {

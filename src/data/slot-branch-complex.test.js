@@ -217,6 +217,66 @@ describe('slotCompareTree', () => {
         it('delta depth second deeper', () => {
             inner_test({type:'branch',value:['vendredi']}, {type:'branch',value:['vendredi', 'aprem']}, 1)
         })
+
+        // Ancre relatifPresent : la règle "précis avant imprécis" vaut aussi au niveau jour.
+        // Un 'today' sans heure est dû avant la fin de la journée : il ferme son conteneur.
+        it('today matin before today', () => {
+            inner_test({type:'branch',value:['today', 'matin']}, {type:'branch',value:['today']}, -1)
+        })
+
+        it('today after today aprem', () => {
+            inner_test({type:'branch',value:['today']}, {type:'branch',value:['today', 'aprem']}, 1)
+        })
+
+        it('today matin before today aprem', () => {
+            inner_test({type:'branch',value:['today', 'matin']}, {type:'branch',value:['today', 'aprem']}, -1)
+        })
+    })
+
+    // Au niveau jour, deux familles cohabitent sur la même échelle de weight
+    // (today=1 comme lundi=1). La famille tranche avant le weight : le relatifPresent,
+    // toujours urgent, ouvre le niveau. Pas de projection (cf. slot-model-spec.md § 10).
+    describe('family order at day level', () => {
+        it('today before lundi', () => {
+            inner_test({type:'branch',value:['this_month','this_week','today']},
+                       {type:'branch',value:['this_month','this_week','lundi']}, -1)
+        })
+
+        it('lundi after today', () => {
+            inner_test({type:'branch',value:['this_month','this_week','lundi']},
+                       {type:'branch',value:['this_month','this_week','today']}, 1)
+        })
+
+        it('tomorrow before lundi', () => {
+            inner_test({type:'branch',value:['this_month','this_week','tomorrow']},
+                       {type:'branch',value:['this_month','this_week','lundi']}, -1)
+        })
+
+        it('mardi after tomorrow (same weight, different family)', () => {
+            inner_test({type:'branch',value:['this_month','this_week','mardi']},
+                       {type:'branch',value:['this_month','this_week','tomorrow']}, 1)
+        })
+
+        it('today before tomorrow', () => {
+            inner_test({type:'branch',value:['this_month','this_week','today']},
+                       {type:'branch',value:['this_month','this_week','tomorrow']}, -1)
+        })
+
+        // la famille prime sur l'heure : pas de today matin < mardi matin < today aprem
+        it('today aprem before lundi matin', () => {
+            inner_test({type:'branch',value:['this_month','this_week','today','aprem']},
+                       {type:'branch',value:['this_month','this_week','lundi','matin']}, -1)
+        })
+
+        it('generic day opens the level', () => {
+            inner_test({type:'branch',value:['this_month','this_week','day']},
+                       {type:'branch',value:['this_month','this_week','today']}, -1)
+        })
+
+        it('weekday order unchanged', () => {
+            inner_test({type:'branch',value:['this_month','this_week','lundi']},
+                       {type:'branch',value:['this_month','this_week','mardi']}, -1)
+        })
     })
 
     describe('compare with empty', () => {

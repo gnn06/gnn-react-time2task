@@ -8,17 +8,17 @@ export function DashedColumnHeader({ children, className = "", style }) {
     );
 }
 
-export function DashedRowHeader({ children, className = "" }) {
+export function DashedRowHeader({ children, className = "", ...rest }) {
     return (
-        <div style={{ writingMode: "sideways-lr", borderLeftWidth: 1,borderRightWidth: 1 }} className={`bg-gray-100 text-center ${className}`}>
+        <div style={{ writingMode: "sideways-lr", borderLeftWidth: 1,borderRightWidth: 1 }} className={`bg-gray-100 text-center ${className}`} {...rest}>
             {children}
         </div>
     );
 }
 
-export function DashedCell({ children, className = "", style }) {
+export function DashedCell({ children, className = "", style, ...rest }) {
     return (
-        <div className={`p-2 ${className}`} style={style}>
+        <div className={`p-2 ${className}`} style={style} {...rest}>
             {children}
         </div>
     );

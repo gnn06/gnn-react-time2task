@@ -50,12 +50,8 @@ export function makeFilterCombine(filter) {
     }
     if (!expression) {
         // when expression is used, don't use slot or task filter
-        if (filter.slot) {
-            // if (filter.slotStrict) {
-                // filters.push((task) => isSlotEqual(task.slotExpr, filter.slot))
-            // } else {
-                filters.push((task) => isSlotEqualOrInclude(task.slotExpr, filter.slot))
-            // }
+        if (filter.slots?.length) {
+            filters.push((task) => filter.slots.some(slot => isSlotEqualOrInclude(task.slotExpr, slot)))
         }
         if (filter.taskId) {
             filters.push((task) => task.id === Number.parseInt(filter.taskId))

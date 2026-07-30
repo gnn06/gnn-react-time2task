@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
 import SlotPanel from './slot-panel';
-import taskSlice, { login, setFilterSlot } from '../features/taskSlice';
+import taskSlice, { login } from '../features/taskSlice';
 import { DEFAULT_CONF } from '../data/slot-view';
 
 // Mock the apiSlice module
@@ -162,29 +162,6 @@ describe('SlotPanel', () => {
             },
             'view',
             'list'
-        );
-    });
-
-    it('should call upsertUserConf.initiate when handleShowRepeat is triggered', async () => {
-        await testConfigurationChange(
-            () => screen.getByLabelText('voir les répétitions'),
-            async (element) => {
-                await userEvent.click(element);
-            },
-            'showRepeat',
-            false
-        );
-    });
-
-    it('should call upsertUserConf.initiate when handleSlotStrict is triggered', async () => {
-        await testConfigurationChange(
-            () => screen.getByLabelText('Slot strict'),
-            async (element) => {
-                await userEvent.click(element);
-            },
-            'slotStrict',
-            false,
-            () => store.dispatch(setFilterSlot('test-filter'))
         );
     });
 });

@@ -66,6 +66,20 @@ test('modifie un champ puis confirme : la tâche retournée contient la valeur s
   expect(onConfirm).toHaveBeenCalledWith(expectedTask);
 });
 
+test('sans onDelete, le bouton Supprimer est absent', () => {
+  const givenTask = { id: 1, title: 'test', nextAction: '', url: '' };
+  render(<Provider store={store}><TaskDialog task={givenTask} onCancel={vi.fn()} onConfirm={vi.fn()} /></Provider>);
+  expect(screen.queryByRole('button', { name: /supprimer/i })).not.toBeInTheDocument();
+});
+
+test('avec onDelete, clic Supprimer appelle onDelete avec la tâche courante', () => {
+  const givenTask = { id: 1, title: 'test', nextAction: 'action', url: '' };
+  const onDelete = vi.fn();
+  render(<Provider store={store}><TaskDialog task={givenTask} onCancel={vi.fn()} onConfirm={vi.fn()} onDelete={onDelete} /></Provider>);
+  fireEvent.click(screen.getByRole('button', { name: /supprimer/i }));
+  expect(onDelete).toHaveBeenCalledWith(givenTask);
+});
+
 test('click on link', () => {
   const givenTask = {
     id: 1,

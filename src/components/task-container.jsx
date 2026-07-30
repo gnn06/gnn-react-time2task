@@ -5,7 +5,7 @@ import { Panel, Group, Separator } from "react-resizable-panels";
 import TaskPanel from './task-panel';
 import SlotPanel from "./slot-panel";
 import TaskDialog from "./task-dialog";
-import { useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
+import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation } from "../features/apiSlice.js";
 import { dragging, editTask } from "../features/taskSlice";
 import { filterSlotExpr } from '../data/task.js';
 import { slotExprAdd } from "../data/slot-expr.js";
@@ -18,6 +18,7 @@ export default function TaskContainer() {
     const { data:tasksRedux } = useGetTasksQuery({userId, activity})
     const currentFilter = useSelector(state => state.tasks.currentFilter);
     const [ updateTask ] = useUpdateTaskMutation()
+    const [ deleteTask ] = useDeleteTaskMutation()
     const taskToEdit  = useSelector(state => state.tasks.editTask);
     const dispatch = useDispatch()
 
@@ -45,14 +46,24 @@ export default function TaskContainer() {
       dispatch(editTask(null))
     }
 
+    const onTaskDialogDelete = (task) => {
+      const isConfirm = window.confirm('Supprimer la tâche ?');
+      if (isConfirm) {
+        deleteTask(task.id)
+        dispatch(editTask(null))
+      }
+    }
+
     if (tasksRedux) {
         const tasksFetched = tasksRedux.slice();
-        const tasks = filterSlotExpr(tasksFetched, currentFilter);
-        const panel1 = <SlotPanel tasks={tasks}/>
-        const panel2 = <TaskPanel tasks={tasks}/>
+        // Vérité unique : le filtre courant décide QUELLES tâches ; les deux panneaux
+        // reçoivent le même ensemble, chacun le disposant à sa façon.
+        const tasksFiltered = filterSlotExpr(tasksFetched, currentFilter);
+        const panel1 = <SlotPanel tasks={tasksFiltered}/>
+        const panel2 = <TaskPanel tasks={tasksFiltered}/>
         return (
           <DndContext onDragEnd={onDnd} onDragStart={onDndStart} >            
-            { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm}/>}
+            { taskToEdit && <TaskDialog task={taskToEdit} onCancel={onTaskDialogCancel} onConfirm={onTaskDialogConfirm} onDelete={onTaskDialogDelete}/>}
             <Group orientation="horizontal" className="">
                 <Panel className='' collapsible={true} minSize="20%" style={{}} >
                   {panel1}

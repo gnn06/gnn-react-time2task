@@ -2,7 +2,12 @@ import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrIn
 import { makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
-import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti } from './slot-branch';
+import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchHasPathWithoutWeekDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
+import moment from 'moment';
+import { getDate, getDefaultDates, getCurrentWeekdayId } from './slot-date';
+import { getSlotIdLevel, getSlotIdFamily, getSlotIdCurrent, SLOTIDS_BY_LEVEL, weight } from './slot-id';
+import { IDizer } from '../utils/stringUtil';
+import { slotHasImpreciseIcon } from './slot-view';
 import { branchShift } from './slot-branch++';
 import { SlotPath, getCurrentPathExpr } from './slot-path';
 import { getSlotNextPrev } from './slot-next-prev';
@@ -41,6 +46,22 @@ export function taskPredicateDisable(task) {
 
 export function taskPredicateStatus(task, status) {
     return task.status === status;
+}
+
+export function isTaskImprecise(task, levelMaxIncluded) {
+    const branch = parser.parse(task.slotExpr)
+    if (branch === undefined) return false
+    const hash = getBranchHash(branchComplete(branch))
+    if (!hash) return false
+    const idPath = IDizer(hash)
+    const path = idPath.join(' ')
+    const level = idPath.length
+    const maxLevel = levelMaxIncluded ?? 3
+    return level <= maxLevel && slotHasImpreciseIcon(path, level)
+}
+
+export function makeTaskPredicateImprecise(levelMaxIncluded) {
+    return (task) => isTaskImprecise(task, levelMaxIncluded)
 }
 
 export function taskPredicateId(task, id) {
@@ -165,6 +186,62 @@ export function isTaskRepeat(task) {
     return isSlotRepeat1(task.slotExpr)
 }
 
+/**
+ * Routage vue tree/list (v1 partition) : vrai si la tâche a un jour relatifParent
+ * (lundi..vendredi) → vue tree ; faux (purement relatifPresent) → vue list.
+ */
+export function taskHasRelatifParentDay(task) {
+    const branch = parser.parse(task.slotExpr)
+    return branch ? branchHasRelatifParentDay(branch) : false
+}
+
+export function taskHasRelatifPresentDay(task) {
+    const branch = parser.parse(task.slotExpr)
+    return branch ? branchGetRelatifPresentDayId(branch) !== null : false
+}
+
+/** Vrai si la tâche admet au moins un créneau (chemin) sans jour précis (lundi..vendredi). */
+export function taskHasPathWithoutWeekDay(task) {
+    const branch = parser.parse(task.slotExpr)
+    return branch ? branchHasPathWithoutWeekDay(branch) : false
+}
+
+/**
+ * Partition des tâches affichées en vue list.
+ * Base : pas de jour relatifParent, OU a un jour relatifPresent (tâches mixtes).
+ * Si conf.includeWeekDays : ajoute les tâches purement relatifParent (lundi..vendredi),
+ * projetées sur le cadre relatifPresent (today/tomorrow, sinon this_week) via
+ * taskRelativeParentToPresent.
+ */
+export function getListTasks(tasks, conf, snapDates = []) {
+    const listTasks = tasks.filter(t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t))
+    if (!conf?.includeWeekDays) return listTasks
+    const projected = tasks
+        .filter(t => taskHasRelatifParentDay(t) && !taskHasRelatifPresentDay(t))
+        .map(t => taskRelativeParentToPresent(t, snapDates))
+        .filter(Boolean)
+    return [...listTasks, ...projected]
+}
+
+/**
+ * DORMANT — projection à réintroduire. Depuis la « vérité unique » (task-container),
+ * les deux panneaux sont alimentés par filterSlotExpr et cette fonction n'est plus
+ * appelée. Conservée (avec getListTasks et les primitives taskRelativeParentToPresent /
+ * slotPathToPresent) pour rebrancher la projection weekday→today/tomorrow quand la
+ * décision bubbling vs projection sera tranchée.
+ *
+ * Tâches affichées par le SlotPanel : projection vue list (si view==='list')
+ * puis filtre courant. La projection précède le filtre pour que ce dernier opère
+ * sur l'expression projetée (ex : tâche weekday projetée sur today, filtrée par today).
+ */
+export function getListTasksFiltered(tasks, conf, filter, snapDates = []) {
+    const base = conf?.view === 'list' ? getListTasks(tasks, conf, snapDates) : tasks
+    const slots = conf?.view === 'list' && filter?.slots?.length
+        ? filter.slots.map(s => slotPathToPresent(s, snapDates))
+        : filter?.slots
+    return filterSlotExpr(base, { ...filter, slots })
+}
+
 // statuts pour lesquels le jour courant compte comme prochain slot
 const ACTIVE_STATUSES = ['A faire', 'en cours']
 
@@ -172,13 +249,19 @@ const ACTIVE_STATUSES = ['A faire', 'en cours']
  * Retourne l'expression du prochain slot d'une tâche, ou null si aucun.
  * branchComplete(branch, 1) complète les slots incomplets (ex: "lundi" → "this_week lundi").
  * Pour les statuts actifs ('A faire', 'en cours'), aujourd'hui est inclus comme prochain slot.
+ * Le jour de "maintenant" suit le today stocké (snapDates, décalable via « Démarrer Jour »),
+ * pas l'horloge système — cohérent avec le modèle today/tomorrow. Fallback horloge si
+ * snapDates absent ou si today a dérivé hors de this_week (getCurrentWeekdayId → null).
+ * @param {object} task
+ * @param {Array<{slotid:string,date:string}>} [snapDates]
  * @returns {string|null}
  */
-export function getTaskNextSlotLabel(task) {
-    const branch = parser.parse(task.slotExpr)
+export function getTaskNextSlotLabel(task, snapDates) {
+    const branch = parser.parse(task.originalSlotExpr ?? task.slotExpr)
     if (!branch) return null
     const completed = branchComplete(branch, 1)
-    const currentPath = new SlotPath(getCurrentPathExpr(4))
+    const weekday = getCurrentWeekdayId(snapDates) ?? getSlotIdCurrent(3)
+    const currentPath = new SlotPath(`${getCurrentPathExpr(2)} ${weekday} ${getSlotIdCurrent(4)}`)
     const comparison = ACTIVE_STATUSES.includes(task.status) ? 'inclusive' : 'strict'  // 'inclusive' = statut actif, aujourd'hui compte
     const result = getSlotNextPrev(completed, currentPath, +1, comparison)
     if (!result) return null
@@ -213,4 +296,119 @@ export function getNewOrder(tasks, activeId, overId) {
         newOrder = (adjacentOrder + overOrder) / 2.0;
     }
     return newOrder;
+}
+
+/**
+ * Projette une tâche relatifPresent (today/tomorrow) vers son weekday projeté.
+ * Retourne une tâche fantôme ou null si inapplicable (weekend, pas d'ancre
+ * jour relatifPresent, hors this_week/next_week).
+ * Le contexte semaine/mois est basé sur moment() courant, pas sur les snapDates
+ * stockés qui peuvent être périmés (ex : semaine non avancée).
+ */
+export function taskRelativePresentToParent(task, snapDates) {
+    const branch = parser.parse(task.slotExpr)
+    if (!branch) return null
+
+    const anchorId = branchGetRelatifPresentDayId(branch)
+    if (!anchorId) return null
+
+    // Si today n'est pas en base (Phase E non faite), les snapDates stockés peuvent
+    // être incohérents avec la date réelle. On utilise alors getDefaultDates() comme
+    // référence cohérente pour tous les calculs — aujourd'hui ET la semaine courante.
+    const hasTodayInDB = snapDates.some(el => el.slotid === 'today')
+    const referenceDates = hasTodayInDB ? snapDates : getDefaultDates()
+
+    const projectedDateStr = getDate({ id: anchorId }, referenceDates)
+    if (!projectedDateStr) return null
+
+    const projMoment = moment(projectedDateStr)
+    const isoDay = projMoment.isoWeekday()  // 1=lun..7=dim
+    if (isoDay > 5) return null  // weekend
+
+    const weekdayId = SLOTIDS_BY_LEVEL['3'][isoDay - 1]
+
+    const thisWeekStr = getDate({ id: 'this_week' }, referenceDates)
+    const thisWeekMoment = moment(thisWeekStr)
+    const weekDiff = (projMoment.isoWeekYear() - thisWeekMoment.isoWeekYear()) * 53
+                   + (projMoment.isoWeek() - thisWeekMoment.isoWeek())
+    let weekId
+    if (weekDiff === 0) weekId = 'this_week'
+    else if (weekDiff === 1) weekId = 'next_week'
+    else return null
+
+    const thisMonthStr = getDate({ id: 'this_month' }, referenceDates)
+    const monthDiff = projMoment.diff(moment(thisMonthStr, 'YYYY-MM'), 'months')
+    let monthId
+    if (monthDiff === 0) monthId = 'this_month'
+    else if (monthDiff === 1) monthId = 'next_month'
+    else return null
+
+    // Heure (matin/aprem) préservée si présente
+    const completed = branchComplete(branch)
+    const hash = getBranchHash(completed) ?? ''
+    const hourToken = hash.split(' ').find(t => getSlotIdLevel(t) === 4) ?? null
+
+    let projectedSlotExpr = `${monthId} ${weekId} ${weekdayId}`
+    if (hourToken) projectedSlotExpr += ` ${hourToken}`
+
+    return { ...task, slotExpr: projectedSlotExpr, originalSlotExpr: task.slotExpr }
+}
+
+/**
+ * Projette un slotExpr weekday (lundi..vendredi) vers 'today' ou 'tomorrow' si le jour
+ * correspond. Retourne le slotExpr inchangé si aucune correspondance (jour passé ou futur).
+ * Heure (matin/aprem) préservée.
+ */
+export function slotPathToPresent(slotExpr, snapDates = []) {
+    if (!slotExpr) return slotExpr
+    const branch = parser.parse(slotExpr)
+    if (!branch) return slotExpr
+
+    const weekdayId = branchGetRelatifParentDayId(branch)
+    if (!weekdayId) return slotExpr
+
+    const hasTodayInDB = snapDates.some(el => el.slotid === 'today')
+    const referenceDates = hasTodayInDB ? snapDates : getDefaultDates()
+
+    const completed = branchComplete(branch)
+    const hash = getBranchHash(completed) ?? ''
+    const hourToken = hash.split(' ').find(t => getSlotIdLevel(t) === 4) ?? null
+    const weekToken = hash.split(' ').find(t => getSlotIdLevel(t) === 2) ?? 'this_week'
+
+    // Date réelle du weekday dans SA semaine : lundi de weekToken + offset du jour.
+    // getDate({ id: weekday }) résoudrait toujours dans this_week, d'où la projection
+    // erronée d'un « next_week mardi » sur today.
+    const weekStartStr    = getDate({ id: weekToken }, referenceDates)
+    const dayOffset       = weight[weekdayId] - 1
+    const weekdayDateStr  = moment(weekStartStr).add(dayOffset, 'days').format('YYYY-MM-DD')
+    const todayDateStr    = getDate({ id: 'today'    }, referenceDates)
+    const tomorrowDateStr = getDate({ id: 'tomorrow' }, referenceDates)
+
+    let anchorId
+    if      (weekdayDateStr === todayDateStr)    anchorId = 'today'
+    else if (weekdayDateStr === tomorrowDateStr) anchorId = 'tomorrow'
+
+    if (!anchorId) return slotExpr
+    return anchorId + (hourToken ? ` ${hourToken}` : '')
+}
+
+export function taskRelativeParentToPresent(task, snapDates) {
+    const branch = parser.parse(task.slotExpr)
+    if (!branch) return null
+
+    const weekdayId = branchGetRelatifParentDayId(branch)
+    if (!weekdayId) return null
+
+    const projectedSlotExpr = slotPathToPresent(task.slotExpr, snapDates)
+
+    // sinon (jour passé ou ≥ après-demain) → troncature au niveau semaine :
+    // la tâche remonte à this_week via le bubbling de la list.
+    let finalSlotExpr
+    if (projectedSlotExpr !== task.slotExpr) {
+        finalSlotExpr = projectedSlotExpr
+    } else {
+        finalSlotExpr = getBranchHash(branchTruncate(branchComplete(branch), 2)) ?? ''
+    }
+
+    return { ...task, slotExpr: finalSlotExpr, originalSlotExpr: task.slotExpr }
 }

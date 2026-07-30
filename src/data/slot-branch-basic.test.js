@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch, 
          branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendStartToBranch, 
-         getBranchHead, getBranchTail, 
-         branchAppendEnd} from './slot-branch.js';
+         getBranchHead, getBranchTail,
+         branchAppendEnd, branchHasRelatifParentDay, branchHasPathWithoutWeekDay} from './slot-branch.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -370,6 +370,22 @@ describe('hashBranch', () => {
         const result = getBranchHash(given)
         expect(result).toEqual('this_month this_week')
     });
+    test('complexe real cas', () => {
+        const given = { type: 'branch', value: [ 'month', 'this_week',
+            { type: 'multi',
+                value: [ { type: 'branch', value: [ 'mardi' ] },
+                        { type: 'branch', value: [ 'jeudi' ] } ]
+            }
+         ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_month this_week mardi')
+    });
+
+    test('repeat (every N) — repetition ignorée', () => {
+        const given = { type: 'branch', value: [ 'this_month', { type: 'branch', value: [ 'this_week' ], repetition: 2 } ] };
+        const result = getBranchHash(given)
+        expect(result).toEqual('this_month this_week')
+    });
 
 });
 
@@ -412,6 +428,13 @@ describe('slotToExpr', () => {
     test('shift with alias', () => {
         const given    = { value: [ 'this_week' ], shift: 1 }
         const expected = 'next_week'
+        const result = branchToExpr(given)
+        expect(result).toEqual(expected)
+    });
+
+    test('shift with alias today + 1 = tomorrow', () => {
+        const given    = { value: [ 'today' ], shift: 1 }
+        const expected = 'tomorrow'
         const result = branchToExpr(given)
         expect(result).toEqual(expected)
     });
@@ -505,4 +528,70 @@ describe('getTail', () => {
         const result = getBranchTail(given)
         expect(result).toEqual(expected)
     });
+});
+
+describe('branchHasRelatifParentDay', () => {
+    test('this_week mardi (nested) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', { value: ['mardi'] }] })).toBe(true)
+    })
+    test('this_week mardi (flat) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', 'mardi'] })).toBe(true)
+    })
+    test('today → false', () => {
+        expect(branchHasRelatifParentDay({ value: ['today'] })).toBe(false)
+    })
+    test('today matin → false (matin = heure, niveau 4)', () => {
+        expect(branchHasRelatifParentDay({ value: ['today', 'matin'] })).toBe(false)
+    })
+    test('this_week seul → false', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week'] })).toBe(false)
+    })
+    test('multi lundi/mardi → true', () => {
+        expect(branchHasRelatifParentDay({ type: 'multi', value: [{ value: ['lundi'] }, { value: ['mardi'] }] })).toBe(true)
+    })
+    test('this_week mardi matin (profond) → true', () => {
+        expect(branchHasRelatifParentDay({ value: ['this_week', { value: ['mardi', { value: ['matin'] }] }] })).toBe(true)
+    })
+});
+
+describe('branchHasPathWithoutWeekDay', () => {
+    test('this_week seul → true', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_week'] })).toBe(true)
+    })
+    test('this_month seul → true', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_month'] })).toBe(true)
+    })
+    test('today → true', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['today'] })).toBe(true)
+    })
+    test('today aprem → true (heure ne disqualifie pas)', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['today', 'aprem'] })).toBe(true)
+    })
+    test('this_week mardi (nested) → false (mardi sur le chemin)', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_week', { value: ['mardi'] }] })).toBe(false)
+    })
+    test('this_week mardi (flat) → false', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_week', 'mardi'] })).toBe(false)
+    })
+    test('mercredi aprem → false (mercredi sur le chemin)', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['mercredi', 'aprem'] })).toBe(false)
+    })
+    test('next_week mercredi → false', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['next_week', 'mercredi'] })).toBe(false)
+    })
+    test('lundi seul → false (relatifParent)', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['lundi'] })).toBe(false)
+    })
+    test('multi today/jeudi → true (alternative today sans weekday)', () => {
+        expect(branchHasPathWithoutWeekDay({ type: 'multi', value: [{ value: ['today'] }, { value: ['jeudi'] }] })).toBe(true)
+    })
+    test('multi mardi/jeudi → false', () => {
+        expect(branchHasPathWithoutWeekDay({ type: 'multi', value: [{ value: ['mardi'] }, { value: ['jeudi'] }] })).toBe(false)
+    })
+    test('multi imbriqué (this_week → today/mardi) → true', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_week', { type: 'multi', value: [{ value: ['today'] }, { value: ['mardi'] }] }] })).toBe(true)
+    })
+    test('multi imbriqué (this_week → mardi/jeudi) → false', () => {
+        expect(branchHasPathWithoutWeekDay({ value: ['this_week', { type: 'multi', value: [{ value: ['mardi'] }, { value: ['jeudi'] }] }] })).toBe(false)
+    })
 });

@@ -19,7 +19,7 @@ Fonctionnalité: Affichage initial de l'application
   Scénario: Barre de commandes du panel tâches visible
     Alors le bouton "Créer Tâche" est visible
     Et le bouton "Todo" est visible
-    Et le bouton "Démarrer Semaine" est visible
+    Et le bouton "Démarrer Créneau" est visible
 
   Scénario: Table ou message vide affiché après chargement
     Quand les données sont chargées

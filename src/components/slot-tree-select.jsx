@@ -4,7 +4,12 @@ import DndContainer from "./dnd-container";
 import { isInsideSelected } from "../data/selection-tree";
 import { getSlotIdLevel } from "../data/slot-id";
 
-export default function SlotTreeSelect({slot, selection, handleSelection, handleShift, handleDelete, handleAdd, handleRepetition, handleDisable}) {
+/**
+ * affiche réccursivement l'arbre des slots en utilisant SlotSelect.
+ * @param {*} param0 
+ * @returns 
+ */
+export default function SlotTreeSelect({slot, selection, handleSelection, handleShift, handleClick, handleRepetition, handleDisable}) {
     const { path, inner } = slot;
 
     const innerClass = 'ml-3' 
@@ -19,7 +24,7 @@ export default function SlotTreeSelect({slot, selection, handleSelection, handle
         <div>        
             <DndContainer id={slot.path} 
                 mode={mode}>
-                <SlotSelect slot={slot} selection={selection} handleSelection={handleSelection} handleShift={handleShift} handleDelete={handleDelete} handleAdd={handleAdd} 
+                <SlotSelect slot={slot} selection={selection} handleSelection={handleSelection} handleShift={handleShift} handleClick={handleClick}
                         handleRepetition={handleRepetition} handleDisable={handleDisable}/>
             </DndContainer>
             <div className={innerClass}>
@@ -28,8 +33,7 @@ export default function SlotTreeSelect({slot, selection, handleSelection, handle
                     selection={selection}
                     handleSelection={(path, val) => handleSelection && handleSelection(path, val)} 
                     handleShift={handleShift}
-                    handleDelete={handleDelete}
-                    handleAdd={handleAdd}
+                    handleClick={handleClick}
                     handleRepetition={handleRepetition}
                     handleDisable={handleDisable}
                 />)}

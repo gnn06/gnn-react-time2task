@@ -26,7 +26,7 @@ describe('SlotPickerCard', () => {
   })
 
   test('renders slot card with correct content', () => {
-    render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerCard slot={mockSlot} selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} />)
 
     expect(screen.getByTestId('slot-title')).toHaveTextContent('mercredi')
   })
@@ -34,7 +34,7 @@ describe('SlotPickerCard', () => {
   describe('state management', () => {
     test('calls onSlotChange when clicked', async () => {
       const user = userEvent.setup()
-      render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="" onSlotChange={mockOnSlotChange} />)
+      render(<SlotPickerCard slot={mockSlot} selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} />)
 
       const card = screen.getByText('mercredi')
       await user.click(card)
@@ -42,26 +42,27 @@ describe('SlotPickerCard', () => {
       expect(mockOnSlotChange).toHaveBeenCalledWith('this_month this_week mercredi')
     })
 
-    test('does not call onSlotChange when clicking already selected slot', async () => {
+    test('calls onSlotChange when clicking already selected slot (toggle off)', async () => {
       const user = userEvent.setup()
-      render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="this_month this_week mercredi" onSlotChange={mockOnSlotChange} />)
+      render(<SlotPickerCard slot={mockSlot} selectedSlotExprs={['this_month this_week mercredi']} onSlotChange={mockOnSlotChange} />)
 
       const card = screen.getByText('mercredi')
       await user.click(card)
 
-      expect(mockOnSlotChange).not.toHaveBeenCalled()
+      expect(mockOnSlotChange).toHaveBeenCalledWith('this_month this_week mercredi')
     })
   })
 
   describe('styling', () => {
     test('applies selected style when slot is selected', () => {
-      const { container } = render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="this_month this_week mercredi" onSlotChange={mockOnSlotChange} />)
+      const { container } = render(<SlotPickerCard slot={mockSlot} selectedSlotExprs={['this_month this_week mercredi']} onSlotChange={mockOnSlotChange} />)
       expect(container.querySelector('.bg-blue-400')).toBeInTheDocument();
     })
 
-    test('applies inside style when slot is inside selected path', () => {
-      const { container } = render(<SlotPickerCard slot={mockSlot} selectedSlotExpr="this_month this_week mercredi matin" onSlotChange={mockOnSlotChange} />)
-      expect(container.querySelector('.bg-blue-300')).toBeInTheDocument();
+    test('applies neutral gray style when slot is not selected (ancestor non géré)', () => {
+      const { container } = render(<SlotPickerCard slot={mockSlot} selectedSlotExprs={['this_month this_week mercredi matin']} onSlotChange={mockOnSlotChange} />)
+      expect(container.querySelector('.bg-gray-100')).toBeInTheDocument();
+      expect(container.querySelector('.bg-blue-300')).not.toBeInTheDocument();
     })
   })
 

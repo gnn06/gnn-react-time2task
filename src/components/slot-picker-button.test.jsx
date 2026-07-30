@@ -19,7 +19,7 @@ describe('SlotPickerButton', () => {
   })
 
   test('renders button with correct text', () => {
-    render(<SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} />)
     
     const button = screen.getByRole('button', { name: /créneau/i })
     expect(button).toBeInTheDocument()
@@ -27,7 +27,7 @@ describe('SlotPickerButton', () => {
   })
 
   test('shows chip with slot expression when slot is selected', async () => {
-    render(<SlotPickerButton selectedSlotExpr="this_month this_week mercredi" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerButton selectedSlotExprs={['this_month this_week mercredi']} onSlotChange={mockOnSlotChange} />)
     
     const chip = screen.getByText('this_week mercredi')
     expect(chip).toBeInTheDocument()
@@ -35,7 +35,7 @@ describe('SlotPickerButton', () => {
 
   test('opens popper when button is clicked', async () => {
     const user = userEvent.setup()
-    render(<Provider store={store}><SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} /></Provider>)
+    render(<Provider store={store}><SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} /></Provider>)
     
     const button = screen.getByRole('button', { name: /créneau/i })
     await user.click(button)
@@ -49,7 +49,7 @@ describe('SlotPickerButton', () => {
     const user = userEvent.setup()
     render(
       <Provider store={store}><div>
-        <SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} />
+        <SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} />
         <div data-testid="outside-element">Outside</div>
       </div></Provider>
     )
@@ -69,7 +69,7 @@ describe('SlotPickerButton', () => {
 
   test('calls onSlotChange when slot is selected in popper', async () => {
     const user = userEvent.setup()
-    render(<Provider store={store}><SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} /></Provider>)
+    render(<Provider store={store}><SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} /></Provider>)
     
     const button = screen.getByRole('button', { name: /créneau/i })
     await user.click(button)
@@ -82,7 +82,7 @@ describe('SlotPickerButton', () => {
   })
 
   test('shows clear icon when slot is selected', () => {
-    render(<SlotPickerButton selectedSlotExpr="this_month this_week mercredi" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerButton selectedSlotExprs={['this_month this_week mercredi']} onSlotChange={mockOnSlotChange} />)
     
     // L'icône Clear devrait être présente
     const clearIcon = document.querySelector('svg[data-testid="ClearIcon"]')
@@ -91,7 +91,7 @@ describe('SlotPickerButton', () => {
 
   test('calls onSlotChange with null when clear icon is clicked', async () => {
     const user = userEvent.setup()
-    render(<SlotPickerButton selectedSlotExpr="this_month this_week mercredi" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerButton selectedSlotExprs={['this_month this_week mercredi']} onSlotChange={mockOnSlotChange} />)
     
     // Trouver et cliquer sur l'icône Clear
     const clearIcon = document.querySelector('svg[data-testid="ClearIcon"]')
@@ -101,7 +101,7 @@ describe('SlotPickerButton', () => {
   })
 
   test('does not show clear icon when no slot is selected', () => {
-    render(<SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} />)
+    render(<SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} />)
     
     // L'icône Clear ne devrait pas être présente
     const clearIcon = document.querySelector('svg[data-testid="ClearIcon"]')
@@ -110,7 +110,7 @@ describe('SlotPickerButton', () => {
 
   test('popper stays open when clicking on slot', async () => {
     const user = userEvent.setup()
-    render(<Provider store={store}><SlotPickerButton selectedSlotExpr="" onSlotChange={mockOnSlotChange} /></Provider>)
+    render(<Provider store={store}><SlotPickerButton selectedSlotExprs={[]} onSlotChange={mockOnSlotChange} /></Provider>)
     
     const button = screen.getByRole('button', { name: /créneau/i })
     await user.click(button)

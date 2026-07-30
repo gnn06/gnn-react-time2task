@@ -13,27 +13,30 @@ import IconButtonLink from "./icon-button-link.jsx";
 
 import { getSlotIdAndKeywords } from "../data/slot-id.js";
 import { getTaskNextSlotLabel } from "../data/task.js";
+import { useGetSnapDatesQuery } from "../features/apiSlice.js";
 
 /**
  * Permet l'éditin d'une tache et fournit la tache modifiée via callback
  * @param {*} param0 
  * @returns 
  */
-export default function TaskDialog({task: taskProp, onCancel, onConfirm}) {
+export default function TaskDialog({task: taskProp, onCancel, onConfirm, onDelete}) {
     const [task, setTask] = useState(taskProp);
     const handleConfirm = () => {
         onConfirm(task)
     }
-      
+    const handleDelete = onDelete ? () => onDelete(task) : undefined;
+
     return <div>
-        <Confirm titre="Détail de tâche" handleCancel={onCancel} handleConfirm={handleConfirm}>
+        <Confirm titre="Détail de tâche" handleCancel={onCancel} handleConfirm={handleConfirm} handleDelete={handleDelete}>
             <Content task={task} setTask={setTask}/>
         </Confirm>
         </div>
 }
 
 function Content({task, setTask}) {
-    
+    const { data: snapDates } = useGetSnapDatesQuery();
+
     const onTitleChange = (e) => {
         // const taskId = task.id;
         const title = e.target.value;
@@ -55,7 +58,10 @@ function Content({task, setTask}) {
     
     const onSlotExprChange = e => {
         const slotExpr = e;
-        const newTask = produce(task, draft => { draft.slotExpr = slotExpr; })
+        const newTask = produce(task, draft => {
+            draft.slotExpr = slotExpr;
+            delete draft.originalSlotExpr;
+        })
         setTask(newTask)
     };
 
@@ -87,11 +93,11 @@ function Content({task, setTask}) {
             <IconButtonLink href={task.url} fontSize="large" />
         </Stack>
         <Stack direction={"row"} spacing={1} >
-            <SyntaxInputWithSelection key={task.slotExpr} initialInputValue={task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
+            <SyntaxInputWithSelection key={task.originalSlotExpr ?? task.slotExpr} initialInputValue={task.originalSlotExpr ?? task.slotExpr} classNameInput="" items={getSlotIdAndKeywords()}
             onInputChange={onSlotExprChange} title={task.title} closeIcon placeHolderInput="Les créneaux pour réaliser la tâche"/>
             <SlotSelectionButton  task={task} handleSave={onSlotExprChange} withText={true} />
         </Stack>
-        <TextField label="Prochain créneau" value={getTaskNextSlotLabel(task) ?? ''} InputProps={{ readOnly: true }} fullWidth />
+        <TextField label="Prochain créneau" value={getTaskNextSlotLabel(task, snapDates) ?? ''} InputProps={{ readOnly: true }} fullWidth />
         <ActivityInput activity={task.activity} saveHandler={onActivityChange} isInline={false} />
         <StatusInput task={task} saveHandler={onStatusChange}/>
         <InputLabel>{ import.meta.env.DEV && JSON.stringify(task)}</InputLabel>

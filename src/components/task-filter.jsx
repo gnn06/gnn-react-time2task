@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Stack } from "@mui/material";
@@ -14,10 +14,10 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
-import { taskPredicateDisable, taskPredicateMulti } from "../data/task";
+import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1, taskHasRelatifParentDay, taskHasPathWithoutWeekDay } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
-function createFilterConfig(activities = []) {
+export function createFilterConfig(activities = [], levelMaxIncluded = null) {
   const baseConfig = [
     {
       key: 'status',
@@ -51,6 +51,38 @@ function createFilterConfig(activities = []) {
       options: [true, false],
       valueLabels: { true: 'contient disabled' },
       predicate: taskPredicateDisable
+    },
+    {
+      key: 'isImprecise',
+      label: 'isImprecise',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'tâche imprécise' },
+      predicate: makeTaskPredicateImprecise(levelMaxIncluded)
+    },
+    {
+      key: 'isRepeat',
+      label: 'isRepeat',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins une répétition' },
+      predicate: taskPredicateEvery1
+    },
+    {
+      key: 'isWeekDay',
+      label: 'isWeekDay',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins un weekday (lundi..vendredi)' },
+      predicate: taskHasRelatifParentDay
+    },
+    {
+      key: 'isRelatifPresent',
+      label: 'isRelatifPresent',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'au moins un créneau sans jour précis (hors lundi..vendredi)' },
+      predicate: taskHasPathWithoutWeekDay
     }
   ];
 
@@ -85,14 +117,15 @@ export default function TaskFilter() {
     const [isDisableFilter, setIsDisableFilter] = useState(false)
     const filterExpr = useSelector(state => state.tasks.currentFilter.expression);
     const genericFilters = useSelector(state => state.tasks.currentFilter.genericFilters) || {};
-    const filterSlot = useSelector(state => state.tasks.currentFilter.slot);    
+    const filterSlots = useSelector(state => state.tasks.currentFilter.slots);
     const activity = useSelector(state => state.tasks.currentActivity);
 
     const filterRef = useRef(null);
 
     // Générer la configuration des filtres avec les activités dynamiques
     // Seulement si les activités sont chargées avec succès
-    const filterConfig = createFilterConfig(isActivitiesSuccess ? activities : []);
+    const levelMaxIncluded = useSelector(state => state.tasks.slotViewFilterConf.levelMaxIncluded);
+    const filterConfig = createFilterConfig(isActivitiesSuccess ? activities : [], levelMaxIncluded);
 
     const onInputChange = (e) => {
         const filter = e;
@@ -125,6 +158,19 @@ export default function TaskFilter() {
         dispatch(setFilterGeneric(genericFilters));
     }
 
+    // TODO (option B) : le prédicat isImprecise est une closure sur levelMaxIncluded.
+    // Quand le niveau change, on recrée le prédicat si le filtre est actif.
+    // Solution définitive : stocker un booléen dans Redux et construire le prédicat
+    // dynamiquement dans le moteur de filtrage en lui passant la conf de vue.
+    useEffect(() => {
+        if (typeof genericFilters.isImprecise === 'function') {
+            dispatch(setFilterGeneric({
+                ...genericFilters,
+                isImprecise: makeTaskPredicateImprecise(levelMaxIncluded)
+            }));
+        }
+    }, [levelMaxIncluded]);
+
     const onSlotChange = (slotExpr) => {
         dispatch(setFilterSlot(slotExpr));
     }
@@ -146,7 +192,7 @@ export default function TaskFilter() {
               { error && <div className="m-1 text-red-500">{error}</div>}
           </div>
           <DialogHelpExpression/>            
-          <SlotPickerButton selectedSlotExpr={filterSlot} onSlotChange={onSlotChange} />
+          <SlotPickerButton selectedSlotExprs={filterSlots} onSlotChange={onSlotChange} />
           <FilterPanel filters={genericFilters} setFilters={onGenericFilterChange} filterConfig={filterConfig}/>
         </Stack>
     );

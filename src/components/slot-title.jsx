@@ -1,10 +1,4 @@
-import { getDate } from "../data/slot-date";
-import { useGetSnapDatesQuery } from "../features/apiSlice"
-
-export default function SlotTitle({slot}) {
-    const { data:snapDates, isSuccess }= useGetSnapDatesQuery()
-    const { id, title, start, end, inner } = slot;
-    const date = (isSuccess && getDate(slot, snapDates)) || ""
-    
+export default function SlotTitle({slot, date = ""}) {
+    const { id, title } = slot;
     return <div className="flex-auto"><div className="title ">{title} <span className="italic text-sm">{id} {date && "-"} {date}</span></div></div>
 }

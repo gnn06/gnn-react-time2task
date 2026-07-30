@@ -1,37 +1,100 @@
 import { getNow } from '../utils/now'
 
-export const weight = {
-    month     : 1,
-    this_month: 1,
-    next_month: 2,
-    week      : 1,
-    this_week : 2,
-    next_week : 3,
-    following_week: 4,
-    day       : 1,
-    lundi     : 1,
-    mardi     : 2,
-    mercredi  : 3,
-    jeudi     : 4,
-    vendredi  : 5,
-    matin     : 1,
-    aprem     : 2
-}
+/**
+ * SLOT_DEFS — source de vérité unique des slots disponibles à l'exécution.
+ * Les structures historiques (SLOTIDS_LST, SLOTIDS_BY_LEVEL, weight) et
+ * getSlotIdLevel/Family/isAnchor/isComplement en DÉRIVENT.
+ * Pour ajouter un slot : une seule ligne ici.
+ *   - role   : 'generic' (libellé/joker de niveau) | 'anchor' (relatif au présent)
+ *              | 'complement' (position dans la période parente)
+ *   - family : 'generic' | 'relatifPresent' | 'relatifParent' (| 'absolu' à venir)
+ *   - weight : tri / distance (compléments : ordre dans le cycle ; ancres : échelle héritée)
+ *   - alias  : forme canonique avec shift (ex. next_week = this_week + 1)
+ * L'ordre de déclaration = ordre de SLOTIDS_LST.
+ */
+const SLOT_DEFS = [
+    { id: 'month',          level: 1, role: 'generic',    family: 'generic',        weight: 1 },
+    { id: 'this_month',     level: 1, role: 'anchor',     family: 'relatifPresent', weight: 1 },
+    { id: 'next_month',     level: 1, role: 'anchor',     family: 'relatifPresent', weight: 2, alias: 'this_month + 1' },
+    { id: 'week',           level: 2, role: 'generic',    family: 'generic',        weight: 1 },
+    { id: 'this_week',      level: 2, role: 'anchor',     family: 'relatifPresent', weight: 2 },
+    { id: 'next_week',      level: 2, role: 'anchor',     family: 'relatifPresent', weight: 3, alias: 'this_week + 1' },
+    { id: 'following_week', level: 2, role: 'anchor',     family: 'relatifPresent', weight: 4, alias: 'this_week + 2' },
+    { id: 'day',            level: 3, role: 'generic',    family: 'generic',        weight: 1 },
+    { id: 'today',          level: 3, role: 'anchor',     family: 'relatifPresent', weight: 1 },
+    { id: 'tomorrow',       level: 3, role: 'anchor',     family: 'relatifPresent', weight: 2, alias: 'today + 1' },
+    { id: 'lundi',          level: 3, role: 'complement', family: 'relatifParent',  weight: 1 },
+    { id: 'mardi',          level: 3, role: 'complement', family: 'relatifParent',  weight: 2 },
+    { id: 'mercredi',       level: 3, role: 'complement', family: 'relatifParent',  weight: 3 },
+    { id: 'jeudi',          level: 3, role: 'complement', family: 'relatifParent',  weight: 4 },
+    { id: 'vendredi',       level: 3, role: 'complement', family: 'relatifParent',  weight: 5 },
+    { id: 'matin',          level: 4, role: 'complement', family: 'relatifParent',  weight: 1 },
+    { id: 'aprem',          level: 4, role: 'complement', family: 'relatifParent',  weight: 2 },
+];
+
+const _defById = new Map(SLOT_DEFS.map(d => [d.id, d]));
 
 export const EXPR_KEYWORDS = [
     'disable', 'chaque', 'every'
 ];
 
-export const SLOTIDS_LST = ['month', 'this_month', 'next_month', 'week', 'this_week', 'next_week', 'following_week', 'day', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'aprem'];
+// Catalogue des tokens (parser, autocomplétion). 'hour' reste un libellé de niveau
+// seulement (cf. GENERIC_SLOTIDS), historiquement absent de cette liste / de weight.
+export const SLOTIDS_LST = SLOT_DEFS.map(d => d.id);
 
-export const SLOTIDS_BY_LEVEL = {
-    '1': ['this_month', 'next_month'],
-    '2': ['this_week', 'next_week', 'following_week'],
-    '3': ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],
-    '4': ['matin', 'aprem']
+/** Regroupe les ids retenus par niveau (clé string), triés par weight. */
+function _groupByLevel(predicate) {
+    /** @type {{ [level: string]: string[] }} */
+    const byLevel = {};
+    SLOT_DEFS
+        .filter(predicate)
+        .sort((a, b) => a.level - b.level || a.weight - b.weight)
+        .forEach(d => { (byLevel[String(d.level)] ??= []).push(d.id); });
+    return byLevel;
 }
 
-export const GENERIC_SLOTIDS = [ 'month', 'week', 'day', 'hour' ]
+// Séquences de navigation par famille (getSlotIdNextPrev/Previous/Index).
+export const ANCHOR_IDS_BY_LEVEL = _groupByLevel(d => d.role === 'anchor');
+export const COMPLEMENT_IDS_BY_LEVEL = _groupByLevel(d => d.role === 'complement');
+
+// Catalogue d'affichage / nombre de niveaux (vues, slot-panel, getSlotIdFirstLevel) :
+// compléments du niveau s'ils existent, sinon ancres (les ancres jour today/tomorrow
+// ne polluent donc pas la colonne des weekdays).
+export const SLOTIDS_BY_LEVEL = (() => {
+    /** @type {{ [level: string]: string[] }} */
+    const byLevel = {};
+    for (const def of SLOT_DEFS) {
+        const lvl = String(def.level);
+        if (!byLevel[lvl]) byLevel[lvl] = COMPLEMENT_IDS_BY_LEVEL[lvl] ?? ANCHOR_IDS_BY_LEVEL[lvl] ?? [];
+    }
+    return byLevel;
+})();
+
+/** Séquence de navigation d'un id selon sa famille (fallback legacy pour génériques/inconnus). */
+function _navSeq(baseId) {
+    const def = _defById.get(baseId);
+    if (def?.role === 'anchor') return ANCHOR_IDS_BY_LEVEL[def.level];
+    if (def?.role === 'complement') return COMPLEMENT_IDS_BY_LEVEL[def.level];
+    return SLOTIDS_BY_LEVEL[getSlotIdLevel(baseId).toString()];
+}
+
+// Libellés / jokers de niveau (index = niveau - 1). 'hour' n'a pas de slot def.
+export const GENERIC_SLOTIDS = ['month', 'week', 'day', 'hour'];
+
+export const weight = Object.fromEntries(SLOT_DEFS.map(d => [d.id, d.weight]));
+
+/**
+ * Poids d'un jour (niveau 3) comparable à celui d'un jour de semaine réel (`referenceWeight`,
+ * le poids du jour "maintenant" — toujours lundi..vendredi). `weight` seul ne suffit pas :
+ * il mélange deux échelles incompatibles (today/tomorrow = famille relatifPresent,
+ * lundi..vendredi = famille relatifParent). Par construction, 'today' vaut toujours le jour
+ * de référence lui-même, et 'tomorrow' ce jour + 1 — quel que soit le vrai jour de la semaine.
+ */
+export function getSlotIdDayWeight(dayId, referenceWeight) {
+    if (dayId === 'today') return referenceWeight;
+    if (dayId === 'tomorrow') return referenceWeight + 1;
+    return weight[dayId] ?? 0;
+}
 
 export function getSlotIdAndKeywords() {
     return SLOTIDS_LST.concat(EXPR_KEYWORDS)
@@ -43,16 +106,42 @@ export function getSlotIdAndKeywords() {
  * public used by parser.js
  */
 export function getSlotIdLevel(slotId) {
-    if (slotId === 'month' || slotId === 'this_month' || slotId === 'next_month')
-        return 1;
-    if (slotId === 'week' || slotId === 'next_week' || slotId === 'following_week' || slotId === 'this_week')
-        return 2;
-    else if (slotId === 'day' || slotId === 'lundi' || slotId === 'mardi' || slotId === 'mercredi' || slotId === 'jeudi' || slotId === 'vendredi')
-        return 3;
-    else if (slotId === 'matin' || slotId === 'aprem')
-        return 4;
-    else
-        return -1
+    const base = slotId?.match(/(\S+)/)?.[1];
+    return _defById.get(base)?.level ?? -1;
+}
+
+/**
+ * Famille d'un slot id (gère le suffixe shift "id + n").
+ * @returns 'relatifPresent' | 'relatifParent' | 'generic' | undefined
+ */
+export function getSlotIdFamily(slotId) {
+    const base = slotId.match(/(\S+)/)?.[1];
+    return _defById.get(base)?.family;
+}
+
+/**
+ * Rang de la famille dans l'ordre d'affichage, à niveau égal (cf. slot-model-spec.md § 10).
+ * Départage les slots que `weight` seul ne sait pas ordonner : au niveau jour, les deux
+ * familles partagent la même échelle (`today` = `lundi` = 1). Le joker ouvre le niveau,
+ * puis le `relatifPresent` (toujours urgent), puis le `relatifParent`.
+ * @returns 0 | 1 | 2 (0 pour un id inconnu)
+ */
+export function getSlotIdFamilyRank(slotId) {
+    return FAMILY_RANK[getSlotIdFamily(slotId)] ?? 0;
+}
+
+const FAMILY_RANK = { generic: 0, relatifPresent: 1, relatifParent: 2 };
+
+/** Ancre relative au présent (peut porter shift/repetition en tête de branche). */
+export function isAnchor(slotId) {
+    const base = slotId.match(/(\S+)/)?.[1];
+    return _defById.get(base)?.role === 'anchor';
+}
+
+/** Complément : position dans la période parente. */
+export function isComplement(slotId) {
+    const base = slotId.match(/(\S+)/)?.[1];
+    return _defById.get(base)?.role === 'complement';
 }
 
 /*
@@ -95,8 +184,7 @@ export function getSlotIdPrevious(slotId, repetition) {
     if (isSlotIdGeneric(slotId)) {
         return slotId
     }
-    const level = getSlotIdLevel(slotId)
-    const slots = SLOTIDS_BY_LEVEL[level.toString()]
+    const slots = _navSeq(slotId)
     const index = slots.indexOf(slotId)
     if (index === 0 && repetition === undefined) {
         return slotId
@@ -126,12 +214,10 @@ export function getSlotIdNextPrev(slotId, direction) {
     const shift = IdRegExp[2] !== '' ? parseInt(IdRegExp[2]) : undefined
 
     if (shift === undefined) {
-        const level = getSlotIdLevel(id)
-        const slots = SLOTIDS_BY_LEVEL[level.toString()]
-        const index = 
-        slots.indexOf(id)
+        const slots = _navSeq(id)
+        const index = slots.indexOf(id)
         if (direction > 0) {
-            if (index < slots.length - 1) {
+            if (index + direction < slots.length) {
                 return slots[index + direction]
             } else {
                 return id + " + " + direction
@@ -173,7 +259,7 @@ export function getSlotIdIndex(slotId) {
         return index + shift
     }
 
-    return SLOTIDS_BY_LEVEL[level].indexOf(id)
+    return _navSeq(id).indexOf(id)
 }
 
 export function getSlotIdDistance(id1, id2) {

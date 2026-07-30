@@ -1,15 +1,14 @@
 import SlotPickerNode from "./slot-picker-node";
 
-import { DEFAULT_CONF, slotViewFilter } from "../data/slot-view";
+import { DEFAULT_CONF, slotViewPicker } from "../data/slot-view";
 
-function SlotPicker({selectedSlotExpr, onSlotChange}) {
+function SlotPicker({selectedSlotExprs, onSlotChange}) {
 
-  const givenSlots = slotViewFilter(DEFAULT_CONF);
-  const rootSlot = { id: 'root', slotExpr: '', path: '', inner: givenSlots }
+  const givenSlots = slotViewPicker(DEFAULT_CONF);
 
   return (
     <>
-      {givenSlots.map((slot, index) => <SlotPickerNode key={index} slot={slot} selectedSlotExpr={selectedSlotExpr} onSlotChange={onSlotChange}/>)}
+      {givenSlots.map((slot, index) => <SlotPickerNode key={index} slot={slot} selectedSlotExprs={selectedSlotExprs} onSlotChange={onSlotChange}/>)}
     </>
   );
 }

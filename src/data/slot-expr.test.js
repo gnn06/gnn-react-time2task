@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import { isSlotEqual, slotCompare, slotExprAdd } from "./slot-expr.js";
+import { slotHasImpreciseIcon } from "./slot-view";
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -93,6 +94,30 @@ describe('slotEqual', () => {
     it("every (don't check  length)", () => {
         const result = isSlotEqual('this_month every 2 this_week jeudi', 'this_month this_week jeudi');
         expect(result).toEqual(true);
+    })
+})
+
+describe('tâche imprécise — icône', () => {
+    it('une tâche affectée à this_month sans semaine est imprécise dans le slot this_month', () => {
+        const taskSlotExpr = 'this_month';
+        const slotPath = 'this_month';
+        expect(slotHasImpreciseIcon(slotPath, 1)).toBe(true);
+        expect(isSlotEqual(taskSlotExpr, slotPath)).toBe(true);
+    })
+    it('une tâche affectée à this_month this_week n\'est pas imprécise dans this_month', () => {
+        const taskSlotExpr = 'this_month this_week';
+        const slotPath = 'this_month';
+        expect(isSlotEqual(taskSlotExpr, slotPath)).toBe(false);
+    })
+    it('une tâche affectée à this_month this_week est imprécise dans le slot this_week', () => {
+        const taskSlotExpr = 'this_month this_week';
+        const slotPath = 'this_month this_week';
+        expect(slotHasImpreciseIcon(slotPath, 2)).toBe(true);
+        expect(isSlotEqual(taskSlotExpr, slotPath)).toBe(true);
+    })
+    it('une tâche affectée à this_month next_week n\'a pas d\'icône (hors branche this_week)', () => {
+        const slotPath = 'this_month next_week';
+        expect(slotHasImpreciseIcon(slotPath, 2)).toBe(false);
     })
 })
 

@@ -157,6 +157,15 @@ describe('getSlotIdNext', () => {
         const result = getSlotIdNextPrev("lundi", -1)
         expect(result).toEqual("lundi")
     });
+    test('direction 3 depuis this_week → this_week + 3', () => {
+        expect(getSlotIdNextPrev('this_week', 3)).toEqual('this_week + 3')
+    });
+    test('direction 3 depuis next_week → next_week + 3', () => {
+        expect(getSlotIdNextPrev('next_week', 3)).toEqual('next_week + 3')
+    });
+    test('direction 3 depuis this_month → this_month + 3', () => {
+        expect(getSlotIdNextPrev('this_month', 3)).toEqual('this_month + 3')
+    });
 });
 
 

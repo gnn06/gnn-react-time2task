@@ -4,7 +4,15 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskPredicateError,
     getNewOrder,
     taskGroupActivity,
-    getTaskNextSlotLabel} from "./task";
+    getTaskNextSlotLabel,
+    isTaskImprecise,
+    taskHasRelatifParentDay,
+    taskHasRelatifPresentDay,
+    taskHasPathWithoutWeekDay,
+    taskRelativePresentToParent,
+    taskRelativeParentToPresent,
+    getListTasks,
+    getListTasksFiltered} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -74,6 +82,46 @@ describe('taskCompare', () => {
         const task2 = { slotExpr: 'this_month this_week' }
         const result = taskCompare(task1, task2)
         expect(result).toBe(1)
+    })
+
+    // Les tâches les plus urgentes ouvrent la liste : le bloc relatifPresent passe devant
+    // les weekdays, quel que soit le jour réel (cf. slot-model-spec.md § 10).
+    describe('day family order', () => {
+        it('today before lundi', () => {
+            const task1 = { slotExpr: 'this_month this_week today', order: 9 }
+            const task2 = { slotExpr: 'this_month this_week lundi', order: 1 }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('tomorrow before mardi', () => {
+            const task1 = { slotExpr: 'this_month this_week tomorrow', order: 9 }
+            const task2 = { slotExpr: 'this_month this_week mardi', order: 1 }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today aprem before lundi matin', () => {
+            const task1 = { slotExpr: 'this_month this_week today aprem' }
+            const task2 = { slotExpr: 'this_month this_week lundi matin' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today matin before today aprem', () => {
+            const task1 = { slotExpr: 'this_month this_week today matin' }
+            const task2 = { slotExpr: 'this_month this_week today aprem' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
+
+        it('today without hour closes the today block', () => {
+            const task1 = { slotExpr: 'this_month this_week today' }
+            const task2 = { slotExpr: 'this_month this_week today aprem' }
+            expect(taskCompare(task1, task2)).toBe(1)
+        })
+
+        it('vendredi before this_week alone', () => {
+            const task1 = { slotExpr: 'this_month this_week vendredi' }
+            const task2 = { slotExpr: 'this_month this_week' }
+            expect(taskCompare(task1, task2)).toBe(-1)
+        })
     })
 
     describe('multi slot', () => {
@@ -344,6 +392,33 @@ describe('findTaskBySlotExpr', () => {
         expect(result).toEqual(expected);
     })
 
+    it('tâche mixte cross-famille (today jeudi) trouvée par le nœud today', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const todayNode = { id: 'today', path: 'today', inner: [
+            { id: 'matin', path: 'today matin', inner: [] },
+            { id: 'aprem', path: 'today aprem', inner: [] },
+        ] };
+        const result = findTaskBySlotExpr(tasks, todayNode, false);
+        expect(result.map(t => t.id)).toEqual(['mixte']);
+    });
+
+    it('tâche mixte cross-famille (today jeudi) trouvée aussi par le nœud jeudi (→ affichée deux fois)', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const jeudiNode = { id: 'jeudi', path: 'this_month this_week jeudi', inner: [] };
+        const result = findTaskBySlotExpr(tasks, jeudiNode, false);
+        expect(result.map(t => t.id)).toEqual(['mixte']);
+    });
+
+    it('tâche mixte (today jeudi) exclue de this_week quand today et jeudi sont des inner', () => {
+        const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];
+        const thisWeek = { id: 'this_week', path: 'this_month this_week', inner: [
+            { id: 'today', path: 'today', inner: [] },
+            { id: 'jeudi', path: 'this_month this_week jeudi', inner: [] },
+        ] };
+        const result = findTaskBySlotExpr(tasks, thisWeek, false);
+        expect(result).toEqual([]);
+    });
+
     it('test findTaskBySlotExpr empty slotExpr', () => {
         const tasks = [ {
             id: 'task1'
@@ -606,10 +681,53 @@ describe('taskShiftFilter', () => {
     });
 
     test('expression with space', () => {
-        const given    = [ { slotExpr: 'this_week ' } ] 
+        const given    = [ { slotExpr: 'this_week ' } ]
         const expected = [  ] ;
         const result = taskShiftFilter(given, 'this_week')
         expect(result).toEqual(expected)
+    })
+
+    describe('level day', () => {
+        test('tomorrow → today', () => {
+            const given    = [ { slotExpr: 'tomorrow' } ]
+            const expected = [ { slotExpr: 'today', oldSlotExpr: 'tomorrow' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+        test('today → inchangé (plancher, non inclus)', () => {
+            expect(taskShiftFilter([ { slotExpr: 'today' } ], 'day')).toEqual([])
+        })
+        test('weekday → inchangé', () => {
+            expect(taskShiftFilter([ { slotExpr: 'this_week mardi' } ], 'day')).toEqual([])
+        })
+        test('this_week tomorrow → this_week today', () => {
+            const given    = [ { slotExpr: 'this_week tomorrow' } ]
+            const expected = [ { slotExpr: 'this_week today', oldSlotExpr: 'this_week tomorrow' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+    })
+
+    describe('conservation de la répétition (multi jour-ancre + weekday répété)', () => {
+        test('tomorrow + every 1 this_week jeudi → today, every et jeudi conservés', () => {
+            const given    = [ { slotExpr: 'tomorrow every 1 this_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 1 this_week jeudi', oldSlotExpr: 'tomorrow every 1 this_week jeudi' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+
+        test('tomorrow + every 2 this_week jeudi → today, every 2 conservé', () => {
+            const given    = [ { slotExpr: 'tomorrow every 2 this_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 2 this_week jeudi', oldSlotExpr: 'tomorrow every 2 this_week jeudi' } ]
+            expect(taskShiftFilter(given, 'day')).toEqual(expected)
+        })
+
+        test('today + every 1 this_week jeudi → inchangé au niveau jour', () => {
+            expect(taskShiftFilter([ { slotExpr: 'today every 1 this_week jeudi' } ], 'day')).toEqual([])
+        })
+
+        test('today + every 1 next_week jeudi → this_week, every conservé au niveau semaine', () => {
+            const given    = [ { slotExpr: 'today every 1 next_week jeudi' } ]
+            const expected = [ { slotExpr: 'today every 1 this_week jeudi', oldSlotExpr: 'today every 1 next_week jeudi' } ]
+            expect(taskShiftFilter(given, 'week')).toEqual(expected)
+        })
     })
 });
 
@@ -648,6 +766,36 @@ describe('getTaskNextSlotLabel', () => {
         const task = { slotExpr: 'this_week mercredi' }
         expect(getTaskNextSlotLabel(task)).toBeNull()
     })
+    test('tâche projetée → libellé basé sur originalSlotExpr', () => {
+        // projetée sur today (slotExpr) mais affectée à vendredi à l'origine
+        const task = { slotExpr: 'today', originalSlotExpr: 'this_week vendredi' }
+        expect(getTaskNextSlotLabel(task)).toBe('vendredi')
+    })
+
+    describe('source du "maintenant" au niveau jour — today stocké (snapDates) plutôt que horloge', () => {
+        // Horloge système = mercredi (beforeEach ci-dessus), mais today a été avancé
+        // manuellement (« Démarrer Jour ») jusqu'à jeudi : le "maintenant" utilisé pour
+        // nextSlot doit suivre le today stocké, pas l'horloge.
+        const snapDatesTodayJeudi = [
+            { slotid: 'this_week', date: '2023-12-18' }, // lundi
+            { slotid: 'today',     date: '2023-12-21' }, // jeudi
+        ]
+
+        test("today stocké = jeudi, tâche jeudi 'fait' (strict) → plus de prochain créneau (même jour, pas de répétition)", () => {
+            const task = { slotExpr: 'this_week jeudi', status: 'fait' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodayJeudi)).toBeNull()
+        })
+
+        test("today stocké = jeudi, tâche mercredi (jour de l'horloge) 'A faire' → considérée passée, pas 'aujourd'hui'", () => {
+            const task = { slotExpr: 'this_week mercredi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodayJeudi)).toBeNull()
+        })
+
+        test('sans snapDates → comportement inchangé, fallback horloge (non-régression)', () => {
+            const task = { slotExpr: 'this_week mercredi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task)).toBe('mercredi')
+        })
+    })
 })
 
 describe('getNewOrder', () => {
@@ -670,5 +818,393 @@ describe('getNewOrder', () => {
         const tasks = [ { id: 'id1', order: 0.5 },{ id: 'id2', order: 5.0 }, { id: 'id3', order: 7.0 } ];
         const result = getNewOrder(tasks, 'id1', 'id3');
         expect(result).toEqual(8);
+    })
+});
+
+describe('isTaskImprecise', () => {
+    // date mockée : mercredi 2023-12-20 → this_month, this_week
+    const t = (slotExpr) => ({ slotExpr })
+
+    describe('sans levelMaxIncluded (vue complète)', () => {
+        test('this_month → imprecise', () => {
+            expect(isTaskImprecise(t('this_month'), null)).toBe(true)
+        })
+        test('this_month this_week → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week'), null)).toBe(true)
+        })
+        test('this_month this_week mercredi → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi'), null)).toBe(true)
+        })
+        test('this_month this_week mercredi matin (heure) → non imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi matin'), null)).toBe(false)
+        })
+        test('this_month next_week → non imprecise (hors branche this_week)', () => {
+            expect(isTaskImprecise(t('this_month next_week'), null)).toBe(false)
+        })
+        test('next_month → non imprecise', () => {
+            expect(isTaskImprecise(t('next_month'), null)).toBe(false)
+        })
+    })
+
+    describe('avec levelMaxIncluded', () => {
+        test('this_month avec levelMaxIncluded=1 → imprecise', () => {
+            expect(isTaskImprecise(t('this_month'), 1)).toBe(true)
+        })
+        test('this_month this_week avec levelMaxIncluded=1 → non imprecise (niveau > max)', () => {
+            expect(isTaskImprecise(t('this_month this_week'), 1)).toBe(false)
+        })
+        test('this_month this_week avec levelMaxIncluded=2 → imprecise', () => {
+            expect(isTaskImprecise(t('this_month this_week'), 2)).toBe(true)
+        })
+        test('this_month this_week mercredi avec levelMaxIncluded=2 → non imprecise (niveau > max)', () => {
+            expect(isTaskImprecise(t('this_month this_week mercredi'), 2)).toBe(false)
+        })
+    })
+
+    describe('taskHasRelatifPresentDay — C2b-bis', () => {
+        const t = slotExpr => ({ slotExpr })
+        test('today → true', () => expect(taskHasRelatifPresentDay(t('today'))).toBe(true))
+        test('tomorrow → true', () => expect(taskHasRelatifPresentDay(t('tomorrow'))).toBe(true))
+        test('today matin → true', () => expect(taskHasRelatifPresentDay(t('today matin'))).toBe(true))
+        test('every 1 today → true (tâche répétante)', () => expect(taskHasRelatifPresentDay(t('every 1 today'))).toBe(true))
+        test('this_week mardi → false', () => expect(taskHasRelatifPresentDay(t('this_week mardi'))).toBe(false))
+        test('this_week seul → false', () => expect(taskHasRelatifPresentDay(t('this_week'))).toBe(false))
+        test('this_month seul → false', () => expect(taskHasRelatifPresentDay(t('this_month'))).toBe(false))
+    })
+
+    describe('taskHasPathWithoutWeekDay (au moins un créneau sans jour précis)', () => {
+        const t = slotExpr => ({ slotExpr })
+        test('this_week → true', () => expect(taskHasPathWithoutWeekDay(t('this_week'))).toBe(true))
+        test('today → true', () => expect(taskHasPathWithoutWeekDay(t('today'))).toBe(true))
+        test('tomorrow → true', () => expect(taskHasPathWithoutWeekDay(t('tomorrow'))).toBe(true))
+        test('this_month → true', () => expect(taskHasPathWithoutWeekDay(t('this_month'))).toBe(true))
+        test('next_week → true', () => expect(taskHasPathWithoutWeekDay(t('next_week'))).toBe(true))
+        test('today aprem → true (heure ne disqualifie pas)', () => expect(taskHasPathWithoutWeekDay(t('today aprem'))).toBe(true))
+        test('today jeudi → true (multi : alternative today)', () => expect(taskHasPathWithoutWeekDay(t('today jeudi'))).toBe(true))
+        test('every 1 today → true', () => expect(taskHasPathWithoutWeekDay(t('every 1 today'))).toBe(true))
+        test('this_week mardi → false (mardi sur le chemin)', () => expect(taskHasPathWithoutWeekDay(t('this_week mardi'))).toBe(false))
+        test('next_week mercredi → false', () => expect(taskHasPathWithoutWeekDay(t('next_week mercredi'))).toBe(false))
+        test('mercredi aprem → false (mercredi sur le chemin)', () => expect(taskHasPathWithoutWeekDay(t('mercredi aprem'))).toBe(false))
+        test('mercredi jeudi → false (multi sans alternative sans weekday)', () => expect(taskHasPathWithoutWeekDay(t('mercredi jeudi'))).toBe(false))
+        test('lundi seul → false (relatifParent)', () => expect(taskHasPathWithoutWeekDay(t('lundi'))).toBe(false))
+    })
+
+    describe('taskHasRelatifParentDay (routage vue tree/list)', () => {
+        const task = slotExpr => ({ slotExpr })
+        test('this_week mardi → true', () => {
+            expect(taskHasRelatifParentDay(task('this_week mardi'))).toBe(true)
+        })
+        test('every 1 this_week mardi → true', () => {
+            expect(taskHasRelatifParentDay(task('every 1 this_week mardi'))).toBe(true)
+        })
+        test('today → false', () => {
+            expect(taskHasRelatifParentDay(task('today'))).toBe(false)
+        })
+        test('today matin → false', () => {
+            expect(taskHasRelatifParentDay(task('today matin'))).toBe(false)
+        })
+        test('this_week seul → false', () => {
+            expect(taskHasRelatifParentDay(task('this_week'))).toBe(false)
+        })
+        test('today vendredi → true (mixte)', () => {
+            expect(taskHasRelatifParentDay(task('today vendredi'))).toBe(true)
+        })
+    })
+
+    describe('routage tree/list — partition v2', () => {
+        const t = slotExpr => ({ slotExpr })
+        const forTree = t => taskHasRelatifParentDay(t)
+        const forList = t => !taskHasRelatifParentDay(t) || taskHasRelatifPresentDay(t)
+
+        test('this_week lundi → tree uniquement', () => {
+            const task = t('this_week lundi')
+            expect(forTree(task)).toBe(true)
+            expect(forList(task)).toBe(false)
+        })
+        test('today → list uniquement', () => {
+            const task = t('today')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('this_week seul → list uniquement', () => {
+            const task = t('this_week')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('this_month seul → list uniquement', () => {
+            const task = t('this_month')
+            expect(forTree(task)).toBe(false)
+            expect(forList(task)).toBe(true)
+        })
+        test('today vendredi → les deux vues (tâche mixte)', () => {
+            const task = t('today vendredi')
+            expect(forTree(task)).toBe(true)
+            expect(forList(task)).toBe(true)
+        })
+    })
+
+    describe('taskRelativePresentToParent — C2b projection tree', () => {
+        // mock date : vendredi 2025-01-03 (isoWeek 1, isoWeekYear 2025)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => vi.useRealTimers())
+
+        // snapDates explicites (today = vendredi)
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        // snapDates avec today = jeudi (pour tester tomorrow → vendredi)
+        const snapDatesThursday = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-02' },
+        ]
+        // snapDates sans today (Phase E pas encore faite) + this_week périmée — cas réel de prod
+        const snapDatesStaleWeek = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-23' },  // lundi semaine PRÉCÉDENTE
+            // pas de 'today' en base avant Phase E
+        ]
+        const t = slotExpr => ({ slotExpr, status: 'A faire', title: 'test' })
+
+        test('today (vendredi) → vendredi this_week', () => {
+            expect(taskRelativePresentToParent(t('today'), snapDates).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('today matin → vendredi matin this_week', () => {
+            expect(taskRelativePresentToParent(t('today matin'), snapDates).slotExpr)
+                .toBe('this_month this_week vendredi matin')
+        })
+        test('tomorrow (vendredi → samedi) → null (weekend)', () => {
+            expect(taskRelativePresentToParent(t('tomorrow'), snapDates)).toBeNull()
+        })
+        test('tomorrow (jeudi → vendredi) → vendredi this_week', () => {
+            expect(taskRelativePresentToParent(t('tomorrow'), snapDatesThursday).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('snapDate this_week périmée → contexte basé sur moment() courant', () => {
+            expect(taskRelativePresentToParent(t('today'), snapDatesStaleWeek).slotExpr)
+                .toBe('this_month this_week vendredi')
+        })
+        test('tâche relatifParent (mardi) → null', () => {
+            expect(taskRelativePresentToParent(t('this_week mardi'), snapDates)).toBeNull()
+        })
+        test('tâche sans jour (this_week seul) → null', () => {
+            expect(taskRelativePresentToParent(t('this_week'), snapDates)).toBeNull()
+        })
+        test('tâche mixte (lundi + today=jeudi) → phantom jeudi', () => {
+            expect(taskRelativePresentToParent(t('this_month this_week lundi today'), snapDatesThursday).slotExpr)
+                .toBe('this_month this_week jeudi')
+        })
+        test('les autres propriétés de la tâche sont préservées', () => {
+            const result = taskRelativePresentToParent(t('today'), snapDates)
+            expect(result.status).toBe('A faire')
+            expect(result.title).toBe('test')
+        })
+        test('originalSlotExpr contient le slotExpr original', () => {
+            const result = taskRelativePresentToParent(t('today'), snapDates)
+            expect(result.originalSlotExpr).toBe('today')
+        })
+        test('invariant ?? t : tomorrow vendredi → null, fallback = tâche originale', () => {
+            const task = t('tomorrow')
+            // projection impossible (weekend) → null → l'appelant utilise ?? task
+            const result = taskRelativePresentToParent(task, snapDates) ?? task
+            expect(result).toBe(task)
+        })
+    })
+
+    describe('taskRelativeParentToPresent — C2c', () => {
+        // Fake timer : vendredi 2025-01-03 (isoWeekday=5, semaine du 2024-12-30)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: 'test', status: 'A faire' })
+
+        // snapDates cohérents : today = vendredi 2025-01-03
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        // snapDates avec today = jeudi → vendredi = tomorrow
+        const snapDatesThursday = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-02' },
+        ]
+        // snapDates sans today (avant Phase E)
+        const snapDatesStaleWeek = [
+            { slotid: 'this_month', date: '2024-12' },
+            { slotid: 'this_week',  date: '2024-12-23' },
+        ]
+
+        test('vendredi (= today) → today', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDates).slotExpr)
+                .toBe('today')
+        })
+        test('vendredi matin (= today) → today matin (heure préservée)', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi matin'), snapDates).slotExpr)
+                .toBe('today matin')
+        })
+        test('vendredi (= tomorrow) → tomorrow', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesThursday).slotExpr)
+                .toBe('tomorrow')
+        })
+        test('jeudi (offset ≥2, ≠ today/tomorrow) → this_month this_week (troncature)', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates).slotExpr)
+                .toBe('this_month this_week')
+        })
+        test('lundi (offset <0, ≠ today/tomorrow) → this_month this_week (troncature)', () => {
+            expect(taskRelativeParentToPresent(t('this_month this_week lundi'), snapDates).slotExpr)
+                .toBe('this_month this_week')
+        })
+        test('jeudi matin → this_month this_week (heure jetée au fallback)', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi matin'), snapDates).slotExpr)
+                .toBe('this_month this_week')
+        })
+        test('fallback : originalSlotExpr préservé', () => {
+            expect(taskRelativeParentToPresent(t('this_week jeudi'), snapDates).originalSlotExpr)
+                .toBe('this_week jeudi')
+        })
+        test('today (pas de relatifParent) → null', () => {
+            expect(taskRelativeParentToPresent(t('today'), snapDates)).toBeNull()
+        })
+        test('next_week vendredi (today=vendredi) → next_week, PAS today (projection seulement depuis this_week)', () => {
+            expect(taskRelativeParentToPresent(t('next_week vendredi'), snapDates).slotExpr)
+                .toBe('this_month next_week')
+        })
+        test('next_week vendredi matin (today=vendredi) → next_week (heure jetée), PAS today matin', () => {
+            expect(taskRelativeParentToPresent(t('next_week vendredi matin'), snapDates).slotExpr)
+                .toBe('this_month next_week')
+        })
+        test('snapDate périmée (sans today) → getDefaultDates() → vendredi = today', () => {
+            expect(taskRelativeParentToPresent(t('this_week vendredi'), snapDatesStaleWeek).slotExpr)
+                .toBe('today')
+        })
+        test('les autres propriétés de la tâche sont préservées', () => {
+            const result = taskRelativeParentToPresent(t('this_week vendredi'), snapDates)
+            expect(result.status).toBe('A faire')
+            expect(result.title).toBe('test')
+        })
+        test('originalSlotExpr contient le slotExpr original', () => {
+            const result = taskRelativeParentToPresent(t('this_week vendredi'), snapDates)
+            expect(result.originalSlotExpr).toBe('this_week vendredi')
+        })
+    })
+
+    describe('getListTasks — partition vue list', () => {
+        // Fake timer : vendredi 2025-01-03 (today = vendredi)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: slotExpr, status: 'A faire' })
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        const exprs = list => list.map(t => t.slotExpr).sort()
+
+        const tasks = [
+            t('today'),              // relatifPresent pur
+            t('today vendredi'),     // mixte
+            t('this_week'),          // imprécis
+            t('this_week vendredi'), // relatifParent = today
+            t('this_week lundi'),    // relatifParent offset <0
+        ]
+
+        test('includeWeekDays absent → base seule (pas de relatifParent pur)', () => {
+            const result = getListTasks(tasks, {}, snapDates)
+            expect(exprs(result)).toEqual(['this_week', 'today', 'today vendredi'])
+        })
+
+        test('includeWeekDays true → ajoute vendredi (→today) et lundi (→this_month this_week)', () => {
+            const result = getListTasks(tasks, { includeWeekDays: true }, snapDates)
+            expect(exprs(result)).toEqual([
+                'this_month this_week', // this_week lundi tronqué
+                'this_week',
+                'today',                // base
+                'today',                // this_week vendredi projeté
+                'today vendredi',
+            ])
+        })
+
+        test('includeWeekDays true → la tâche mixte n\'est pas dupliquée', () => {
+            const result = getListTasks(tasks, { includeWeekDays: true }, snapDates)
+            expect(result.filter(t => t.slotExpr === 'today vendredi')).toHaveLength(1)
+        })
+
+        test('projection préserve originalSlotExpr', () => {
+            const result = getListTasks([t('this_week lundi')], { includeWeekDays: true }, snapDates)
+            expect(result[0].originalSlotExpr).toBe('this_week lundi')
+        })
+    })
+
+    describe('getListTasksFiltered — projection puis filtre (synchro panels)', () => {
+        // Fake timer : vendredi 2025-01-03 (today = vendredi)
+        beforeEach(() => {
+            vi.useFakeTimers()
+            vi.setSystemTime(new Date(2025, 0, 3, 13, 35, 45))
+        })
+        afterEach(() => { vi.useRealTimers() })
+
+        const t = slotExpr => ({ slotExpr, title: slotExpr, status: 'A faire' })
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+        const exprs = list => list.map(t => t.slotExpr).sort()
+
+        const tasks = [
+            t('today'),              // directement today
+            t('this_week vendredi'), // relatifParent = today → projeté en today
+            t('this_week lundi'),    // relatifParent passé
+        ]
+        const conf = { view: 'list', includeWeekDays: true }
+        const filterToday = { expression: 'today' }
+
+        test('filtre today : la tâche projetée (vendredi→today) reste visible', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            // les deux tâches qui tombent sur today : la directe + la projetée
+            expect(result.filter(x => x.slotExpr === 'today')).toHaveLength(2)
+        })
+
+        test('filtre today : la tâche directement today reste visible', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            expect(result.some(x => x.slotExpr === 'today' && !x.originalSlotExpr)).toBe(true)
+        })
+
+        test('la tâche projetée garde son originalSlotExpr', () => {
+            const result = getListTasksFiltered(tasks, conf, filterToday, snapDates)
+            const projected = result.find(x => x.originalSlotExpr === 'this_week vendredi')
+            expect(projected).toBeDefined()
+            expect(projected.slotExpr).toBe('today')
+        })
+
+        test('vue tree : pas de projection, filtre sur slotExpr brut', () => {
+            const result = getListTasksFiltered(tasks, { view: 'tree', includeWeekDays: true }, filterToday, snapDates)
+            // seule la tâche directement today matche (pas de projection)
+            expect(exprs(result)).toEqual(['today'])
+        })
+
+        test('filtre slot vendredi = filtre slot today quand today est vendredi', () => {
+            const filterVendredi = { slot: 'this_month this_week vendredi' }
+            const filterTodaySlot = { slot: 'this_month this_week today' }
+            const resultVendredi = getListTasksFiltered(tasks, conf, filterVendredi, snapDates)
+            const resultToday    = getListTasksFiltered(tasks, conf, filterTodaySlot, snapDates)
+            expect(resultVendredi).toHaveLength(resultToday.length)
+            expect(exprs(resultVendredi)).toEqual(exprs(resultToday))
+        })
     })
 });

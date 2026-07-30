@@ -32,6 +32,24 @@ afterAll(() => server.close())
 
 const store = configureTestStorePreloaded({ user:{ id: 12 }})
 
+test('tâche complement (mardi) → icône fixe visible', () => {
+    const task = { id: 1, title: 'test', slotExpr: 'this_week mardi' }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    expect(screen.getByTestId('fixed-slot-icon')).toBeInTheDocument()
+})
+
+test('tâche today → pas d\'icône fixe', () => {
+    const task = { id: 1, title: 'test', slotExpr: 'today' }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    expect(screen.queryByTestId('fixed-slot-icon')).not.toBeInTheDocument()
+})
+
+test('tâche projetée (originalSlotExpr mardi) → icône fixe visible', () => {
+    const task = { id: 1, title: 'test', slotExpr: 'today', originalSlotExpr: 'this_week mardi' }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    expect(screen.getByTestId('fixed-slot-icon')).toBeInTheDocument()
+})
+
 test('don\'t loose nextAction and url on favorite click', async () => {
     const task = { id: 12, title: 'goi', slotExpr: 'this_week', nextAction: 'do it', url: 'http://example.com', favorite: false };
     

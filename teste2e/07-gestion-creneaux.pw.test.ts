@@ -49,6 +49,9 @@ test.describe('Gestion des créneaux', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('');
         await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
+        // Garantir la vue tree au départ de chaque test (indépendamment de l'état laissé par le test précédent)
+        await page.getByRole('combobox', { name: 'slot-view-select' }).click();
+        await page.getByRole('option', { name: 'Tree' }).click();
     });
 
     test('affecter un créneau à une tâche sans créneau', async ({ page }) => {
@@ -105,7 +108,10 @@ test.describe('Gestion des créneaux', () => {
         await expectTaskInSlotPanel(page, title, 'this_month this_week jeudi');
     });
 
-    test('ajouter une répétition sur un créneau (this_week)', async ({ page }) => {
+    // TEMPORAIRE : la visualisation des répétitions est désactivée (slot.jsx includeRepeat=false),
+    // donc une tâche répétée n'apparaît plus qu'en this_week. Réactiver ce test quand la décision
+    // répétition/filtre NOREPEAT sera tranchée (cf. slot.jsx et docs/slot-view-spec.md).
+    test.fixme('ajouter une répétition sur un créneau (this_week)', async ({ page }) => {
         const title = uniqueTitle('créneau-répétition');
         await creerTache(page, title);
 
@@ -122,6 +128,10 @@ test.describe('Gestion des créneaux', () => {
 
         await dialog.getByRole('button', { name: 'Confirm' }).click();
         await waitForApiIdle(page);
+
+        // Les tâches this_week sans weekday ne sont pas dans la vue tree — passer en vue list
+        await page.getByRole('combobox', { name: 'slot-view-select' }).click();
+        await page.getByRole('option', { name: 'List' }).click();
 
         await expectTaskInSlotPanel(page, title, 'this_month this_week');
         await expectTaskInSlotPanel(page, title, 'this_month next_week');

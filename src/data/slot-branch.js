@@ -1,5 +1,5 @@
 import { isBranchEqualOrInclude } from "./slot-branch++";
-import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance } from "./slot-id";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance, getSlotIdFamily } from "./slot-id";
 
 export function getBranchFirstSlot(branch) {
     return branch.value[0];
@@ -78,9 +78,14 @@ export function isBranchEqualShallow(branch1, branch2, withRepeat = false) {
         const distance = getBranchDistance(branch1, branch2)
         return (distance >= 0 && distance % branch1.repetition === 0)
     }
-    if (isSlotIdGeneric(getBranchFirstSlot(branch1))) {
+    const id1 = getBranchFirstSlot(branch1)
+    const id2 = getBranchFirstSlot(branch2)
+    if (isSlotIdGeneric(id1)) {
         return true
     } else {
+        const fam1 = typeof id1 === 'string' ? getSlotIdFamily(id1) : undefined
+        const fam2 = typeof id2 === 'string' ? getSlotIdFamily(id2) : undefined
+        if (fam1 && fam2 && fam1 !== fam2 && fam1 !== 'generic' && fam2 !== 'generic') return false
         return getBranchWeight(branch1) === getBranchWeight(branch2)
     }
 }
@@ -169,6 +174,52 @@ export function isBranchDisable(branch) {
     return _applyTestOnBranchOr(branch, branch => branch.flags && branch.flags.indexOf('disable') > -1)
 }
 
+/** Tous les ids de slot (chaînes) d'une branche/multi, récursivement. */
+function _collectSlotIds(node) {
+    if (typeof node === 'string') return [node];
+    if (node === null || typeof node !== 'object' || !Array.isArray(node.value)) return [];
+    return node.value.flatMap(_collectSlotIds);
+}
+
+/** Jour relatifParent (lundi..vendredi) : complément de niveau JOUR. L'heure (matin/aprem, niveau 4) ne compte pas. */
+function _isWeekDayId(id) {
+    return getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent';
+}
+
+/**
+ * Vrai si la branche contient un complément relatifParent au niveau JOUR
+ * (lundi..vendredi). L'heure (matin/aprem, niveau 4) n'intervient pas.
+ * Sert au routage vue tree (relatifParent) vs list (relatifPresent).
+ */
+export function branchHasRelatifParentDay(branch) {
+    return _collectSlotIds(branch).some(_isWeekDayId);
+}
+
+/**
+ * Vrai si au moins un chemin racine→feuille ne contient aucun weekday (lundi..vendredi).
+ * Multi (OU) : il suffit qu'une alternative soit sans weekday (ex. "today jeudi" → ok via today).
+ * Branche (chemin AND) : tous les éléments doivent éviter un weekday (un weekday sur le chemin
+ * disqualifie, ex. "mercredi aprem" → non). L'heure (matin/aprem) ne disqualifie pas.
+ */
+export function branchHasPathWithoutWeekDay(node) {
+    if (typeof node === 'string') return !_isWeekDayId(node);
+    if (node === null || typeof node !== 'object' || !Array.isArray(node.value)) return false;
+    if (node.type === 'multi') return node.value.some(branchHasPathWithoutWeekDay);
+    return node.value.every(branchHasPathWithoutWeekDay);
+}
+
+export function branchGetRelatifPresentDayId(branch) {
+    return _collectSlotIds(branch).find(
+        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifPresent'
+    ) ?? null
+}
+
+export function branchGetRelatifParentDayId(branch) {
+    return _collectSlotIds(branch).find(
+        id => getSlotIdLevel(id) === 3 && getSlotIdFamily(id) === 'relatifParent'
+    ) ?? null
+}
+
 export function isBranchMulti(branch) {
     if (branch.type === 'multi') {
         return true;
@@ -255,7 +306,11 @@ export function _branchAlias(branch) {
     if (branch.value[0] === 'next_week' && branch.shift && branch.shift === 1) {
         return transformBranch(branch, 'following_week')
     }
-    
+
+    if (branch.value[0] === 'today' && branch.shift && branch.shift === 1) {
+        return transformBranch(branch, 'tomorrow')
+    }
+
     return branch
 }
 

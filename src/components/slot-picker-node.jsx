@@ -2,7 +2,7 @@ import SlotPickerCard from "./slot-picker-card";
 
 import { getSlotIdLevel } from "../data/slot-id";
 
-export default function SlotPickerNode({slot, selectedSlotExpr, onSlotChange}) {
+export default function SlotPickerNode({slot, selectedSlotExprs, onSlotChange}) {
     const { path, inner } = slot;
 
     const innerClass = 'ml-3' 
@@ -10,11 +10,11 @@ export default function SlotPickerNode({slot, selectedSlotExpr, onSlotChange}) {
 
     return (
         <div>        
-            <SlotPickerCard slot={slot} selectedSlotExpr={selectedSlotExpr} onSlotChange={onSlotChange}/>
+            <SlotPickerCard slot={slot} selectedSlotExprs={selectedSlotExprs} onSlotChange={onSlotChange}/>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
                 <SlotPickerNode key={innerSlot.id} slot={innerSlot} 
-                    selectedSlotExpr={selectedSlotExpr}
+                    selectedSlotExprs={selectedSlotExprs}
                     onSlotChange={onSlotChange}
                 />)}
             </div>    

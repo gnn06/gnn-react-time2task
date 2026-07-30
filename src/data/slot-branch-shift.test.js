@@ -351,3 +351,51 @@ describe('_getBranchPreviousOrShift', () => {
         expect(result).toEqual({ type: 'branch', value: ['this_week'], repetition: 1 })
     })
 });
+
+describe('branchShift — niveau jour (family-aware)', () => {
+    // Ancres relatifPresent : roulent
+    test('tomorrow → today', () => {
+        expect(branchShift('tomorrow', 'day')).toBe('today')
+    })
+    test('today → today (plancher)', () => {
+        expect(branchShift('today', 'day')).toBe('today')
+    })
+    // Compléments relatifParent : restent fixes
+    test('mardi → mardi (relatifParent inchangé)', () => {
+        expect(branchShift('mardi', 'day')).toBe('mardi')
+    })
+    test('lundi → lundi (relatifParent inchangé)', () => {
+        expect(branchShift('lundi', 'day')).toBe('lundi')
+    })
+    // Branche avec weekday en queue : queue inchangée
+    test('this_week mardi → inchangé', () => {
+        const branch = { type: 'branch', value: ['this_week', 'mardi'] }
+        expect(branchShift(branch, 'day')).toEqual({ type: 'branch', value: ['this_week', 'mardi'] })
+    })
+    // Branche avec tomorrow localisé en queue : tomorrow → today
+    test('this_week tomorrow → this_week today', () => {
+        const branch = { type: 'branch', value: ['this_week', 'tomorrow'] }
+        expect(branchShift(branch, 'day')).toEqual({ type: 'branch', value: ['this_week', 'today'] })
+    })
+    // Branch avec weekday seul en tête (forme legacy non-localisée)
+    test('branch {mardi} → inchangé', () => {
+        expect(branchShift({ type: 'branch', value: ['mardi'] }, 'day'))
+            .toEqual({ type: 'branch', value: ['mardi'] })
+    })
+    // Multi de branches weekday (ex : this_month this_week mardi jeudi)
+    test('multi {mardi}{jeudi} → inchangé', () => {
+        const multi = { type: 'multi', value: [
+            { type: 'branch', value: ['mardi'] },
+            { type: 'branch', value: ['jeudi'] },
+        ]}
+        expect(branchShift({ type: 'branch', value: ['this_month', 'this_week', multi] }, 'day'))
+            .toEqual({ type: 'branch', value: ['this_month', 'this_week', multi] })
+    })
+    // Non-régression week/month : comportement inchangé
+    test('non-régression : next_week avec level week', () => {
+        expect(branchShift('next_week', 'week')).toBe('this_week')
+    })
+    test('non-régression : next_month avec level month', () => {
+        expect(branchShift('next_month', 'month')).toBe('this_month')
+    })
+});
