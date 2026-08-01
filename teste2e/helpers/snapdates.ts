@@ -2,11 +2,11 @@ import moment from 'moment';
 import { Page } from '@playwright/test';
 
 // Le today STOCKÉ (table SnapDates) pilote les colonnes/sections des vues, pas l'horloge.
-// La table est protégée par une RLS qui interdit l'écriture côté client (ANON_KEY) ; on ne
-// peut donc pas la seeder. On force plutôt la RÉPONSE de GET /SnapDates via page.route, ce
-// qui suffit : getCurrentWeekdayId lit ce que renvoie getSnapDates. À appeler AVANT le
-// chargement de la page (la 1re requête SnapDates doit être interceptée). L'interception est
-// portée par la page/contexte du test et disparaît en fin de test — aucune restauration.
+// On force la RÉPONSE de GET /SnapDates via page.route plutôt que de seeder par écriture
+// directe, pour ne pas dépendre de l'état réel de la table entre tests (déterminisme) ; ça
+// suffit, getCurrentWeekdayId lit ce que renvoie getSnapDates. À appeler AVANT le chargement
+// de la page (la 1re requête SnapDates doit être interceptée). L'interception est portée par
+// la page/contexte du test et disparaît en fin de test — aucune restauration.
 
 const WEEKDAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 

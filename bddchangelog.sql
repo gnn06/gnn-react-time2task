@@ -40,7 +40,16 @@ create table
     constraint SnapDates_pkey primary key (slotid)
   ) tablespace pg_default;
 
-// add policy all to authenticated
+// policy créée depuis le dashboard Supabase (constaté le 2026-08-01 sur prod et dev, non appliquée ici) :
+create policy "all to authenticated"
+on "public"."SnapDates"
+to authenticated
+using (
+  (userid = auth.uid())
+)
+with check (
+  (userid = auth.uid())
+);
 
 create table public.user_confs (
   user_id uuid not null references auth.users on delete cascade,
