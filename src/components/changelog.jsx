@@ -1,9 +1,13 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '28/07/2026';
+export const RELEASE = '02/08/2026';
 
 const text = `
+02/08/2026
+==========
+- possible d'activer la répétition (every N) sur les créneaux today/tomorrow, comme sur les autres créneaux
+
 28/07/2026
 ==========
 - nouveaux créneaux « today » et « tomorrow » : une tâche peut être posée sur aujourd'hui ou demain, et plus seulement sur un jour de la semaine. Les deux familles de jour cohabitent dans les vues, les jours de la semaine (weekDays) sur une ligne, aujourd'hui et demain (rollingDays) sur une autre

@@ -360,6 +360,28 @@ describe('branchShift — niveau jour (family-aware)', () => {
     test('today → today (plancher)', () => {
         expect(branchShift('today', 'day')).toBe('today')
     })
+    // Ancre avec répétition à la borne : redémarre sur sa propre famille (today),
+    // ne doit jamais basculer vers le complement 'lundi' (getSlotIdFirstLevel(3)
+    // préfère les compléments, à ne pas utiliser ici).
+    test('every 2 today → redémarre sur today avec shift (pas lundi)', () => {
+        const branch = { type: 'branch', value: ['today'], repetition: 2 }
+        expect(branchShift(branch, 'day')).toEqual({ type: 'branch', value: ['today'], repetition: 2, shift: 1 })
+    })
+    // Analyse de variantes : 'tomorrow' est à l'index 1 (pas 0) dans la séquence
+    // des ancres jour — il ne passe jamais par le chemin getSlotIdPrevious===null
+    // corrigé ci-dessus, donc pas de bug équivalent à vérifier ici, seulement à confirmer.
+    test('every 2 tomorrow → today (pas de bug équivalent, index 1 ≠ 0)', () => {
+        const branch = { type: 'branch', value: ['tomorrow'], repetition: 2 }
+        expect(branchShift(branch, 'day')).toEqual({ type: 'branch', value: ['today'], repetition: 2 })
+    })
+    // Cycle complet : une fois retombé sur 'today' (index 0), le shift suivant
+    // doit repasser par le chemin corrigé, pas régresser vers 'lundi'.
+    test('every 2 tomorrow, deux shifts → today shift 1 (pas lundi)', () => {
+        const branch = { type: 'branch', value: ['tomorrow'], repetition: 2 }
+        const afterOne = branchShift(branch, 'day')
+        const afterTwo = branchShift(afterOne, 'day')
+        expect(afterTwo).toEqual({ type: 'branch', value: ['today'], repetition: 2, shift: 1 })
+    })
     // Compléments relatifParent : restent fixes
     test('mardi → mardi (relatifParent inchangé)', () => {
         expect(branchShift('mardi', 'day')).toBe('mardi')

@@ -323,7 +323,12 @@ export function _getBranchPreviousOrShift(branch) {
         const repetition = branch.repetition
         const newSlotId = getSlotIdPrevious(slotId, repetition)
         if (newSlotId === null) {
-            const first = getSlotIdFirstLevel(getSlotIdLevel(getBranchFirstSlot(branch)))
+            // newSlotId === null signifie qu'on est déjà au premier id de la
+            // séquence de slotId (cf. getSlotIdPrevious) : slotId EST ce premier id.
+            // getSlotIdFirstLevel(level) ne convient pas ici — au niveau jour il
+            // préfère les compléments (lundi) et casserait la famille d'une ancre
+            // en répétition (today/tomorrow).
+            const first = slotId
             if (repetition === undefined || repetition === 1) {
                 return {...branch, value: [first].concat(branch.value.slice(1)) }
             } else {

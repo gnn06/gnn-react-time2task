@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SlotSelectDialog from './slot-select-dialog';
 import { DEFAULT_CONF } from '../data/slot-view';
@@ -59,5 +59,15 @@ describe('SlotSelectDialog — today/tomorrow dans le picker', () => {
         await user.click(screen.getByRole('button', { name: /confirm/i }))
 
         expect(onConfirm).toHaveBeenCalledWith(TODAY)
+    })
+})
+
+describe('SlotSelectDialog — bouton répétition today/tomorrow vs weekday', () => {
+    test('bouton répétition visible sur today, absent sur mardi', () => {
+        renderDialog('mardi')
+        const todayNode = document.querySelector(`[data-slot-path="${TODAY}"]`)
+        const mardiNode = document.querySelector('[data-slot-path="this_month this_week mardi"]')
+        expect(within(todayNode).queryByTestId('LoopIcon')).toBeInTheDocument()
+        expect(within(mardiNode).queryByTestId('LoopIcon')).not.toBeInTheDocument()
     })
 })

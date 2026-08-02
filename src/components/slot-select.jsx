@@ -10,12 +10,12 @@ import RepeatIcon from '@mui/icons-material/Loop';
 import DisableIcon from '@mui/icons-material/Block';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
-import { getSlotIdLevel, isComplement } from "../data/slot-id";
+import { getSlotIdLevel, isComplement, isAnchor } from "../data/slot-id";
 import { isInsideSelected } from "../data/selection-tree";
 import { IDizer } from "../utils/stringUtil";
 
 function showRepeat(id) {
-    return getSlotIdLevel(id) <= 2
+    return getSlotIdLevel(id) <= 2 || isAnchor(id)
 }
 
 // Vrai si `path` est le parent DIRECT (un seul niveau au-dessus) d'une sélection
