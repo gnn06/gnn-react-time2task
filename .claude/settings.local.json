@@ -45,5 +45,8 @@
       "Bash(node -e \"const data = JSON.parse\\(require\\('child_process'\\).execSync\\('npm view @vitejs/plugin-react --json', {maxBuffer: 2*1024*1024}\\).toString\\(\\)\\); const latest = data['dist-tags'].latest; console.log\\('latest:', latest, 'date:', data.time[latest].slice\\(0,10\\)\\)\")",
       "Bash(node -e \"const pkg = require\\('/home/gnn/dev/gnn-react-time2task/node_modules/material-react-table/package.json'\\); console.log\\('peerDeps:', JSON.stringify\\(pkg.peerDependencies, null, 2\\)\\)\")"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

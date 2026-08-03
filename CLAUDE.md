@@ -19,6 +19,14 @@ Le code doit toujours refléter la spécification — toute divergence est soit 
 - **Encapsulation** : préférer une méthode de classe à une fonction standalone quand la logique opère sur un objet existant
 - **Nommage** : nommer d'après ce que fait la fonction (comportement mécanique), pas d'après son usage contextuel
 
+## En cas de correction de bug
+
+Une fois le bug corrigé et les tests unitaires adaptés :
+
+- **Analyse de variantes (priorité 1)** : rechercher dans le code si le même pattern d'erreur existe ailleurs (même logique erronée, même hypothèse incorrecte, même structure de code copiée/adaptée) — corriger la classe de bug, pas seulement l'occurrence
+- **Couverture de test (priorité 2)** : vérifier que le correctif et les cas voisins identifiés sont bien couverts par les tests
+- Si un ou plusieurs variants sont trouvés, les traiter comme des bugs à part entière (même cycle : test → fix → vérification)
+
 ## Après chaque modification
 
 - Compilation : `npx tsc --noEmit`
