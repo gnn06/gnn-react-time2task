@@ -1,5 +1,15 @@
 import { isBranchEqualOrInclude } from "./slot-branch++";
-import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance, getSlotIdFamily } from "./slot-id";
+import { getSlotIdLevel, getSlotIdCurrent, weight, getSlotIdPrevious, getSlotIdFirstLevel, isSlotIdGeneric, getSlotIdDistance, getSlotIdFamily, SLOTIDS_BY_LEVEL } from "./slot-id";
+
+/**
+ * Jour courant pour compléter un slot incomplet (branchComplete). getSlotIdCurrent(3) suit
+ * l'horloge système sur 7 jours ; le catalogue jour ne connaît que lundi..vendredi. Le
+ * week-end, on retombe sur vendredi (dernier jour réel écoulé) pour rester dans le catalogue.
+ */
+function _currentWeekDayId() {
+    const id = getSlotIdCurrent(3);
+    return SLOTIDS_BY_LEVEL['3'].includes(id) ? id : 'vendredi';
+}
 
 export function getBranchFirstSlot(branch) {
     return branch.value[0];
@@ -105,7 +115,7 @@ export function branchComplete(branch, targetLevel) {
         const first = getBranchFirstSlot(branch);
         const level = getSlotIdLevel(first);
         for (let i = level - 1; i >= targetLevel; i--) {
-            branch = _appendStartToBranch(getSlotIdCurrent(i), branch)
+            branch = _appendStartToBranch(i === 3 ? _currentWeekDayId() : getSlotIdCurrent(i), branch)
         }
         return branch
     }

@@ -19,6 +19,7 @@ getSlotNextPrev(slot: SlotBranch, slotPath: SlotPath, direction: number, compari
 - **Retour** : `SlotPath | null` — homogène avec le 2ème argument ; `SlotPath` ne porte pas de `repetition`/`flags`, ce qui supprime naturellement les modificateurs repeat du résultat
 - **`null`** signifie "pas de prochain slot" (tâche unique ou multi dont tous les slots sont passés)
 - **Pureté temporelle** : le "maintenant" est toujours passé via `slotPath` — pas de lecture de la date courante dans la fonction
+- **Jour de `slotPath` hors lundi..vendredi (week-end)** : le today stocké (`getCurrentWeekdayId(snapDates)`) peut légitimement tomber un samedi/dimanche. Ce jour est alors traité comme *après* vendredi (jamais avant lundi), pour que tout jour réel de la semaine compare toujours comme "déjà passé" plutôt que "encore à venir" (fix 2026-08-06, cf. `slot-next-prev.js` pathDayW et tests "today stocké tombe le week-end" dans `task.test.js` / `slot-branch-basic.test.js`)
 
 > Cas `chaque` (ex: `"chaque lundi"`) : non traité en v1.
 

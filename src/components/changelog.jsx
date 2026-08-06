@@ -4,6 +4,10 @@ import Markdown from 'react-markdown'
 export const RELEASE = '02/08/2026';
 
 const text = `
+06/08/2026
+==========
+- FIX : le « prochain créneau » (fiche tâche) et la colonne « Prochain slot » de la liste affichaient une tâche de la semaine comme encore à venir même si déjà passée, quand consultés un samedi ou un dimanche
+
 02/08/2026
 ==========
 - possible d'activer la répétition (every N) sur les créneaux today/tomorrow, comme sur les autres créneaux

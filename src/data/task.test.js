@@ -796,6 +796,24 @@ describe('getTaskNextSlotLabel', () => {
             expect(getTaskNextSlotLabel(task)).toBe('mercredi')
         })
     })
+
+    describe('today stocké tombe le week-end — weight[jour] indéfini (bug potentiel)', () => {
+        // this_week = lundi 2023-12-18, today = samedi 2023-12-23 (offset 5, cf. getCurrentWeekdayId)
+        const snapDatesTodaySamedi = [
+            { slotid: 'this_week', date: '2023-12-18' }, // lundi
+            { slotid: 'today',     date: '2023-12-23' }, // samedi
+        ]
+
+        test("today stocké = samedi, tâche 'lundi' de cette semaine (passée, sans répétition) → plus de prochain créneau", () => {
+            const task = { slotExpr: 'this_week lundi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodaySamedi)).toBeNull()
+        })
+
+        test("today stocké = samedi, tâche répétée 'lundi' (passée cette semaine) → avance à la semaine suivante", () => {
+            const task = { slotExpr: 'every 1 this_week lundi', status: 'A faire' }
+            expect(getTaskNextSlotLabel(task, snapDatesTodaySamedi)).toBe('next_week')
+        })
+    })
 })
 
 describe('getNewOrder', () => {

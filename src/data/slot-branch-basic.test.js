@@ -1,8 +1,9 @@
 import { vi } from 'vitest';
-import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch, 
-         branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendStartToBranch, 
+import { getBranchLowerSlot, branchComplete, getBranchCurrentPath, _chooseSlotForSortBranch,
+         branchRemoveDisable, isBranchSimple, isBranchUnique, branchTruncate, getBranchHash, branchToExpr, _appendStartToBranch,
          getBranchHead, getBranchTail,
          branchAppendEnd, branchHasRelatifParentDay, branchHasPathWithoutWeekDay} from './slot-branch.js';
+import { SLOTIDS_BY_LEVEL } from './slot-id.js';
 
 vi.useFakeTimers()
 vi.setSystemTime(new Date('2023-12-20')) // mercredi
@@ -121,6 +122,16 @@ describe('completeSlotBranch', () => {
         expect(result).toEqual(
             expected);
     });
+
+    describe('horloge système = week-end (bug potentiel)', () => {
+        beforeEach(() => vi.setSystemTime(new Date('2023-12-23'))) // samedi
+        afterEach(() => vi.setSystemTime(new Date('2023-12-20'))) // restaure mercredi (défaut du fichier)
+
+        test("complète 'aprem' seul un samedi → jour réel de la semaine (lundi..vendredi), jamais 'samedi'/'dimanche'", () => {
+            const result = branchComplete({type:'branch',value:['aprem']});
+            expect(SLOTIDS_BY_LEVEL['3']).toContain(result.value[2]);
+        })
+    })
 })
 
 describe('getCurrentPathBranch', () => {
@@ -161,6 +172,11 @@ describe('chooseSlotForSortBranch', () => {
             })).toEqual({type:'branch',value:['mercredi']})
     });
 
+    // Piste "today non reconnu dans un multi week-end" vérifiée et écartée : sur un jour de
+    // semaine normal, multi [vendredi, today] retombe déjà sur 'vendredi' (isBranchEqualShallow
+    // bloque toute égalité entre familles relatifPresent/relatifParent, cf. slot-branch++.js).
+    // Le comportement est donc identique en semaine et le week-end : pas un bug lié à
+    // getSlotIdCurrent(3), juste une limite préexistante et indépendante du modèle.
 })
 
 describe('removeDisable', () => {

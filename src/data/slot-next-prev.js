@@ -7,12 +7,18 @@ import { SlotPath } from './slot-path'
  *   jour (niveau 3) peut être un vrai jour de semaine (lundi..vendredi) OU une ancre
  *   relatifPresent (today/tomorrow) — les deux sont gérés (cf. getSlotIdDayWeight).
  * @param {SlotPath} slotPath - représente "maintenant" ; ne lit pas la date courante.
- *   INVARIANT : le jour (niveau 3) de slotPath est toujours un vrai jour de semaine
+ *   INVARIANT NOMINAL : le jour (niveau 3) de slotPath est un vrai jour de semaine
  *   (lundi..vendredi), jamais une ancre today/tomorrow — c'est le seul repère qui permette
  *   de positionner les deux familles de jour (offset trivial pour les ancres, comparaison
  *   directe pour les jours de semaine) sans lire de donnée externe. Au niveau applicatif,
  *   ce jour doit lui-même dériver du today STOCKÉ (getCurrentWeekdayId(snapDates)), pas de
  *   l'horloge système, pour rester cohérent avec le modèle today/tomorrow décalable.
+ *   TOLÉRANCE WEEK-END : ce jour peut légitimement être hors catalogue (samedi/dimanche),
+ *   puisque getCurrentWeekdayId(snapDates) renvoie tel quel le jour calendaire réel. La
+ *   comparaison de poids (pathDayW plus bas) traite alors ce jour comme après vendredi
+ *   (jamais avant lundi), pour que tout jour réel de la semaine reste "déjà passé" plutôt
+ *   que "encore à venir" (bug corrigé le 2026-08-06, cf. tests "today stocké tombe le
+ *   week-end" dans task.test.js).
  * @param {number} direction - seul +1 est traité
  * @param {'strict'|'inclusive'} comparison - 'inclusive' : le créneau courant compte (>=) ; 'strict' : uniquement l'avenir (>)
  * @returns {SlotPath|null} null = pas de prochain slot
@@ -100,7 +106,10 @@ function getNextPrevBranch(branch, slotPath, comparison) {
     // même semaine : comparer au niveau du jour
     if (!dayId && !multiNode) return new SlotPath(weekId)  // slot = semaine entière, toujours valide
 
-    const pathDayW  = weight[pathDayId]  ?? 0
+    // pathDayId hors lundi..vendredi (ex. today stocké un week-end) : traité comme
+    // après vendredi, jamais avant lundi, pour que tout jour réel de la semaine
+    // compare toujours comme « déjà passé » plutôt que « encore à venir ».
+    const pathDayW  = pathDayId in weight ? weight[pathDayId] : weight['vendredi'] + 1
     const pathHourW = weight[pathHourId] ?? 0
 
     if (dayId) {
