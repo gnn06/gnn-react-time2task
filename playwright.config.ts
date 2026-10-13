@@ -93,7 +93,10 @@ export default defineConfig({
    * pour déclencher un rebuild (ou lancer manuellement `npm run build`). */
   webServer: {
     command: 'npm run build:e2e && npm run serve',
-    url: 'http://localhost:4173/gnn-react-time2task',
+    /* 127.0.0.1 et non localhost : la sonde de Playwright résout aussi localhost en IPv6 ;
+     * via le domaine de recherche DNS (« home »), cela peut renvoyer une adresse du LAN
+     * qui ne répond pas → timeout du webServer. */
+    url: 'http://127.0.0.1:4173/gnn-react-time2task',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
