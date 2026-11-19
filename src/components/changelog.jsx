@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '02/08/2026';
+export const RELEASE = '06/08/2026';
 
 const text = `
 06/08/2026
