@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/gnn-react-time2task',
+  base: '/',
   plugins: [react(), tailwindcss()],
   test: {
     globals: true,

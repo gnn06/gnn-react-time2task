@@ -31,7 +31,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'http://localhost:4173/gnn-react-time2task',
+    baseURL: 'http://localhost:4173/',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -96,7 +96,7 @@ export default defineConfig({
     /* 127.0.0.1 et non localhost : la sonde de Playwright résout aussi localhost en IPv6 ;
      * via le domaine de recherche DNS (« home »), cela peut renvoyer une adresse du LAN
      * qui ne répond pas → timeout du webServer. */
-    url: 'http://127.0.0.1:4173/gnn-react-time2task',
+    url: 'http://127.0.0.1:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
