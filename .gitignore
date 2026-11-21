@@ -37,3 +37,6 @@ node_modules/
 /teste2e/.auth/user.json
 test-output.log
 test-e2e-output.log
+
+# Local Netlify folder
+.netlify
