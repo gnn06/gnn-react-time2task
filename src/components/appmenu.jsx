@@ -21,6 +21,7 @@ export default function AppMenu() {
             }}>
             <MenuIcon />
             <span>Time2Task</span>
+            <span style={{ color: 'red', fontWeight: 'bold' }}>DEV</span>
             <Link to="/settings">Settings</Link> <Link to="/help">Aide Méthodo</Link> <Link to="/changelog">Version {RELEASE}</Link> <Logout />
             <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                 <CloudQueueIcon sx={{ fontSize: 24, color: isLoading ? 'primary.main' : 'text.disabled' }} />
