@@ -42,3 +42,13 @@ Une fois le bug corrigé et les tests unitaires adaptés :
 
 # Plan
 -privilégier un découpage du plan qui favorise des résultats visuels dans la UI au plus tôt. Cela pour avoir un feedback visuel au plus tôt. Des choix temporaires peuvent faits qui seront mis au propre quand le rendu aura été validé au niveau visuel.
+
+# Règles de collaboration (valables en local et en cloud)
+
+- **Commit** : demander confirmation avant de committer (notamment en fin de phase) ; message sur une seule ligne, sans corps ni liste de fichiers
+- **Commandes shell** : pas de `cd` en préfixe (casse le matching des permissions) ; ne jamais rediriger la sortie (`tee`, `>`) sauf demande explicite
+- **Tests Playwright** : toujours demander avant de les lancer
+- **Plan** : ne pas marquer ✅ FAIT sans confirmation explicite
+- **Docs** : ne les modifier que sur demande ou si une décision d'architecture change
+- **Supabase** : clé `anon` uniquement ; jamais de `service_role` dans le dépôt ni dans un `.env.*` ; les E2E ciblent la base dev (`icxyfpyfuamawldilhih`), jamais la prod
+- **Spécification des vues** : source de vérité = page Notion « spéc-vue » (le `.md` du repo est une archive)
