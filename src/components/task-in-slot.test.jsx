@@ -50,6 +50,30 @@ test('tâche projetée (originalSlotExpr mardi) → icône fixe visible', () => 
     expect(screen.getByTestId('fixed-slot-icon')).toBeInTheDocument()
 })
 
+test.each([
+    ['chaque', 'chaque vendredi'],
+    ['every 1', 'every 1 this_week mardi'],
+    ['every 2', 'every 2 this_week mardi'],
+])('tâche répétitive (%s) → icône répétition visible avec infobulle', (_, slotExpr) => {
+    const task = { id: 1, title: 'test', slotExpr }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    const icon = screen.getByTestId('repeat-slot-icon')
+    expect(icon).toBeInTheDocument()
+    expect(icon).toHaveAccessibleName('tâche répétitive')
+})
+
+test('tâche non répétitive → pas d\'icône répétition', () => {
+    const task = { id: 1, title: 'test', slotExpr: 'this_week mardi' }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    expect(screen.queryByTestId('repeat-slot-icon')).not.toBeInTheDocument()
+})
+
+test('tâche projetée (originalSlotExpr chaque mardi) → icône répétition visible', () => {
+    const task = { id: 1, title: 'test', slotExpr: 'today', originalSlotExpr: 'chaque mardi' }
+    render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
+    expect(screen.getByTestId('repeat-slot-icon')).toBeInTheDocument()
+})
+
 test('don\'t loose nextAction and url on favorite click', async () => {
     const task = { id: 12, title: 'goi', slotExpr: 'this_week', nextAction: 'do it', url: 'http://example.com', favorite: false };
     

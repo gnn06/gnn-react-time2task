@@ -1,9 +1,14 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '06/08/2026';
+export const RELEASE = '24/11/2026';
 
 const text = `
+24/11/2026
+==========
+- nouveau filtre « aucune répétition » (menu Filtres › créneau) : n'affiche que les tâches non répétitives
+- vues par créneau : une icône de répétition apparaît avant l'étoile sur les tâches répétitives
+
 06/08/2026
 ==========
 - FIX : le « prochain créneau » (fiche tâche) et la colonne « Prochain slot » de la liste affichaient une tâche de la semaine comme encore à venir même si déjà passée, quand consultés un samedi ou un dimanche

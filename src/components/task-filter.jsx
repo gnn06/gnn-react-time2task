@@ -14,7 +14,7 @@ import DialogHelpExpression from "./button-help-expression";
 import {FILTER_KEYWORDS, makeFilterExpr} from '../data/filter-engine'
 import FilterPanel from './filter-panel';
 import SlotPickerButton from './slot-picker-button';
-import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1, taskHasRelatifParentDay, taskHasPathWithoutWeekDay } from "../data/task";
+import { taskPredicateDisable, taskPredicateMulti, makeTaskPredicateImprecise, taskPredicateEvery1, taskPredicateNoRepeat, taskHasRelatifParentDay, taskHasPathWithoutWeekDay } from "../data/task";
 
 // Fonction pour générer la configuration des filtres avec les activités
 export function createFilterConfig(activities = [], levelMaxIncluded = null) {
@@ -67,6 +67,14 @@ export function createFilterConfig(activities = [], levelMaxIncluded = null) {
       options: [true, false],
       valueLabels: { true: 'au moins une répétition' },
       predicate: taskPredicateEvery1
+    },
+    {
+      key: 'isNoRepeat',
+      label: 'isNoRepeat',
+      type: 'slotexpr',
+      options: [true, false],
+      valueLabels: { true: 'aucune répétition' },
+      predicate: taskPredicateNoRepeat
     },
     {
       key: 'isWeekDay',
