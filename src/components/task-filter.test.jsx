@@ -32,6 +32,45 @@ describe('createFilterConfig isRepeat', () => {
   })
 })
 
+describe('createFilterConfig isNoRepeat', () => {
+  const getNoRepeatFilter = () => createFilterConfig().find(f => f.key === 'isNoRepeat')
+
+  test('expose un filtre isNoRepeat de type slotexpr', () => {
+    const filter = getNoRepeatFilter()
+    expect(filter).toBeDefined()
+    expect(filter.type).toBe('slotexpr')
+    expect(filter.valueLabels).toEqual({ true: 'aucune répétition' })
+    expect(typeof filter.predicate).toBe('function')
+  })
+
+  test.each([
+    ['créneau simple', 'mardi'],
+    ['créneau précis sans répétition', 'this_week mardi'],
+    ['plusieurs créneaux sans répétition', 'this_week mardi vendredi'],
+  ])('predicate true pour une tâche non répétitive : %s', (_, slotExpr) => {
+    expect(getNoRepeatFilter().predicate({ slotExpr })).toBe(true)
+  })
+
+  test.each([
+    ['every 1', 'every 1 this_week mardi'],
+    ['every 2 (répétition >= 2)', 'every 2 this_week mardi'],
+    ['chaque', 'chaque vendredi'],
+    ['id générique', 'week'],
+    ['multi dont un seul créneau répétitif', 'this_week mardi chaque vendredi'],
+  ])('predicate false pour une tâche répétitive : %s', (_, slotExpr) => {
+    expect(getNoRepeatFilter().predicate({ slotExpr })).toBe(false)
+  })
+
+  test('isNoRepeat est le complément de isRepeat', () => {
+    const config = createFilterConfig()
+    const isRepeat = config.find(f => f.key === 'isRepeat').predicate
+    const isNoRepeat = config.find(f => f.key === 'isNoRepeat').predicate
+    for (const slotExpr of ['mardi', 'every 1 this_week mardi', 'every 2 this_week mardi', 'chaque vendredi']) {
+      expect(isNoRepeat({ slotExpr })).toBe(!isRepeat({ slotExpr }))
+    }
+  })
+})
+
 describe('createFilterConfig isWeekDay', () => {
   const getWeekDayFilter = () => createFilterConfig().find(f => f.key === 'isWeekDay')
 
