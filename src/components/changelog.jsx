@@ -7,6 +7,7 @@ const text = `
 24/11/2026
 ==========
 - nouveau filtre « aucune répétition » (menu Filtres › créneau) : n'affiche que les tâches non répétitives
+- vues par créneau : une icône de répétition apparaît avant l'étoile sur les tâches répétitives
 
 06/08/2026
 ==========
