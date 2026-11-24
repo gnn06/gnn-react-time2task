@@ -40,3 +40,6 @@ test-e2e-output.log
 
 # Local Netlify folder
 .netlify
+
+# Claude Code (local)
+.claude/settings.local.json
