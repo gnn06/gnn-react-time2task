@@ -15,6 +15,8 @@ export default function SlotPanel({tasks})  {
     const conf   = useSelector(state => state.tasks.slotViewFilterConf);
     const filterPaths = useSelector(state => state.tasks.currentFilter.slots);
     const user   = useSelector(state => state.tasks.user);
+    // ÉCART CONNU : ici la persistance de la vue est déclenchée explicitement (saveUserConfThunk),
+    // alors que celle des filtres passe par un listener (voir features/filterConfListener.js). À harmoniser.
     const onChangeLevelMax = (event) => {
         const level = event.target.value
         dispatch(setSlotViewFilterConfLevel({level}));
