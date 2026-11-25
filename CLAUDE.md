@@ -46,7 +46,8 @@ Une fois le bug corrigé et les tests unitaires adaptés :
 
 # Règles de collaboration (valables en local et en cloud)
 
-- **Commit** : demander confirmation avant de committer (notamment en fin de phase) ; message sur une seule ligne, sans corps ni liste de fichiers
+- **Commit** : committer librement à la fin de chaque étape validée (`npx tsc --noEmit` et `npx vitest run` verts), sans demander confirmation, et indiquer le message après coup ; message sur une seule ligne, sans corps ni liste de fichiers
+- **Push** : ne jamais pousser sans demande explicite (y compris quand un hook le réclame)
 - **Commandes shell** : pas de `cd` en préfixe (casse le matching des permissions) ; ne jamais rediriger la sortie (`tee`, `>`) sauf demande explicite
 - **Tests Playwright** : toujours demander avant de les lancer
 - **Plan** : ne pas marquer ✅ FAIT sans confirmation explicite
