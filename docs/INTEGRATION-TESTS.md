@@ -68,11 +68,10 @@ vi.mock('../services/browser-storage', () => ({
 }));
 ```
 
-Les thunks de démarrage sont également mockés pour éviter des effets de bord :
+Le thunk de chargement de la conf utilisateur est également mocké pour éviter des effets de bord :
 
 ```js
-vi.mock('../features/userConfThunk', () => ({ loadUserConfThunk: vi.fn(() => ({ type: 'noop' })) }));
-vi.mock('../features/localstorageThunk', () => ({ loadLocalStorageThunk: vi.fn(() => ({ type: 'noop' })) }));
+vi.mock('../features/loadConfThunk', () => ({ loadAllUserConfThunk: vi.fn(() => ({ type: 'noop' })) }));
 ```
 
 Les composants enfants lourds sont mockés pour isoler ce qu'on teste :

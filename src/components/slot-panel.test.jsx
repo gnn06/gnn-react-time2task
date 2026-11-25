@@ -48,9 +48,6 @@ vi.mock('../features/apiSlice', () => ({
             },
             updateSnapDate: {
                 initiate: vi.fn()
-            },
-            getUserConf: {
-                initiate: vi.fn()
             }
         },
         reducer: {},
@@ -67,8 +64,7 @@ vi.mock('../features/apiSlice', () => ({
     useUpdateActivityMutation: () => [vi.fn(), { isLoading: false, error: null }],
     useAddActivityMutation: () => [vi.fn(), { isLoading: false, error: null }],
     useDeleteActivityMutation: () => [vi.fn(), { isLoading: false, error: null }],
-    useUpdateSnapDateMutation: () => [vi.fn(), { isLoading: false, error: null }],
-    useLazyGetUserConfQuery: () => [vi.fn(), { isLoading: false, error: null }]
+    useUpdateSnapDateMutation: () => [vi.fn(), { isLoading: false, error: null }]
 }));
 
 describe('SlotPanel', () => {
