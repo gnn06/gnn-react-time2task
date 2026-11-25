@@ -178,4 +178,99 @@ test.describe('Filtrage des tâches', () => {
             expect(await getTaskRowIndex(page, titleSansCreneau)).toBeGreaterThanOrEqual(0);
         }).toPass({ timeout: 5000 });
     });
+
+    /**
+     * Attend la sauvegarde des filtres (POST user_confs, clé filterconf, délai 500 ms côté app)
+     * dont le corps contient toutes les chaînes données. À créer AVANT l'action qui la déclenche.
+     */
+    function waitForFilterConfSaved(page: Page, ...needles: string[]) {
+        return page.waitForResponse(resp => {
+            const req = resp.request();
+            const body = req.postData() ?? '';
+            return req.method() === 'POST'
+                && resp.url().includes('/user_confs')
+                && body.includes('"filterconf"')
+                && needles.every(needle => body.includes(needle));
+        });
+    }
+
+    test('les filtres créneau et menu Filtres sont conservés après rechargement', async ({ page }) => {
+        const titleOk           = uniqueTitle('filtre-persist-ok');
+        const titleAutreCreneau = uniqueTitle('filtre-persist-creneau');
+        const titleAutreStatut  = uniqueTitle('filtre-persist-statut');
+
+        await creerTache(page, titleOk);
+        await setInlineStatus(page, titleOk, 'en cours');
+        await affecterCreneau(page, titleOk, 'this_month this_week mardi');
+        await creerTache(page, titleAutreCreneau);
+        await setInlineStatus(page, titleAutreCreneau, 'en cours');
+        await affecterCreneau(page, titleAutreCreneau, 'this_month this_week jeudi');
+        await creerTache(page, titleAutreStatut);  // statut initial : "A faire"
+        await affecterCreneau(page, titleAutreStatut, 'this_month this_week mardi');
+
+        const saved = waitForFilterConfSaved(page, 'en cours', 'this_month this_week mardi');
+
+        // Filtre menu : status "en cours"
+        await page.getByRole('button', { name: /Filtres/ }).click();
+        await page.getByRole('menuitem', { name: 'status' }).hover();
+        await expect(page.getByRole('checkbox', { name: 'en cours' })).toBeVisible();
+        await page.getByRole('checkbox', { name: 'en cours' }).click();
+        await closeFiltresMenu(page);
+
+        // Filtre créneau : mardi
+        await page.getByRole('button', { name: 'filtre-créneau' }).click();
+        await page.getByTestId('slot-picker-popper')
+                  .locator('[data-slot-path="this_month this_week mardi"]')
+                  .click();
+
+        const expectSeuleTacheOkVisible = async () => {
+            await expect(async () => {
+                expect(await getTaskRowIndex(page, titleOk)).toBeGreaterThanOrEqual(0);
+                expect(await getTaskRowIndex(page, titleAutreCreneau)).toBe(-1);
+                expect(await getTaskRowIndex(page, titleAutreStatut)).toBe(-1);
+            }).toPass({ timeout: 5000 });
+        };
+        await expectSeuleTacheOkVisible();
+
+        await saved;
+        await page.reload();
+        await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
+
+        // Les deux filtres sont restaurés : même résultat sans rien refaire
+        await expectSeuleTacheOkVisible();
+    });
+
+    test('réinitialiser les filtres est aussi conservé après rechargement', async ({ page }) => {
+        const titleEnCours = uniqueTitle('filtre-persist-reset-encours');
+        const titleAFaire  = uniqueTitle('filtre-persist-reset-afaire');
+
+        await creerTache(page, titleEnCours);
+        await setInlineStatus(page, titleEnCours, 'en cours');
+        await creerTache(page, titleAFaire);
+
+        let saved = waitForFilterConfSaved(page, 'en cours');
+        await page.getByRole('button', { name: /Filtres/ }).click();
+        await page.getByRole('menuitem', { name: 'status' }).hover();
+        await expect(page.getByRole('checkbox', { name: 'en cours' })).toBeVisible();
+        await page.getByRole('checkbox', { name: 'en cours' }).click();
+        await closeFiltresMenu(page);
+        await expect(async () => {
+            expect(await getTaskRowIndex(page, titleAFaire)).toBe(-1);
+        }).toPass({ timeout: 5000 });
+        await saved;
+
+        // Réinitialisation : la valeur persistée est vidée
+        saved = waitForFilterConfSaved(page, '"genericFilters":{}');
+        await page.getByTestId('ClearIcon').click();
+        await saved;
+
+        await page.reload();
+        await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
+
+        // Aucun filtre restauré : les deux tâches sont visibles
+        await expect(async () => {
+            expect(await getTaskRowIndex(page, titleEnCours)).toBeGreaterThanOrEqual(0);
+            expect(await getTaskRowIndex(page, titleAFaire)).toBeGreaterThanOrEqual(0);
+        }).toPass({ timeout: 10000 });
+    });
 });
