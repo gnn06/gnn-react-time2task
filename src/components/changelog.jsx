@@ -1,9 +1,14 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '24/11/2026';
+export const RELEASE = '25/11/2026';
 
 const text = `
+25/11/2026
+==========
+- les filtres (créneau, texte de la barre de recherche, menu Filtres) sont conservés après un rafraîchissement ou une réouverture de l'application
+- au démarrage, la vue et les filtres sont chargés en un seul appel et l'écran de chargement reste affiché jusqu'à leur restauration : plus de saut visuel
+
 24/11/2026
 ==========
 - nouveau filtre « aucune répétition » (menu Filtres › créneau) : n'affiche que les tâches non répétitives

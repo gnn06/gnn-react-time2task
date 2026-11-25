@@ -17,6 +17,9 @@ const initialState = {
         taskId: null,
     },
     slotViewFilterConf: DEFAULT_CONF,
+    // true une fois la conf utilisateur (vue + filtres) restaurée : l'AppLoader reste affiché
+    // jusque-là pour éviter de montrer la vue par défaut puis de la voir sauter.
+    userConfLoaded: false,
     selectedSlotId: [],
     association: {},
     user: {
@@ -86,6 +89,11 @@ export const taskSlice = createSlice({
                 state.currentFilter = {...state.currentFilter, slots: [current[1], path] }
             }
         },
+        /* Restauration depuis la conf persistée : remplace uniquement la partie persistée du filtre */
+        setFilterConf: (state, action) => {
+            const { expression, slots, genericFilters } = action.payload
+            state.currentFilter = {...state.currentFilter, expression, slots, genericFilters }
+        },
         setFilterTaskId: (state, action) => {
             const taskId = action.payload
             state.currentFilter = {...state.currentFilter, taskId: taskId }
@@ -96,6 +104,10 @@ export const taskSlice = createSlice({
         logout: (state) => {
             state.user = { id: '', email: '' };
             state.accessToken = '';
+            state.userConfLoaded = false;
+        },
+        setUserConfLoaded: (state, action) => {
+            state.userConfLoaded = action.payload;
         },
         accessToken: (state, action) => {
             state.accessToken = action.payload;
@@ -129,7 +141,7 @@ export const taskSlice = createSlice({
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView,
-    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric,
+    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric, setFilterConf, setUserConfLoaded,
     editTask, dragging
 } = taskSlice.actions
 

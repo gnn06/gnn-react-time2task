@@ -11,7 +11,7 @@ import Login from './login';
 import AppMenu from './appmenu';
 import AppLoader from './app-loader';
 import TaskContainer from './task-container';
-import { loadUserConfThunk } from '../features/userConfThunk';
+import { loadAllUserConfThunk } from '../features/loadConfThunk';
 import Mainbar from './main-bar';
 import { useAppInitialized } from '../hooks/useAppInitialized';
 
@@ -29,7 +29,7 @@ function App() {
    */
   useEffect(() => {
     if (userId) {
-      dispatch(loadUserConfThunk(userId));
+      dispatch(loadAllUserConfThunk(userId));
     }
   }, [userId, dispatch]);
 

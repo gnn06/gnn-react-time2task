@@ -49,6 +49,22 @@ async function setSlotViewToTree(token: string, userId: string): Promise<void> {
     }
 }
 
+/** Efface les filtres persistés (filterconf) pour que chaque run démarre sans filtre actif. */
+async function resetFilterConf(token: string, userId: string): Promise<void> {
+    const value = { filterConf: { expression: '', slots: [], genericFilters: {} } };
+    const res = await backendFetch(token, '/user_confs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates,return=minimal',
+        },
+        body: JSON.stringify({ user_id: userId, conf: 'filterconf', value }),
+    });
+    if (!res.ok) {
+        throw new Error(`Reset des filtres persistés échoué : HTTP ${res.status}`);
+    }
+}
+
 /**
  * Recrée l'activité de test après le nettoyage.
  * Les tests qui testent la sélection d'activité peuvent ainsi toujours sélectionner
@@ -72,6 +88,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
         deleteTestTasks(token),
         deleteTestActivities(token),
         setSlotViewToTree(token, userId),
+        resetFilterConf(token, userId),
     ]);
     await createTestActivity(token);
     console.log('  Base de données nettoyée et données de référence créées.\n');

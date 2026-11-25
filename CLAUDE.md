@@ -18,6 +18,7 @@ Le code doit toujours refléter la spécification — toute divergence est soit 
 - **Responsabilité unique** : chaque fonction/composant a une seule responsabilité — scinder puis composer plutôt que mélanger
 - **Encapsulation** : préférer une méthode de classe à une fonction standalone quand la logique opère sur un objet existant
 - **Nommage** : nommer d'après ce que fait la fonction (comportement mécanique), pas d'après son usage contextuel
+- **Incohérence** : quand une implémentation s'écarte d'un pattern existant ou d'un choix fait ailleurs dans le code, le signaler avant de coder et choisir ensemble entre aligner et garder. Si l'écart est gardé, le commenter dans le code (pourquoi, et ce qui serait à harmoniser).
 
 ## En cas de correction de bug
 

@@ -44,7 +44,7 @@ La propriété `isLoading` de RTK Query est `true` uniquement lors du premier fe
 **Données attendues avant affichage :**
 - `getTasks` — liste des tâches (contenu principal)
 - `getActivities` — liste des activités (fondamentales pour les filtres et l'édition)
-- `getUserConf` — préférences de vue, chargées via thunk avant le montage des composants enfants, donc prêtes sans attente supplémentaire
+- `getUserConfs` — préférences de vue et filtres persistés, lues en un seul appel par `loadAllUserConfThunk`. L'overlay reste affiché jusqu'à ce que la conf soit restaurée (`state.tasks.userConfLoaded`, aussi positionné en cas d'erreur de chargement), pour ne pas montrer la vue par défaut puis la voir sauter
 - `getSnapDates` — non bloquant (utilisé uniquement dans la dialog "Démarrer Semaine")
 
 ---

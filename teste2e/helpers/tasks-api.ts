@@ -25,6 +25,22 @@ export async function deleteE2ETasks(): Promise<void> {
     }
 }
 
+// Efface les filtres persistés (filterconf). Les filtres posés dans l'UI sont persistés (délai 500 ms) :
+// à appeler AVANT la navigation d'un test (beforeEach), pas en afterEach, pour qu'une sauvegarde
+// différée de la page encore ouverte ne puisse pas réécrire la valeur après le reset.
+export async function resetFilterConf(): Promise<void> {
+    const { token, userId } = await authenticate();
+    const value = { filterConf: { expression: '', slots: [], genericFilters: {} } };
+    const res = await backendFetch(token, '/user_confs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ user_id: userId, conf: 'filterconf', value }),
+    });
+    if (!res.ok) {
+        throw new Error(`Reset des filtres persistés échoué : HTTP ${res.status}`);
+    }
+}
+
 // Restaure la conf de vue par défaut (tree, niveau max = null). Nécessaire car changer le
 // niveau max / la vue dans l'UI persiste la conf (saveUserConfThunk) : sans reset, un test
 // qui réduit le niveau max fausserait la profondeur des tests suivants. Même valeur que globalSetup.

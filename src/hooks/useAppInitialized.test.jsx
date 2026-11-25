@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
-import taskReducer from '../features/taskSlice';
+import taskReducer, { setUserConfLoaded } from '../features/taskSlice';
 import { useAppInitialized } from './useAppInitialized';
 
 vi.mock('../features/apiSlice', () => ({
@@ -13,11 +13,12 @@ vi.mock('../features/apiSlice', () => ({
 
 import { useGetTasksQuery, useGetActivitiesQuery } from '../features/apiSlice';
 
-function makeStore(userId = '') {
+function makeStore(userId = '', confLoaded = true) {
     const store = configureStore({ reducer: { tasks: taskReducer } });
     if (userId) {
         store.dispatch({ type: 'tasks/login', payload: { id: userId, email: 'u@t.com', accessToken: 'tok' } });
     }
+    store.dispatch(setUserConfLoaded(confLoaded));
     return store;
 }
 
@@ -53,11 +54,27 @@ describe('useAppInitialized', () => {
         expect(result.current).toBe(false);
     });
 
-    test('retourne true quand les deux queries sont terminées', () => {
+    test('retourne true quand les deux queries et la conf utilisateur sont chargées', () => {
         useGetTasksQuery.mockReturnValue({ isLoading: false });
         useGetActivitiesQuery.mockReturnValue({ isLoading: false });
 
         const { result } = renderWithStore(makeStore('user-1'));
+        expect(result.current).toBe(true);
+    });
+
+    test('retourne false tant que la conf utilisateur (vue + filtres) n’est pas chargée', () => {
+        useGetTasksQuery.mockReturnValue({ isLoading: false });
+        useGetActivitiesQuery.mockReturnValue({ isLoading: false });
+
+        const { result } = renderWithStore(makeStore('user-1', false));
+        expect(result.current).toBe(false);
+    });
+
+    test('retourne true sur l’écran de login même si la conf n’est pas chargée', () => {
+        useGetTasksQuery.mockReturnValue({ isLoading: false });
+        useGetActivitiesQuery.mockReturnValue({ isLoading: false });
+
+        const { result } = renderWithStore(makeStore('', false));
         expect(result.current).toBe(true);
     });
 });

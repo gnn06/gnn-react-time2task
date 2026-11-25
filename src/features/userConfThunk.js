@@ -1,5 +1,7 @@
-import { setSlotViewFilterConfView, setSlotViewFilterConf } from "./taskSlice";
+import { setSlotViewFilterConf } from "./taskSlice";
 import { apiSlice } from './apiSlice';
+
+export const VIEW_CONF_KEY = 'slotviewconf';
 
 const selectConf = (state) => state.tasks.slotViewFilterConf;
 
@@ -12,33 +14,23 @@ export const saveUserConfThunk = () => async (dispatch, getState) => {
         await dispatch(
             apiSlice.endpoints.upsertUserConf.initiate({
             userId,
-            conf: 'slotviewconf',
+            conf: VIEW_CONF_KEY,
             value: { slotViewFilterConf: selectConf(state) },
             })
         ).unwrap();
     } catch (err) {
         console.error('Échec persistance conf :', err);
     }
-    
+
 };
 
-export const loadUserConfThunk = (userId) => async (dispatch) => {
-  const promise = dispatch(
-    apiSlice.endpoints.getUserConf.initiate(
-      { userId, conf: 'slotviewconf' },
-      { forceRefetch: true }
-    )
-  );
-  const { data, error } = await promise;
-  promise.unsubscribe();
-
-  if (error) {
-    console.error('Échec chargement conf :', error);
-    return;
-  }
-  if (data) {
-    // L'API retourne { slotViewFilterConf: {...} }, on extrait la configuration
-    const conf = data.slotViewFilterConf || data;
-    dispatch(setSlotViewFilterConf({conf}));
-  }
+/**
+ * Restaure la conf de vue depuis la valeur persistée (lue par loadAllUserConfThunk).
+ * Sans valeur persistée, la conf par défaut est conservée.
+ */
+export const restoreViewConfThunk = (value) => async (dispatch) => {
+  if (!value) return;
+  // La valeur persistée est { slotViewFilterConf: {...} }, on extrait la configuration
+  const conf = value.slotViewFilterConf || value;
+  dispatch(setSlotViewFilterConf({conf}));
 };
