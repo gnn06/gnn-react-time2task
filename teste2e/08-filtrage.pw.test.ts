@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, setInlineStatus, TEST_ACTIVITY } from './helpers/tasks';
 import { waitForApiIdle } from './helpers/api';
+import { resetFilterConf } from './helpers/tasks-api';
 
 
 const taskRows = (page: Page) =>
@@ -24,6 +25,8 @@ async function closeFiltresMenu(page: Page): Promise<void> {
 test.describe('Filtrage des tâches', () => {
 
     test.beforeEach(async ({ page }) => {
+        // les filtres posés dans l'UI sont persistés : repartir sans filtre
+        await resetFilterConf();
         await page.goto('');
         await expect(page.getByRole('button', { name: 'login' })).not.toBeVisible();
     });

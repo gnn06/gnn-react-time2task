@@ -86,6 +86,11 @@ export const taskSlice = createSlice({
                 state.currentFilter = {...state.currentFilter, slots: [current[1], path] }
             }
         },
+        /* Restauration depuis la conf persistée : remplace uniquement la partie persistée du filtre */
+        setFilterConf: (state, action) => {
+            const { expression, slots, genericFilters } = action.payload
+            state.currentFilter = {...state.currentFilter, expression, slots, genericFilters }
+        },
         setFilterTaskId: (state, action) => {
             const taskId = action.payload
             state.currentFilter = {...state.currentFilter, taskId: taskId }
@@ -129,7 +134,7 @@ export const taskSlice = createSlice({
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView,
-    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric,
+    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric, setFilterConf,
     editTask, dragging
 } = taskSlice.actions
 

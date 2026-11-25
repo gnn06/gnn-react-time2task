@@ -1,7 +1,7 @@
 import { supabase } from '../services/supabase'
 
 import { accessToken, login } from './taskSlice'
-import { loadUserConfThunk } from './userConfThunk';
+import { loadAllUserConfThunk } from './loadConfThunk';
 import { localStoreAccessToken, localStoreUser } from '../services/browser-storage'
 
 export const loginThunk = (email, password) => async (dispatch) => {
@@ -17,5 +17,5 @@ export const loginThunk = (email, password) => async (dispatch) => {
   dispatch(login(data.user));
 
   // 3. Charger la conf depuis l'API
-  await dispatch(loadUserConfThunk(data.user.id));
+  await dispatch(loadAllUserConfThunk(data.user.id));
 };

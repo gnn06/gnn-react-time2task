@@ -26,7 +26,7 @@ vi.mock('../services/browser-storage', () => ({
     localStoreUser: vi.fn(),
 }));
 
-vi.mock('../features/userConfThunk', () => ({ loadUserConfThunk: vi.fn(() => ({ type: 'noop' })) }));
+vi.mock('../features/loadConfThunk', () => ({ loadAllUserConfThunk: vi.fn(() => ({ type: 'noop' })) }));
 
 vi.mock('./login', () => ({ default: () => <div>Login</div> }));
 vi.mock('./appmenu', () => ({ default: () => <div>AppMenu</div> }));

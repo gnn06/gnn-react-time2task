@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { uniqueTitle, creerTache, getTaskRowIndex, setInlineStatus, affecterCreneau, filtrerParStatut, filtrerParSlots } from './helpers/tasks';
 import { mockSnapToday } from './helpers/snapdates';
-import { setTaskSlotExpr, deleteE2ETasks, resetViewConf } from './helpers/tasks-api';
+import { setTaskSlotExpr, deleteE2ETasks, resetViewConf, resetFilterConf } from './helpers/tasks-api';
 import { waitForAppReady } from './helpers/api';
 
 // Sections jour rollingDays / weekDays des deux vues. Chaque test fixe le `today` STOCKÉ en
@@ -29,6 +29,11 @@ async function setNiveauMax(page: Page, label: 'Month' | 'Week' | 'Day' | 'Hour'
 }
 
 test.describe('Sections jour rollingDays / weekDays', () => {
+
+    // les filtres posés dans l'UI sont persistés : repartir sans filtre
+    test.beforeEach(async () => {
+        await resetFilterConf();
+    });
 
     // Isolation : les tâches créées polluent l'occupation des slots des tests suivants ;
     // le niveau max / la vue changés dans l'UI persistent → restaurer la conf par défaut.
