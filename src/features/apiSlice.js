@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 import { taskCompare } from '../data/task'
+import { indexConfRows } from '../data/user-conf'
 import { mapProperties } from '../utils/objectUtil'
 import { extractExtrasFromRow, buildExtraPropsFromPatch } from '../utils/extraProps';
 import { supabase } from '../services/supabase'
@@ -188,6 +189,12 @@ export const apiSlice = createApi({
                 return response[0].value;
             },
             providesTags: (result, error, arg) => [{ type: 'UserConfs', id: arg.userId + ':' + (arg.conf||'slotviewconf') }]
+        }),
+        // récupère plusieurs confs d'un utilisateur en un seul appel : { [conf]: value }
+        getUserConfs: builder.query({
+            query: ({ confs }) => `/user_confs?conf=in.(${confs.join(',')})`,
+            transformResponse: indexConfRows,
+            providesTags: (result, error, arg) => arg.confs.map(conf => ({ type: 'UserConfs', id: arg.userId + ':' + conf }))
         }),
         // upsert du filtre (création ou mise à jour)
         upsertUserConf: builder.mutation({

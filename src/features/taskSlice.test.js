@@ -1,4 +1,19 @@
-import reducer, { selectTask, setFilterConf } from './taskSlice';
+import reducer, { selectTask, setFilterConf, setUserConfLoaded, logout } from './taskSlice';
+
+describe('userConfLoaded', () => {
+    test('faux à l’initialisation', () => {
+        expect(reducer(undefined, { type: 'init' }).userConfLoaded).toBe(false);
+    });
+
+    test('setUserConfLoaded le positionne', () => {
+        expect(reducer({ userConfLoaded: false }, setUserConfLoaded(true)).userConfLoaded).toBe(true);
+    });
+
+    test('logout le remet à faux : la conf de l’utilisateur suivant sera rechargée avant affichage', () => {
+        const result = reducer({ userConfLoaded: true, user: { id: 'u', email: 'e' } }, logout());
+        expect(result.userConfLoaded).toBe(false);
+    });
+});
 
 describe('setFilterConf', () => {
     const initial = { currentFilter: { expression: 'old', isMulti: true, taskId: 7, slots: ['today'], genericFilters: { status: ['todo'] } } };

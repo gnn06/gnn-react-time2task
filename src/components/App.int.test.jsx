@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
 import taskReducer from '../features/taskSlice';
-import { login } from '../features/taskSlice';
+import { login, setUserConfLoaded } from '../features/taskSlice';
 import { apiSlice } from '../features/apiSlice';
 import App from './App';
 
@@ -72,9 +72,24 @@ describe('App — intégration useAppInitialized + AppLoader', () => {
         await store.dispatch(apiSlice.util.upsertQueryData('getActivities', undefined, []));
 
         store.dispatch(login({ id: 'user-1', email: 'u@t.com', accessToken: 'tok' }));
+        store.dispatch(setUserConfLoaded(true));
 
         render(<Provider store={store}><App /></Provider>);
 
         expect(screen.queryByTestId('app-loader')).not.toBeInTheDocument();
+    });
+
+    test('AppLoader reste affiché tant que la conf utilisateur (vue + filtres) n’est pas chargée', async () => {
+        const store = makeStore();
+
+        await store.dispatch(apiSlice.util.upsertQueryData('getTasks', { userId: 'user-1', activity: null }, []));
+        await store.dispatch(apiSlice.util.upsertQueryData('getActivities', undefined, []));
+
+        store.dispatch(login({ id: 'user-1', email: 'u@t.com', accessToken: 'tok' }));
+        // userConfLoaded reste à false (le chargement de conf est mocké sans effet)
+
+        render(<Provider store={store}><App /></Provider>);
+
+        expect(screen.getByTestId('app-loader')).toBeInTheDocument();
     });
 });

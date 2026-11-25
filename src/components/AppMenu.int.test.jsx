@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
-import taskReducer, { login } from '../features/taskSlice';
+import taskReducer, { login, setUserConfLoaded } from '../features/taskSlice';
 import { apiSlice } from '../features/apiSlice';
 import AppMenu from './appmenu';
 
@@ -53,6 +53,7 @@ describe('AppMenu — intégration useGlobalLoading', () => {
         await store.dispatch(apiSlice.util.upsertQueryData('getTasks',      { userId: 'user-1', activity: null }, []));
         await store.dispatch(apiSlice.util.upsertQueryData('getActivities', undefined, []));
         store.dispatch(login({ id: 'user-1', email: 'u@t.com', accessToken: 'tok' }));
+        store.dispatch(setUserConfLoaded(true));
 
         render(<Provider store={store}><AppMenu /></Provider>);
 

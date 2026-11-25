@@ -26,7 +26,7 @@ test.describe('userconf Persistence', () => {
           body: JSON.stringify([
             {
               "user_id": "99999999-9999-9999-9999-999999999999",
-              "conf": "default",
+              "conf": "slotviewconf",
               "value": {
                 "slotViewFilterConf": {
                   "view": view,

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import taskSlice, { login, logout, setTaskFilter, setFilterSlot, setFilterGeneric, setSlotViewFilterConfLevel } from './taskSlice';
-import { saveFilterConfThunk, loadFilterConfThunk } from './filterConfThunk';
+import { saveFilterConfThunk, restoreFilterConfThunk } from './filterConfThunk';
 
 vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -9,7 +9,6 @@ vi.mock('./apiSlice', () => ({
     apiSlice: {
         endpoints: {
             upsertUserConf: { initiate: vi.fn() },
-            getUserConf: { initiate: vi.fn() },
             getActivities: { initiate: vi.fn() },
         },
         reducer: {},
@@ -80,7 +79,7 @@ describe('saveFilterConfThunk', () => {
     });
 });
 
-describe('loadFilterConfThunk', () => {
+describe('restoreFilterConfThunk', () => {
     let store;
     beforeEach(() => {
         vi.clearAllMocks();
@@ -88,58 +87,39 @@ describe('loadFilterConfThunk', () => {
         apiSlice.endpoints.getActivities.initiate.mockReturnValue(queryResult({ data: [{ id: 1, label: 'A' }] }));
     });
 
-    it('restaure le filtre depuis la conf persistée, prédicats reconstruits', async () => {
-        apiSlice.endpoints.getUserConf.initiate.mockReturnValue(queryResult({
-            data: { filterConf: { expression: 'lundi', slots: ['today'], genericFilters: { status: ['todo'], isRepeat: true, activity: [1, 99] } } },
-        }));
+    it('restaure le filtre depuis la valeur persistée, prédicats reconstruits', async () => {
+        const value = { filterConf: { expression: 'lundi', slots: ['today'], genericFilters: { status: ['todo'], isRepeat: true, activity: [1, 99] } } };
 
-        await store.dispatch(loadFilterConfThunk('user123'));
+        await store.dispatch(restoreFilterConfThunk(value));
 
         const { currentFilter } = store.getState().tasks;
         expect(currentFilter.expression).toBe('lundi');
         expect(currentFilter.slots).toEqual(['today']);
         expect(currentFilter.genericFilters).toEqual({ status: ['todo'], isRepeat: mockPredicate, activity: [1] });
-        expect(apiSlice.endpoints.getUserConf.initiate).toHaveBeenCalledWith({ userId: 'user123', conf: 'filterconf' }, { forceRefetch: true });
     });
 
-    it('construit les prédicats avec le niveau max de la vue déjà chargé', async () => {
+    it('construit les prédicats avec le niveau max de la vue déjà restauré', async () => {
         store.dispatch(setSlotViewFilterConfLevel({ level: 2 }));
-        apiSlice.endpoints.getUserConf.initiate.mockReturnValue(queryResult({
-            data: { filterConf: { genericFilters: { isImprecise: true } } },
-        }));
 
-        await store.dispatch(loadFilterConfThunk('user123'));
+        await store.dispatch(restoreFilterConfThunk({ filterConf: { genericFilters: { isImprecise: true } } }));
 
         expect(createFilterConfig).toHaveBeenCalledWith([{ id: 1, label: 'A' }], 2);
         expect(store.getState().tasks.currentFilter.genericFilters.isImprecise).toBe(mockImprecisePredicate);
     });
 
-    it('ne change rien quand aucune conf n’est persistée', async () => {
-        apiSlice.endpoints.getUserConf.initiate.mockReturnValue(queryResult({ data: null }));
+    it.each([['null', null], ['undefined', undefined]])('ne change rien quand aucune valeur n’est persistée (%s)', async (_, value) => {
         const before = store.getState().tasks.currentFilter;
 
-        await store.dispatch(loadFilterConfThunk('user123'));
+        await store.dispatch(restoreFilterConfThunk(value));
 
         expect(store.getState().tasks.currentFilter).toEqual(before);
-    });
-
-    it('ne change rien et loggue en cas d’erreur de chargement', async () => {
-        apiSlice.endpoints.getUserConf.initiate.mockReturnValue(queryResult({ error: new Error('KO') }));
-        const before = store.getState().tasks.currentFilter;
-
-        await store.dispatch(loadFilterConfThunk('user123'));
-
-        expect(store.getState().tasks.currentFilter).toEqual(before);
-        expect(console.error).toHaveBeenCalled();
+        expect(apiSlice.endpoints.getActivities.initiate).not.toHaveBeenCalled();
     });
 
     it('restaure quand même (sans filtre activité) si les activités sont indisponibles', async () => {
         apiSlice.endpoints.getActivities.initiate.mockReturnValue(queryResult({ error: new Error('KO') }));
-        apiSlice.endpoints.getUserConf.initiate.mockReturnValue(queryResult({
-            data: { filterConf: { genericFilters: { status: ['done'], activity: [1] } } },
-        }));
 
-        await store.dispatch(loadFilterConfThunk('user123'));
+        await store.dispatch(restoreFilterConfThunk({ filterConf: { genericFilters: { status: ['done'], activity: [1] } } }));
 
         expect(store.getState().tasks.currentFilter.genericFilters).toEqual({ status: ['done'] });
     });

@@ -3,7 +3,7 @@ import { apiSlice } from './apiSlice';
 import { createFilterConfig } from '../components/task-filter';
 import { serializeFilterConf, restoreFilterConf } from '../data/filter-conf';
 
-const CONF_KEY = 'filterconf';
+export const FILTER_CONF_KEY = 'filterconf';
 
 export const saveFilterConfThunk = () => async (dispatch, getState) => {
     const state = getState();
@@ -14,7 +14,7 @@ export const saveFilterConfThunk = () => async (dispatch, getState) => {
         await dispatch(
             apiSlice.endpoints.upsertUserConf.initiate({
                 userId,
-                conf: CONF_KEY,
+                conf: FILTER_CONF_KEY,
                 value: { filterConf: serializeFilterConf(state.tasks.currentFilter) },
             })
         ).unwrap();
@@ -24,21 +24,13 @@ export const saveFilterConfThunk = () => async (dispatch, getState) => {
 };
 
 /**
- * À appeler après loadUserConfThunk : les prédicats (isImprecise) dépendent du niveau max de la vue,
- * et la validité du filtre activité dépend des activités existantes.
+ * Restaure les filtres depuis la valeur persistée (lue par loadAllUserConfThunk). À appeler après la
+ * restauration de la vue : les prédicats (isImprecise) dépendent du niveau max de la vue, et la
+ * validité du filtre activité dépend des activités existantes.
+ * Sans valeur persistée, le filtre courant est conservé.
  */
-export const loadFilterConfThunk = (userId) => async (dispatch, getState) => {
-    const confPromise = dispatch(
-        apiSlice.endpoints.getUserConf.initiate({ userId, conf: CONF_KEY }, { forceRefetch: true })
-    );
-    const { data, error } = await confPromise;
-    confPromise.unsubscribe();
-
-    if (error) {
-        console.error('Échec chargement filtres :', error);
-        return;
-    }
-    if (!data) return;
+export const restoreFilterConfThunk = (value) => async (dispatch, getState) => {
+    if (!value) return;
 
     const activitiesPromise = dispatch(apiSlice.endpoints.getActivities.initiate());
     const { data: activities } = await activitiesPromise;
@@ -46,5 +38,5 @@ export const loadFilterConfThunk = (userId) => async (dispatch, getState) => {
 
     const levelMaxIncluded = getState().tasks.slotViewFilterConf.levelMaxIncluded;
     const filterConfig = createFilterConfig(activities ?? [], levelMaxIncluded);
-    dispatch(setFilterConf(restoreFilterConf(data.filterConf ?? data, filterConfig)));
+    dispatch(setFilterConf(restoreFilterConf(value.filterConf ?? value, filterConfig)));
 };

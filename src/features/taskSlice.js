@@ -17,6 +17,9 @@ const initialState = {
         taskId: null,
     },
     slotViewFilterConf: DEFAULT_CONF,
+    // true une fois la conf utilisateur (vue + filtres) restaurée : l'AppLoader reste affiché
+    // jusque-là pour éviter de montrer la vue par défaut puis de la voir sauter.
+    userConfLoaded: false,
     selectedSlotId: [],
     association: {},
     user: {
@@ -101,6 +104,10 @@ export const taskSlice = createSlice({
         logout: (state) => {
             state.user = { id: '', email: '' };
             state.accessToken = '';
+            state.userConfLoaded = false;
+        },
+        setUserConfLoaded: (state, action) => {
+            state.userConfLoaded = action.payload;
         },
         accessToken: (state, action) => {
             state.accessToken = action.payload;
@@ -134,7 +141,7 @@ export const taskSlice = createSlice({
 
 export const { selectTask, selectSlot, associateSelected, setTaskFilter, setFilterIsMulti, setFilterIsDisable, setFilterIsStatusARepo, login, logout, accessToken, setActivity,
     setSlotViewFilterConfLevel, setSlotViewFilterConf, setSlotViewFilterConfView,
-    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric, setFilterConf,
+    confBranch, setFilterSlot, setFilterTaskId, setFilterGeneric, setFilterConf, setUserConfLoaded,
     editTask, dragging
 } = taskSlice.actions
 

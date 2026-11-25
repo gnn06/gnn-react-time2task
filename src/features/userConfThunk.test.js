@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
-import { saveUserConfThunk } from './userConfThunk';
+import { saveUserConfThunk, restoreViewConfThunk } from './userConfThunk';
 import taskSlice, { login, logout } from './taskSlice';
 
 // Mock console.error to avoid noise in tests
@@ -23,6 +23,40 @@ vi.mock('./apiSlice', () => ({
 // Import after mocking
 import { apiSlice } from './apiSlice';
 import { DEFAULT_CONF } from '../data/slot-view';
+
+describe('restoreViewConfThunk', () => {
+    const makeStore = () => configureStore({
+        reducer: { tasks: taskSlice, [apiSlice.reducerPath]: apiSlice.reducer },
+        middleware: (gdm) => gdm({ serializableCheck: false }).concat(apiSlice.middleware),
+    });
+
+    it('restaure la conf de vue depuis la valeur enveloppée { slotViewFilterConf }', async () => {
+        const store = makeStore();
+        const conf = { ...DEFAULT_CONF, view: 'tree', levelMaxIncluded: 2 };
+
+        await store.dispatch(restoreViewConfThunk({ slotViewFilterConf: conf }));
+
+        expect(store.getState().tasks.slotViewFilterConf).toEqual(conf);
+    });
+
+    it('accepte aussi une valeur non enveloppée', async () => {
+        const store = makeStore();
+        const conf = { ...DEFAULT_CONF, view: 'tree' };
+
+        await store.dispatch(restoreViewConfThunk(conf));
+
+        expect(store.getState().tasks.slotViewFilterConf).toEqual(conf);
+    });
+
+    it.each([['null', null], ['undefined', undefined]])('ne change rien sans valeur persistée (%s)', async (_, value) => {
+        const store = makeStore();
+        const before = store.getState().tasks.slotViewFilterConf;
+
+        await store.dispatch(restoreViewConfThunk(value));
+
+        expect(store.getState().tasks.slotViewFilterConf).toEqual(before);
+    });
+});
 
 describe('saveUserConfThunk', () => {
     let store;

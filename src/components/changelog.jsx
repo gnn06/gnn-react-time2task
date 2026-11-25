@@ -7,6 +7,7 @@ const text = `
 25/11/2026
 ==========
 - les filtres (créneau, texte de la barre de recherche, menu Filtres) sont conservés après un rafraîchissement ou une réouverture de l'application
+- au démarrage, la vue et les filtres sont chargés en un seul appel et l'écran de chargement reste affiché jusqu'à leur restauration : plus de saut visuel
 
 24/11/2026
 ==========
