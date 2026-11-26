@@ -38,7 +38,7 @@ Une fois le bug corrigé et les tests unitaires adaptés :
 
 - Vérifier que la couverture de test correspond à la spec (cas nominaux + cas limites)
 - Mettre à jour la spec si des décisions ont été prises pendant le développement
-- Proposer de lancer les tests E2E Playwright (ne pas les lancer sans accord)
+- Lancer les tests E2E Playwright (suite complète) et en rapporter le résultat
 - Mettre à jour `src/components/changelog.jsx`
 
 # Plan
@@ -49,7 +49,7 @@ Une fois le bug corrigé et les tests unitaires adaptés :
 - **Commit** : committer librement à la fin de chaque étape validée (`npx tsc --noEmit` et `npx vitest run` verts), sans demander confirmation, et indiquer le message après coup ; message sur une seule ligne, sans corps ni liste de fichiers
 - **Push** : pousser librement sur les branches de développement (`feat/…`, `fix/…`, `chore/…`) ; jamais sur `master` (il ne reçoit que des fusions de PR, faites sur demande explicite)
 - **Commandes shell** : pas de `cd` en préfixe (casse le matching des permissions) ; ne jamais rediriger la sortie (`tee`, `>`) sauf demande explicite
-- **Tests Playwright** : toujours demander avant de les lancer
+- **Tests Playwright** : lancer automatiquement la suite complète en fin d'évolution, une fois `npx tsc --noEmit` et `npx vitest run` verts, sans demander confirmation ; toujours contre la base dev (cf. règle Supabase)
 - **Plan** : ne pas marquer ✅ FAIT sans confirmation explicite
 - **Docs** : ne les modifier que sur demande ou si une décision d'architecture change
 - **Supabase** : clé `anon` uniquement ; jamais de `service_role` dans le dépôt ni dans un `.env.*` ; les E2E ciblent la base dev (`icxyfpyfuamawldilhih`), jamais la prod
