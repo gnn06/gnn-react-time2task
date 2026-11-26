@@ -1,10 +1,11 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UniqueIcon from '@mui/icons-material/LooksOneOutlined';
 import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import RepeatIcon from '@mui/icons-material/Repeat';
+import AltRouteIcon from '@mui/icons-material/AltRoute';
 import { IconButton, Tooltip } from "@mui/material";
 import Color from 'color';
 
@@ -14,7 +15,7 @@ import FavoriteToggle from "./favorite-toggle";
 import { editTask } from "../features/taskSlice";
 import { useGetActivitiesQuery, useUpdateTaskMutation } from "../features/apiSlice";
 
-import { isTaskUnique, isTaskRepeat, taskHasRelatifParentDay } from '../data/task.js'
+import { isTaskUnique, isTaskRepeat, taskHasRelatifParentDay, taskSlotsOutsideFilter } from '../data/task.js'
 import { getActivityColor } from "./ui-helper";
 import { STATUS_LST } from "./task-status";
 import IconButtonLink from "./icon-button-link";
@@ -34,6 +35,9 @@ export default function TaskInSlot({task, isImprecise = false}) {
     const effectiveTask = task.originalSlotExpr ? { ...task, slotExpr: task.originalSlotExpr } : task
     const isFixed = taskHasRelatifParentDay(effectiveTask)
     const isRepeat = isTaskRepeat(effectiveTask)
+    // Filtre créneau actif : une tâche multiple n'est affichée qu'au créneau filtré ; on signale ses autres créneaux.
+    const filterSlots = useSelector(state => state.tasks.currentFilter.slots)
+    const otherSlots = taskSlotsOutsideFilter(task, filterSlots)
 
     const onSlotSelectionConfirm = (slotExpr) => {
         updateTask({id:task.id, slotExpr})
@@ -63,6 +67,7 @@ export default function TaskInSlot({task, isImprecise = false}) {
                 { isFixed     && <PushPinIcon data-testid="fixed-slot-icon" sx={{ fontSize: 16, color: activityTextColor, opacity: 0.6 }} /> }
                 { isImprecise && <FileDownloadOffIcon sx={{ fontSize: 18, color: activityTextColor, opacity: 0.6 }} /> }
                 { isRepeat    && <Tooltip title="tâche répétitive"><RepeatIcon data-testid="repeat-slot-icon" role="img" aria-hidden={false} sx={{ fontSize: 18, color: activityTextColor, opacity: 0.6 }} /></Tooltip> }
+                { otherSlots.length > 0 && <Tooltip title={`aussi sur : ${otherSlots.join(', ')}`}><AltRouteIcon data-testid="other-slots-icon" role="img" aria-hidden={false} sx={{ fontSize: 18, color: activityTextColor, opacity: 0.6 }} /></Tooltip> }
                 <FavoriteToggle favorite={task.favorite} onToggle={onToggleFavorite} size={24} color={activityTextColor} />
             </div>
             <div className="italic">{task.nextAction} </div>

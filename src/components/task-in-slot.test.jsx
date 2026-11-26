@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 import { Provider } from 'react-redux';
 import { configureTestStorePreloaded } from '../features/test-store'
+import { setFilterSlot } from '../features/taskSlice'
 
 import {http, HttpResponse} from 'msw';
 import {setupServer} from 'msw/node';
@@ -72,6 +73,47 @@ test('tâche projetée (originalSlotExpr chaque mardi) → icône répétition v
     const task = { id: 1, title: 'test', slotExpr: 'today', originalSlotExpr: 'chaque mardi' }
     render(<Provider store={store}><TaskInSlot task={task}/></Provider>)
     expect(screen.getByTestId('repeat-slot-icon')).toBeInTheDocument()
+})
+
+describe('icône « aussi sur » — tâche multiple sous filtre créneau', () => {
+    const renderWithFilter = (task, filterSlots = ['this_month this_week mardi']) => {
+        const filterStore = configureTestStorePreloaded({ user: { id: 12 } })
+        filterSlots.forEach(path => filterStore.dispatch(setFilterSlot(path)))
+        render(<Provider store={filterStore}><TaskInSlot task={task}/></Provider>)
+    }
+
+    test('filtre sur mardi, tâche lundi+mardi → icône avec les autres créneaux en infobulle', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'this_week lundi mardi' })
+        const icon = screen.getByTestId('other-slots-icon')
+        expect(icon).toBeInTheDocument()
+        expect(icon).toHaveAccessibleName('aussi sur : this_month this_week lundi')
+    })
+
+    test('plusieurs autres créneaux → tous listés', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'this_week lundi mardi jeudi' })
+        expect(screen.getByTestId('other-slots-icon'))
+            .toHaveAccessibleName('aussi sur : this_month this_week lundi, this_month this_week jeudi')
+    })
+
+    test('sans filtre créneau → pas d\'icône', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'this_week lundi mardi' }, [])
+        expect(screen.queryByTestId('other-slots-icon')).not.toBeInTheDocument()
+    })
+
+    test('tâche non multiple → pas d\'icône', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'this_week mardi' })
+        expect(screen.queryByTestId('other-slots-icon')).not.toBeInTheDocument()
+    })
+
+    test('tous les créneaux de la tâche sont dans le filtre → pas d\'icône', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'this_week mardi matin mardi aprem' })
+        expect(screen.queryByTestId('other-slots-icon')).not.toBeInTheDocument()
+    })
+
+    test('tâche projetée → autres créneaux calculés sur le créneau d\'origine', () => {
+        renderWithFilter({ id: 1, title: 'test', slotExpr: 'today', originalSlotExpr: 'this_week lundi mardi' })
+        expect(screen.getByTestId('other-slots-icon')).toBeInTheDocument()
+    })
 })
 
 test('don\'t loose nextAction and url on favorite click', async () => {

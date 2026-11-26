@@ -1,14 +1,14 @@
-import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotUnique, isSlotMulti } from './slot-expr';
+import { isSlotRepeat2, isSlotRepeat1, slotCompare, isSlotEqual, isSlotEqualOrInclude, isSlotNested, isSlotUnique, isSlotMulti } from './slot-expr';
 import { makeFilterCombine }  from './filter-engine.js';
 import { Parser } from "./parser";
 import _ from 'lodash';
-import { branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchHasPathWithoutWeekDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
+import { branchAlternatives, branchComplete, branchToExpr, branchTruncate, getBranchHash, isBranchDisable, isBranchMulti, branchHasRelatifParentDay, branchHasPathWithoutWeekDay, branchGetRelatifPresentDayId, branchGetRelatifParentDayId } from './slot-branch';
 import moment from 'moment';
 import { getDate, getDefaultDates, getCurrentWeekdayId } from './slot-date';
 import { getSlotIdLevel, getSlotIdFamily, getSlotIdCurrent, SLOTIDS_BY_LEVEL, weight } from './slot-id';
 import { IDizer } from '../utils/stringUtil';
 import { slotHasImpreciseIcon } from './slot-view';
-import { branchShift } from './slot-branch++';
+import { branchShift, isBranchEqualOrInclude } from './slot-branch++';
 import { SlotPath, getCurrentPathExpr } from './slot-path';
 import { getSlotNextPrev } from './slot-next-prev';
 
@@ -130,9 +130,44 @@ export function findTaskBySlotExpr(tasks, slot, includeRepeat = true) {
 const parser = new Parser()
 
 /**
- * 
- * @param {*} tasks 
- * @param {*} level 
+ * Règle de placement sous filtre créneau (cf. spec-vue, Placement) : quand un filtre créneau est actif,
+ * une tâche multiple n'apparaît qu'aux slots du créneau filtré. Un slot est lié au filtre s'il est égal,
+ * contenu ou contenant. À composer avec findTaskBySlotExpr (tâches déjà placées dans le slot).
+ * ÉCART CONNU : cette composition est écrite à chaque appelant (Slot, SlotViewList, SlotViewTree) plutôt que
+ * regroupée dans un helper, pour garder findTaskBySlotExpr et cette règle indépendantes. À regrouper si un
+ * nouvel appelant apparaît.
+ * Ce n'est pas un filtrage : le filtre courant a déjà décidé quelles tâches sont visibles.
+ * @param {*} tasks tâches placées dans le slot
+ * @param {*} slot with a path
+ * @param {string[]} filterSlots chemins du filtre créneau actif (vide ou absent : tâches renvoyées inchangées)
+ */
+export function keepTasksOnFilteredSlot(tasks, slot, filterSlots) {
+    if (!filterSlots?.length) return tasks
+    return tasks.filter(task => !isSlotMulti(task.slotExpr)
+        || filterSlots.some(filterSlot => isSlotNested(slot.path, filterSlot)))
+}
+
+/**
+ * Créneaux d'une tâche multiple situés hors du filtre créneau (ceux où elle n'est plus affichée).
+ * Sert à signaler « aussi sur : … ». Vide si pas de filtre, tâche non multiple ou tous créneaux filtrés.
+ * @param {*} task
+ * @param {string[]} filterSlots chemins du filtre créneau actif
+ * @returns {string[]} expressions complètes, une par créneau hors filtre
+ */
+export function taskSlotsOutsideFilter(task, filterSlots) {
+    if (!filterSlots?.length) return []
+    const tree = parser.parse(task.originalSlotExpr ?? task.slotExpr)
+    if (tree === undefined || !isBranchMulti(tree)) return []
+    const filterBranches = filterSlots.map(filterSlot => branchComplete(parser.parse(filterSlot)))
+    return branchAlternatives(branchComplete(tree))
+        .filter(alternative => !filterBranches.some(filterBranch => isBranchEqualOrInclude(alternative, filterBranch)))
+        .map(branchToExpr)
+}
+
+/**
+ *
+ * @param {*} tasks
+ * @param {*} level
  * @returns object { 'this_month this_week': [task1, task2] , ... }
  */
 export function taskGroupLevel(tasks, level) {

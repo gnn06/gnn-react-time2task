@@ -10,7 +10,7 @@ import CollapseButton from "./collapse-button";
 import { selectSlot, setFilterSlot } from "../features/taskSlice";
 
 import { SortedTaskList } from "./sorted-task-list";
-import { findTaskBySlotExpr } from "../data/task";
+import { findTaskBySlotExpr, keepTasksOnFilteredSlot } from "../data/task";
 import { SlotPath } from "../data/slot-path";
 import { slotHasImpreciseIcon } from "../data/slot-view";
 import { getDate } from "../data/slot-date";
@@ -32,7 +32,8 @@ export default function Slot({slot, tasks}) {
     // contient et qui existe dans la vue ; sinon elle remonte. Le filtre courant a déjà
     // restreint l'ensemble en amont (vérité unique), donc pas de gating par slot ici.
     // TEMPORAIRE : includeRepeat=false → chaque tâche répétée n'apparaît qu'une fois.
-    let tasksInSlot = findTaskBySlotExpr(tasks, slot, false);
+    // Filtre créneau actif : une tâche multiple n'apparaît qu'aux slots du créneau filtré.
+    let tasksInSlot = keepTasksOnFilteredSlot(findTaskBySlotExpr(tasks, slot, false), slot, filterPaths);
 
     // need to reorder tasks byb order because task order is affected by multi slots
     tasksInSlot = tasksInSlot.sort((a, b) => {

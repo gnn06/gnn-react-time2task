@@ -12,7 +12,9 @@ import { taskCompare, taskPredicateEqualAndInclude, taskPredicateEqual, taskPred
     taskRelativePresentToParent,
     taskRelativeParentToPresent,
     getListTasks,
-    getListTasksFiltered} from "./task";
+    getListTasksFiltered,
+    keepTasksOnFilteredSlot,
+    taskSlotsOutsideFilter} from "./task";
 import { branchComplete, branchTruncate, getBranchHash } from './slot-branch.js';
 import { Parser } from './parser.js';
 import { vi } from "vitest";
@@ -391,6 +393,125 @@ describe('findTaskBySlotExpr', () => {
         }];
         expect(result).toEqual(expected);
     })
+
+    describe('keepTasksOnFilteredSlot : filtre créneau actif, une tâche multiple n\'apparaît qu\'aux slots du créneau filtré', () => {
+        // règle composée avec le placement par bubbling, comme dans les vues
+        const place = (tasks, slot, filterSlots) => keepTasksOnFilteredSlot(findTaskBySlotExpr(tasks, slot, false), slot, filterSlots);
+        const lundi = { id: 'lundi', path: 'this_month this_week lundi' };
+        const mardi = { id: 'mardi', path: 'this_month this_week mardi' };
+        const multi = { id: 'multi', slotExpr: 'this_week lundi mardi' };
+        const filterMardi = ['this_month this_week mardi'];
+
+        it('sans filtre créneau (absent ou vide), la tâche apparaît à chacun de ses slots', () => {
+            for (const filterSlots of [undefined, []]) {
+                expect(place([multi], lundi, filterSlots).map(t => t.id)).toEqual(['multi']);
+                expect(place([multi], mardi, filterSlots).map(t => t.id)).toEqual(['multi']);
+            }
+        });
+
+        it('avec filtre sur mardi, la tâche n\'apparaît plus sur lundi mais reste sur mardi', () => {
+            expect(place([multi], lundi, filterMardi)).toEqual([]);
+            expect(place([multi], mardi, filterMardi).map(t => t.id)).toEqual(['multi']);
+        });
+
+        it('une tâche non multiple n\'est pas affectée', () => {
+            const simple = { id: 'simple', slotExpr: 'this_month this_week mardi' };
+            expect(place([simple], mardi, filterMardi).map(t => t.id)).toEqual(['simple']);
+        });
+
+        it('créneaux dans des semaines différentes : seul le slot du créneau filtré la montre', () => {
+            const task = { id: 'deuxSemaines', slotExpr: 'next_week lundi this_week mardi' };
+            const lundiProchain = { id: 'lundi', path: 'this_month next_week lundi' };
+            expect(place([task], lundiProchain, filterMardi)).toEqual([]);
+            expect(place([task], mardi, filterMardi).map(t => t.id)).toEqual(['deuxSemaines']);
+        });
+
+        it('tâche mixte (today jeudi) filtrée sur today : absente du slot jeudi, présente sur today', () => {
+            const mixte = { id: 'mixte', slotExpr: 'today jeudi' };
+            const jeudi = { id: 'jeudi', path: 'this_month this_week jeudi' };
+            const today = { id: 'today', path: 'today' };
+            expect(place([mixte], jeudi, ['today'])).toEqual([]);
+            expect(place([mixte], today, ['today']).map(t => t.id)).toEqual(['mixte']);
+        });
+
+        it('slot ancêtre du créneau filtré (jours masqués par le niveau max) : la tâche apparaît une seule fois', () => {
+            const semaine = { id: 'this_week', path: 'this_month this_week' };
+            expect(place([multi], semaine, filterMardi).map(t => t.id)).toEqual(['multi']);
+        });
+
+        it('slot ancêtre avec jours visibles : la tâche est en bas (mardi), pas remontée à la semaine', () => {
+            const semaine = { id: 'this_week', path: 'this_month this_week', inner: [lundi, mardi] };
+            expect(place([multi], semaine, filterMardi)).toEqual([]);
+        });
+
+        it('sous-slots du créneau filtré : la tâche apparaît à chacun (cas conservé)', () => {
+            const task = { id: 'matinAprem', slotExpr: 'this_week mardi matin mardi aprem' };
+            const matin = { id: 'matin', path: 'this_month this_week mardi matin' };
+            const aprem = { id: 'aprem', path: 'this_month this_week mardi aprem' };
+            expect(place([task], matin, filterMardi).map(t => t.id)).toEqual(['matinAprem']);
+            expect(place([task], aprem, filterMardi).map(t => t.id)).toEqual(['matinAprem']);
+        });
+
+        it('deux créneaux filtrés : la tâche apparaît à chacun (cas conservé)', () => {
+            const filters = ['this_month this_week lundi', 'this_month this_week mardi'];
+            expect(place([multi], lundi, filters).map(t => t.id)).toEqual(['multi']);
+            expect(place([multi], mardi, filters).map(t => t.id)).toEqual(['multi']);
+        });
+        describe('règle seule, sur des tâches déjà placées', () => {
+            const slotLundi = { path: 'this_month this_week lundi' };
+
+            it('sans filtre créneau, renvoie les tâches inchangées', () => {
+                const tasks = [multi, { id: 'simple', slotExpr: 'this_month this_week lundi' }];
+                expect(keepTasksOnFilteredSlot(tasks, slotLundi, undefined)).toBe(tasks);
+                expect(keepTasksOnFilteredSlot(tasks, slotLundi, [])).toBe(tasks);
+            });
+
+            it('avec filtre sur mardi, retire seulement les tâches multiples du slot lundi', () => {
+                const simple = { id: 'simple', slotExpr: 'this_month this_week lundi' };
+                expect(keepTasksOnFilteredSlot([multi, simple], slotLundi, filterMardi).map(t => t.id)).toEqual(['simple']);
+            });
+        });
+    });
+
+    describe('taskSlotsOutsideFilter : les autres créneaux d\'une tâche multiple', () => {
+        const filterMardi = ['this_month this_week mardi'];
+
+        it('liste les créneaux hors du créneau filtré', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week lundi mardi' }, filterMardi))
+                .toEqual(['this_month this_week lundi']);
+        });
+
+        it('plusieurs créneaux hors filtre', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week lundi mardi jeudi' }, filterMardi))
+                .toEqual(['this_month this_week lundi', 'this_month this_week jeudi']);
+        });
+
+        it('tâche mixte (today jeudi) filtrée sur today : jeudi est hors filtre', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'today jeudi' }, ['today']))
+                .toEqual(['this_month this_week jeudi']);
+        });
+
+        it('sous-slots du créneau filtré : aucun créneau hors filtre', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week mardi matin mardi aprem' }, filterMardi)).toEqual([]);
+        });
+
+        it('deux créneaux filtrés : ceux-ci ne sont pas listés', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week lundi mardi jeudi' },
+                ['this_month this_week lundi', 'this_month this_week mardi']))
+                .toEqual(['this_month this_week jeudi']);
+        });
+
+        it('tâche non multiple ou sans filtre : aucun autre créneau', () => {
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week mardi' }, filterMardi)).toEqual([]);
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week lundi mardi' }, [])).toEqual([]);
+            expect(taskSlotsOutsideFilter({ slotExpr: 'this_week lundi mardi' }, undefined)).toEqual([]);
+        });
+
+        it('utilise le créneau d\'origine d\'une tâche projetée', () => {
+            const projected = { slotExpr: 'today', originalSlotExpr: 'this_week lundi mardi' };
+            expect(taskSlotsOutsideFilter(projected, filterMardi)).toEqual(['this_month this_week lundi']);
+        });
+    });
 
     it('tâche mixte cross-famille (today jeudi) trouvée par le nœud today', () => {
         const tasks = [ { id: 'mixte', slotExpr: 'today jeudi' } ];

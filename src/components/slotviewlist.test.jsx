@@ -229,6 +229,23 @@ describe('SlotViewList — weekDays (secondaire) : slots Past/Future masqués sa
         expect(p).not.toContain('this_month this_week jeudi');
     });
 
+    test('filtre créneau actif : la tâche multiple ne fait plus afficher le slot de son autre créneau', () => {
+        // tâche sur jeudi ET vendredi, filtre sur vendredi : jeudi ne porte plus la tâche → masqué.
+        const tasks = [{ id: 1, title: 'a', slotExpr: 'this_week jeudi vendredi' }];
+        render(<SlotViewList tasks={tasks} conf={CONF} snapDates={SNAP_WED} filterSlots={['this_month this_week vendredi']} />);
+        const p = paths();
+        expect(p).toContain('this_month this_week vendredi');
+        expect(p).not.toContain('this_month this_week jeudi');
+    });
+
+    test('sans filtre créneau : la tâche multiple fait afficher les deux slots', () => {
+        const tasks = [{ id: 1, title: 'a', slotExpr: 'this_week jeudi vendredi' }];
+        render(<SlotViewList tasks={tasks} conf={CONF} snapDates={SNAP_WED} filterSlots={[]} />);
+        const p = paths();
+        expect(p).toContain('this_month this_week vendredi');
+        expect(p).toContain('this_month this_week jeudi');
+    });
+
     test('jour passé vide masqué, jour passé avec tâche affiché (today=mercredi)', () => {
         // mardi porte une tâche → affiché ; lundi reste vide → masqué.
         render(<SlotViewList tasks={[

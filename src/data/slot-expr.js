@@ -105,6 +105,15 @@ export function isSlotEqualOrInclude(slotExpr, otherSlotExpr, withRepeat = false
     return isBranchEqualOrInclude(tree1, tree2, withRepeat)
 }
 
+/**
+ * true si les deux slots sont égaux ou si l'un contient l'autre (même chemin dans l'arbre des slots).
+ * 'this_week mardi' et 'this_week' : true ; 'this_week lundi' et 'this_week mardi' : false.
+ * @param slotExpr, otherSlotExpr slots mono (un seul chemin chacun)
+ */
+export function isSlotNested(slotExpr, otherSlotExpr) {
+    return isSlotEqualOrInclude(slotExpr, otherSlotExpr) || isSlotEqualOrInclude(otherSlotExpr, slotExpr)
+}
+
 const parser = new Parser()
 
 export function slotExprAdd(origBranch, branchToAdd) {

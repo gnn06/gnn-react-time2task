@@ -20,6 +20,7 @@ const createMockStore = () => configureStore({
         tasks: {
             user: { id: 'user123' },
             currentActivity: 'activity1',
+            currentFilter: { slots: [] }, // lu par TaskInSlot (icône « aussi sur »)
         },
     },
 });

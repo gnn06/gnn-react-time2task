@@ -230,6 +230,21 @@ export function branchGetRelatifParentDayId(branch) {
     ) ?? null
 }
 
+/**
+ * Éclate une branche multiple en ses alternatives : une branche sans multi par créneau.
+ * 'this_week lundi mardi' => ['this_week lundi', 'this_week mardi'] (préfixe commun conservé).
+ * Les drapeaux, répétitions et décalages de chaque alternative sont conservés (branchToExpr les relit).
+ * @returns tableau de branches, vide si la branche est indéfinie
+ */
+export function branchAlternatives(branch) {
+    if (branch === undefined) return []
+    if (branch.type === 'multi') return branch.value.flatMap(branchAlternatives)
+    const ids = branch.value.filter(item => typeof item === 'string')
+    const nested = branch.value.filter(item => typeof item === 'object')
+    if (nested.length === 0) return [branch]
+    return nested.flatMap(item => branchAlternatives(item).map(alternative => ({ ...branch, value: [...ids, alternative] })))
+}
+
 export function isBranchMulti(branch) {
     if (branch.type === 'multi') {
         return true;

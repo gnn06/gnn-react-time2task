@@ -233,6 +233,32 @@ test.describe('Sections jour rollingDays / weekDays', () => {
         expect(await getTaskRowIndex(page, tJeudi)).toBe(-1);
     });
 
+    // --- Filtre créneau : une tâche multiple n'apparaît qu'au créneau filtré ---
+
+    test('arbre, filtre créneau — une tâche multiple n\'apparaît plus qu\'une fois, au créneau filtré', async ({ page }) => {
+        await ouvrirApp(page, 'mercredi');
+        const titre = uniqueTitle('multi-filtre');
+        await tacheAvecCreneau(page, titre, 'this_week mardi jeudi');
+        await page.reload();
+        await waitForAppReady(page);
+        await ouvrirVue(page, 'Tree');
+
+        // Sans filtre : la tâche apparaît à chacun de ses deux slots, sans icône « aussi sur »
+        await expect(page.getByText(titre)).toHaveCount(2);
+        await expect(page.getByTestId('other-slots-icon')).toHaveCount(0);
+
+        await filtrerParSlots(page, [WD('mardi')]);
+
+        // Avec le filtre mardi : une seule carte, sur mardi, qui signale son autre créneau
+        await expect(page.getByText(titre)).toHaveCount(1);
+        await expect(page.locator(`[data-slot-path="${WD('mardi')}"]`).getByText(titre)).toBeVisible();
+        await expect(page.locator(`[data-slot-path="${WD('jeudi')}"]`).getByText(titre)).toHaveCount(0);
+        await expect(page.getByTestId('other-slots-icon')).toHaveAccessibleName(`aussi sur : ${WD('jeudi')}`);
+
+        // La tâche reste visible dans la liste des tâches (le filtre décide seul de sa présence)
+        expect(await getTaskRowIndex(page, titre)).toBeGreaterThanOrEqual(0);
+    });
+
     // --- Bubbling : réduire le niveau max fait remonter la tâche (elle reste visible) ---
 
     for (const vue of ['List', 'Tree'] as const) {

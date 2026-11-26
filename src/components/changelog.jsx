@@ -1,9 +1,13 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '25/11/2026';
+export const RELEASE = '26/11/2026';
 
 const text = `
+26/11/2026
+==========
+- vues par créneau : quand un filtre créneau est actif, une tâche multiple n'apparaît plus qu'au créneau filtré (plus de doublon). Une icône sur la carte indique ses autres créneaux
+
 25/11/2026
 ==========
 - les filtres (créneau, texte de la barre de recherche, menu Filtres) sont conservés après un rafraîchissement ou une réouverture de l'application

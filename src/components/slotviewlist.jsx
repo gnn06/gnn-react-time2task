@@ -4,7 +4,7 @@ import { getSlotsForRow, getHourSlotsForRow, slotViewListSelection, slotViewList
 import { getSlotIdLevel } from "../data/slot-id";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { getCurrentWeekdayId } from "../data/slot-date";
-import { findTaskBySlotExpr } from "../data/task";
+import { findTaskBySlotExpr, keepTasksOnFilteredSlot } from "../data/task";
 import { rowLabel } from "./level-label";
 import { Parser } from "../data/parser";
 import { IDizer } from "../utils/stringUtil";
@@ -33,7 +33,9 @@ function cellContent(cell, tasks) {
     return cell ? <Slot slot={cell} tasks={tasks} /> : null;
 }
 
-export default function SlotViewList({ tasks, conf, snapDates }) {
+// filterSlots : chemins du filtre créneau actif. Même règle de placement que Slot : une case ne compte
+// une tâche multiple que si elle l'affiche (cf. keepTasksOnFilteredSlot).
+export default function SlotViewList({ tasks, conf, snapDates, filterSlots }) {
     // Vérité unique : tasks = ensemble filtré (identique au TaskPanel), disposé par bubbling.
     const allListTasks = tasks;
     const taskPaths = computeTaskPaths(allListTasks);
@@ -64,7 +66,8 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     // que s'il porte une tâche (le present reste toujours affiché, aligné verticalement sur le
     // today de rollingDays). Symétrique de la ligne heure secondaire (weekHours) et cohérent
     // avec rollingDays (principal), qui n'a aucune cellule Past. rollingDays reste inconditionnel.
-    const keepIfHasTask = (slots) => slots.filter(s => findTaskBySlotExpr(allListTasks, s, false).length > 0);
+    const tasksPlacedIn = (slot) => keepTasksOnFilteredSlot(findTaskBySlotExpr(allListTasks, slot, false), slot, filterSlots);
+    const keepIfHasTask = (slots) => slots.filter(s => tasksPlacedIn(s).length > 0);
     const weekdayPast = keepIfHasTask(weekday.past);
     const weekdayFuture = keepIfHasTask(weekday.future);
     const hasWeekday = weekdayPast.length > 0 || weekday.present || weekdayFuture.length > 0;
@@ -72,7 +75,7 @@ export default function SlotViewList({ tasks, conf, snapDates }) {
     // Seul le jour present d'une section porte matin/aprem en inner (past/future sont
     // strippés, cf. slotViewListDaySections) : la ligne heure d'une section se déduit donc
     // du seul jour present, réparti sur Past/Present/Future par getHourSlotsForRow.
-    const rowHasTasks = (cells) => cells.some(c => c && findTaskBySlotExpr(allListTasks, c, false).length > 0);
+    const rowHasTasks = (cells) => cells.some(c => c && tasksPlacedIn(c).length > 0);
 
     const hourRows = [];
     const dayRows = [];

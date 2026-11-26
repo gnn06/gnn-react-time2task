@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { isSlotEqual, slotCompare, slotExprAdd } from "./slot-expr.js";
+import { isSlotEqual, isSlotNested, slotCompare, slotExprAdd } from "./slot-expr.js";
 import { slotHasImpreciseIcon } from "./slot-view";
 
 vi.useFakeTimers()
@@ -96,6 +96,21 @@ describe('slotEqual', () => {
         expect(result).toEqual(true);
     })
 })
+
+describe('isSlotNested', () => {
+    test.each([
+        ['égaux', 'this_month this_week mardi', 'this_month this_week mardi', true],
+        ['le premier est dans le second', 'this_month this_week mardi', 'this_month this_week', true],
+        ['le second est dans le premier', 'this_month this_week', 'this_month this_week mardi', true],
+        ['sous-niveau heure', 'this_month this_week mardi matin', 'this_month this_week mardi', true],
+        ['frères (même parent)', 'this_month this_week lundi', 'this_month this_week mardi', false],
+        ['semaines différentes', 'this_month this_week mardi', 'this_month next_week mardi', false],
+        ['familles de jour distinctes (today ≠ jeudi)', 'this_month this_week jeudi', 'today', false],
+        ['complétion d\'un slot incomplet', 'mardi', 'this_month this_week', true],
+    ])('%s', (_, slotExpr, other, expected) => {
+        expect(isSlotNested(slotExpr, other)).toBe(expected);
+    });
+});
 
 describe('tâche imprécise — icône', () => {
     it('une tâche affectée à this_month sans semaine est imprécise dans le slot this_month', () => {

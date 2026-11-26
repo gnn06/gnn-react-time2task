@@ -6,7 +6,7 @@ import { IDizer } from "../utils/stringUtil";
 import { getBranchHash, branchComplete } from "../data/slot-branch";
 import { isSlotEqualOrInclude } from "../data/slot-expr";
 import { getCurrentWeekdayId } from "../data/slot-date";
-import { findTaskBySlotExpr } from "../data/task";
+import { findTaskBySlotExpr, keepTasksOnFilteredSlot } from "../data/task";
 import { Parser } from "../data/parser";
 import { rowLabel } from "./level-label";
 
@@ -22,9 +22,11 @@ const colTestId = (rowKind, col) => `tcell-${rowKind}-${col === OVERFLOW ? 'over
  *
  * @param {tasks} tasks après filtrage
  * @param {conf} conf issue du store
+ * @param {string[]} filterSlots chemins du filtre créneau actif. Même règle de placement que Slot : une case ne compte
+ *   une tâche multiple que si elle l'affiche (cf. keepTasksOnFilteredSlot)
  * @returns
  */
-export default function SlotViewTree({ tasks, selection, handleSelection, conf, snapDates }) {
+export default function SlotViewTree({ tasks, selection, handleSelection, conf, snapDates, filterSlots }) {
 
     const maxLevel = conf.levelMaxIncluded
     // Vérité unique : le tree dispose toutes les tâches filtrées. Les jours weekday
@@ -113,7 +115,7 @@ export default function SlotViewTree({ tasks, selection, handleSelection, conf, 
             const rollingHourRowHasTasks = (hour) => showRollingHere &&
                 [todayNode, tomorrowNode].some(node => {
                     const h = rollingHour(node, hour);
-                    return h && findTaskBySlotExpr(allTreeTasks, h, false).length > 0;
+                    return h && keepTasksOnFilteredSlot(findTaskBySlotExpr(allTreeTasks, h, false), h, filterSlots).length > 0;
                 });
 
             // Ligne Jour (rolling) : l'en-tête « rollingDays » distingue la section roulante
