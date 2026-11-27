@@ -47,7 +47,7 @@ Une fois le bug corrigé et les tests unitaires adaptés :
 # Règles de collaboration (valables en local et en cloud)
 
 - **Commit** : committer librement à la fin de chaque étape validée (`npx tsc --noEmit` et `npx vitest run` verts), sans demander confirmation, et indiquer le message après coup ; message sur une seule ligne, sans corps ni liste de fichiers
-- **Push** : pousser librement sur les branches de développement (`feat/…`, `fix/…`, `chore/…`) ; jamais sur `master` (il ne reçoit que des fusions de PR, faites sur demande explicite)
+- **Push** : pousser librement sur les branches de développement (`feat/…`, `fix/…`, `chore/…`) ; ne jamais pousser directement sur `master`. Il ne reçoit que des fusions en squash : faites par l'utilisateur (PR ou squash local), ou par Claude via une PR sur demande explicite
 - **Commandes shell** : pas de `cd` en préfixe (casse le matching des permissions) ; ne jamais rediriger la sortie (`tee`, `>`) sauf demande explicite
 - **Tests Playwright** : lancer automatiquement la suite complète en fin d'évolution, une fois `npx tsc --noEmit` et `npx vitest run` verts, sans demander confirmation ; toujours contre la base dev (cf. règle Supabase)
 - **Plan** : ne pas marquer ✅ FAIT sans confirmation explicite
