@@ -1,9 +1,13 @@
 import { Link } from "react-router";
 import Markdown from 'react-markdown'
 
-export const RELEASE = '26/11/2026';
+export const RELEASE = '27/11/2026';
 
 const text = `
+27/11/2026
+==========
+- FIX : la date affichée sur un jour d'une semaine suivante (par exemple le mardi de la semaine prochaine) était celle de la semaine courante
+
 26/11/2026
 ==========
 - vues par créneau : quand un filtre créneau est actif, une tâche multiple n'apparaît plus qu'au créneau filtré (plus de doublon). Une icône sur la carte indique ses autres créneaux
