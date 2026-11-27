@@ -125,6 +125,53 @@ describe('getDate', () => {
             expect(getDate({ id: 'lundi' }, [])).toBe('2024-12-30')
         })
     })
+
+    describe('jour d\'une autre semaine — la date suit la semaine du chemin, pas seulement l\'id', () => {
+        // this_week = 2024-12-30 ; next_week = 2025-01-06 ; following_week = 2025-01-13 ; following_week + 1 = 2025-01-20
+        const snapDates = [
+            { slotid: 'this_month', date: '2025-01' },
+            { slotid: 'this_week',  date: '2024-12-30' },
+            { slotid: 'today',      date: '2025-01-03' },
+        ]
+
+        test.each([
+            ['lundi de next_week',               'lundi',    'this_month next_week lundi',               '2025-01-06'],
+            ['mardi de next_week',               'mardi',    'this_month next_week mardi',               '2025-01-07'],
+            ['vendredi de following_week',       'vendredi', 'this_month following_week vendredi',       '2025-01-17'],
+            ['lundi de following_week + 1',      'lundi',    'this_month following_week + 1 lundi',      '2025-01-20'],
+            ['mercredi de following_week + 1',   'mercredi', 'this_month following_week + 1 mercredi',   '2025-01-22'],
+            ['mardi de this_week (chemin complet)', 'mardi', 'this_month this_week mardi',               '2024-12-31'],
+        ])('%s', (_, id, path, expected) => {
+            expect(getDate({ id, path }, snapDates)).toBe(expected)
+        })
+
+        test('sans snapDate de semaine : semaine par défaut + décalage de la semaine du chemin', () => {
+            expect(getDate({ id: 'mardi', path: 'this_month next_week mardi' }, [])).toBe('2025-01-07')
+        })
+
+        test('chemin sans semaine : retombe sur la semaine courante (comportement par id)', () => {
+            expect(getDate({ id: 'mardi', path: 'mardi' }, snapDates)).toBe('2024-12-31')
+        })
+
+        test('sans chemin : comportement inchangé (semaine courante)', () => {
+            expect(getDate({ id: 'mardi' }, snapDates)).toBe('2024-12-31')
+        })
+
+        test('les ancres today/tomorrow ne dépendent pas de la semaine du chemin', () => {
+            expect(getDate({ id: 'today',    path: 'today' }, snapDates)).toBe('2025-01-03')
+            expect(getDate({ id: 'tomorrow', path: 'this_month next_week tomorrow' }, snapDates)).toBe('2025-01-04')
+        })
+
+        test('slot semaine ou mois avec chemin : inchangé', () => {
+            expect(getDate({ id: 'next_week',  path: 'this_month next_week' }, snapDates)).toBe('2025-01-06')
+            expect(getDate({ id: 'next_month', path: 'next_month' }, snapDates)).toBe('2025-02')
+        })
+
+        test('niveau heure : aucune date', () => {
+            expect(getDate({ id: 'matin', path: 'this_month next_week mardi matin' }, snapDates)).toBe('')
+            expect(getDate({ id: 'aprem', path: 'today aprem' }, snapDates)).toBe('')
+        })
+    })
 });
 
 test('getISODate', () => {

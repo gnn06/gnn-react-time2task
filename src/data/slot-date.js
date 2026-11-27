@@ -1,6 +1,7 @@
 import moment from "moment"
 import { ANCHOR_IDS_BY_LEVEL, getSlotIdLevel, isAnchor, weight } from "./slot-id"
 import { getNow } from "../utils/now"
+import { IDizer } from "../utils/stringUtil"
 
 export function getDefaultDates() {
     const now        = moment(getNow())
@@ -73,7 +74,11 @@ export function shiftDate(date, level) {
     return date
 }
 
-/* use in <SlotTitle/> */
+/**
+ * Date réelle d'un slot (mois, semaine, jour ; aucune au niveau heure).
+ * @param slotID slot avec `id`, et `path` (chemin complet) pour dater un jour dans sa semaine
+ * use in <SlotTitle/>
+ */
 export function getDate(slotID, snapDates) {
     const IdRegExp = slotID.id.match(/(\S+) ?\+? ?(\d*)/)
     const id = IdRegExp[1]
@@ -125,11 +130,12 @@ export function getDate(slotID, snapDates) {
             resultDate.add(shift, 'days')
             return resultDate.format("YYYY-MM-DD")
         } else {
-            // lundi..vendredi : compléments relatifParent, offset depuis lundi de la semaine
-            snapDate = snapDates.find(el => el.slotid === 'this_week')
-            if (!snapDate) snapDate = getDefaultDates().find(el => el.slotid === 'this_week')
+            // lundi..vendredi : compléments relatifParent, offset depuis le lundi de LEUR semaine :
+            // celle du chemin du slot s'il en porte une (next_week mardi), sinon la semaine courante.
+            const weekId = slotID.path && IDizer(slotID.path).find(item => getSlotIdLevel(item) === 2)
+            const weekStart = getDate({ id: weekId ?? 'this_week' }, snapDates)
             const offset = weight[id] - 1  // lundi=0, mardi=1, …, vendredi=4
-            return moment(snapDate.date).add(offset, 'days').format("YYYY-MM-DD")
+            return moment(weekStart).add(offset, 'days').format("YYYY-MM-DD")
         }
     }
     return ""
