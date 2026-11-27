@@ -71,7 +71,7 @@ function withPresentDaySlots(slots) {
  * @param {*} param0 
  * @returns 
  */
-export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCancel, title }) {
+export default function SlotSelectDialog({ selectionExpr, conf, snapDates, onConfirm, onCancel, title }) {
 
   const [ selection, setSelection] = useState(exprToSelection(selectionExpr))
   // slotsFromConf dérivé de selection via useMemo (pas d'état séparé) : évite la désynchronisation
@@ -142,7 +142,7 @@ export default function SlotSelectDialog({ selectionExpr, conf, onConfirm, onCan
       <div className='mb-3'>Tâche : {title}</div>
       <DndContext onDragEnd={dnd} sensors={sensors}>
         {withPresentDaySlots(slotsFromConf).map((slot, index) => {
-          return <SlotTreeSelect key={slot.id} slot={slot} selection={selection}
+          return <SlotTreeSelect key={slot.id} slot={slot} selection={selection} snapDates={snapDates}
                     handleSelection={handleSelection}
                     handleShift={handleShift}
                     handleClick={handleClick}

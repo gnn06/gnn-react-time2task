@@ -4,11 +4,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Button, IconButton } from "@mui/material";
 
 import SlotSelectDialog from "./slot-select-dialog";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 export default function SlotSelectionButton({task, style, withText = false, handleSave}) {
 
     const [ showSlotSelect, setShowSlotSelect ] = useState(false)
     const conf = useSelector(state => state.tasks.slotViewFilterConf);
+    const { data: snapDates } = useGetSnapDatesQuery();
 
     const onSlotSelect = () => {
         setShowSlotSelect(true)
@@ -28,7 +30,7 @@ export default function SlotSelectionButton({task, style, withText = false, hand
         { withText ? <Button variant="contained" size="small" startIcon={<EditIcon />} onClick={onSlotSelect}>Choix créneau</Button> 
         : <IconButton style={style} onClick={onSlotSelect}><EditIcon /></IconButton>}
         
-        { showSlotSelect && <SlotSelectDialog selectionExpr={task.originalSlotExpr ?? task.slotExpr} title={task.title} conf={conf} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
+        { showSlotSelect && <SlotSelectDialog selectionExpr={task.originalSlotExpr ?? task.slotExpr} title={task.title} conf={conf} snapDates={snapDates} onConfirm={onSlotSelectConfirm} onCancel={onSlotSelectCancel}/>}
     </React.Fragment>
 }
 

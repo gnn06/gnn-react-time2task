@@ -7,6 +7,7 @@ const text = `
 27/11/2026
 ==========
 - FIX : la date affichée sur un jour d'une semaine suivante (par exemple le mardi de la semaine prochaine) était celle de la semaine courante
+- le sélecteur de créneaux d'une tâche affiche maintenant la date de chaque créneau (mois, semaine, jour)
 
 26/11/2026
 ==========

@@ -13,6 +13,7 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import { getSlotIdLevel, isComplement, isAnchor } from "../data/slot-id";
 import { isInsideSelected } from "../data/selection-tree";
 import { IDizer } from "../utils/stringUtil";
+import { getDate } from "../data/slot-date";
 
 function showRepeat(id) {
     return getSlotIdLevel(id) <= 2 || isAnchor(id)
@@ -37,7 +38,9 @@ function isDirectParentOfRelativeSelection(path, selection) {
  * @param {*} param0 
  * @returns 
  */
-export default function SlotSelect({slot, selection, handleSelection, handleShift, handleClick, handleRepetition, handleDisable}) {
+// snapDates : dates d'ancrage (this_month, this_week, today). Absentes (pas encore chargées), les dates
+// sont calculées depuis les valeurs par défaut : on affiche sans attendre.
+export default function SlotSelect({slot, selection, snapDates, handleSelection, handleShift, handleClick, handleRepetition, handleDisable}) {
     const { id, title, path, start, end } = slot;
     const selected = selection.get(path) && selection.get(path).selected || false
     const repetition   = selection.get(path) && selection.get(path).repetition || null
@@ -81,7 +84,7 @@ export default function SlotSelect({slot, selection, handleSelection, handleShif
     return <React.Fragment>
         <div className={slotStyle + " cursor-pointer min-w-[8.5em] min-h-[5.5em] group"} data-slot-path={path} onClick={onSlotClick} >
             <div className="flex flex-row">
-                <SlotTitle slot={slot} />
+                <SlotTitle slot={slot} date={getDate(slot, snapDates ?? [])} />
                 { isComplement(id) && getSlotIdLevel(id) === 3 && <PushPinIcon sx={{ fontSize: 14, opacity: 0.5 }} /> }
                 <div>
                     {start != null && end != null && <div className="time text-xs">{start} - {end}</div>}

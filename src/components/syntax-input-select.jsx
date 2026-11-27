@@ -3,12 +3,14 @@ import { useSelector } from "react-redux";
 
 import SyntaxInput from "./syntax-input";
 import SlotSelectDialog from "./slot-select-dialog";
+import { useGetSnapDatesQuery } from "../features/apiSlice";
 
 export default function SyntaxInputWithSelection ({id, items, placeHolderInput, initialInputValue, classNameInput, onInputChange, closeIcon, title}) {
 
     const [ show, setShow ] = useState(false)
     const [ selectionExpr, setSelectionExpr ] = useState(initialInputValue)
     const conf = useSelector(state => state.tasks.slotViewFilterConf);
+    const { data: snapDates } = useGetSnapDatesQuery();
 
     const onExprChange = (e) => {
         const expr = e
@@ -33,6 +35,6 @@ export default function SyntaxInputWithSelection ({id, items, placeHolderInput, 
     return <div className="grow">
         <SyntaxInput id={id} items={items} placeHolderInput={placeHolderInput} initialInputValue={selectionExpr} classNameInput={classNameInput} closeIcon={closeIcon}
             onInputChange={onExprChange} />
-        { show && <SlotSelectDialog selectionExpr={selectionExpr} title={title} conf={conf} onConfirm={onConfirm} onCancel={onCancel}/>}
+        { show && <SlotSelectDialog selectionExpr={selectionExpr} title={title} conf={conf} snapDates={snapDates} onConfirm={onConfirm} onCancel={onCancel}/>}
     </div>
 }

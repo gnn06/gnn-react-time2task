@@ -9,7 +9,7 @@ import { getSlotIdLevel } from "../data/slot-id";
  * @param {*} param0 
  * @returns 
  */
-export default function SlotTreeSelect({slot, selection, handleSelection, handleShift, handleClick, handleRepetition, handleDisable}) {
+export default function SlotTreeSelect({slot, selection, snapDates, handleSelection, handleShift, handleClick, handleRepetition, handleDisable}) {
     const { path, inner } = slot;
 
     const innerClass = 'ml-3' 
@@ -24,13 +24,14 @@ export default function SlotTreeSelect({slot, selection, handleSelection, handle
         <div>        
             <DndContainer id={slot.path} 
                 mode={mode}>
-                <SlotSelect slot={slot} selection={selection} handleSelection={handleSelection} handleShift={handleShift} handleClick={handleClick}
+                <SlotSelect slot={slot} selection={selection} snapDates={snapDates} handleSelection={handleSelection} handleShift={handleShift} handleClick={handleClick}
                         handleRepetition={handleRepetition} handleDisable={handleDisable}/>
             </DndContainer>
             <div className={innerClass}>
                 {inner != null && inner.map((innerSlot, index) => 
                 <SlotTreeSelect key={innerSlot.id} slot={innerSlot} 
                     selection={selection}
+                    snapDates={snapDates}
                     handleSelection={(path, val) => handleSelection && handleSelection(path, val)} 
                     handleShift={handleShift}
                     handleClick={handleClick}

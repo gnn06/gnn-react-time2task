@@ -22,6 +22,35 @@ function renderDialog(selectionExpr, onConfirm = noop) {
     )
 }
 
+describe('SlotSelectDialog — dates des créneaux', () => {
+    // this_week = lundi 2024-12-30 ; today = 2025-01-03
+    const SNAP_DATES = [
+        { slotid: 'this_month', date: '2025-01' },
+        { slotid: 'this_week',  date: '2024-12-30' },
+        { slotid: 'today',      date: '2025-01-03' },
+    ]
+    const slotEl = (path) => document.querySelector(`[data-slot-path="${path}"]`)
+
+    test('chaque créneau de niveau mois, semaine ou jour affiche sa date réelle', () => {
+        render(<SlotSelectDialog selectionExpr="" conf={DEFAULT_CONF} snapDates={SNAP_DATES} onConfirm={noop} onCancel={noop} title="test" />)
+        expect(slotEl('this_month')).toHaveTextContent('2025-01')
+        expect(slotEl('this_month this_week')).toHaveTextContent('2024-12-30')
+        expect(slotEl('this_month this_week mardi')).toHaveTextContent('2024-12-31')
+        expect(slotEl(TODAY)).toHaveTextContent('2025-01-03')
+        expect(slotEl(TOMORROW)).toHaveTextContent('2025-01-04')
+    })
+
+    test('un jour de la semaine suivante (injecté par la sélection de la tâche) porte la date de SA semaine', () => {
+        render(<SlotSelectDialog selectionExpr="next_week mardi" conf={DEFAULT_CONF} snapDates={SNAP_DATES} onConfirm={noop} onCancel={noop} title="test" />)
+        expect(slotEl('this_month next_week mardi')).toHaveTextContent('2025-01-07')
+    })
+
+    test('le niveau heure n\'affiche aucune date', () => {
+        render(<SlotSelectDialog selectionExpr="" conf={DEFAULT_CONF} snapDates={SNAP_DATES} onConfirm={noop} onCancel={noop} title="test" />)
+        expect(slotEl(TODAY_MATIN)).not.toHaveTextContent(/\d{4}-\d{2}/)
+    })
+})
+
 describe('SlotSelectDialog — today/tomorrow dans le picker', () => {
 
     test('today et tomorrow présents dans le picker', () => {
